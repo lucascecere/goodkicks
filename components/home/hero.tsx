@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 export function Hero() {
@@ -37,9 +38,14 @@ export function Hero() {
           transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
           className="flex items-center justify-center"
         >
-          <div className="w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-brand-rule flex items-center justify-center text-8xl">
-            🏐
-          </div>
+          <Image
+            src="/brand/logo.png"
+            alt="Good Kicks mascot"
+            width={400}
+            height={400}
+            className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 object-contain drop-shadow-lg"
+            priority
+          />
         </motion.div>
       </div>
     </section>

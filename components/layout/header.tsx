@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import { CartIconButton } from './cart-icon-button';
 import { cn } from '@/lib/utils';
@@ -33,8 +34,15 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="font-display text-xl text-brand-ink hover:text-brand-rust transition-colors">
-          Good Kicks
+        <Link href="/" className="flex-shrink-0">
+          <Image
+            src="/brand/logo.png"
+            alt="Good Kicks Foot Bags"
+            width={40}
+            height={40}
+            style={{ height: '40px', width: 'auto' }}
+            priority
+          />
         </Link>
 
         {/* Desktop nav */}

@@ -3,6 +3,7 @@ import { Hero } from '@/components/home/hero';
 import { FeaturedProduct } from '@/components/home/featured-product';
 import { Pillars } from '@/components/home/pillars';
 import { CommunityGrid } from '@/components/home/community-grid';
+import { NewsletterCta } from '@/components/home/newsletter-cta';
 import { storefrontClient } from '@/lib/shopify/client';
 import { PRODUCT_BY_HANDLE_QUERY } from '@/lib/shopify/queries';
 import type { ShopifyProduct } from '@/lib/shopify/types';
@@ -35,6 +36,7 @@ export default async function HomePage() {
       <FeaturedProduct product={product} />
       <Pillars />
       <CommunityGrid />
+      <NewsletterCta />
     </>
   );
 }
