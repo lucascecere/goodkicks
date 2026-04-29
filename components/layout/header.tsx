@@ -32,35 +32,20 @@ export function Header() {
           : 'bg-transparent'
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex-shrink-0">
-          <Image
-            src="/brand/logo.png"
-            alt="Good Kicks Foot Bags"
-            width={80}
-            height={80}
-            style={{ height: '80px', width: 'auto' }}
-            priority
-          />
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm tracking-wide text-brand-ink/80 hover:text-brand-rust transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Right: cart + mobile toggle */}
-        <div className="flex items-center gap-3">
-          <CartIconButton />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[10px] grid grid-cols-3 items-center">
+        {/* Left: desktop nav / mobile hamburger */}
+        <div className="flex items-center">
+          <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm tracking-wide text-brand-ink/80 hover:text-brand-rust transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
           <button
             onClick={() => setMobileOpen((v) => !v)}
             className="md:hidden p-2 text-brand-ink hover:text-brand-rust transition-colors"
@@ -68,6 +53,25 @@ export function Header() {
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
+        </div>
+
+        {/* Center: logo */}
+        <div className="flex justify-center">
+          <Link href="/" className="flex-shrink-0">
+            <Image
+              src="/brand/logo.png"
+              alt="Good Kicks Foot Bags"
+              width={80}
+              height={80}
+              style={{ height: '80px', width: 'auto' }}
+              priority
+            />
+          </Link>
+        </div>
+
+        {/* Right: cart */}
+        <div className="flex items-center justify-end">
+          <CartIconButton />
         </div>
       </div>
 
