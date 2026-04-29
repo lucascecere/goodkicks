@@ -1,0 +1,86 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Menu, X } from 'lucide-react';
+import { CartIconButton } from './cart-icon-button';
+import { cn } from '@/lib/utils';
+
+const navLinks = [
+  { href: '/', label: 'shop' },
+  { href: '/about', label: 'about' },
+  { href: '/contact', label: 'contact' },
+];
+
+export function Header() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <header
+      className={cn(
+        'sticky top-0 z-50 transition-all duration-300',
+        scrolled
+          ? 'bg-brand-cream/95 backdrop-blur-sm border-b border-brand-rule shadow-sm'
+          : 'bg-transparent'
+      )}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="font-display text-xl text-brand-ink hover:text-brand-rust transition-colors">
+          Good Kicks
+        </Link>
+
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm tracking-wide text-brand-ink/80 hover:text-brand-rust transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Right: cart + mobile toggle */}
+        <div className="flex items-center gap-3">
+          <CartIconButton />
+          <button
+            onClick={() => setMobileOpen((v) => !v)}
+            className="md:hidden p-2 text-brand-ink hover:text-brand-rust transition-colors"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile nav */}
+      {mobileOpen && (
+        <nav
+          className="md:hidden bg-brand-cream border-t border-brand-rule px-4 pb-4 flex flex-col gap-1"
+          aria-label="Mobile navigation"
+        >
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="py-3 text-brand-ink hover:text-brand-rust transition-colors border-b border-brand-rule/50 last:border-0"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+      )}
+    </header>
+  );
+}

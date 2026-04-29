@@ -8,9 +8,15 @@
     "start": "next start"
   },
   "dependencies": {
+    "@shopify/storefront-api-client": "^1.0.10",
+    "@vercel/analytics": "^2.0.1",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.14.0",
     "next": "16.2.4",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.74.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
