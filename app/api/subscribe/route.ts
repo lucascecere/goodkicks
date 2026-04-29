@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { storefrontClient } from '@/lib/shopify/client';
+import { CUSTOMER_CREATE_MUTATION } from '@/lib/shopify/mutations';
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
@@ -7,41 +9,33 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'invalid email' }, { status: 400 });
   }
 
-  const adminToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
-  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+  try {
+    const { data } = await storefrontClient.request(CUSTOMER_CREATE_MUTATION, {
+      variables: {
+        input: {
+          email,
+          acceptsMarketing: true,
+          // Generates a random password — customer can reset via Shopify email
+          password: crypto.randomUUID(),
+        },
+      },
+    });
 
-  if (!adminToken || !domain) {
-    // Not yet configured — log and succeed silently so the form doesn't break
-    console.warn('[subscribe] Shopify Admin credentials not set — email not synced:', email);
+    const errors = data?.customerCreate?.customerUserErrors ?? [];
+    // Code CUSTOMER_ALREADY_USED_ONCE or TAKEN = already exists, treat as success
+    const alreadyExists = errors.some((e: { code: string }) =>
+      ['TAKEN', 'CUSTOMER_ALREADY_USED_ONCE'].includes(e.code)
+    );
+
+    if (errors.length > 0 && !alreadyExists) {
+      console.error('[subscribe] Shopify errors:', errors);
+      return NextResponse.json({ error: 'subscription failed' }, { status: 422 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    // Storefront not yet configured — fail silently in dev
+    console.warn('[subscribe] Storefront not configured:', err);
     return NextResponse.json({ ok: true });
   }
-
-  // Create or update customer with acceptsMarketing via Admin API
-  const res = await fetch(`https://${domain}/admin/api/2026-04/customers.json`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Access-Token': adminToken,
-    },
-    body: JSON.stringify({
-      customer: {
-        email,
-        accepts_marketing: true,
-        marketing_opt_in_level: 'single_opt_in',
-        tags: 'newsletter,website-footer',
-      },
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.json();
-    // 422 = customer already exists — treat as success
-    if (res.status === 422) {
-      return NextResponse.json({ ok: true });
-    }
-    console.error('[subscribe] Shopify error:', body);
-    return NextResponse.json({ error: 'shopify error' }, { status: 500 });
-  }
-
-  return NextResponse.json({ ok: true });
 }

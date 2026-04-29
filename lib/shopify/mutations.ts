@@ -59,3 +59,20 @@ export const CART_LINES_REMOVE_MUTATION = `
   }
   ${CART_FRAGMENT}
 `;
+
+export const CUSTOMER_CREATE_MUTATION = `
+  mutation CustomerCreate($input: CustomerCreateInput!) {
+    customerCreate(input: $input) {
+      customer {
+        id
+        email
+        acceptsMarketing
+      }
+      customerUserErrors {
+        field
+        message
+        code
+      }
+    }
+  }
+`;
