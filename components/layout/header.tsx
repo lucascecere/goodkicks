@@ -38,9 +38,9 @@ export function Header() {
           <Image
             src="/brand/logo.png"
             alt="Good Kicks Foot Bags"
-            width={40}
-            height={40}
-            style={{ height: '40px', width: 'auto' }}
+            width={80}
+            height={80}
+            style={{ height: '80px', width: 'auto' }}
             priority
           />
         </Link>
