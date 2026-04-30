@@ -30,16 +30,18 @@ export function FeaturedProduct({ product }: FeaturedProductProps) {
               🏐
             </div>
           </div>
-          <div className="md:col-span-2 space-y-6">
+          <div className="md:col-span-2 space-y-6 text-center md:text-left">
             <p className="text-xs uppercase tracking-widest text-brand-muted font-medium">the good kick</p>
             <h2 className="font-display text-4xl text-brand-ink">{product.title}</h2>
             {firstVariant && (
               <p className="text-2xl text-brand-ink">{formatCents(firstVariant.priceInCents)}</p>
             )}
             <p className="text-brand-muted leading-relaxed">{product.description}</p>
-            <Link href={`/products/${product.handle}`} className="inline-flex items-center text-brand-rust font-medium hover:gap-2 transition-all group">
-              shop now <span className="ml-1 group-hover:ml-2 transition-all">→</span>
-            </Link>
+            <div className="flex justify-center md:justify-start">
+              <Link href={`/products/${product.handle}`} className="inline-flex items-center text-brand-rust font-medium hover:gap-2 transition-all group">
+                shop now <span className="ml-1 group-hover:ml-2 transition-all">→</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

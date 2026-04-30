@@ -76,7 +76,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left: logo + tagline + subscribe */}
-          <div className="space-y-8">
+          <div className="space-y-8 flex flex-col items-center text-center lg:items-start lg:text-left">
             <div className="space-y-4">
               <Image
                 src="/goodkicks_logo_inverted.svg"
@@ -100,7 +100,7 @@ export function Footer() {
           </div>
 
           {/* Right: nav columns */}
-          <div className="grid grid-cols-3 gap-8 text-sm lg:pt-2">
+          <div className="grid grid-cols-3 gap-8 text-sm lg:pt-2 text-center lg:text-left">
             <div>
               <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">shop</h3>
               <ul className="space-y-3">
@@ -137,7 +137,7 @@ export function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10 px-4 sm:px-8 py-5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-white/40">
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-2 sm:flex-row sm:justify-between text-xs text-white/40">
           <p>© {year} Good Kicks Foot Bags</p>
           <a
             href="https://instagram.com/goodkicksco"

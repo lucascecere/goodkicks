@@ -30,7 +30,7 @@ export function Pillars() {
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         {pillars.map((pillar) => (
-          <div key={pillar.title} className="space-y-3">
+          <div key={pillar.title} className="space-y-3 flex flex-col items-center text-center md:items-start md:text-left">
             <pillar.icon className="text-brand-rust" size={28} strokeWidth={1.5} />
             <h3 className="font-display text-2xl text-brand-ink">{pillar.title}</h3>
             <p className="text-brand-muted leading-relaxed">{pillar.body}</p>

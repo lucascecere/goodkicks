@@ -10,8 +10,8 @@ export function StitchPromo() {
     <section className="py-20 px-4 sm:px-8 bg-brand-ink text-white">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
-          <div>
+        <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6 mb-12">
+          <div className="text-center sm:text-left">
             <p className="text-white/50 text-xs uppercase tracking-widest mb-3">from the blog</p>
             <h2 className="font-display text-4xl sm:text-5xl text-white">the stitch.</h2>
             <p className="text-white/60 mt-3 max-w-md leading-relaxed">
