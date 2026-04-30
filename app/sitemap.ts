@@ -1,24 +1,15 @@
 import { MetadataRoute } from 'next';
-import { storefrontClient } from '@/lib/shopify/client';
-import { ALL_PRODUCT_HANDLES_QUERY } from '@/lib/shopify/queries';
-import { flattenEdges } from '@/lib/shopify/transforms';
+import { ALL_PRODUCTS } from '@/lib/products/catalog';
 import { blogPosts } from '@/lib/blog/posts';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://goodkicks.co';
 
-  let productRoutes: MetadataRoute.Sitemap = [];
-  try {
-    const { data } = await storefrontClient.request(ALL_PRODUCT_HANDLES_QUERY);
-    const products = flattenEdges(data?.products ?? { edges: [] }) as Array<{ handle: string }>;
-    productRoutes = products.map((p) => ({
-      url: `${siteUrl}/products/${p.handle}`,
-      lastModified: new Date(),
-      priority: 0.8,
-    }));
-  } catch {
-    // If Shopify isn't configured yet, return static routes only
-  }
+  const productRoutes: MetadataRoute.Sitemap = ALL_PRODUCTS.map((p) => ({
+    url: `${siteUrl}/products/${p.handle}`,
+    lastModified: new Date(),
+    priority: 0.8,
+  }));
 
   const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,

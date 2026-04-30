@@ -1,41 +1,35 @@
 'use client';
 
-import { useTransition } from 'react';
-import { Button } from '@/components/ui/button';
-import { addToCart } from '@/lib/cart/actions';
 import { useCart } from '@/lib/cart/cart-context';
 
 interface AddToCartButtonProps {
-  variantId: string;
-  availableForSale: boolean;
+  variant: {
+    id: string;
+    name: string;
+    priceInCents: number;
+  };
+  productTitle: string;
 }
 
-export function AddToCartButton({ variantId, availableForSale }: AddToCartButtonProps) {
-  const [isPending, startTransition] = useTransition();
-  const { openCart } = useCart();
+export function AddToCartButton({ variant, productTitle }: AddToCartButtonProps) {
+  const { addItem, openCart } = useCart();
 
-  if (!availableForSale) {
-    return (
-      <Button variant="secondary" size="lg" disabled className="w-full">
-        sold out
-      </Button>
-    );
+  function handleClick() {
+    addItem({
+      variantId: variant.id,
+      variantName: variant.name,
+      productTitle,
+      priceInCents: variant.priceInCents,
+    });
+    openCart();
   }
 
   return (
-    <Button
-      variant="primary"
-      size="lg"
-      disabled={isPending}
-      className="w-full"
-      onClick={() => {
-        startTransition(async () => {
-          await addToCart(variantId, 1);
-          openCart();
-        });
-      }}
+    <button
+      onClick={handleClick}
+      className="w-full bg-brand-rust text-white py-4 rounded font-medium hover:bg-brand-rust/90 transition-colors text-lg"
     >
-      {isPending ? 'adding...' : 'add to bag'}
-    </Button>
+      add to bag
+    </button>
   );
 }

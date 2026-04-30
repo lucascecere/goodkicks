@@ -7,9 +7,7 @@ import { StitchPromo } from '@/components/home/stitch-promo';
 import { InstagramFeed } from '@/components/home/instagram-feed';
 import { NewsletterCta } from '@/components/home/newsletter-cta';
 import { FAQ } from '@/components/home/faq';
-import { storefrontClient } from '@/lib/shopify/client';
-import { PRODUCT_BY_HANDLE_QUERY } from '@/lib/shopify/queries';
-import type { ShopifyProduct } from '@/lib/shopify/types';
+import { getProductByHandle } from '@/lib/products/catalog';
 
 export const metadata: Metadata = {
   title: 'Good Kicks — The Best Foot Bag (Hacky Sack) for Your Circle',
@@ -17,21 +15,8 @@ export const metadata: Metadata = {
     'Hand-stitched foot bags — what everyone calls hacky sacks — built for dorm circles, campus quads, and every backpack that needs one. $15. Free shipping on orders $40+.',
 };
 
-const FEATURED_PRODUCT_HANDLE = 'good-kicks-hacky-sack';
-
-async function getFeaturedProduct(): Promise<ShopifyProduct | null> {
-  try {
-    const { data } = await storefrontClient.request(PRODUCT_BY_HANDLE_QUERY, {
-      variables: { handle: FEATURED_PRODUCT_HANDLE },
-    });
-    return (data?.product as ShopifyProduct) ?? null;
-  } catch {
-    return null;
-  }
-}
-
-export default async function HomePage() {
-  const product = await getFeaturedProduct();
+export default function HomePage() {
+  const product = getProductByHandle('good-kicks-foot-bag');
 
   return (
     <>

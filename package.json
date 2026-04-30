@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@shopify/storefront-api-client": "^1.0.10",
+    "@supabase/supabase-js": "^2.105.1",
     "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",
@@ -16,6 +17,8 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.74.0",
+    "resend": "^6.12.2",
+    "stripe": "^22.1.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

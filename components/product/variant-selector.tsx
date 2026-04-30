@@ -1,16 +1,14 @@
 'use client';
 
-import { ColorSwatch } from '@/components/ui/color-swatch';
-import { colorForVariant } from '@/lib/shopify/variant-colors';
+import { cn } from '@/lib/utils';
+import type { ProductVariant } from '@/lib/products/catalog';
 
-type Variant = {
-  id: string;
-  title: string;
-  availableForSale: boolean;
-};
+function formatCents(cents: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(cents / 100);
+}
 
 interface VariantSelectorProps {
-  variants: Variant[];
+  variants: ProductVariant[];
   selectedVariantId: string;
   onSelect: (variantId: string) => void;
 }
@@ -18,21 +16,21 @@ interface VariantSelectorProps {
 export function VariantSelector({ variants, selectedVariantId, onSelect }: VariantSelectorProps) {
   return (
     <div className="space-y-2">
-      <p className="text-sm text-brand-muted">
-        color:{' '}
-        <span className="text-brand-ink">
-          {variants.find((v) => v.id === selectedVariantId)?.title ?? ''}
-        </span>
-      </p>
+      <p className="text-sm text-brand-muted font-medium">select pack</p>
       <div className="flex flex-wrap gap-3">
         {variants.map((variant) => (
-          <ColorSwatch
+          <button
             key={variant.id}
-            color={colorForVariant(variant.title)}
-            title={variant.title}
-            selected={variant.id === selectedVariantId}
             onClick={() => onSelect(variant.id)}
-          />
+            className={cn(
+              'px-5 py-2.5 rounded border text-sm font-medium transition-all',
+              variant.id === selectedVariantId
+                ? 'border-brand-rust bg-brand-rust text-white'
+                : 'border-brand-rule text-brand-ink hover:border-brand-rust/50'
+            )}
+          >
+            {variant.name} — {formatCents(variant.priceInCents)}
+          </button>
         ))}
       </div>
     </div>

@@ -1,14 +1,11 @@
 import type { Metadata } from 'next';
 import { DM_Serif_Display, Inter } from 'next/font/google';
-import { cookies } from 'next/headers';
 import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { CartDrawer } from '@/components/layout/cart-drawer';
 import { CartProvider } from '@/lib/cart/cart-context';
-import { fetchCart } from '@/lib/cart/fetch-cart';
-import { CART_COOKIE } from '@/lib/cart/cookies';
 import './globals.css';
 
 const dmSerifDisplay = DM_Serif_Display({
@@ -55,15 +52,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const cartId = cookieStore.get(CART_COOKIE)?.value;
-  const cart = cartId ? await fetchCart(cartId) : null;
-
   return (
     <html
       lang="en"
@@ -89,7 +82,7 @@ export default async function RootLayout({
         >
           Skip to content
         </a>
-        <CartProvider initialCart={cart}>
+        <CartProvider>
           <Header />
           <main id="main-content">{children}</main>
           <Footer />

@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import shopifyImageLoader from '@/lib/shopify/image-loader';
 
-type ShopifyImage = { url: string; altText: string | null; width: number; height: number };
+type LocalImage = { url: string; altText: string | null; width: number; height: number };
 
 interface ProductGalleryProps {
-  images: ShopifyImage[];
+  images: LocalImage[];
   productTitle?: string;
 }
 
@@ -30,7 +29,6 @@ export function ProductGallery({ images, productTitle = 'Product' }: ProductGall
         <Image
           src={activeImage.url}
           alt={activeImage.altText ?? productTitle}
-          loader={shopifyImageLoader}
           fill
           sizes="(max-width: 1024px) 100vw, 50vw"
           className="object-cover"
@@ -56,7 +54,6 @@ export function ProductGallery({ images, productTitle = 'Product' }: ProductGall
               <Image
                 src={img.url}
                 alt={img.altText ?? `${productTitle} view ${i + 1}`}
-                loader={shopifyImageLoader}
                 fill
                 sizes="80px"
                 className="object-cover"
