@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About',
+  title: 'About Good Kicks — The Story Behind the Foot Bag',
   description:
-    'Two college friends, a quiet renaissance, and one simple bet. The story behind Good Kicks.',
+    'Two college friends, a quiet renaissance, and one simple bet. How Good Kicks became the foot bag brand built for campus circles.',
 };
 
 export default function AboutPage() {

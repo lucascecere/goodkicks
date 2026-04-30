@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import { ContactForms } from './contact-forms';
 
 export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Get in touch with Good Kicks. Questions, partnerships, sac account inquiries.',
+  title: 'Contact Good Kicks — Bulk Orders, Questions & Partnerships',
+  description:
+    'Get in touch with Good Kicks. Campus bulk orders, sac accounts, partnerships, or just questions about foot bags and hacky sacks — we answer everything.',
 };
 
 export default function ContactPage() {

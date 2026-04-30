@@ -63,3 +63,35 @@
     max-width: 65ch;
   }
 }
+
+.prose-content h2 {
+  font-family: var(--font-dm-serif);
+  font-size: 1.5rem;
+  color: var(--color-brand-ink);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+.prose-content p {
+  margin-bottom: 1rem;
+  line-height: 1.75;
+  color: var(--color-brand-muted);
+}
+.prose-content ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.prose-content li {
+  margin-bottom: 0.5rem;
+  color: var(--color-brand-muted);
+  line-height: 1.6;
+}
+.prose-content strong {
+  color: var(--color-brand-ink);
+  font-weight: 600;
+}
+.prose-content a {
+  color: var(--color-brand-rust);
+  text-decoration: underline;
+}

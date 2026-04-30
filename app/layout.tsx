@@ -25,6 +25,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://goodkicks.co'),
   title: {
     template: '%s | Good Kicks',
     default: 'Good Kicks — Make the circle bigger.',
@@ -65,6 +66,19 @@ export default async function RootLayout({
       className={`${dmSerifDisplay.variable} ${inter.variable}`}
     >
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Good Kicks',
+              url: 'https://goodkicks.co',
+              logo: 'https://goodkicks.co/icon.png',
+              description: 'Hand-stitched foot bags — what everyone calls hacky sacks — built for college circles and everyone keeping the game going.',
+            }),
+          }}
+        />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-rust text-white px-4 py-2 rounded z-[100]"
