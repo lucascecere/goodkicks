@@ -78,11 +78,11 @@ export function Footer() {
           <div className="space-y-8">
             <div className="space-y-4">
               <Image
-                src="/brand/logo.png"
+                src="/goodkicks_logo_inverted.svg"
                 alt="Good Kicks Foot Bags"
-                width={100}
-                height={100}
-                style={{ height: '100px', width: 'auto' }}
+                width={120}
+                height={120}
+                style={{ height: '120px', width: 'auto' }}
               />
               <p className="font-display text-2xl text-white/80">make the circle bigger.</p>
               <p className="text-white/50 text-sm leading-relaxed max-w-xs">
