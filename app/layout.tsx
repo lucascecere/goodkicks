@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { CartDrawer } from '@/components/layout/cart-drawer';
 import { CartProvider } from '@/lib/cart/cart-context';
+import { SpinWheelPopup } from '@/components/home/spin-wheel-popup';
 import './globals.css';
 
 const dmSerifDisplay = DM_Serif_Display({
@@ -89,6 +90,7 @@ export default function RootLayout({
           <main id="main-content">{children}</main>
           <Footer />
           <CartDrawer />
+          <SpinWheelPopup />
         </CartProvider>
         <Analytics />
         <Script
