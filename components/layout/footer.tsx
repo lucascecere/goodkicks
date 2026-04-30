@@ -83,6 +83,7 @@ export function Footer() {
                 alt="Good Kicks Foot Bags"
                 width={120}
                 height={120}
+                className="mx-auto lg:mx-0"
                 style={{ height: '120px', width: 'auto' }}
               />
               <p className="font-display text-2xl text-white/80">make the circle bigger.</p>
