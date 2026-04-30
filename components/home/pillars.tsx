@@ -20,9 +20,9 @@ const pillars = [
 
 export function Pillars() {
   return (
-    <section className="py-20 px-4 sm:px-8">
+    <section className="py-8 px-4 sm:px-8">
       {/* Color strip decoration */}
-      <div className="flex w-full mb-12 overflow-hidden rounded-full h-1.5 max-w-xs mx-auto gap-1">
+      <div className="flex w-full mb-8 overflow-hidden rounded-full h-1.5 max-w-xs mx-auto gap-1">
         <div className="flex-1 bg-brand-rust rounded-full" />
         <div className="flex-1 bg-brand-blue rounded-full" />
         <div className="flex-1 bg-brand-green rounded-full" />
