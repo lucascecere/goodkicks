@@ -3,6 +3,8 @@ import { Hero } from '@/components/home/hero';
 import { FeaturedProduct } from '@/components/home/featured-product';
 import { Pillars } from '@/components/home/pillars';
 import { CommunityGrid } from '@/components/home/community-grid';
+import { StitchPromo } from '@/components/home/stitch-promo';
+import { InstagramFeed } from '@/components/home/instagram-feed';
 import { NewsletterCta } from '@/components/home/newsletter-cta';
 import { FAQ } from '@/components/home/faq';
 import { storefrontClient } from '@/lib/shopify/client';
@@ -37,6 +39,8 @@ export default async function HomePage() {
       <FeaturedProduct product={product} />
       <Pillars />
       <CommunityGrid />
+      <StitchPromo />
+      <InstagramFeed />
       <NewsletterCta />
       <FAQ />
     </>
