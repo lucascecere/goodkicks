@@ -23,8 +23,8 @@ export default function HomePage() {
       <Hero />
       <FeaturedProduct product={product} />
       <Pillars />
-      <CommunityGrid />
       <StitchPromo />
+      <CommunityGrid />
       <InstagramFeed />
       <NewsletterCta />
       <FAQ />
