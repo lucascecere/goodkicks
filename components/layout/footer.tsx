@@ -11,6 +11,7 @@ const shopLinks = [
 const brandLinks = [
   { href: '/about', label: 'our story' },
   { href: '/contact', label: 'contact' },
+  { href: '/partners', label: 'ambassador program' },
 ];
 
 const helpLinks = [
