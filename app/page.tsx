@@ -20,11 +20,11 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <Pillars />
       <CommunityGrid />
+      <Pillars />
+      <FeaturedProduct product={product} />
       <InstagramFeed />
       <StitchPromo />
-      <FeaturedProduct product={product} />
       <FAQ />
     </>
   );
