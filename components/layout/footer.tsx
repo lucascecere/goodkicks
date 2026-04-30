@@ -139,12 +139,12 @@ export function Footer() {
         <div className="max-w-7xl mx-auto flex items-center justify-between text-xs text-white/40">
           <p>© {year} Good Kicks Foot Bags</p>
           <a
-            href="https://instagram.com/goodkicks"
+            href="https://instagram.com/goodkicksco"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors tracking-wide"
           >
-            @goodkicks
+            @goodkicksco
           </a>
         </div>
       </div>

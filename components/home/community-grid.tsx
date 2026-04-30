@@ -32,12 +32,12 @@ export function CommunityGrid() {
 
         <div className="text-center">
           <a
-            href="https://instagram.com/goodkicks"
+            href="https://instagram.com/goodkicksco"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors"
           >
-            tag us @goodkicks ↗
+            tag us @goodkicksco ↗
           </a>
         </div>
       </div>

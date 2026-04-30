@@ -15,12 +15,12 @@ export function InstagramFeed() {
             spotted in the circle.
           </h2>
           <a
-            href="https://instagram.com/goodkicks"
+            href="https://instagram.com/goodkicksco"
             target="_blank"
             rel="noopener noreferrer"
             className="text-brand-rust hover:underline text-sm"
           >
-            @goodkicks ↗
+            @goodkicksco ↗
           </a>
         </div>
 
@@ -32,7 +32,7 @@ export function InstagramFeed() {
                 key={i}
                 className="aspect-square rounded-lg bg-brand-rule flex items-center justify-center text-brand-muted/40 text-xs"
               >
-                @goodkicks
+                @goodkicksco
               </div>
             ))}
           </div>
