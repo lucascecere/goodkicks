@@ -87,11 +87,20 @@ export function Header() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="py-3 text-brand-ink hover:text-brand-rust transition-colors border-b border-brand-rule/50 last:border-0"
+              className="py-3 text-brand-ink hover:text-brand-rust transition-colors border-b border-brand-rule/50"
             >
               {link.label}
             </Link>
           ))}
+          <div className="pt-4 pb-1">
+            <Link
+              href="/partners"
+              onClick={() => setMobileOpen(false)}
+              className="block w-full bg-brand-rust text-white text-center py-3 rounded font-medium hover:bg-brand-rust/90 transition-colors"
+            >
+              get a discount / become an ambassador
+            </Link>
+          </div>
         </nav>
       )}
     </header>
