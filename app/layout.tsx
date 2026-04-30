@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { DM_Serif_Display, Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
+import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -95,6 +96,18 @@ export default async function RootLayout({
           <CartDrawer />
         </CartProvider>
         <Analytics />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-7M4VXBHXB7"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-7M4VXBHXB7');
+          `}
+        </Script>
       </body>
     </html>
   );
