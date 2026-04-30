@@ -1,0 +1,23 @@
+{
+  "name": "Good Kicks",
+  "short_name": "Good Kicks",
+  "description": "Hand-stitched foot bags — what everyone calls hacky sacks — built for dorm circles and every backpack that needs one.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#EFE8DA",
+  "theme_color": "#EFE8DA",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
