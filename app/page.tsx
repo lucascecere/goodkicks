@@ -24,8 +24,8 @@ export default function HomePage() {
       <CommunityGrid />
       <Pillars />
       <FeaturedProduct product={product} />
-      <InstagramFeed />
       <AmbassadorPromo />
+      <InstagramFeed />
       <StitchPromo />
       <FAQ />
     </>

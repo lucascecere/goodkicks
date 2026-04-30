@@ -41,13 +41,18 @@ export function SpinWheelPopup() {
   const rotRef = useRef(0);
 
   useEffect(() => {
-    if (localStorage.getItem('gk_spin_v2')) return;
+    const stored = localStorage.getItem('gk_spin_v3');
+    if (stored) {
+      const seenAt = parseInt(stored, 10);
+      const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+      if (Date.now() - seenAt < thirtyDays) return;
+    }
     const t = setTimeout(() => setVisible(true), 2000);
     return () => clearTimeout(t);
   }, []);
 
   function dismiss() {
-    localStorage.setItem('gk_spin_v2', '1');
+    localStorage.setItem('gk_spin_v3', Date.now().toString());
     setVisible(false);
   }
 
@@ -83,7 +88,7 @@ export function SpinWheelPopup() {
     } catch {}
     setSending(false);
     setStep('success');
-    localStorage.setItem('gk_spin_v2', '1');
+    localStorage.setItem('gk_spin_v3', Date.now().toString());
   }
 
   if (!visible) return null;
