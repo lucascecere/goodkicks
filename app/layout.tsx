@@ -86,6 +86,9 @@ export default function RootLayout({
           Skip to content
         </a>
         <CartProvider>
+          <div className="bg-brand-ink text-white text-center py-2 px-4 text-xs tracking-wide">
+            free shipping on orders $30+ &nbsp;·&nbsp; hand-stitched in every bag
+          </div>
           <Header />
           <main id="main-content">{children}</main>
           <Footer />

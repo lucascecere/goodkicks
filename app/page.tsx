@@ -12,7 +12,7 @@ import { getProductByHandle } from '@/lib/products/catalog';
 export const metadata: Metadata = {
   title: 'Good Kicks — The Best Foot Bag (Hacky Sack) for Your Circle',
   description:
-    'Hand-stitched foot bags — what everyone calls hacky sacks — built for dorm circles, campus quads, and every backpack that needs one. $15. Free shipping on orders $40+.',
+    'Hand-stitched foot bags — what everyone calls hacky sacks — built for dorm circles, campus quads, and every backpack that needs one. $15. Free shipping on orders $30+.',
 };
 
 export default function HomePage() {

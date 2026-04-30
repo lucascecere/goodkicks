@@ -43,7 +43,7 @@ export function ProductDetail({ product, variants }: ProductDetailProps) {
           productTitle={product.title}
         />
       )}
-      <p className="text-brand-muted text-sm">free shipping on orders $40+ · ships in 1–2 days</p>
+      <p className="text-brand-muted text-sm">free shipping on orders $30+ · ships in 1–2 days</p>
       <div className="border-t border-brand-rule pt-6">
         <h2 className="font-display text-xl mb-3">what it is</h2>
         <div className="text-brand-muted leading-relaxed" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
