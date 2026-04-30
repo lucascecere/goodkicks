@@ -41,13 +41,13 @@ export function SpinWheelPopup() {
   const rotRef = useRef(0);
 
   useEffect(() => {
-    if (localStorage.getItem('gk_spin_seen')) return;
-    const t = setTimeout(() => setVisible(true), 4000);
+    if (localStorage.getItem('gk_spin_v2')) return;
+    const t = setTimeout(() => setVisible(true), 2000);
     return () => clearTimeout(t);
   }, []);
 
   function dismiss() {
-    localStorage.setItem('gk_spin_seen', '1');
+    localStorage.setItem('gk_spin_v2', '1');
     setVisible(false);
   }
 
@@ -83,7 +83,7 @@ export function SpinWheelPopup() {
     } catch {}
     setSending(false);
     setStep('success');
-    localStorage.setItem('gk_spin_seen', '1');
+    localStorage.setItem('gk_spin_v2', '1');
   }
 
   if (!visible) return null;
