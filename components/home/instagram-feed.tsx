@@ -10,7 +10,6 @@ export function InstagramFeed() {
     <section className="py-20 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10">
-          <p className="text-brand-muted text-xs uppercase tracking-widest mb-3">follow along</p>
           <h2 className="font-display text-4xl sm:text-5xl text-brand-ink mb-4">
             spotted in the circle.
           </h2>
