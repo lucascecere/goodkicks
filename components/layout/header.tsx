@@ -98,7 +98,7 @@ export function Header() {
               onClick={() => setMobileOpen(false)}
               className="block w-full bg-brand-rust text-white text-center py-3 rounded font-medium hover:bg-brand-rust/90 transition-colors"
             >
-              get a discount / become an ambassador
+              get a discount today
             </Link>
           </div>
         </nav>
