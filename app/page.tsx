@@ -5,7 +5,6 @@ import { Pillars } from '@/components/home/pillars';
 import { CommunityGrid } from '@/components/home/community-grid';
 import { StitchPromo } from '@/components/home/stitch-promo';
 import { InstagramFeed } from '@/components/home/instagram-feed';
-import { NewsletterCta } from '@/components/home/newsletter-cta';
 import { FAQ } from '@/components/home/faq';
 import { getProductByHandle } from '@/lib/products/catalog';
 
@@ -21,12 +20,11 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <FeaturedProduct product={product} />
       <Pillars />
-      <StitchPromo />
       <CommunityGrid />
       <InstagramFeed />
-      <NewsletterCta />
+      <StitchPromo />
+      <FeaturedProduct product={product} />
       <FAQ />
     </>
   );
