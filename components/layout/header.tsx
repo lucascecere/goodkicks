@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 const navLinks = [
   { href: '/', label: 'shop' },
   { href: '/about', label: 'about' },
+  { href: '/blog', label: 'the stitch' },
   { href: '/contact', label: 'contact' },
 ];
 
