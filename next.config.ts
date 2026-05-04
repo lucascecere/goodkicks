@@ -8,6 +8,16 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.shopify.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.cdninstagram.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.fbcdn.net',
+        pathname: '/**',
+      },
     ],
   },
 };

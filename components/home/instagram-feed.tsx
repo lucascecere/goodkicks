@@ -1,11 +1,9 @@
-'use client';
+import Image from 'next/image';
+import { fetchInstagramPosts } from '@/lib/instagram';
 
-import Script from 'next/script';
+export async function InstagramFeed() {
+  const posts = await fetchInstagramPosts(6);
 
-// Replace BEHOLD_WIDGET_ID with the real Behold widget ID once provided
-const BEHOLD_WIDGET_ID = 'BEHOLD_WIDGET_ID';
-
-export function InstagramFeed() {
   return (
     <section className="py-20 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
@@ -23,8 +21,27 @@ export function InstagramFeed() {
           </a>
         </div>
 
-        {BEHOLD_WIDGET_ID === 'BEHOLD_WIDGET_ID' ? (
-          /* Placeholder shown until Behold widget ID is configured */
+        {posts.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {posts.map((post) => (
+              <a
+                key={post.id}
+                href={post.permalink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="aspect-square relative rounded-lg overflow-hidden bg-brand-rule group"
+              >
+                <Image
+                  src={post.media_url}
+                  alt={post.caption?.slice(0, 80) ?? 'Good Kicks on Instagram'}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </a>
+            ))}
+          </div>
+        ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
@@ -35,14 +52,6 @@ export function InstagramFeed() {
               </div>
             ))}
           </div>
-        ) : (
-          <>
-            <div id={`behold-widget-${BEHOLD_WIDGET_ID}`} />
-            <Script
-              src={`https://w.behold.so/widget.js`}
-              strategy="lazyOnload"
-            />
-          </>
         )}
       </div>
     </section>
