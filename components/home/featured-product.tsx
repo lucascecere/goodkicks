@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Product } from '@/lib/products/catalog';
 
 type FeaturedProductProps = { product: Product | null };
@@ -26,8 +27,19 @@ export function FeaturedProduct({ product }: FeaturedProductProps) {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
           <div className="md:col-span-3">
-            <div className="aspect-square relative rounded-lg overflow-hidden bg-brand-rule/20 flex items-center justify-center text-8xl">
-              🏐
+            <div className="aspect-square relative rounded-lg overflow-hidden bg-brand-rule/20">
+              {product.images[0] ? (
+                <Image
+                  src={product.images[0].url}
+                  alt={product.images[0].altText ?? product.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 60vw"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-8xl">🏐</div>
+              )}
             </div>
           </div>
           <div className="md:col-span-2 space-y-6 text-center md:text-left">

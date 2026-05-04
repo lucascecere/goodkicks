@@ -22,7 +22,9 @@ export const GOOD_KICKS_FOOT_BAG: Product = {
   title: 'Good Kicks Foot Bag',
   description: 'Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.',
   descriptionHtml: '<p>Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
-  images: [],
+  images: [
+    { url: '/brand/Photoroom_20260504_182143.jpeg', altText: 'Good Kicks Foot Bag — Georgia colorway', width: 1512, height: 2016 },
+  ],
   variants: [
     { id: 'gk-georgia',    name: 'georgia',    priceInCents: 1800, quantity: 1, color: '#C15A3A' },
     { id: 'gk-colorado',   name: 'colorado',   priceInCents: 1800, quantity: 1, color: '#5A5E68' },
