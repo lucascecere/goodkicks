@@ -1,34 +1,14 @@
 'use client';
 
+import Image from 'next/image';
+
 const colorways = [
-  {
-    name: 'georgia',
-    style: { background: '#C15A3A' },
-  },
-  {
-    name: 'colorado',
-    style: {
-      background: 'linear-gradient(135deg, #C15A3A 50%, #4A4848 50%)',
-    },
-  },
-  {
-    name: 'nevada',
-    style: { background: '#A89870' },
-  },
-  {
-    name: 'new york',
-    style: {
-      background: 'linear-gradient(135deg, #4A4848 50%, #D4A84B 50%)',
-    },
-  },
-  {
-    name: 'california',
-    style: { background: '#5BA4B4' },
-  },
-  {
-    name: 'maine',
-    style: { background: '#5A5E68' },
-  },
+  { name: 'georgia',    src: '/brand/ball_georgia.png'    },
+  { name: 'colorado',   src: '/brand/ball_colorado.png'   },
+  { name: 'nevada',     src: '/brand/ball_nevada.png'     },
+  { name: 'new york',   src: '/brand/ball_newyork.png'    },
+  { name: 'california', src: '/brand/ball_california.png' },
+  { name: 'maine',      src: '/brand/ball_maine.png'      },
 ];
 
 // Doubled for seamless infinite loop
@@ -55,10 +35,14 @@ export function CommunityGrid() {
         >
           {doubled.map((colorway, i) => (
             <div key={i} className="flex flex-col items-center gap-4 w-52 flex-shrink-0">
-              <div
-                className="w-44 h-44 rounded-full shadow-lg ring-1 ring-white/10"
-                style={colorway.style}
-              />
+              <div className="w-44 h-44 relative">
+                <Image
+                  src={colorway.src}
+                  alt={`${colorway.name} colorway`}
+                  fill
+                  className="object-contain drop-shadow-lg"
+                />
+              </div>
               <p className="font-display text-xl text-white/90 tracking-wide">{colorway.name}</p>
             </div>
           ))}

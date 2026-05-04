@@ -33,6 +33,19 @@ export async function POST(req: NextRequest) {
   const session = event.data.object;
   const supabase = createSupabaseServiceClient();
 
+  // Resolve ambassador promo code string (e.g. "OHIO20") from the session discounts
+  let promoCode: string | null = null;
+  const firstDiscount = (session.discounts as Array<{ promotion_code?: string | null }> | null)?.[0];
+  const promoCodeId = firstDiscount?.promotion_code;
+  if (promoCodeId && typeof promoCodeId === 'string') {
+    try {
+      const promo = await stripe.promotionCodes.retrieve(promoCodeId);
+      promoCode = promo.code;
+    } catch {
+      // Non-fatal — order still saves without it
+    }
+  }
+
   // Save order
   const { error: dbError } = await supabase.from('orders').insert({
     stripe_session_id: session.id,
@@ -44,6 +57,7 @@ export async function POST(req: NextRequest) {
     amount_total: session.amount_total ?? 0,
     currency: session.currency ?? 'usd',
     status: 'paid',
+    promo_code: promoCode,
   });
 
   if (dbError && !dbError.message.includes('unique')) {

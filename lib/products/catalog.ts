@@ -3,6 +3,7 @@ export type ProductVariant = {
   name: string;
   priceInCents: number;
   quantity: number;
+  color?: string;
 };
 
 export type Product = {
@@ -23,9 +24,12 @@ export const GOOD_KICKS_FOOT_BAG: Product = {
   descriptionHtml: '<p>Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
   images: [],
   variants: [
-    { id: 'gk-1pack', name: '1-Pack', priceInCents: 1500, quantity: 1 },
-    { id: 'gk-3pack', name: '3-Pack', priceInCents: 4000, quantity: 3 },
-    { id: 'gk-5pack', name: '5-Pack', priceInCents: 6000, quantity: 5 },
+    { id: 'gk-georgia',    name: 'georgia',    priceInCents: 1800, quantity: 1, color: '#C15A3A' },
+    { id: 'gk-colorado',   name: 'colorado',   priceInCents: 1800, quantity: 1, color: '#5A5E68' },
+    { id: 'gk-nevada',     name: 'nevada',     priceInCents: 1800, quantity: 1, color: '#5BA4B4' },
+    { id: 'gk-new-york',   name: 'new york',   priceInCents: 1800, quantity: 1, color: '#A89870' },
+    { id: 'gk-california', name: 'california', priceInCents: 1800, quantity: 1, color: '#D4A84B' },
+    { id: 'gk-maine',      name: 'maine',      priceInCents: 1800, quantity: 1, color: '#4A4848' },
   ],
 };
 

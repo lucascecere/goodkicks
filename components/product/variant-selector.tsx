@@ -3,10 +3,6 @@
 import { cn } from '@/lib/utils';
 import type { ProductVariant } from '@/lib/products/catalog';
 
-function formatCents(cents: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(cents / 100);
-}
-
 interface VariantSelectorProps {
   variants: ProductVariant[];
   selectedVariantId: string;
@@ -14,9 +10,42 @@ interface VariantSelectorProps {
 }
 
 export function VariantSelector({ variants, selectedVariantId, onSelect }: VariantSelectorProps) {
+  const hasColors = variants.some((v) => v.color);
+
+  if (hasColors) {
+    return (
+      <div className="space-y-2">
+        <p className="text-sm text-brand-muted font-medium">
+          colorway —{' '}
+          <span className="text-brand-ink">
+            {variants.find((v) => v.id === selectedVariantId)?.name ?? ''}
+          </span>
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {variants.map((variant) => (
+            <button
+              key={variant.id}
+              onClick={() => onSelect(variant.id)}
+              title={variant.name}
+              className={cn(
+                'w-9 h-9 rounded-full border-2 transition-all',
+                variant.id === selectedVariantId
+                  ? 'border-brand-ink scale-110 shadow-md'
+                  : 'border-transparent hover:scale-105'
+              )}
+              style={{ backgroundColor: variant.color ?? '#ccc' }}
+              aria-label={variant.name}
+              aria-pressed={variant.id === selectedVariantId}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2">
-      <p className="text-sm text-brand-muted font-medium">select pack</p>
+      <p className="text-sm text-brand-muted font-medium">select colorway</p>
       <div className="flex flex-wrap gap-3">
         {variants.map((variant) => (
           <button
@@ -29,7 +58,7 @@ export function VariantSelector({ variants, selectedVariantId, onSelect }: Varia
                 : 'border-brand-rule text-brand-ink hover:border-brand-rust/50'
             )}
           >
-            {variant.name} — {formatCents(variant.priceInCents)}
+            {variant.name}
           </button>
         ))}
       </div>

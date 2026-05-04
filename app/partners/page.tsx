@@ -35,7 +35,7 @@ export default function PartnersPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
               <p className="text-xs uppercase tracking-widest text-brand-muted font-medium">the product</p>
-              <h2 className="font-display text-4xl text-brand-ink">hand-stitched. properly weighted. $15.</h2>
+              <h2 className="font-display text-4xl text-brand-ink">hand-stitched. properly weighted. $18.</h2>
               <p className="text-brand-muted leading-relaxed">
                 Good Kicks foot bags are hand-crocheted by the same crew that&apos;s been making them for 30+ years. Not the $4 Amazon junk. Not the $40 premium stuff. Just the right foot bag at the right price — built for dorm circles, lunch tables, and every campus quad that needs one.
               </p>
@@ -67,11 +67,11 @@ export default function PartnersPage() {
           {[
             {
               title: 'your own code.',
-              body: 'get a custom discount code tied to your school or account (e.g. OHIO15, DUKE10). your followers get a real discount. you get credit for every sale.',
+              body: 'get a custom discount code tied to your school or account (e.g. OHIO20, DUKE20). your followers get 20% off. you get credit for every sale.',
             },
             {
-              title: '15% commission.',
-              body: 'earn 15% on every order placed with your code. no cap. paid out monthly. the more you post, the more you earn.',
+              title: '8–10% commission.',
+              body: 'earn 8–10% on every order placed with your code. no cap. paid out monthly. the more you post, the more you earn.',
             },
             {
               title: 'free starter pack.',

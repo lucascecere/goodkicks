@@ -52,7 +52,6 @@ export function SpinWheelPopup() {
   }, []);
 
   function dismiss() {
-    localStorage.setItem('gk_spin_v3', Date.now().toString());
     setVisible(false);
   }
 
