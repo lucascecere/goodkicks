@@ -9,13 +9,18 @@ export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ handle: string }> };
 
+function stateName(title: string) {
+  return title.replace(/^The Good Kick\s*[—–-]\s*/i, '').toLowerCase();
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
   const product = await getProductByHandle(handle);
   if (!product) return { title: 'Product Not Found' };
+  const name = stateName(product.title);
   return {
-    title: `${product.title} — Good Kicks Foot Bag`,
-    description: `Hand-stitched foot bag in the ${product.title} colorway. $18. Free shipping on orders $35+.`,
+    title: `${name} — good kicks foot bag`,
+    description: `Hand-stitched foot bag in the ${name} colorway. $18. Free shipping on orders $35+.`,
   };
 }
 
@@ -29,17 +34,18 @@ export default async function ProductPage({ params }: Props) {
 
   const priceInCents = Math.round(parseFloat(variant.price.amount) * 100);
   const imgSrc = shopifyProduct.featuredImage?.url ?? imageForVariant(shopifyProduct.title);
+  const name = stateName(shopifyProduct.title);
 
   const product = {
     id: shopifyProduct.id,
     handle: shopifyProduct.handle,
-    title: shopifyProduct.title,
+    title: name,
     description: 'Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.',
     descriptionHtml: '<p>Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
     images: imgSrc
       ? [{ url: imgSrc, altText: shopifyProduct.featuredImage?.altText ?? `Good Kicks ${shopifyProduct.title}`, width: 800, height: 800 }]
       : [],
-    variants: [{ id: variant.id, name: shopifyProduct.title, priceInCents, quantity: 99, color: undefined }],
+    variants: [{ id: variant.id, name, priceInCents, quantity: 99, color: undefined }],
   };
 
   const jsonLd = {
