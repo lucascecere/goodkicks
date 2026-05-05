@@ -33,7 +33,12 @@ export function Hero() {
 
         {/* Right: interactive color wheel */}
         <div className="flex items-center justify-center">
-          <ColorWheel size={360} showLabel bgColor="#F5EFE3" />
+          <div className="lg:hidden">
+            <ColorWheel size={250} showLabel bgColor="#F5EFE3" />
+          </div>
+          <div className="hidden lg:block">
+            <ColorWheel size={360} showLabel bgColor="#F5EFE3" />
+          </div>
         </div>
       </div>
     </section>
