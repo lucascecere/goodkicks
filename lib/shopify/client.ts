@@ -5,6 +5,6 @@ import { createStorefrontApiClient } from '@shopify/storefront-api-client';
 // placeholder credentials will throw a network/auth error, caught by callers.
 export const storefrontClient = createStorefrontApiClient({
   storeDomain: process.env.SHOPIFY_STORE_DOMAIN ?? 'placeholder.myshopify.com',
-  apiVersion: '2025-01',
+  apiVersion: '2025-10',
   publicAccessToken: process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ?? 'placeholder-build-token',
 });
