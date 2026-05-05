@@ -83,7 +83,7 @@ export function ColorWheel({ size = 300, showLabel = true, bgColor = '#EFE8DA' }
       </div>
 
       {showLabel && (
-        <p className="font-display text-2xl text-brand-ink capitalize tracking-wide">{current.name}</p>
+        <p className="font-display text-2xl text-brand-ink tracking-wide">{current.name}</p>
       )}
     </div>
   );
