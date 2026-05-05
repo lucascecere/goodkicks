@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { COLORWAYS } from './color-wheel';
+import { COLORWAYS } from './colorways-data';
 
 const doubled = [...COLORWAYS, ...COLORWAYS];
 
