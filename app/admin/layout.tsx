@@ -5,9 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: '📊' },
-  { href: '/admin/ambassadors', label: 'Ambassadors', icon: '✌️' },
-  { href: '/admin/contacts', label: 'Contacts', icon: '📋' },
+  { href: '/admin', label: 'Dashboard' },
+  { href: '/admin/contacts', label: 'Contacts' },
+  { href: '/admin/ambassadors', label: 'Ambassadors' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -72,7 +72,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     active ? 'bg-[#1A1A1A] text-white' : 'text-[#1A1A1A]/60 hover:text-[#1A1A1A] hover:bg-[#1A1A1A]/10'
                   }`}
                 >
-                  <span>{item.icon}</span>
                   {item.label}
                 </Link>
               );

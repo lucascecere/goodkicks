@@ -53,11 +53,6 @@ export default async function AdminDashboardPage() {
       href: 'https://analytics.google.com',
     },
     {
-      label: 'Vercel',
-      desc: 'deployments · web vitals',
-      href: 'https://vercel.com/your-website-friend/goodkicks',
-    },
-    {
       label: 'Resend',
       desc: 'email delivery logs',
       href: 'https://resend.com',
@@ -100,8 +95,37 @@ export default async function AdminDashboardPage() {
         />
       </div>
 
-      {/* Ambassadors + Contacts panels */}
+      {/* Contacts + Ambassadors panels */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent contacts */}
+        <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
+          <div className="px-5 py-4 border-b border-brand-rule flex items-center justify-between">
+            <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Contacts</h2>
+            <Link href="/admin/contacts" className="text-xs text-brand-rust hover:underline">view all →</Link>
+          </div>
+          {recentContacts.length === 0 ? (
+            <p className="px-5 py-8 text-brand-muted text-sm text-center">no submissions yet.</p>
+          ) : (
+            <div className="divide-y divide-brand-rule">
+              {recentContacts.map((c) => (
+                <Link
+                  key={c.id}
+                  href="/admin/contacts"
+                  className="flex items-start justify-between px-5 py-3.5 hover:bg-[#FAF7F2] transition-colors group"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-brand-ink group-hover:text-brand-rust transition-colors">{c.name}</p>
+                    <p className="text-xs text-brand-muted truncate max-w-xs">
+                      {c.message ? c.message.slice(0, 55) + (c.message.length > 55 ? '…' : '') : c.email}
+                    </p>
+                  </div>
+                  <span className="text-xs text-brand-muted ml-3 shrink-0">{fmtDate(c.created_at)}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Recent ambassadors */}
         <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
           <div className="px-5 py-4 border-b border-brand-rule flex items-center justify-between">
@@ -135,35 +159,6 @@ export default async function AdminDashboardPage() {
                   </Link>
                 );
               })}
-            </div>
-          )}
-        </div>
-
-        {/* Recent contacts */}
-        <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
-          <div className="px-5 py-4 border-b border-brand-rule flex items-center justify-between">
-            <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Contacts</h2>
-            <Link href="/admin/contacts" className="text-xs text-brand-rust hover:underline">view all →</Link>
-          </div>
-          {recentContacts.length === 0 ? (
-            <p className="px-5 py-8 text-brand-muted text-sm text-center">no submissions yet.</p>
-          ) : (
-            <div className="divide-y divide-brand-rule">
-              {recentContacts.map((c) => (
-                <Link
-                  key={c.id}
-                  href="/admin/contacts"
-                  className="flex items-start justify-between px-5 py-3.5 hover:bg-[#FAF7F2] transition-colors group"
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-brand-ink group-hover:text-brand-rust transition-colors">{c.name}</p>
-                    <p className="text-xs text-brand-muted truncate max-w-xs">
-                      {c.message ? c.message.slice(0, 55) + (c.message.length > 55 ? '…' : '') : c.email}
-                    </p>
-                  </div>
-                  <span className="text-xs text-brand-muted ml-3 shrink-0">{fmtDate(c.created_at)}</span>
-                </Link>
-              ))}
             </div>
           )}
         </div>
