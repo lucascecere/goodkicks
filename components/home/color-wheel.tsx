@@ -15,7 +15,7 @@ export function ColorWheel({ size = 300, showLabel = true, bgColor = '#EFE8DA' }
   const [selected, setSelected] = useState(0);
   const current = COLORWAYS[selected];
   const radius = size * 0.393;
-  const ballSize = size * 0.48;
+  const ballSize = size * 0.62;
 
   function dotPosition(i: number) {
     const angle = (i / COLORWAYS.length) * 2 * Math.PI - Math.PI / 2;
