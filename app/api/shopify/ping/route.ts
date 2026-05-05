@@ -1,34 +1,33 @@
 import { NextResponse } from 'next/server';
 
-const VERSIONS = ['2025-10', '2025-07', '2025-04', '2025-01', '2024-10'];
-
 export async function GET() {
   const domain = process.env.SHOPIFY_STORE_DOMAIN ?? '(not set)';
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ?? '';
-  const tokenSet = !!(token && token !== 'placeholder-build-token');
   const tokenPrefix = token ? token.slice(0, 8) + '...' : '(empty)';
+  const url = `https://${domain}/api/2025-10/graphql.json`;
+  const query = JSON.stringify({ query: '{ shop { name } }' });
 
-  const results: Record<string, unknown> = {};
-
-  for (const version of VERSIONS) {
-    const url = `https://${domain}/api/${version}/graphql.json`;
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': token,
-        },
-        body: JSON.stringify({ query: '{ shop { name } }' }),
-      });
-      const raw = await res.text();
-      let parsed: unknown;
-      try { parsed = JSON.parse(raw); } catch { parsed = raw; }
-      results[version] = { status: res.status, body: parsed };
-    } catch (err) {
-      results[version] = { error: String(err) };
-    }
+  async function attempt(label: string, headers: Record<string, string>) {
+    const res = await fetch(url, { method: 'POST', headers, body: query });
+    const raw = await res.text();
+    let body: unknown;
+    try { body = JSON.parse(raw); } catch { body = raw; }
+    return { status: res.status, body };
   }
 
-  return NextResponse.json({ domain, tokenSet, tokenPrefix, results });
+  const results = {
+    storefront_header: await attempt('storefront_header', {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': token,
+    }),
+    bearer: await attempt('bearer', {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    }),
+    no_auth: await attempt('no_auth', {
+      'Content-Type': 'application/json',
+    }),
+  };
+
+  return NextResponse.json({ domain, tokenPrefix, url, results });
 }
