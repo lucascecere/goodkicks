@@ -19,8 +19,8 @@ export default async function AdminOrdersPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="font-display text-3xl text-brand-ink">Orders</h1>
-        <p className="text-brand-muted text-sm mt-1">all orders from goodkicks.co</p>
+        <h1 className="font-display text-3xl text-white">Orders</h1>
+        <p className="text-white/50 text-sm mt-1">all orders from goodkicks.co</p>
       </div>
 
       {/* Stats */}
@@ -31,9 +31,9 @@ export default async function AdminOrdersPage() {
           { label: 'Avg Order', value: all.length ? fmt(Math.round(totalRevenue / all.length)) : '—' },
           { label: 'With Promo Code', value: all.filter((o) => o.promo_code).length.toString() },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl p-5 border border-brand-rule">
-            <p className="text-xs text-brand-muted uppercase tracking-wide mb-1">{stat.label}</p>
-            <p className="font-display text-2xl text-brand-ink">{stat.value}</p>
+          <div key={stat.label} className="bg-white/10 rounded-xl p-5 border border-white/10">
+            <p className="text-xs text-white/50 uppercase tracking-wide mb-1">{stat.label}</p>
+            <p className="font-display text-2xl text-white">{stat.value}</p>
           </div>
         ))}
       </div>

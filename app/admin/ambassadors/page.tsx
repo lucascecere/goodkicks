@@ -31,8 +31,8 @@ export default async function AdminAmbassadorsPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="font-display text-3xl text-brand-ink">Ambassadors</h1>
-        <p className="text-brand-muted text-sm mt-1">
+        <h1 className="font-display text-3xl text-white">Ambassadors</h1>
+        <p className="text-white/50 text-sm mt-1">
           {all.length} total · {pending} pending review
         </p>
       </div>
