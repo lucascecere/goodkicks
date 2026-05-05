@@ -17,17 +17,22 @@ export const VARIANT_IMAGES: Record<string, string> = {
   'california': '/brand/ball_california.png',
 };
 
-function findStateKey(title: string): string | undefined {
-  const t = title.toLowerCase();
-  return Object.keys(VARIANT_COLORS).find((k) => k !== 'default' && t.includes(k));
+function findStateKey(title: string, tags?: string[]): string | undefined {
+  const candidates = [title, ...(tags ?? [])];
+  for (const candidate of candidates) {
+    const t = candidate.toLowerCase();
+    const match = Object.keys(VARIANT_COLORS).find((k) => k !== 'default' && t.includes(k));
+    if (match) return match;
+  }
+  return undefined;
 }
 
-export function colorForVariant(variantTitle: string): string {
-  const key = findStateKey(variantTitle);
+export function colorForVariant(variantTitle: string, tags?: string[]): string {
+  const key = findStateKey(variantTitle, tags);
   return key ? VARIANT_COLORS[key] : VARIANT_COLORS.default;
 }
 
-export function imageForVariant(variantTitle: string): string | undefined {
-  const key = findStateKey(variantTitle);
+export function imageForVariant(variantTitle: string, tags?: string[]): string | undefined {
+  const key = findStateKey(variantTitle, tags);
   return key ? VARIANT_IMAGES[key] : undefined;
 }

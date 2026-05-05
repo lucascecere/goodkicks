@@ -16,6 +16,7 @@ type ShopifyProduct = {
   id: string;
   title: string;
   handle: string;
+  tags: string[];
   variants: {
     edges: Array<{
       node: { id: string; availableForSale: boolean; price: { amount: string } };
@@ -45,8 +46,8 @@ export default async function ShopPage() {
             if (!variant) return null;
             const priceInCents = Math.round(parseFloat(variant.price.amount) * 100);
             const displayPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(parseFloat(variant.price.amount));
-            const color = colorForVariant(product.title);
-            const imgSrc = imageForVariant(product.title);
+            const color = colorForVariant(product.title, product.tags);
+            const imgSrc = imageForVariant(product.title, product.tags);
 
             return (
               <div

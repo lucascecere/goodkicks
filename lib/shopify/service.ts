@@ -47,6 +47,7 @@ const ALL_PRODUCTS_QUERY = `
           id
           title
           handle
+          tags
           variants(first: 1) {
             edges {
               node {
