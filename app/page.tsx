@@ -7,7 +7,6 @@ import { StitchPromo } from '@/components/home/stitch-promo';
 import { InstagramFeed } from '@/components/home/instagram-feed';
 import { AmbassadorPromo } from '@/components/home/ambassador-promo';
 import { FAQ } from '@/components/home/faq';
-import { getProductByHandle } from '@/lib/products/catalog';
 
 export const metadata: Metadata = {
   title: 'Good Kicks — The Best Foot Bag (Hacky Sack) for Your Circle',
@@ -16,14 +15,12 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage() {
-  const product = getProductByHandle('good-kicks-foot-bag');
-
   return (
     <>
       <Hero />
       <CommunityGrid />
       <Pillars />
-      <FeaturedProduct product={product} />
+      <FeaturedProduct />
       <AmbassadorPromo />
       <InstagramFeed />
       <StitchPromo />
