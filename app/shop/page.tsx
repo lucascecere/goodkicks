@@ -6,6 +6,8 @@ import { getProductByHandle } from '@/lib/shopify/service';
 import { flattenEdges } from '@/lib/shopify/transforms';
 import { colorForVariant, imageForVariant } from '@/lib/shopify/variant-colors';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Shop — Good Kicks Foot Bags',
   description: 'Six colorways. One circle. Hand-stitched foot bags at $18 — pick your state and keep the game going.',
