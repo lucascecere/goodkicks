@@ -13,7 +13,7 @@ export default function PartnersPage() {
       {/* Hero */}
       <section className="bg-brand-ink text-white py-24 px-4 sm:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <p className="text-xs uppercase tracking-widest text-white/50 font-medium text-center">goodkicks brand ambassador program</p>
+          <p className="text-xs uppercase tracking-widest text-white/50 font-medium text-center max-w-none">goodkicks brand ambassador program</p>
           <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl leading-none">
             you run the circle.<br />we&apos;ll back it.
           </h1>
