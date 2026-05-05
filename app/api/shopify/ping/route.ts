@@ -1,17 +1,29 @@
 import { NextResponse } from 'next/server';
-import { getShopInfo } from '@/lib/shopify/service';
 
 export async function GET() {
   const domain = process.env.SHOPIFY_STORE_DOMAIN ?? '(not set)';
-  const tokenSet = !!(process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN && process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN !== 'placeholder-build-token');
+  const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ?? '';
+  const tokenSet = !!(token && token !== 'placeholder-build-token');
+  const url = `https://${domain}/api/2025-01/graphql.json`;
 
   try {
-    const shop = await getShopInfo();
-    if (!shop) {
-      return NextResponse.json({ connected: false, error: 'No shop data returned', domain, tokenSet }, { status: 500 });
-    }
-    return NextResponse.json({ connected: true, shop, domain, tokenSet });
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': token,
+      },
+      body: JSON.stringify({ query: '{ shop { name } }' }),
+    });
+
+    const httpStatus = res.status;
+    const raw = await res.text();
+
+    let parsed: unknown;
+    try { parsed = JSON.parse(raw); } catch { parsed = raw; }
+
+    return NextResponse.json({ domain, tokenSet, url, httpStatus, response: parsed });
   } catch (err) {
-    return NextResponse.json({ connected: false, error: String(err), domain, tokenSet }, { status: 500 });
+    return NextResponse.json({ domain, tokenSet, url, error: String(err) }, { status: 500 });
   }
 }
