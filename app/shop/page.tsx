@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { GOOD_KICKS_FOOT_BAG } from '@/lib/products/catalog';
 import { AddToCartButton } from '@/components/product/add-to-cart-button';
 import { getProductByHandle } from '@/lib/shopify/service';
-import { flattenEdges } from '@/lib/shopify/transforms';
 import { colorForVariant, imageForVariant } from '@/lib/shopify/variant-colors';
 
 export const dynamic = 'force-dynamic';
@@ -44,7 +43,7 @@ export default async function ShopPage() {
 
   if (shopifyProduct) {
     productTitle = shopifyProduct.title;
-    variants = flattenEdges(shopifyProduct.variants).map((v) => ({
+    variants = shopifyProduct.variants.edges.map(({ node: v }: { node: { id: string; title: string; price: { amount: string } } }) => ({
       id: v.id,
       name: v.title,
       displayPrice: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(parseFloat(v.price.amount)),

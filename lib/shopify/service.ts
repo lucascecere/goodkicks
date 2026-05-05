@@ -1,10 +1,55 @@
-import { storefrontClient } from './client';
-import { PRODUCT_BY_HANDLE_QUERY } from './queries';
 import { CART_CREATE_MUTATION } from './mutations';
-import type { ShopifyProduct, ShopifyCart } from './types';
+import { storefrontClient } from './client';
+import type { ShopifyCart } from './types';
 
-interface ProductQueryResult {
-  product: ShopifyProduct;
+function shopifyFetch(query: string, variables?: Record<string, unknown>) {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+  const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+  return fetch(`https://${domain}/api/unstable/graphql.json`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': token ?? '',
+    },
+    body: JSON.stringify({ query, variables }),
+    cache: 'no-store',
+  }).then((r) => r.json());
+}
+
+const PRODUCT_QUERY = `
+  query ProductByHandle($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      variants(first: 20) {
+        edges {
+          node {
+            id
+            title
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const SHOP_QUERY = `{ shop { name primaryDomain { url } } }`;
+
+export async function getShopInfo() {
+  const json = await shopifyFetch(SHOP_QUERY);
+  return json?.data?.shop ?? null;
+}
+
+export async function getProductByHandle(handle: string) {
+  const json = await shopifyFetch(PRODUCT_QUERY, { handle });
+  if (json?.errors) console.error('[shopify]', JSON.stringify(json.errors));
+  return json?.data?.product ?? null;
 }
 
 interface CartCreateResult {
@@ -12,35 +57,6 @@ interface CartCreateResult {
     cart: ShopifyCart;
     userErrors: Array<{ field: string[]; message: string }>;
   };
-}
-
-interface ShopQueryResult {
-  shop: { name: string; primaryDomain: { url: string } };
-}
-
-const SHOP_QUERY = `
-  query {
-    shop {
-      name
-      primaryDomain { url }
-    }
-  }
-`;
-
-export async function getShopInfo() {
-  const { data, errors } = await storefrontClient.request<ShopQueryResult>(SHOP_QUERY);
-  if (errors) throw new Error(errors.networkStatusCode?.toString() ?? 'Shopify error');
-  return data?.shop ?? null;
-}
-
-export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
-  const { data, errors } = await storefrontClient.request<ProductQueryResult>(
-    PRODUCT_BY_HANDLE_QUERY,
-    { variables: { handle } }
-  );
-  if (errors) console.error('[shopify] getProductByHandle errors:', JSON.stringify(errors));
-  if (!data?.product) console.error('[shopify] product not found for handle:', handle);
-  return data?.product ?? null;
 }
 
 export async function createShopifyCart(
