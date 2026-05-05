@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { createSupabaseServiceClient } from '@/lib/supabase/client';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -7,6 +8,19 @@ export async function POST(req: NextRequest) {
 
   if (!name || !email || !instagram || !school) {
     return NextResponse.json({ error: 'missing required fields' }, { status: 400 });
+  }
+
+  // Save to Supabase
+  try {
+    const supabase = createSupabaseServiceClient();
+    await supabase.from('ambassador_applications').insert({
+      name, email, instagram, school,
+      account_type: accountType ?? null,
+      followers: followers ?? null,
+      message: message ?? null,
+    });
+  } catch (err) {
+    console.error('[partners] DB insert error:', err);
   }
 
   if (process.env.RESEND_API_KEY) {

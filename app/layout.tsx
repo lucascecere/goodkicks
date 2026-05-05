@@ -2,11 +2,7 @@ import type { Metadata } from 'next';
 import { DM_Serif_Display, Inter } from 'next/font/google';
 import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/react';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
-import { CartDrawer } from '@/components/layout/cart-drawer';
-import { CartProvider } from '@/lib/cart/cart-context';
-import { SpinWheelPopup } from '@/components/home/spin-wheel-popup';
+import { SiteWrapper } from '@/components/layout/site-wrapper';
 import './globals.css';
 
 const dmSerifDisplay = DM_Serif_Display({
@@ -85,16 +81,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <CartProvider>
-          <div className="bg-brand-ink text-white text-center py-2 px-4 text-xs tracking-wide">
-            free shipping on orders $30+ &nbsp;·&nbsp; hand-stitched in every bag
-          </div>
-          <Header />
-          <main id="main-content">{children}</main>
-          <Footer />
-          <CartDrawer />
-          <SpinWheelPopup />
-        </CartProvider>
+        <SiteWrapper>{children}</SiteWrapper>
         <Analytics />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-7M4VXBHXB7"

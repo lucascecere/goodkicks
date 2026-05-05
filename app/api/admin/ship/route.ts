@@ -3,13 +3,9 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { Resend } from 'resend';
 
 export async function POST(req: NextRequest) {
-  if (req.headers.get('x-admin-password') !== process.env.ADMIN_PASSWORD) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   const { orderId, trackingNumber } = await req.json();
-  if (!orderId || !trackingNumber) {
-    return Response.json({ error: 'orderId and trackingNumber required' }, { status: 400 });
+  if (!orderId) {
+    return Response.json({ error: 'orderId required' }, { status: 400 });
   }
 
   const supabase = createSupabaseServiceClient();
