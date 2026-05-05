@@ -1,8 +1,8 @@
 import { CART_FRAGMENT } from './fragments';
 
 export const CART_CREATE_MUTATION = `
-  mutation CartCreate($lines: [CartLineInput!]!) {
-    cartCreate(input: { lines: $lines }) {
+  mutation CartCreate($lines: [CartLineInput!]!, $discountCodes: [String!]) {
+    cartCreate(input: { lines: $lines, discountCodes: $discountCodes }) {
       cart {
         ...CartFragment
       }
