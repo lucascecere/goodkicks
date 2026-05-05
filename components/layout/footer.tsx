@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const shopLinks = [
-  { href: '/', label: 'the good kick' },
+  { href: '/shop', label: 'the good kick' },
 ];
 
 const brandLinks = [
