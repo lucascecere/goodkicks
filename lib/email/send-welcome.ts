@@ -23,6 +23,12 @@ these aren't optional — they're how the program works:
 3. mentioned in every video
    every time you post something related to the sack, give us a shoutout. it doesn't have to be a dedicated video — just a mention, a tag, a caption. stay consistent.
 
+━━━ YOUR STATS PAGE ━━━
+
+bookmark this link — it's your personal dashboard showing every order driven by your code, total revenue, and commission earned in real time:
+
+goodkicks.co/ambassador/{{discount_code_lower}}
+
 ━━━ HOW YOU GROW ━━━
 
 your tier is based on total sales driven through your code:
@@ -31,7 +37,7 @@ your tier is based on total sales driven through your code:
   repping  → 11–30 orders   → 20% commission
   anchor   → 31+ orders     → 30% commission + exclusive drops
 
-you move up automatically as your numbers grow. we track everything on our end.
+you move up automatically as your numbers grow.
 
 ━━━ HOW TO GET STARTED ━━━
 
@@ -70,6 +76,7 @@ export async function sendWelcomeEmail({
   const text = TEMPLATE
     .replace(/\{\{first_name\}\}/g, firstName)
     .replace(/\{\{discount_code\}\}/g, discountCode)
+    .replace(/\{\{discount_code_lower\}\}/g, discountCode.toLowerCase())
     .replace(/\{\{colorway\}\}/g, colorway)
     .replace(/\{\{tier_pct\}\}/g, String(tierPct));
 
