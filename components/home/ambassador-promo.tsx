@@ -16,7 +16,7 @@ export function AmbassadorPromo() {
           <div className="space-y-6 text-center lg:text-left">
             <p className="text-xs uppercase tracking-widest text-brand-rust font-medium max-w-none">ambassador program</p>
             <h2 className="font-display text-4xl sm:text-5xl text-brand-ink leading-tight">
-              run a school sac account?<br />we&apos;ll back you.
+              run a school sack account?<br />we&apos;ll back you.
             </h2>
             <p className="text-brand-muted leading-relaxed max-w-md mx-auto lg:mx-0">
               we partner with high school and college hacky sack accounts — give your followers 20% off with your own code, pay you 8–10% commission on every sale, and ship you a free starter pack to kick things off.

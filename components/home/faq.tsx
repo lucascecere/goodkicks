@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     question: "Do you offer bulk orders for campus groups or clubs?",
-    answer: "Yes. We do sac accounts for college clubs, dormitory programs, and campus organizations. Reach out through our contact page and we'll sort you out."
+    answer: "Yes. We do sack accounts for college clubs, dormitory programs, and campus organizations. Reach out through our contact page and we'll sort you out."
   },
 ];
 

@@ -12,7 +12,7 @@ export function NewsletterCta() {
           stay in the circle.
         </h2>
         <p className="text-brand-muted mt-4 leading-relaxed">
-          new drops, campus stories, and whatever&apos;s going on with the sac.
+          new drops, campus stories, and whatever&apos;s going on with the sack.
         </p>
 
         {submitted ? (

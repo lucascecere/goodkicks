@@ -79,7 +79,7 @@ export function AmbassadorForm() {
             <option value="high-school">high school</option>
             <option value="college">college / university</option>
             <option value="freestyle">freestyle / tricks</option>
-            <option value="general">general sac community</option>
+            <option value="general">general sack community</option>
           </select>
         </div>
         <div>

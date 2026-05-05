@@ -98,12 +98,12 @@ export default function PartnersPage() {
               {
                 step: '01',
                 title: 'apply below.',
-                body: 'fill out the form. tell us about your account, your school, and how you hype the sac community. takes 2 minutes.',
+                body: 'fill out the form. tell us about your account, your school, and how you hype the sack community. takes 2 minutes.',
               },
               {
                 step: '02',
                 title: 'we review + approve.',
-                body: "we look at your account, make sure it's a real school sac community (not 12 followers and a burner), and reach out within a few days.",
+                body: "we look at your account, make sure it's a real school sack community (not 12 followers and a burner), and reach out within a few days.",
               },
               {
                 step: '03',
@@ -133,13 +133,13 @@ export default function PartnersPage() {
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <h2 className="font-display text-4xl">who we&apos;re looking for.</h2>
           <p className="text-white/70 leading-relaxed max-w-xl mx-auto">
-            school hacky sack accounts — doesn&apos;t matter if it&apos;s 200 followers or 20k. we care more about engagement and genuine community than numbers. if your followers actually sac, you&apos;re probably a fit.
+            school hacky sack accounts — doesn&apos;t matter if it&apos;s 200 followers or 20k. we care more about engagement and genuine community than numbers. if your followers actually sack, you&apos;re probably a fit.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 text-left">
             {[
-              { label: 'high school accounts', desc: 'lunchtime circles, after-school crews, school-named sac accounts.' },
+              { label: 'high school accounts', desc: 'lunchtime circles, after-school crews, school-named sack accounts.' },
               { label: 'college accounts', desc: 'dorm circles, campus quads, greek chapter groups, rec clubs.' },
-              { label: 'general sac accounts', desc: 'freestyle channels, trick accounts, sac-focused creators.' },
+              { label: 'general sack accounts', desc: 'freestyle channels, trick accounts, sack-focused creators.' },
             ].map((item) => (
               <div key={item.label} className="border border-white/20 rounded-lg p-5 space-y-2">
                 <p className="font-medium text-white text-sm">{item.label}</p>
