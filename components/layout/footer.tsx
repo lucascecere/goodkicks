@@ -80,62 +80,62 @@ export function Footer() {
       {/* Main footer body */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Left: logo + tagline + subscribe */}
-          <div className="space-y-8 flex flex-col items-center text-center lg:items-start lg:text-left">
-            <div className="space-y-4">
-              <Image
-                src="/goodkicks_logo_inverted.svg"
-                alt="Good Kicks Foot Bags"
-                width={120}
-                height={120}
-                className="mx-auto lg:mx-0"
-                style={{ height: '120px', width: 'auto' }}
-              />
-              <p className="font-display text-2xl text-white/80">make the circle bigger.</p>
-              <p className="text-white/50 text-sm leading-relaxed max-w-xs">
-                hand-stitched foot bags built for dorm circles, dining-hall tosses, and every backpack that needs one.
-              </p>
+          {/* Left: logo + tagline */}
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-4">
+            <Image
+              src="/goodkicks_logo_inverted.svg"
+              alt="Good Kicks Foot Bags"
+              width={120}
+              height={120}
+              className="mx-auto lg:mx-0"
+              style={{ height: '120px', width: 'auto' }}
+            />
+            <p className="font-display text-2xl text-white/80">make the circle bigger.</p>
+            <p className="text-white/50 text-sm leading-relaxed max-w-xs">
+              hand-stitched foot bags built for dorm circles, dining-hall tosses, and every backpack that needs one.
+            </p>
+          </div>
+
+          {/* Right: nav columns + subscribe */}
+          <div className="flex flex-col gap-10 text-sm lg:pt-2">
+            <div className="grid grid-cols-3 gap-8 text-center lg:text-left">
+              <div>
+                <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">v1 collection</h3>
+                <ul className="space-y-3">
+                  {shopLinks.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href} className="text-white/70 hover:text-white transition-colors">{l.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">brand</h3>
+                <ul className="space-y-3">
+                  {brandLinks.map((l) => (
+                    <li key={l.href}>
+                      <Link href={l.href} className="text-white/70 hover:text-white transition-colors">{l.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">help</h3>
+                <ul className="space-y-3">
+                  {helpLinks.map((l) => (
+                    <li key={l.href}>
+                      <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">{l.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
-            {/* Subscribe */}
-            <div className="space-y-3">
+            {/* Subscribe — below nav, right-aligned */}
+            <div className="space-y-3 border-t border-white/10 pt-8">
               <p className="text-white text-sm font-medium uppercase tracking-wider">offers &amp; discounts</p>
               <p className="text-white/50 text-xs">subscribe for exclusive drops and discount codes.</p>
               <SubscribeForm />
-            </div>
-          </div>
-
-          {/* Right: nav columns */}
-          <div className="grid grid-cols-3 gap-8 text-sm lg:pt-2 text-center lg:text-left">
-            <div>
-              <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">v1 collection</h3>
-              <ul className="space-y-3">
-                {shopLinks.map((l) => (
-                  <li key={l.href}>
-                    <Link href={l.href} className="text-white/70 hover:text-white transition-colors">{l.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">brand</h3>
-              <ul className="space-y-3">
-                {brandLinks.map((l) => (
-                  <li key={l.href}>
-                    <Link href={l.href} className="text-white/70 hover:text-white transition-colors">{l.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">help</h3>
-              <ul className="space-y-3">
-                {helpLinks.map((l) => (
-                  <li key={l.href}>
-                    <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">{l.label}</a>
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>
