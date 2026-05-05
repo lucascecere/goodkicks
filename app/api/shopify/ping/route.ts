@@ -4,7 +4,7 @@ export async function GET() {
   const domain = process.env.SHOPIFY_STORE_DOMAIN ?? '(not set)';
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ?? '';
   const tokenPrefix = token ? token.slice(0, 8) + '...' : '(empty)';
-  const url = `https://${domain}/api/2025-10/graphql.json`;
+  const url = `https://${domain}/api/unstable/graphql.json`;
   const query = JSON.stringify({ query: '{ shop { name } }' });
 
   async function attempt(label: string, headers: Record<string, string>) {
