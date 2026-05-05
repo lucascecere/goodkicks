@@ -32,7 +32,7 @@ export function AmbassadorPromo() {
           {/* Right: perks */}
           <div className="space-y-4">
             {perks.map((perk, i) => (
-              <div key={perk.label} className="flex items-start gap-5 bg-brand-ink rounded-xl p-5">
+              <div key={perk.label} className="flex items-start gap-5 bg-[#1A1A1A] rounded-xl p-5">
                 <span className="font-display text-3xl text-brand-rust/60 flex-shrink-0 leading-none">{String(i + 1).padStart(2, '0')}</span>
                 <div>
                   <p className="font-medium text-white text-sm">{perk.label}</p>
