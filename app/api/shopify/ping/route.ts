@@ -1,12 +1,25 @@
 import { NextResponse } from 'next/server';
-import { getShopInfo } from '@/lib/shopify/service';
+import { storefrontClient } from '@/lib/shopify/client';
+
+const PRODUCTS_QUERY = `
+  query {
+    products(first: 10) {
+      edges {
+        node {
+          title
+          handle
+          variants(first: 10) {
+            edges {
+              node { title }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 export async function GET() {
-  try {
-    const shop = await getShopInfo();
-    if (!shop) return NextResponse.json({ connected: false, error: 'No data' }, { status: 500 });
-    return NextResponse.json({ connected: true, shop });
-  } catch (err) {
-    return NextResponse.json({ connected: false, error: String(err) }, { status: 500 });
-  }
+  const { data, errors } = await storefrontClient.request(PRODUCTS_QUERY);
+  return NextResponse.json({ data, errors });
 }
