@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
 
-      const notifyEmail = process.env.PARTNER_NOTIFICATION_EMAIL ?? 'hello@goodkicksfootbags.com';
+      const notifyEmail = process.env.PARTNER_NOTIFICATION_EMAIL ?? 'goodkicksfootbags@gmail.com';
 
       // Notify the Good Kicks team
       await resend.emails.send({
