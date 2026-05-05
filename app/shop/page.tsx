@@ -31,7 +31,7 @@ export default async function ShopPage() {
     <div className="bg-brand-cream min-h-screen">
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-16 pb-10 text-center">
-        <p className="text-xs uppercase tracking-widest text-brand-muted font-medium mb-3 text-center">the collection</p>
+        <p className="text-xs uppercase tracking-widest text-brand-muted font-medium mb-3 text-center max-w-none">the collection</p>
         <h1 className="font-display text-5xl sm:text-6xl text-brand-ink mb-4">pick your colorway.</h1>
         <p className="text-brand-muted max-w-md mx-auto leading-relaxed">
           six states. six colorways. hand-stitched foot bags at $18 — free shipping on orders $35+.

@@ -34,7 +34,7 @@ export default function PartnersPage() {
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
-              <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center">the product</p>
+              <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">the product</p>
               <h2 className="font-display text-4xl text-brand-ink">hand-stitched. properly weighted. $18.</h2>
               <p className="text-brand-muted leading-relaxed">
                 Good Kicks foot bags are hand-crocheted by the same crew that&apos;s been making them for 30+ years. Not the $4 Amazon junk. Not the $40 premium stuff. Just the right foot bag at the right price — built for dorm circles, lunch tables, and every campus quad that needs one.
@@ -59,7 +59,7 @@ export default function PartnersPage() {
       {/* The Program */}
       <section className="py-20 px-4 sm:px-8 bg-[#EFE8DA]">
         <div className="max-w-4xl mx-auto text-center space-y-4 mb-16">
-          <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center">what you get</p>
+          <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">what you get</p>
           <h2 className="font-display text-4xl text-brand-ink">the goodkicks ambassador program.</h2>
           <p className="text-brand-muted max-w-xl mx-auto">we keep it simple. you promote, your followers save, you earn.</p>
         </div>
@@ -90,7 +90,7 @@ export default function PartnersPage() {
       <section className="py-20 px-4 sm:px-8 bg-brand-cream">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16 space-y-3">
-            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center">the process</p>
+            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">the process</p>
             <h2 className="font-display text-4xl text-brand-ink">how it works.</h2>
           </div>
           <div className="space-y-0">
@@ -154,7 +154,7 @@ export default function PartnersPage() {
       <section id="apply" className="py-20 px-4 sm:px-8 bg-brand-cream">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12 space-y-3">
-            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center">apply</p>
+            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">apply</p>
             <h2 className="font-display text-4xl text-brand-ink">become an ambassador.</h2>
             <p className="text-brand-muted">we&apos;ll get back to you within a few days.</p>
           </div>
