@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
   await supabase
     .from('ambassador_applications')
-    .update({ approved: true, discount_code: discountCode })
+    .update({ approved: true, status: 'approved', discount_code: discountCode, tier_pct: tierPct })
     .eq('id', applicationId);
 
   return NextResponse.json({ ok: true, discountCode });
