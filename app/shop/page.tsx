@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { AddToCartButton } from '@/components/product/add-to-cart-button';
 import { getAllProducts } from '@/lib/shopify/service';
 import { colorForVariant, imageForVariant } from '@/lib/shopify/variant-colors';
@@ -52,27 +53,31 @@ export default async function ShopPage() {
                 key={product.id}
                 className="bg-white rounded-2xl overflow-hidden border border-brand-rule hover:shadow-lg transition-shadow group"
               >
-                {/* Image */}
-                <div className="aspect-square relative bg-[#F5EFE3] p-8">
-                  {imgSrc ? (
-                    <Image
-                      src={imgSrc}
-                      alt={`Good Kicks ${product.title} colorway`}
-                      fill
-                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      className="object-contain p-6 group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full rounded-full" style={{ backgroundColor: color }} />
-                  )}
-                </div>
+                {/* Image — clicking goes to product page */}
+                <Link href={`/products/${product.handle}`} className="block">
+                  <div className="aspect-square relative bg-[#F5EFE3] p-8">
+                    {imgSrc ? (
+                      <Image
+                        src={imgSrc}
+                        alt={`Good Kicks ${product.title} colorway`}
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        className="object-contain p-6 group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full" style={{ backgroundColor: color }} />
+                    )}
+                  </div>
+                </Link>
 
                 {/* Info */}
                 <div className="p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-                      <h2 className="font-display text-xl text-brand-ink">{product.title}</h2>
+                      <Link href={`/products/${product.handle}`}>
+                        <h2 className="font-display text-xl text-brand-ink hover:text-brand-rust transition-colors">{product.title}</h2>
+                      </Link>
                     </div>
                     <p className="text-brand-ink font-medium">{displayPrice}</p>
                   </div>

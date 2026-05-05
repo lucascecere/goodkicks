@@ -1,35 +1,46 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getProductByHandle, ALL_PRODUCTS } from '@/lib/products/catalog';
+import { getProductByHandle } from '@/lib/shopify/service';
+import { imageForVariant } from '@/lib/shopify/variant-colors';
 import { ProductGallery } from './product-gallery';
 import { ProductDetail } from './product-detail';
 
-type Props = { params: Promise<{ handle: string }> };
+export const dynamic = 'force-dynamic';
 
-export function generateStaticParams() {
-  return ALL_PRODUCTS.map((p) => ({ handle: p.handle }));
-}
+type Props = { params: Promise<{ handle: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
-  const product = getProductByHandle(handle);
+  const product = await getProductByHandle(handle);
   if (!product) return { title: 'Product Not Found' };
   return {
-    title: product.title,
-    description: product.description,
-    openGraph: {
-      title: product.title,
-      description: product.description,
-      images: product.images[0] ? [{ url: product.images[0].url }] : [],
-      type: 'website',
-    },
+    title: `${product.title} — Good Kicks Foot Bag`,
+    description: `Hand-stitched foot bag in the ${product.title} colorway. $18. Free shipping on orders $35+.`,
   };
 }
 
 export default async function ProductPage({ params }: Props) {
   const { handle } = await params;
-  const product = getProductByHandle(handle);
-  if (!product) notFound();
+  const shopifyProduct = await getProductByHandle(handle);
+  if (!shopifyProduct) notFound();
+
+  const variant = shopifyProduct.variants.edges[0]?.node;
+  if (!variant) notFound();
+
+  const priceInCents = Math.round(parseFloat(variant.price.amount) * 100);
+  const imgSrc = imageForVariant(shopifyProduct.title);
+
+  const product = {
+    id: shopifyProduct.id,
+    handle: shopifyProduct.handle,
+    title: shopifyProduct.title,
+    description: 'Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.',
+    descriptionHtml: '<p>Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
+    images: imgSrc
+      ? [{ url: imgSrc, altText: `Good Kicks ${shopifyProduct.title}`, width: 800, height: 800 }]
+      : [],
+    variants: [{ id: variant.id, name: shopifyProduct.title, priceInCents, quantity: 99, color: undefined }],
+  };
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -38,9 +49,9 @@ export default async function ProductPage({ params }: Props) {
     description: product.description,
     offers: {
       '@type': 'Offer',
-      price: (product.variants[0].priceInCents / 100).toFixed(2),
+      price: (priceInCents / 100).toFixed(2),
       priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
+      availability: 'https://schema.org/PreOrder',
     },
   };
 
