@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Hero } from '@/components/home/hero';
 import { FeaturedProduct } from '@/components/home/featured-product';
 import { Pillars } from '@/components/home/pillars';
-import { CommunityGrid } from '@/components/home/community-grid';
 import { StitchPromo } from '@/components/home/stitch-promo';
 import { InstagramFeed } from '@/components/home/instagram-feed';
 import { AmbassadorPromo } from '@/components/home/ambassador-promo';
@@ -18,7 +17,6 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <CommunityGrid />
       <Pillars />
       <FeaturedProduct />
       <AmbassadorPromo />
