@@ -13,12 +13,12 @@ function fmt(cents: number) {
 }
 
 const ballImages: Record<string, string> = {
-  'gk-georgia':    '/brand/ball_georgia.png',
-  'gk-colorado':   '/brand/ball_colorado.png',
-  'gk-nevada':     '/brand/ball_nevada.png',
-  'gk-new-york':   '/brand/ball_newyork.png',
-  'gk-california': '/brand/ball_california.png',
+  'gk-tennessee':  '/brand/ball_tennessee.png',
   'gk-maine':      '/brand/ball_maine.png',
+  'gk-montana':    '/brand/ball_montana.png',
+  'gk-new-york':   '/brand/ball_newyork.png',
+  'gk-new-mexico': '/brand/ball_newmexico.png',
+  'gk-california': '/brand/ball_california.png',
 };
 
 export default function ShopPage() {

@@ -26,12 +26,12 @@ export const GOOD_KICKS_FOOT_BAG: Product = {
     { url: '/brand/Photoroom_20260504_182143.jpeg', altText: 'Good Kicks Foot Bag — Georgia colorway', width: 1512, height: 2016 },
   ],
   variants: [
-    { id: 'gk-georgia',    name: 'georgia',    priceInCents: 1800, quantity: 1, color: '#C15A3A' },
-    { id: 'gk-colorado',   name: 'colorado',   priceInCents: 1800, quantity: 1, color: '#5A5E68' },
-    { id: 'gk-nevada',     name: 'nevada',     priceInCents: 1800, quantity: 1, color: '#5BA4B4' },
+    { id: 'gk-tennessee',  name: 'tennessee',  priceInCents: 1800, quantity: 1, color: '#C15A3A' },
+    { id: 'gk-maine',      name: 'maine',      priceInCents: 1800, quantity: 1, color: '#5A5E68' },
+    { id: 'gk-montana',    name: 'montana',    priceInCents: 1800, quantity: 1, color: '#5BA4B4' },
     { id: 'gk-new-york',   name: 'new york',   priceInCents: 1800, quantity: 1, color: '#A89870' },
-    { id: 'gk-california', name: 'california', priceInCents: 1800, quantity: 1, color: '#D4A84B' },
-    { id: 'gk-maine',      name: 'maine',      priceInCents: 1800, quantity: 1, color: '#4A4848' },
+    { id: 'gk-new-mexico', name: 'new mexico', priceInCents: 1800, quantity: 1, color: '#D4A84B' },
+    { id: 'gk-california', name: 'california', priceInCents: 1800, quantity: 1, color: '#4A4848' },
   ],
 };
 
