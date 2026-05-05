@@ -34,16 +34,13 @@ export async function getShopInfo() {
 }
 
 export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
-  try {
-    const { data, errors } = await storefrontClient.request<ProductQueryResult>(
-      PRODUCT_BY_HANDLE_QUERY,
-      { variables: { handle } }
-    );
-    if (errors || !data?.product) return null;
-    return data.product;
-  } catch {
-    return null;
-  }
+  const { data, errors } = await storefrontClient.request<ProductQueryResult>(
+    PRODUCT_BY_HANDLE_QUERY,
+    { variables: { handle } }
+  );
+  if (errors) console.error('[shopify] getProductByHandle errors:', JSON.stringify(errors));
+  if (!data?.product) console.error('[shopify] product not found for handle:', handle);
+  return data?.product ?? null;
 }
 
 export async function createShopifyCart(
