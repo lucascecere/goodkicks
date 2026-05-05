@@ -6,16 +6,16 @@ const doubled = [...COLORWAYS, ...COLORWAYS];
 
 export function FeaturedProduct() {
   return (
-    <section id="featured" className="py-20 px-4 sm:px-8 bg-[#EFE8DA]">
+    <section id="featured" className="py-20 px-4 sm:px-8 bg-brand-ink text-white">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* Left: vertical scrolling ball collection */}
           <div className="overflow-hidden h-[480px] relative order-last lg:order-first">
             {/* Soft fade top */}
-            <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#EFE8DA] to-transparent z-10 pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#1A1A1A] to-transparent z-10 pointer-events-none" />
             {/* Soft fade bottom */}
-            <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#EFE8DA] to-transparent z-10 pointer-events-none" />
+            <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#1A1A1A] to-transparent z-10 pointer-events-none" />
 
             <div
               className="flex flex-col"
@@ -37,11 +37,11 @@ export function FeaturedProduct() {
 
           {/* Right: copy */}
           <div className="space-y-6 text-center lg:text-left">
-            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium max-w-none">the good kick</p>
-            <h2 className="font-display text-4xl sm:text-5xl text-brand-ink leading-tight">
+            <p className="text-xs uppercase tracking-widest text-white/40 font-medium max-w-none">the good kick</p>
+            <h2 className="font-display text-4xl sm:text-5xl text-white leading-tight">
               hand-stitched.<br />properly weighted.<br />$18.
             </h2>
-            <p className="text-brand-muted leading-relaxed">
+            <p className="text-white/60 leading-relaxed">
               six colorways. one circle. pick your state and keep the game going — hand-crocheted by the same crew that&apos;s been doing it for 30+ years.
             </p>
             <Link

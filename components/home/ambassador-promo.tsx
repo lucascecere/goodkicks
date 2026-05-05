@@ -8,17 +8,17 @@ const perks = [
 
 export function AmbassadorPromo() {
   return (
-    <section className="py-20 px-4 sm:px-8 bg-brand-ink text-white">
+    <section className="py-20 px-4 sm:px-8 bg-[#EFE8DA]">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* Left: copy */}
           <div className="space-y-6 text-center lg:text-left">
-            <p className="text-xs uppercase tracking-widest text-brand-rust font-medium">ambassador program</p>
-            <h2 className="font-display text-4xl sm:text-5xl text-white leading-tight">
+            <p className="text-xs uppercase tracking-widest text-brand-rust font-medium max-w-none">ambassador program</p>
+            <h2 className="font-display text-4xl sm:text-5xl text-brand-ink leading-tight">
               run a school sac account?<br />we&apos;ll back you.
             </h2>
-            <p className="text-white/60 leading-relaxed max-w-md mx-auto lg:mx-0">
+            <p className="text-brand-muted leading-relaxed max-w-md mx-auto lg:mx-0">
               we partner with high school and college hacky sack accounts — give your followers 20% off with your own code, pay you 8–10% commission on every sale, and ship you a free starter pack to kick things off.
             </p>
             <Link
@@ -32,15 +32,15 @@ export function AmbassadorPromo() {
           {/* Right: perks */}
           <div className="space-y-4">
             {perks.map((perk, i) => (
-              <div key={perk.label} className="flex items-start gap-5 border border-white/10 rounded-xl p-5 hover:border-white/25 transition-colors">
-                <span className="font-display text-3xl text-brand-rust/60 flex-shrink-0 leading-none">{String(i + 1).padStart(2, '0')}</span>
+              <div key={perk.label} className="flex items-start gap-5 border border-brand-rule rounded-xl p-5 hover:border-brand-muted/40 transition-colors">
+                <span className="font-display text-3xl text-brand-rust/50 flex-shrink-0 leading-none">{String(i + 1).padStart(2, '0')}</span>
                 <div>
-                  <p className="font-medium text-white text-sm">{perk.label}</p>
-                  <p className="text-white/50 text-sm mt-0.5">{perk.desc}</p>
+                  <p className="font-medium text-brand-ink text-sm">{perk.label}</p>
+                  <p className="text-brand-muted text-sm mt-0.5">{perk.desc}</p>
                 </div>
               </div>
             ))}
-            <p className="text-white/30 text-xs text-center lg:text-left pt-2">
+            <p className="text-brand-muted/50 text-xs text-center lg:text-left pt-2">
               high school · college · freestyle · all welcome
             </p>
           </div>
