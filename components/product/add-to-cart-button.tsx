@@ -29,7 +29,7 @@ export function AddToCartButton({ variant, productTitle }: AddToCartButtonProps)
       onClick={handleClick}
       className="w-full bg-brand-rust text-white py-4 rounded font-medium hover:bg-brand-rust/90 transition-colors text-lg"
     >
-      add to bag
+      pre-order
     </button>
   );
 }

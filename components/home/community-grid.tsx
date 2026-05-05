@@ -3,12 +3,12 @@
 import Image from 'next/image';
 
 const colorways = [
-  { name: 'tennessee',  src: '/brand/ball_tennessee.png'  },
-  { name: 'maine',      src: '/brand/ball_maine.png'      },
-  { name: 'montana',    src: '/brand/ball_montana.png'    },
+  { name: 'georgia',    src: '/brand/ball_tennessee.png'  },
+  { name: 'nevada',     src: '/brand/ball_newmexico.png'  },
+  { name: 'colorado',   src: '/brand/ball_montana.png'    },
   { name: 'new york',   src: '/brand/ball_newyork.png'    },
-  { name: 'new mexico', src: '/brand/ball_newmexico.png'  },
   { name: 'california', src: '/brand/ball_california.png' },
+  { name: 'maine',      src: '/brand/ball_maine.png'      },
 ];
 
 // Doubled for seamless infinite loop
