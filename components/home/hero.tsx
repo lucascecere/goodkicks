@@ -33,7 +33,7 @@ export function Hero() {
 
         {/* Right: interactive color wheel */}
         <div className="flex items-center justify-center">
-          <ColorWheel size={300} showLabel bgColor="#F5F0E8" />
+          <ColorWheel size={360} showLabel bgColor="#F5EFE3" />
         </div>
       </div>
     </section>

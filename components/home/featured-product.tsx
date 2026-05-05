@@ -11,13 +11,18 @@ export function FeaturedProduct() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
           {/* Left: vertical scrolling ball collection */}
-          <div className="overflow-hidden h-[480px] rounded-2xl relative order-last lg:order-first">
+          <div className="overflow-hidden h-[480px] relative order-last lg:order-first">
+            {/* Soft fade top */}
+            <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#EFE8DA] to-transparent z-10 pointer-events-none" />
+            {/* Soft fade bottom */}
+            <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-[#EFE8DA] to-transparent z-10 pointer-events-none" />
+
             <div
-              className="flex flex-col gap-4"
+              className="flex flex-col"
               style={{ animation: 'marquee-vertical 22s linear infinite' }}
             >
               {doubled.map((colorway, i) => (
-                <div key={i} className="relative w-full h-44 flex-shrink-0">
+                <div key={i} className="relative w-full h-48 flex-shrink-0">
                   <Image
                     src={colorway.image}
                     alt={`Good Kicks ${colorway.name} colorway`}
