@@ -39,6 +39,32 @@ const PRODUCT_QUERY = `
   }
 `;
 
+const ALL_PRODUCTS_QUERY = `
+  query {
+    products(first: 20) {
+      edges {
+        node {
+          id
+          title
+          handle
+          variants(first: 1) {
+            edges {
+              node {
+                id
+                availableForSale
+                price {
+                  amount
+                  currencyCode
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 const SHOP_QUERY = `{ shop { name primaryDomain { url } } }`;
 
 export async function getShopInfo() {
@@ -50,6 +76,12 @@ export async function getProductByHandle(handle: string) {
   const json = await shopifyFetch(PRODUCT_QUERY, { handle });
   if (json?.errors) console.error('[shopify]', JSON.stringify(json.errors));
   return json?.data?.product ?? null;
+}
+
+export async function getAllProducts() {
+  const json = await shopifyFetch(ALL_PRODUCTS_QUERY);
+  if (json?.errors) console.error('[shopify]', JSON.stringify(json.errors));
+  return json?.data?.products?.edges?.map((e: { node: unknown }) => e.node) ?? [];
 }
 
 interface CartCreateResult {
