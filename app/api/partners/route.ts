@@ -12,6 +12,8 @@ export async function POST(req: NextRequest) {
   }
 
   // Save to Supabase
+  console.log('[partners] SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 30));
+  console.log('[partners] SERVICE_KEY length:', process.env.SUPABASE_SERVICE_ROLE_KEY?.length ?? 'MISSING');
   const supabase = createSupabaseServiceClient();
   const { error: dbError } = await supabase.from('ambassador_applications').insert({
     name, email, instagram, school,
