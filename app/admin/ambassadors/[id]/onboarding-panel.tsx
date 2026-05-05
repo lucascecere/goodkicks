@@ -90,9 +90,21 @@ export function OnboardingPanel({ app }: { app: App }) {
           <Step n={3} label="Ambassador onboarded" done />
         </div>
 
-        <div className="border-t border-brand-rule pt-4 space-y-1">
-          <p className="text-xs text-brand-muted uppercase tracking-wide">Discount Code</p>
-          <p className="font-mono text-lg font-bold text-brand-ink">{app.discount_code ?? '—'}</p>
+        <div className="border-t border-brand-rule pt-4 space-y-3">
+          <div>
+            <p className="text-xs text-brand-muted uppercase tracking-wide">Discount Code</p>
+            <p className="font-mono text-lg font-bold text-brand-ink">{app.discount_code ?? '—'}</p>
+          </div>
+          {app.discount_code && (
+            <a
+              href={`/ambassador/${app.discount_code.toLowerCase()}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-brand-rust hover:underline"
+            >
+              view stats page →
+            </a>
+          )}
         </div>
       </div>
     );
