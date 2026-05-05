@@ -171,17 +171,10 @@ function PartnershipForm() {
 
 export function ContactForms() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-      <div>
-        <h2 className="font-display text-2xl text-brand-ink mb-2">say hi.</h2>
-        <p className="text-brand-muted mb-6">questions, ideas, or just want to send us a sack selfie? we&apos;re listening.</p>
-        <GeneralForm />
-      </div>
-      <div>
-        <h2 className="font-display text-2xl text-brand-ink mb-2">run a sack account?</h2>
-        <p className="text-brand-muted mb-6">we work directly with school sack accounts and friend-group crews. custom colorways, group pricing, partnership perks — let&apos;s talk.</p>
-        <PartnershipForm />
-      </div>
+    <div className="max-w-lg">
+      <h2 className="font-display text-2xl text-brand-ink mb-2">say hi.</h2>
+      <p className="text-brand-muted mb-6">questions, ideas, or just want to send us a message? we&apos;re listening.</p>
+      <GeneralForm />
     </div>
   );
 }

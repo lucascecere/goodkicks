@@ -20,8 +20,8 @@ const brandLinks = [
 ];
 
 const helpLinks = [
-  { href: 'https://goodkicks.myshopify.com/policies/shipping-policy', label: 'shipping & returns', external: true },
-  { href: 'https://goodkicks.myshopify.com/policies/privacy-policy', label: 'privacy & terms', external: true },
+  { href: '/shipping-returns', label: 'shipping & returns' },
+  { href: '/privacy', label: 'privacy & terms' },
 ];
 
 function SubscribeForm() {
@@ -124,7 +124,7 @@ export function Footer() {
                 <ul className="space-y-3">
                   {helpLinks.map((l) => (
                     <li key={l.href}>
-                      <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">{l.label}</a>
+                      <Link href={l.href} className="text-white/70 hover:text-white transition-colors">{l.label}</Link>
                     </li>
                   ))}
                 </ul>
