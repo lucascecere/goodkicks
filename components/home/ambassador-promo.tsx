@@ -32,11 +32,11 @@ export function AmbassadorPromo() {
           {/* Right: perks */}
           <div className="space-y-4">
             {perks.map((perk, i) => (
-              <div key={perk.label} className="flex items-start gap-5 border border-brand-rule rounded-xl p-5 hover:border-brand-muted/40 transition-colors">
-                <span className="font-display text-3xl text-brand-rust/50 flex-shrink-0 leading-none">{String(i + 1).padStart(2, '0')}</span>
+              <div key={perk.label} className="flex items-start gap-5 bg-brand-ink rounded-xl p-5">
+                <span className="font-display text-3xl text-brand-rust/60 flex-shrink-0 leading-none">{String(i + 1).padStart(2, '0')}</span>
                 <div>
-                  <p className="font-medium text-brand-ink text-sm">{perk.label}</p>
-                  <p className="text-brand-muted text-sm mt-0.5">{perk.desc}</p>
+                  <p className="font-medium text-white text-sm">{perk.label}</p>
+                  <p className="text-white/50 text-sm mt-0.5">{perk.desc}</p>
                 </div>
               </div>
             ))}
