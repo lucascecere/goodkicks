@@ -19,7 +19,6 @@ export const PRODUCT_VARIANT_FRAGMENT = `
     id
     title
     availableForSale
-    quantityAvailable
     selectedOptions {
       name
       value

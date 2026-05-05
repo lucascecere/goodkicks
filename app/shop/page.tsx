@@ -35,7 +35,7 @@ const STATIC_BALL_IMAGES: Record<string, string> = {
 
 export default async function ShopPage() {
   // Prefer live Shopify data; fall back to static catalog until product is set up in Shopify
-  const shopifyProduct = await getProductByHandle('good-kicks-foot-bag');
+  const shopifyProduct = await getProductByHandle('good-kicks-foot-bag-v1');
 
   let variants: DisplayVariant[];
   let productTitle: string;

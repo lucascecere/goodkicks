@@ -19,7 +19,6 @@ export interface ShopifyProductVariant {
   id: string;
   title: string;
   availableForSale: boolean;
-  quantityAvailable: number;
   price: ShopifyMoneyV2;
   compareAtPrice: ShopifyMoneyV2 | null;
   selectedOptions: ShopifySelectedOption[];
