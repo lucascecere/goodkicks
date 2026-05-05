@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { AmbassadorForm } from '@/components/partners/ambassador-form';
 
 export const metadata: Metadata = {
-  title: 'Brand Ambassador Program | Good Kicks',
+  title: 'GoodKicks Brand Ambassador Program',
   description:
-    'Run a school hacky sack account? Partner with Good Kicks. Get a custom discount code, earn commission on every sale, and help grow the circle at your school.',
+    'Run a school hacky sack account? Join the GoodKicks Brand Ambassador Program. Get your own custom discount code, earn 8–10% commission on every sale, and receive a free starter pack.',
 };
 
 export default function PartnersPage() {
@@ -13,7 +13,7 @@ export default function PartnersPage() {
       {/* Hero */}
       <section className="bg-brand-ink text-white py-24 px-4 sm:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <p className="text-xs uppercase tracking-widest text-white/50 font-medium">brand ambassador program</p>
+          <p className="text-xs uppercase tracking-widest text-white/50 font-medium">goodkicks brand ambassador program</p>
           <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl leading-none">
             you run the circle.<br />we&apos;ll back it.
           </h1>
@@ -60,7 +60,7 @@ export default function PartnersPage() {
       <section className="py-20 px-4 sm:px-8 bg-[#EFE8DA]">
         <div className="max-w-4xl mx-auto text-center space-y-4 mb-16">
           <p className="text-xs uppercase tracking-widest text-brand-muted font-medium">what you get</p>
-          <h2 className="font-display text-4xl text-brand-ink">the ambassador program.</h2>
+          <h2 className="font-display text-4xl text-brand-ink">the goodkicks ambassador program.</h2>
           <p className="text-brand-muted max-w-xl mx-auto">we keep it simple. you promote, your followers save, you earn.</p>
         </div>
         <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">

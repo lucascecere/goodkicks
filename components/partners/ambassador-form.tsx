@@ -108,7 +108,7 @@ export function AmbassadorForm() {
       </div>
 
       {state === 'error' && (
-        <p className="text-red-500 text-sm">something went wrong — try again or email us at hello@goodkicks.co</p>
+        <p className="text-red-500 text-sm">something went wrong — try again or email us at hello@goodkicksfootbags.com</p>
       )}
 
       <button
