@@ -17,6 +17,7 @@ type ShopifyProduct = {
   title: string;
   handle: string;
   tags: string[];
+  featuredImage?: { url: string; altText: string | null };
   variants: {
     edges: Array<{
       node: { id: string; availableForSale: boolean; price: { amount: string } };
@@ -47,7 +48,7 @@ export default async function ShopPage() {
             const priceInCents = Math.round(parseFloat(variant.price.amount) * 100);
             const displayPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(parseFloat(variant.price.amount));
             const color = colorForVariant(product.title, product.tags);
-            const imgSrc = imageForVariant(product.title, product.tags);
+            const imgSrc = product.featuredImage?.url ?? imageForVariant(product.title, product.tags);
 
             return (
               <div

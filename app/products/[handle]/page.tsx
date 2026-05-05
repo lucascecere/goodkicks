@@ -28,7 +28,7 @@ export default async function ProductPage({ params }: Props) {
   if (!variant) notFound();
 
   const priceInCents = Math.round(parseFloat(variant.price.amount) * 100);
-  const imgSrc = imageForVariant(shopifyProduct.title);
+  const imgSrc = shopifyProduct.featuredImage?.url ?? imageForVariant(shopifyProduct.title);
 
   const product = {
     id: shopifyProduct.id,
@@ -37,7 +37,7 @@ export default async function ProductPage({ params }: Props) {
     description: 'Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.',
     descriptionHtml: '<p>Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
     images: imgSrc
-      ? [{ url: imgSrc, altText: `Good Kicks ${shopifyProduct.title}`, width: 800, height: 800 }]
+      ? [{ url: imgSrc, altText: shopifyProduct.featuredImage?.altText ?? `Good Kicks ${shopifyProduct.title}`, width: 800, height: 800 }]
       : [],
     variants: [{ id: variant.id, name: shopifyProduct.title, priceInCents, quantity: 99, color: undefined }],
   };

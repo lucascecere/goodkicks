@@ -1,25 +1,12 @@
 import { NextResponse } from 'next/server';
-import { storefrontClient } from '@/lib/shopify/client';
-
-const PRODUCTS_QUERY = `
-  query {
-    products(first: 10) {
-      edges {
-        node {
-          title
-          handle
-          variants(first: 10) {
-            edges {
-              node { title }
-            }
-          }
-        }
-      }
-    }
-  }
-`;
+import { getAllProducts } from '@/lib/shopify/service';
 
 export async function GET() {
-  const { data, errors } = await storefrontClient.request(PRODUCTS_QUERY);
-  return NextResponse.json({ data, errors });
+  const products = await getAllProducts();
+  return NextResponse.json(products.map((p: { title: string; handle: string; tags: string[]; featuredImage?: { url: string } }) => ({
+    title: p.title,
+    handle: p.handle,
+    tags: p.tags,
+    image: p.featuredImage?.url ?? null,
+  })));
 }

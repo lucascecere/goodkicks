@@ -22,6 +22,10 @@ const PRODUCT_QUERY = `
       id
       title
       handle
+      featuredImage {
+        url
+        altText
+      }
       variants(first: 20) {
         edges {
           node {
@@ -48,6 +52,10 @@ const ALL_PRODUCTS_QUERY = `
           title
           handle
           tags
+          featuredImage {
+            url
+            altText
+          }
           variants(first: 1) {
             edges {
               node {

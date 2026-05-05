@@ -44,7 +44,7 @@ export default function PartnersPage() {
               </p>
             </div>
             <div className="grid grid-cols-3 gap-3">
-              {['#C15A3A','#5A5E68','#5BA4B4','#A89870','#D4A84B','#4A4848'].map((color, i) => ( // tennessee, maine, montana, new york, new mexico, california
+              {['#C15A3A','#5A5E68','#5BA4B4','#A89870','#D4A84B','#4A4848'].map((color, i) => ( // georgia, maine, colorado, new york, nevada, california
                 <div
                   key={i}
                   className="aspect-square rounded-full shadow-sm ring-1 ring-brand-rule"
