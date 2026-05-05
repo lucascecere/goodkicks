@@ -14,7 +14,7 @@ const shopLinks = [
 ];
 
 const brandLinks = [
-  { href: '/partners', label: 'ambassador program' },
+  { href: '/ambassadors', label: 'ambassador program' },
   { href: '/blog', label: 'the stitch' },
   { href: '/contact', label: 'contact' },
 ];

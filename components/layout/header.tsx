@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '/shop', label: 'shop' },
-  { href: '/partners', label: 'ambassadors' },
+  { href: '/ambassadors', label: 'ambassadors' },
   { href: '/blog', label: 'the stitch' },
   { href: '/contact', label: 'contact' },
 ];
@@ -94,7 +94,7 @@ export function Header() {
           ))}
           <div className="pt-4 pb-1">
             <Link
-              href="/partners"
+              href="/ambassadors"
               onClick={() => setMobileOpen(false)}
               className="block w-full bg-brand-rust text-white text-center py-3 rounded font-medium hover:bg-brand-rust/90 transition-colors"
             >

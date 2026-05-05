@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         html: `
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#1C1917">
             <h2 style="font-size:22px;margin-bottom:4px">New Ambassador Application</h2>
-            <p style="color:#6B6B6B;margin:0 0 24px;font-size:14px">submitted via goodkicks.co/partners</p>
+            <p style="color:#6B6B6B;margin:0 0 24px;font-size:14px">submitted via goodkicks.co/ambassadors</p>
             <table style="width:100%;border-collapse:collapse;font-size:14px">
               <tr><td style="padding:8px 0;color:#6B6B6B;width:140px">Name</td><td style="padding:8px 0;font-weight:500">${name}</td></tr>
               <tr><td style="padding:8px 0;color:#6B6B6B">Email</td><td style="padding:8px 0"><a href="mailto:${email}" style="color:#C66A3D">${email}</a></td></tr>

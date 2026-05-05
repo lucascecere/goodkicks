@@ -22,7 +22,7 @@ export function AmbassadorPromo() {
               we partner with high school and college hacky sack accounts — give your followers 20% off with your own code, pay you 8–10% commission on every sale, and ship you a free starter pack to kick things off.
             </p>
             <Link
-              href="/partners"
+              href="/ambassadors"
               className="inline-block bg-brand-rust text-white px-7 py-3.5 rounded font-medium hover:bg-brand-rust/90 transition-colors"
             >
               apply to be an ambassador →
