@@ -90,7 +90,7 @@ export function Footer() {
               className="mx-auto lg:mx-0"
               style={{ height: '120px', width: 'auto' }}
             />
-            <p className="font-display text-2xl text-white/80">make the circle bigger.</p>
+            <p className="font-display text-2xl text-[#C66A3D]">make the circle bigger.</p>
             <p className="text-white/50 text-sm leading-relaxed max-w-xs">
               hand-stitched foot bags built for dorm circles, dining-hall tosses, and every backpack that needs one.
             </p>

@@ -1,4 +1,5 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { ApproveButton } from './approve-button';
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -54,6 +55,7 @@ export default async function AdminAmbassadorsPage() {
                   <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Type</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Followers</th>
                   <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Status</th>
+                  <th className="px-5 py-3"></th>
                 </tr>
               </thead>
               <tbody>
@@ -81,12 +83,17 @@ export default async function AdminAmbassadorsPage() {
                     <td className="px-5 py-4 text-brand-muted">{followerLabels[app.followers] ?? app.followers ?? '—'}</td>
                     <td className="px-5 py-4">
                       <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                        app.status === 'approved' ? 'bg-green-100 text-green-700' :
+                        app.approved ? 'bg-green-100 text-green-700' :
                         app.status === 'rejected' ? 'bg-red-100 text-red-600' :
                         'bg-amber-100 text-amber-700'
                       }`}>
-                        {app.status ?? 'pending'}
+                        {app.approved ? 'approved' : (app.status ?? 'pending')}
                       </span>
+                    </td>
+                    <td className="px-5 py-4">
+                      {!app.approved && (
+                        <ApproveButton applicationId={app.id} instagram={app.instagram} />
+                      )}
                     </td>
                   </tr>
                 ))}

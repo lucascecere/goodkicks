@@ -1,0 +1,19 @@
+hey {{first_name}}, welcome to the team. ✌️
+
+you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way.
+
+here's your personal discount code:
+
+{{discount_code}}
+
+use it yourself or share it with your circle — everyone who uses it gets {{tier_pct}}% off, and you earn credit toward your next sack.
+
+a few things to know:
+- post your sack in action and tag @goodkicksco
+- use #goodkicks so we can find and repost your content
+- reply to this email anytime with questions
+
+make the circle bigger.
+
+— The Good Kicks Team
+goodkicks.co

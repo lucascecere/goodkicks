@@ -14,7 +14,12 @@ export function AmbassadorForm() {
     accountType: '',
     followers: '',
     message: '',
-    shippingAddress: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: 'US',
     colorwayPreference: '',
   });
 
@@ -25,11 +30,14 @@ export function AmbassadorForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setState('loading');
+    const { addressLine1, addressLine2, city, state: st, zip, country, ...rest } = form;
+    const parts = [addressLine1, addressLine2, city, st, zip, country].filter(Boolean);
+    const shippingAddress = parts.length > 1 ? parts.join(', ') : null;
     try {
       const res = await fetch('/api/partners', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...rest, shippingAddress }),
       });
       setState(res.ok ? 'success' : 'error');
     } catch {
@@ -109,17 +117,52 @@ export function AmbassadorForm() {
         />
       </div>
 
-      <div>
-        <label className={labelClass}>shipping address (where we send your free sack)</label>
-        <textarea
-          required
-          rows={3}
-          placeholder="street address, city, state, zip"
-          value={form.shippingAddress}
-          onChange={(e) => set('shippingAddress', e.target.value)}
+      <div className="space-y-3">
+        <label className={labelClass}>shipping address <span className="text-brand-muted font-normal">(optional — where we send your free sack)</span></label>
+        <input
+          type="text"
+          placeholder="street address"
+          value={form.addressLine1}
+          onChange={(e) => set('addressLine1', e.target.value)}
           className={inputClass}
-          style={{ resize: 'vertical' }}
         />
+        <input
+          type="text"
+          placeholder="apt, suite, unit (optional)"
+          value={form.addressLine2}
+          onChange={(e) => set('addressLine2', e.target.value)}
+          className={inputClass}
+        />
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <input
+            type="text"
+            placeholder="city"
+            value={form.city}
+            onChange={(e) => set('city', e.target.value)}
+            className={`${inputClass} col-span-2 sm:col-span-1`}
+          />
+          <input
+            type="text"
+            placeholder="state"
+            value={form.state}
+            onChange={(e) => set('state', e.target.value)}
+            className={inputClass}
+          />
+          <input
+            type="text"
+            placeholder="zip"
+            value={form.zip}
+            onChange={(e) => set('zip', e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <select value={form.country} onChange={(e) => set('country', e.target.value)} className={inputClass}>
+          <option value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="GB">United Kingdom</option>
+          <option value="AU">Australia</option>
+          <option value="other">Other</option>
+        </select>
       </div>
 
       <div>
