@@ -5,7 +5,12 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const shopLinks = [
-  { href: '/shop', label: 'the good kick' },
+  { href: '/products/the-good-kick-georgia',    label: 'georgia'    },
+  { href: '/products/the-good-kick-nevada',     label: 'nevada'     },
+  { href: '/products/the-good-kick-colorado',   label: 'colorado'   },
+  { href: '/products/the-good-kick-new-york',   label: 'new york'   },
+  { href: '/products/the-good-kick-california', label: 'california' },
+  { href: '/products/the-good-kick-maine',      label: 'maine'      },
 ];
 
 const brandLinks = [
@@ -103,7 +108,7 @@ export function Footer() {
           {/* Right: nav columns */}
           <div className="grid grid-cols-3 gap-8 text-sm lg:pt-2 text-center lg:text-left">
             <div>
-              <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">shop</h3>
+              <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">v1 collection</h3>
               <ul className="space-y-3">
                 {shopLinks.map((l) => (
                   <li key={l.href}>
