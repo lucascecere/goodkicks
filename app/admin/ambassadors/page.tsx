@@ -1,6 +1,8 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { ApproveButton } from './approve-button';
 
+export const dynamic = 'force-dynamic';
+
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
