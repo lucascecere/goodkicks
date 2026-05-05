@@ -14,6 +14,8 @@ export function AmbassadorForm() {
     accountType: '',
     followers: '',
     message: '',
+    shippingAddress: '',
+    colorwayPreference: '',
   });
 
   function set(field: string, value: string) {
@@ -105,6 +107,33 @@ export function AmbassadorForm() {
           className={inputClass}
           style={{ resize: 'vertical' }}
         />
+      </div>
+
+      <div>
+        <label className={labelClass}>shipping address (where we send your free sack)</label>
+        <textarea
+          required
+          rows={3}
+          placeholder="street address, city, state, zip"
+          value={form.shippingAddress}
+          onChange={(e) => set('shippingAddress', e.target.value)}
+          className={inputClass}
+          style={{ resize: 'vertical' }}
+        />
+      </div>
+
+      <div>
+        <label className={labelClass}>which colorway do you want?</label>
+        <select required value={form.colorwayPreference} onChange={(e) => set('colorwayPreference', e.target.value)} className={inputClass}>
+          <option value="" disabled>select one</option>
+          <option value="georgia">georgia (rust + cream + dark brown)</option>
+          <option value="nevada">nevada (sage + mustard + cream)</option>
+          <option value="colorado">colorado (cream + rust + sage)</option>
+          <option value="new-york">new york (burgundy + mustard + black)</option>
+          <option value="california">california (navy + cream + burgundy)</option>
+          <option value="maine">maine (mustard + navy + black)</option>
+          <option value="no-preference">no preference / surprise me</option>
+        </select>
       </div>
 
       {state === 'error' && (

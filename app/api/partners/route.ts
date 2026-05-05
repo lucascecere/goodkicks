@@ -4,7 +4,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, email, instagram, school, accountType, followers, message } = body ?? {};
+  const { name, email, instagram, school, accountType, followers, message, shippingAddress, colorwayPreference } = body ?? {};
 
   if (!name || !email || !instagram || !school) {
     return NextResponse.json({ error: 'missing required fields' }, { status: 400 });
@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
       account_type: accountType ?? null,
       followers: followers ?? null,
       message: message ?? null,
+      shipping_address: shippingAddress ?? null,
+      colorway_preference: colorwayPreference ?? null,
     });
   } catch (err) {
     console.error('[partners] DB insert error:', err);
@@ -46,6 +48,8 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding:8px 0;color:#6B6B6B">School</td><td style="padding:8px 0">${school}</td></tr>
               <tr><td style="padding:8px 0;color:#6B6B6B">Account type</td><td style="padding:8px 0">${accountType ?? '—'}</td></tr>
               <tr><td style="padding:8px 0;color:#6B6B6B">Followers</td><td style="padding:8px 0">${followers ?? '—'}</td></tr>
+              <tr><td style="padding:8px 0;color:#6B6B6B">Colorway</td><td style="padding:8px 0">${colorwayPreference ?? '—'}</td></tr>
+              <tr><td style="padding:8px 0;color:#6B6B6B;vertical-align:top">Ship to</td><td style="padding:8px 0;white-space:pre-line">${shippingAddress ?? '—'}</td></tr>
             </table>
             <hr style="border:none;border-top:1px solid #E5DDD0;margin:20px 0" />
             <p style="color:#6B6B6B;font-size:13px;margin-bottom:4px">their message:</p>

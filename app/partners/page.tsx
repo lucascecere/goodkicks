@@ -18,7 +18,7 @@ export default function PartnersPage() {
             you run the circle.<br />we&apos;ll back it.
           </h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed">
-            we&apos;re building partnerships with school hacky sack accounts — high school, college, whatever. if you&apos;re already hyping the scene at your school, we want to help you do it.
+            we&apos;re building partnerships with school hacky sack accounts — high school, college, whatever. if you&apos;re already hyping the scene at your school, we want to back you with free product, your own discount code, and a cut of every sale.
           </p>
           <a
             href="#apply"
@@ -40,7 +40,7 @@ export default function PartnersPage() {
                 Good Kicks foot bags are hand-crocheted by the same crew that&apos;s been making them for 30+ years. Not the $4 Amazon junk. Not the $40 premium stuff. Just the right foot bag at the right price — built for dorm circles, lunch tables, and every campus quad that needs one.
               </p>
               <p className="text-brand-muted leading-relaxed">
-                we sell direct, ship in 1–2 weeks, and offer free shipping on orders $35+. six colorways. one circle.
+                we sell direct, ship in 2-3 weeks, and offer free shipping on orders $35+. six colorways. one circle.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-3">
@@ -67,15 +67,15 @@ export default function PartnersPage() {
           {[
             {
               title: 'your own code.',
-              body: 'get a custom discount code tied to your school or account (e.g. OHIO20, DUKE20). your followers get 20% off. you get credit for every sale.',
+              body: 'get a custom discount code tied to your school or account (e.g. OHIO15, DUKE15). your followers start at 15% off and get bigger codes (20%, 25%) as you level up.',
             },
             {
-              title: '8–10% commission.',
-              body: 'earn 8–10% on every order placed with your code. no cap. paid out monthly. the more you post, the more you earn.',
+              title: 'earn as you grow.',
+              body: 'earn 8% commission on every order placed with your code at the starter tier. level up to 9% (repping) or 10% (anchor) by posting consistently and driving sales. paid out monthly via venmo or paypal.',
             },
             {
-              title: 'free starter pack.',
-              body: 'approved ambassadors get a free 3-pack shipped to them — so you can actually show the product to your circle before you hype it.',
+              title: 'free starter sack.',
+              body: 'approved ambassadors get a free sack shipped to them in your colorway of choice — so you can post with the real product in hand. hit the repping tier and we send 2 more, plus monthly resupply if you stay active.',
             },
           ].map((item) => (
             <div key={item.title} className="bg-brand-cream rounded-xl p-8 space-y-3 border border-brand-rule">
@@ -86,8 +86,39 @@ export default function PartnersPage() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* The Tiers */}
       <section className="py-20 px-4 sm:px-8 bg-brand-cream">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16 space-y-4">
+            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">levels</p>
+            <h2 className="font-display text-4xl text-brand-ink">the tiers.</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {[
+              {
+                tier: 'starter.',
+                body: 'sign up, get approved. 1 free sack, your personal 15% off code, 8% commission on every sale through your code.',
+              },
+              {
+                tier: 'repping.',
+                body: 'hit 5+ tagged posts or 5+ code redemptions. bumps your code to 20% off, your commission to 9%, plus 2 more sacks and monthly resupply.',
+              },
+              {
+                tier: 'anchor.',
+                body: 'hit 15+ posts or 25+ redemptions. 25% off code, 10% commission, 6 more sacks, and a shot at a custom-colorway named partnership.',
+              },
+            ].map((item) => (
+              <div key={item.tier} className="bg-[#EFE8DA] rounded-xl p-8 space-y-3 border border-brand-rule">
+                <h3 className="font-display text-2xl text-brand-ink">{item.tier}</h3>
+                <p className="text-brand-muted text-sm leading-relaxed">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="py-20 px-4 sm:px-8 bg-[#EFE8DA]">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16 space-y-3">
             <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">the process</p>
@@ -107,8 +138,8 @@ export default function PartnersPage() {
               },
               {
                 step: '03',
-                title: 'get your code + free kicks.',
-                body: "once approved, we send your custom promo code and a free 3-pack so you can post with the real product in hand.",
+                title: 'get your code + free sack.',
+                body: "once approved, we send your custom promo code and a free starter sack in your colorway of choice so you can post with the real product in hand.",
               },
               {
                 step: '04',
