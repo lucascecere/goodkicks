@@ -5,8 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const navItems = [
-  { href: '/admin', label: 'Orders', icon: '📦' },
+  { href: '/admin', label: 'Analytics', icon: '📊' },
   { href: '/admin/ambassadors', label: 'Ambassadors', icon: '✌️' },
+  { href: '/admin/contacts', label: 'Contacts', icon: '📋' },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -21,12 +22,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-brand-ink">
+    <div className="min-h-screen flex flex-col bg-[#1A1A1A]" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       {/* Mobile top bar */}
-      <div className="md:hidden bg-[#F0EAD9] flex items-center justify-between px-4 py-3 border-b border-brand-rule">
+      <div className="md:hidden bg-[#F0EAD9] flex items-center justify-between px-4 py-3 border-b border-[#D9D2C2]">
         <div className="flex items-center gap-3">
           <Image src="/brand/logo.png" alt="Good Kicks" width={36} height={36} style={{ height: '36px', width: 'auto' }} />
-          <span className="text-brand-muted text-xs uppercase tracking-widest">admin</span>
+          <span className="text-[#6B6B6B] text-xs uppercase tracking-widest">admin</span>
         </div>
         <div className="flex items-center gap-1">
           {navItems.map((item) => (
@@ -34,7 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               key={item.href}
               href={item.href}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                pathname === item.href ? 'bg-brand-ink text-white' : 'text-brand-ink/60 hover:text-brand-ink'
+                pathname === item.href ? 'bg-[#1A1A1A] text-white' : 'text-[#1A1A1A]/60 hover:text-[#1A1A1A]'
               }`}
             >
               {item.label}
@@ -42,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ))}
           <button
             onClick={handleLogout}
-            className="px-3 py-1.5 rounded-lg text-xs text-brand-muted hover:text-brand-ink transition-colors"
+            className="px-3 py-1.5 rounded-lg text-xs text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors"
           >
             Out
           </button>
@@ -51,11 +52,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Desktop layout */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar — desktop only */}
+        {/* Sidebar */}
         <aside className="hidden md:flex w-56 bg-[#F0EAD9] flex-col flex-shrink-0">
-          <div className="px-5 py-6 border-b border-brand-rule">
+          <div className="px-5 py-6 border-b border-[#D9D2C2]">
             <Image src="/brand/logo.png" alt="Good Kicks" width={48} height={48} style={{ height: '48px', width: 'auto' }} />
-            <p className="text-brand-muted text-xs mt-2 uppercase tracking-widest">admin</p>
+            <p className="text-[#6B6B6B] text-xs mt-2 uppercase tracking-widest">admin</p>
           </div>
           <nav className="flex-1 px-3 py-4 space-y-1">
             {navItems.map((item) => {
@@ -65,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   key={item.href}
                   href={item.href}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    active ? 'bg-brand-ink text-white' : 'text-brand-ink/60 hover:text-brand-ink hover:bg-brand-ink/10'
+                    active ? 'bg-[#1A1A1A] text-white' : 'text-[#1A1A1A]/60 hover:text-[#1A1A1A] hover:bg-[#1A1A1A]/10'
                   }`}
                 >
                   <span>{item.icon}</span>
@@ -74,17 +75,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               );
             })}
           </nav>
-          <div className="px-3 py-4 border-t border-brand-rule">
+          <div className="px-3 py-4 border-t border-[#D9D2C2]">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-brand-muted hover:text-brand-ink hover:bg-brand-ink/10 transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#6B6B6B] hover:text-[#1A1A1A] hover:bg-[#1A1A1A]/10 transition-colors"
             >
               <span>→</span> Log out
             </button>
           </div>
         </aside>
 
-        {/* Main content */}
         <main className="flex-1 overflow-auto">
           {children}
         </main>

@@ -12,7 +12,7 @@ export function ApproveButton({ applicationId, instagram }: Props) {
   const suggested = instagram.replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '') + '15';
   const [code, setCode] = useState(suggested);
   const [tierPct, setTierPct] = useState(15);
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'rejecting' | 'approved' | 'rejected' | 'error'>('idle');
   const [err, setErr] = useState('');
 
   async function handleApprove() {
@@ -24,7 +24,7 @@ export function ApproveButton({ applicationId, instagram }: Props) {
       body: JSON.stringify({ applicationId, discountCode: code, tierPct }),
     });
     if (res.ok) {
-      setStatus('success');
+      setStatus('approved');
     } else {
       const json = await res.json().catch(() => ({}));
       setErr(json.error ?? 'something went wrong');
@@ -32,18 +32,47 @@ export function ApproveButton({ applicationId, instagram }: Props) {
     }
   }
 
-  if (status === 'success') {
+  async function handleReject() {
+    setStatus('rejecting');
+    setErr('');
+    const res = await fetch('/api/admin/reject-ambassador', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ applicationId }),
+    });
+    if (res.ok) {
+      setStatus('rejected');
+    } else {
+      setErr('failed to reject');
+      setStatus('error');
+    }
+  }
+
+  if (status === 'approved') {
     return <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 text-green-700">approved ✓</span>;
+  }
+
+  if (status === 'rejected') {
+    return <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-600">rejected</span>;
   }
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="text-xs font-medium px-3 py-1.5 rounded-full bg-brand-rust text-white hover:bg-brand-rust/90 transition-colors"
-      >
-        approve
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setOpen(true)}
+          className="text-xs font-medium px-3 py-1.5 rounded-full bg-brand-rust text-white hover:bg-brand-rust/90 transition-colors"
+        >
+          approve
+        </button>
+        <button
+          onClick={handleReject}
+          disabled={status === 'rejecting'}
+          className="text-xs font-medium px-3 py-1.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition-colors disabled:opacity-50"
+        >
+          {status === 'rejecting' ? '…' : 'reject'}
+        </button>
+      </div>
     );
   }
 

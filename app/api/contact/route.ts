@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { resend } from '@/lib/email/resend-client';
 
 const generalSchema = z.object({
   type: z.literal('general'),
@@ -24,33 +26,48 @@ export async function POST(request: Request) {
     const result = contactSchema.safeParse(body);
 
     if (!result.success) {
-      return Response.json(
-        { ok: false, errors: result.error.issues },
-        { status: 400 }
-      );
+      return Response.json({ ok: false, errors: result.error.issues }, { status: 400 });
     }
 
     const data = result.data;
-    const prefix = data.type === 'partnership' ? '[PARTNERSHIP]' : '[CONTACT]';
-    console.log(`${prefix}`, JSON.stringify(data, null, 2));
 
-    // TODO: npm install resend — then add email sending here:
-    // if (process.env.RESEND_API_KEY) {
-    //   const { Resend } = await import('resend');
-    //   const resend = new Resend(process.env.RESEND_API_KEY);
-    //   await resend.emails.send({
-    //     from: 'Good Kicks <noreply@goodkicks.co>',
-    //     to: process.env.CONTACT_EMAIL,
-    //     subject: data.type === 'partnership' ? `Partnership inquiry from ${data.name}` : `Message from ${data.name}`,
-    //     text: JSON.stringify(data, null, 2),
-    //   });
-    // }
+    // Save to Supabase
+    const supabase = createSupabaseServiceClient();
+    const { error: dbError } = await supabase.from('contact_submissions').insert({
+      type: data.type,
+      name: data.name,
+      email: data.email,
+      message: data.message,
+      group_name: data.type === 'partnership' ? data.groupName : null,
+      ig_handle: data.type === 'partnership' ? data.igHandle : null,
+    });
+    if (dbError) console.error('[contact] DB insert error:', dbError.message);
+
+    // Email notification
+    if (process.env.RESEND_API_KEY) {
+      try {
+        const subject = data.type === 'partnership'
+          ? `Partnership inquiry — ${data.name} (${(data as { groupName: string }).groupName})`
+          : `Contact form — ${data.name}`;
+
+        const text = data.type === 'partnership'
+          ? `Name: ${data.name}\nEmail: ${data.email}\nGroup: ${(data as { groupName: string }).groupName}\nInstagram: ${(data as { igHandle: string }).igHandle}\n\n${data.message}`
+          : `Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`;
+
+        await resend.emails.send({
+          from: 'Good Kicks <orders@goodkicks.co>',
+          to: process.env.PARTNER_NOTIFICATION_EMAIL ?? 'goodkicksfootbags@gmail.com',
+          replyTo: data.email,
+          subject,
+          text,
+        });
+      } catch (err) {
+        console.error('[contact] Email error:', err);
+      }
+    }
 
     return Response.json({ ok: true });
   } catch {
-    return Response.json(
-      { ok: false, errors: [{ message: 'Server error. Please try again.' }] },
-      { status: 500 }
-    );
+    return Response.json({ ok: false, errors: [{ message: 'Server error. Please try again.' }] }, { status: 500 });
   }
 }
