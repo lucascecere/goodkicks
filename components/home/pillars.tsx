@@ -9,7 +9,7 @@ const pillars = [
   {
     icon: CircleDollarSign,
     title: 'Priced for the squad.',
-    body: '$15. no premium tax, no $4 amazon junk. just the right one at the right price.',
+    body: 'no premium tax, no $4 amazon junk. just the right foot bag at the right price.',
   },
   {
     icon: Users,

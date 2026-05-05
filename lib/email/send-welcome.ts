@@ -1,24 +1,54 @@
 import { resend } from './resend-client';
 
-const TEMPLATE = `hey {{first_name}}, welcome to the team. ✌️
+const TEMPLATE = `hey {{first_name}}, welcome to the Good Kicks team. ✌️
 
-you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way.
+you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way — no cost to you, that's your starter kit.
 
-here's your personal discount code:
+────────────────────────
+your discount code: {{discount_code}}
+────────────────────────
 
-{{discount_code}}
+share this code with anyone. every time someone uses it, they get {{tier_pct}}% off and you earn commission. the more you push it, the more you earn.
 
-use it yourself or share it with your circle — everyone who uses it gets {{tier_pct}}% off, and you earn credit toward your next sack.
+━━━ THE THREE REQUIREMENTS ━━━
 
-a few things to know:
-- post your sack in action and tag @goodkicksco
-- use #goodkicks so we can find and repost your content
-- reply to this email anytime with questions
+these aren't optional — they're how the program works:
+
+1. link in bio
+   your discount code link lives in your bio. always. that's your storefront.
+
+2. code in bio
+   your discount code is pinned in your bio too. make it dead simple for people to find it.
+
+3. mentioned in every video
+   every time you post something related to the sack, give us a shoutout. it doesn't have to be a dedicated video — just a mention, a tag, a caption. stay consistent.
+
+━━━ HOW YOU GROW ━━━
+
+your tier is based on total sales driven through your code:
+
+  starter  → 0–10 orders    → {{tier_pct}}% commission
+  repping  → 11–30 orders   → 20% commission
+  anchor   → 31+ orders     → 30% commission + exclusive drops
+
+you move up automatically as your numbers grow. we track everything on our end.
+
+━━━ HOW TO GET STARTED ━━━
+
+1. drop your code link in your bio today
+2. pin your code in your bio description
+3. post your sack when it arrives and tag @goodkicksco
+4. use #goodkicks so we can find and repost your content
+5. mention us every time you post — keep it natural, keep it consistent
+
+that's it. no complicated rules. just keep the circle going.
+
+questions? just reply to this email — we check it.
 
 make the circle bigger.
 
 — The Good Kicks Team
-goodkicks.co`;
+goodkicks.co | @goodkicksco`;
 
 function safeEmail(email: string) {
   return process.env.NODE_ENV === 'production' ? email : 'delivered@resend.dev';

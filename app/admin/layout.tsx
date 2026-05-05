@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const navItems = [
-  { href: '/admin', label: 'Analytics', icon: '📊' },
+  { href: '/admin', label: 'Dashboard', icon: '📊' },
   { href: '/admin/ambassadors', label: 'Ambassadors', icon: '✌️' },
   { href: '/admin/contacts', label: 'Contacts', icon: '📋' },
 ];
@@ -30,17 +30,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <span className="text-[#6B6B6B] text-xs uppercase tracking-widest">admin</span>
         </div>
         <div className="flex items-center gap-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                pathname === item.href ? 'bg-[#1A1A1A] text-white' : 'text-[#1A1A1A]/60 hover:text-[#1A1A1A]'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  active ? 'bg-[#1A1A1A] text-white' : 'text-[#1A1A1A]/60 hover:text-[#1A1A1A]'
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
           <button
             onClick={handleLogout}
             className="px-3 py-1.5 rounded-lg text-xs text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors"
@@ -60,7 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <nav className="flex-1 px-3 py-4 space-y-1">
             {navItems.map((item) => {
-              const active = pathname === item.href;
+              const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.href}

@@ -1,5 +1,5 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
-import { ApproveButton } from './approve-button';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,19 +7,11 @@ function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-const followerLabels: Record<string, string> = {
-  'under-500': '< 500',
-  '500-2k': '500–2k',
-  '2k-10k': '2k–10k',
-  '10k+': '10k+',
-};
-
-const typeLabels: Record<string, string> = {
-  'high-school': 'High School',
-  'college': 'College',
-  'freestyle': 'Freestyle',
-  'general': 'General',
-};
+function statusBadge(app: { approved: boolean; status: string | null }) {
+  if (app.approved) return { label: 'approved', cls: 'bg-green-100 text-green-700' };
+  if (app.status === 'rejected') return { label: 'rejected', cls: 'bg-red-100 text-red-600' };
+  return { label: 'pending', cls: 'bg-amber-100 text-amber-700' };
+}
 
 export default async function AdminAmbassadorsPage() {
   const supabase = createSupabaseServiceClient();
@@ -29,10 +21,10 @@ export default async function AdminAmbassadorsPage() {
     .order('created_at', { ascending: false });
 
   const all = apps ?? [];
-  const pending = all.filter((a) => a.status === 'pending').length;
+  const pending = all.filter((a) => !a.approved && a.status !== 'rejected').length;
 
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-4xl">
       <div className="mb-8">
         <h1 className="font-display text-3xl text-white">Ambassadors</h1>
         <p className="text-white/50 text-sm mt-1">
@@ -45,63 +37,34 @@ export default async function AdminAmbassadorsPage() {
           no applications yet.
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-brand-rule bg-[#FAF7F2]">
-                  <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Date</th>
-                  <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Applicant</th>
-                  <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Instagram</th>
-                  <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">School</th>
-                  <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Type</th>
-                  <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Followers</th>
-                  <th className="text-left px-5 py-3 text-xs font-medium text-brand-muted uppercase tracking-wide">Status</th>
-                  <th className="px-5 py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {all.map((app) => (
-                  <tr key={app.id} className="border-b border-brand-rule/50 hover:bg-[#FAF7F2] transition-colors">
-                    <td className="px-5 py-4 text-brand-muted whitespace-nowrap">
-                      {app.created_at ? fmtDate(app.created_at) : '—'}
-                    </td>
-                    <td className="px-5 py-4">
-                      <p className="font-medium text-brand-ink">{app.name}</p>
-                      <a href={`mailto:${app.email}`} className="text-brand-rust text-xs hover:underline">{app.email}</a>
-                    </td>
-                    <td className="px-5 py-4">
-                      <a
-                        href={`https://instagram.com/${app.instagram.replace('@', '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand-rust hover:underline"
-                      >
-                        {app.instagram}
-                      </a>
-                    </td>
-                    <td className="px-5 py-4 text-brand-ink">{app.school}</td>
-                    <td className="px-5 py-4 text-brand-muted">{typeLabels[app.account_type] ?? app.account_type ?? '—'}</td>
-                    <td className="px-5 py-4 text-brand-muted">{followerLabels[app.followers] ?? app.followers ?? '—'}</td>
-                    <td className="px-5 py-4">
-                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                        app.approved ? 'bg-green-100 text-green-700' :
-                        app.status === 'rejected' ? 'bg-red-100 text-red-600' :
-                        'bg-amber-100 text-amber-700'
-                      }`}>
-                        {app.approved ? 'approved' : (app.status ?? 'pending')}
-                      </span>
-                    </td>
-                    <td className="px-5 py-4">
-                      {!app.approved && (
-                        <ApproveButton applicationId={app.id} instagram={app.instagram} />
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="space-y-2">
+          {all.map((app) => {
+            const badge = statusBadge(app);
+            return (
+              <Link
+                key={app.id}
+                href={`/admin/ambassadors/${app.id}`}
+                className="flex items-center justify-between bg-white rounded-xl border border-brand-rule px-5 py-4 hover:border-brand-rust/40 hover:shadow-sm transition-all group"
+              >
+                <div className="flex items-center gap-5 min-w-0">
+                  <div className="min-w-0">
+                    <p className="font-medium text-brand-ink group-hover:text-brand-rust transition-colors">{app.name}</p>
+                    <p className="text-brand-muted text-xs mt-0.5">{app.instagram}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 shrink-0 ml-4">
+                  <p className="text-brand-muted text-xs hidden sm:block">
+                    {app.created_at ? fmtDate(app.created_at) : '—'}
+                  </p>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${badge.cls}`}>
+                    {badge.label}
+                  </span>
+                  <span className="text-brand-muted text-xs group-hover:text-brand-rust transition-colors">view →</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
