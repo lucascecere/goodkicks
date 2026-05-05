@@ -19,7 +19,7 @@ const FAQ_ITEMS = [
   { question: 'How big is it? Will it fit in my bag?', answer: 'About 2.25 inches in diameter — small enough to slip in any pocket or backpack pouch.' },
   { question: 'Is it durable? How long will it last?', answer: 'Hand-stitched cotton means it holds up well to regular use. Most circles get months to years out of one.' },
   { question: 'Can I wash it?', answer: "Spot clean only — hand wash with mild soap, air dry. The pellet fill doesn't love full submersion." },
-  { question: 'How fast does it ship?', answer: 'We ship in 1–2 business days. Most domestic orders arrive in 3–5 days.' },
+  { question: 'How fast does it ship?', answer: 'Orders ship in 1–2 weeks. This is a pre-order — we appreciate your patience while we get the first batch out.' },
   { question: "What if I don't like it?", answer: "Reach out within 30 days. We'll make it right — that's the whole deal." },
 ];
 
@@ -43,7 +43,7 @@ export function ProductDetail({ product, variants }: ProductDetailProps) {
           productTitle={product.title}
         />
       )}
-      <p className="text-brand-muted text-sm">free shipping on orders $30+ · ships in 1–2 days</p>
+      <p className="text-brand-muted text-sm">free shipping on orders $35+ · ships in 1–2 weeks</p>
       <div className="border-t border-brand-rule pt-6">
         <h2 className="font-display text-xl mb-3">what it is</h2>
         <div className="text-brand-muted leading-relaxed" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />

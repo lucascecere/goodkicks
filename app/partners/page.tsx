@@ -40,7 +40,7 @@ export default function PartnersPage() {
                 Good Kicks foot bags are hand-crocheted by the same crew that&apos;s been making them for 30+ years. Not the $4 Amazon junk. Not the $40 premium stuff. Just the right foot bag at the right price — built for dorm circles, lunch tables, and every campus quad that needs one.
               </p>
               <p className="text-brand-muted leading-relaxed">
-                we sell direct, ship in 1–2 days, and offer free shipping on orders $30+. six colorways. one circle.
+                we sell direct, ship in 1–2 weeks, and offer free shipping on orders $35+. six colorways. one circle.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-3">
