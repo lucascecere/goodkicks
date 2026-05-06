@@ -65,14 +65,31 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Organization',
-              name: 'Good Kicks',
-              url: 'https://goodkicks.co',
-              logo: 'https://goodkicks.co/icon.png',
-              description: 'Premium foot bags — what everyone calls hacky sacks — built for college circles and everyone keeping the game going.',
-            }),
+            __html: JSON.stringify([
+              {
+                '@context': 'https://schema.org',
+                '@type': 'Organization',
+                name: 'Good Kicks',
+                url: 'https://goodkicks.co',
+                logo: 'https://goodkicks.co/icon.png',
+                sameAs: ['https://www.instagram.com/goodkicksco'],
+                description: 'Premium foot bags — what everyone calls hacky sacks — built for college circles and everyone keeping the game going.',
+              },
+              {
+                '@context': 'https://schema.org',
+                '@type': 'WebSite',
+                name: 'Good Kicks',
+                url: 'https://goodkicks.co',
+                potentialAction: {
+                  '@type': 'SearchAction',
+                  target: {
+                    '@type': 'EntryPoint',
+                    urlTemplate: 'https://goodkicks.co/shop?q={search_term_string}',
+                  },
+                  'query-input': 'required name=search_term_string',
+                },
+              },
+            ]),
           }}
         />
         <a

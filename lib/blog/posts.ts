@@ -411,9 +411,332 @@ export const blogPosts: BlogPost[] = [
 
 <hr />
 
-<p>Any of these five games will work better with a foot bag that actually holds up to heavy play. If you're running Around the World or Stall Challenge sessions regularly, you'll put real wear on a bag. A hand-stitched foot bag is worth the investment.</p>
+<p>Any of these five games will work better with a foot bag that actually holds up to heavy play. If you're running Around the World or Stall Challenge sessions regularly, you'll put real wear on a bag. A quality foot bag is worth the investment.</p>
 
 <p><a href="/">Find yours at Good Kicks</a> — built to handle real game play, not just casual kicks.</p>
+`,
+  },
+  {
+    slug: 'how-to-get-better-at-hacky-sack',
+    title: 'How to Get Better at Hacky Sack: 7 Tips That Actually Work',
+    description: 'Plateaued after your first week? These seven fundamentals will break through the wall and build real consistency.',
+    publishedAt: '2026-04-01',
+    readTime: 5,
+    tags: ['guides', 'tips'],
+    content: `
+<p>Most people hit a wall with hacky sack after the first week. They can get it up a few times, maybe string together three or four kicks before it hits the ground — and then they plateau. Getting better is mostly about repetition and a few specific fundamentals nobody tells you upfront.</p>
+
+<h2>1. Stop Watching the Bag</h2>
+<p>This sounds backwards, but your eyes fix on the bag too early. The goal is to develop peripheral awareness — watch where the bag is going, not where it is. Once you can track it in your peripheral vision while setting up your next kick, your reaction time improves dramatically.</p>
+
+<h2>2. Learn the Inside Kick First</h2>
+<p>Most beginners default to the toe kick because it feels natural. The inside kick — using the inside of your foot like a soccer pass — is the foundation of everything else. It's more controlled, allows for cushion, and sets you up for stalls and combos. Spend 80% of your early practice time here until it's automatic.</p>
+
+<h2>3. Practice Alone Before Circling Up</h2>
+<p>Circle play is fun but it's not where you improve. Solo practice lets you serve the bag to yourself, work specific kicks, and build muscle memory on your own terms. Twenty minutes of solo practice is worth an hour in a circle for skill development.</p>
+
+<h2>4. Learn to Stall</h2>
+<p>A stall is when you catch the bag on your foot, knee, or body and pause it momentarily. The foot stall — resting the bag on the laces with your foot lifted — is the easiest to start with. Once you can stall consistently, you can reset mid-kick and stop panic-kicking the bag in random directions.</p>
+
+<h2>5. Work Both Feet</h2>
+<p>Your weak foot will feel useless at first. That's normal. Spend at least 30% of practice time on your non-dominant side. Once your weak foot becomes halfway reliable, your overall game improves because you're not always pivoting to reach your strong side.</p>
+
+<h2>6. Slow Down Your Circle</h2>
+<p>New players kick too hard because they're nervous. Hacky sack rewards soft, controlled kicks over power. The goal is to set the bag up for the next person. If your circle is constantly dropping, slow everything down — softer kicks, more deliberate placement.</p>
+
+<h2>7. Get a Good Bag</h2>
+<p>Equipment matters more than people admit. A cheap, underweight bag is harder to control because it doesn't fly predictably. A properly weighted bag lets you build actual muscle memory instead of adapting to unpredictable flight every time.</p>
+
+<p><a href="/shop">Good Kicks foot bags</a> are made by the same manufacturer that's been building quality foot bags for 30+ years. The right bag won't make you good overnight — but the wrong one will hold you back.</p>
+`,
+  },
+  {
+    slug: 'hacky-sack-history',
+    title: 'The History of Hacky Sack: From Invention to Campus Icon',
+    description: 'From a knee rehab exercise in 1972 Oregon to a competitive world sport and campus staple — the real history of the foot bag.',
+    publishedAt: '2026-04-05',
+    readTime: 6,
+    tags: ['culture', 'history'],
+    content: `
+<p>The hacky sack has been around longer than most people realize — and its history is more interesting than "some guys started kicking a bag in the '60s."</p>
+
+<h2>The Real Origin: 1972, Oregon</h2>
+<p>The modern hacky sack was invented in 1972 by John Stalberger and Mike Marshall in Oregon City, Oregon. Marshall had developed a small pellet-filled bag as part of a knee rehabilitation exercise. Stalberger, also recovering from a knee injury, started kicking it with him as a daily warm-up.</p>
+<p>They called the game "Hacky Sack" and began manufacturing the bag. Marshall died of a heart attack in 1975, but Stalberger kept developing the product and eventually sold the "Hacky Sack" trademark to Wham-O in 1983 — the same company behind the Frisbee and the Hula Hoop. That's why "Hacky Sack" is technically a brand name, not a generic term for the game or the bag.</p>
+
+<h2>The Actual Sport: Footbag</h2>
+<p>While most people know hacky sack as a casual circle game, there's a parallel history of footbag as a legitimate competitive sport. The World Footbag Association, founded in 1983, governs two disciplines: Footbag Net (played over a net, similar to volleyball) and Footbag Freestyle (acrobatic solo and pairs routines judged on difficulty and execution).</p>
+<p>Freestyle footbag developed into an incredibly technical sport through the 1980s and '90s, with competitors executing combinations of stalls, delays, and aerial tricks that make a casual circle look like a warm-up. World championships are still held annually.</p>
+
+<h2>The Campus Era</h2>
+<p>Hacky sack reached peak cultural visibility on American college campuses through the late 1980s and 1990s. Before smartphones, between-class downtime on campus quads naturally produced circle games. Hacky sack filled that space perfectly: no court, no opposing team, no scorekeeping, and anyone could join without disrupting the flow.</p>
+<p>The game faded from mainstream visibility in the early 2000s as phones changed how people spent idle time outdoors — but it never disappeared. It went underground to the people who genuinely loved it.</p>
+
+<h2>The Comeback</h2>
+<p>School-specific hacky sack Instagram accounts started gaining thousands of followers. TikTok circle videos racked up millions of views. The game's fundamental appeal — cooperative, outdoor, low-barrier, genuinely fun — hadn't changed at all. The audience had just been waiting.</p>
+
+<p>That's where <a href="/">Good Kicks</a> comes in. We make the foot bag for the campus circles keeping the game going.</p>
+`,
+  },
+  {
+    slug: 'hacky-sack-tricks-for-beginners',
+    title: '5 Easy Hacky Sack Tricks Every Beginner Should Learn First',
+    description: 'Got the basics? Here are five beginner tricks — ranked by difficulty — that are achievable within a week of practice.',
+    publishedAt: '2026-04-10',
+    readTime: 5,
+    tags: ['guides', 'tricks'],
+    content: `
+<p>If you've got the basics down — inside kick, outside kick, a somewhat reliable knee kick — the next step is learning actual tricks. Here are five beginner moves achievable within a week of practice, roughly ordered easiest to hardest.</p>
+
+<h2>Before You Start: Learn to Stall</h2>
+<p>Most tricks involve a stall — pausing the bag on a flat surface of your body before continuing. The foot stall (resting the bag on your shoelaces, foot lifted slightly) is the foundation. If you can't stall yet, start there. Everything else builds on it.</p>
+
+<h2>1. The Foot Stall (Difficulty: 1/5)</h2>
+<p>Drop the bag from above your lifted foot and let it land softly on top of your shoe. The key is a soft, slightly cupped foot — the bag needs a small pocket to sit in. Your foot should lower slightly as the bag arrives to absorb impact. Practice catching the bag from a drop before trying it mid-kick.</p>
+
+<h2>2. The Knee Stall (Difficulty: 2/5)</h2>
+<p>Same concept but on your kneecap. Pop the bag up to knee height, extend your knee flat (leg roughly 90 degrees), and let it land on the flat of your kneecap. The trick is getting your knee completely horizontal — any angle and the bag rolls off. Takes more repetition than the foot stall but becomes reliable fast.</p>
+
+<h2>3. Around the World (Difficulty: 2/5)</h2>
+<p>Pop the bag up, kick your foot in a full outward circle around it, and kick it again as your foot returns. The bag stays roughly in place while your foot loops around it. Start with a wide, slow circle and tighten it over time. The timing clicks when your foot is just returning as the bag descends.</p>
+
+<h2>4. The Clipper (Difficulty: 3/5)</h2>
+<p>A clipper is kicking the bag with the inside of your heel — your foot crosses behind your other leg. Pop the bag up with your dominant foot, then cross your other foot behind and clip the bag with the heel. It looks clean in a circle and once you get the angle it's surprisingly consistent. Best "impressive to onlookers" beginner trick.</p>
+
+<h2>5. The Chest Stall (Difficulty: 3/5)</h2>
+<p>Pop the bag high above your head, lean back slightly, and let it come down onto your chest. Bend slightly forward at the moment of contact to create a pocket. The bag should come to a near-stop on your sternum. Easier than it sounds once you stop flinching — the instinct to avoid something falling toward your face is the main obstacle.</p>
+
+<p>Tricks are easier with a bag that responds predictably. A properly weighted 32-panel foot bag makes these moves feel learnable, not frustrating. <a href="/shop">Find yours at Good Kicks →</a></p>
+`,
+  },
+  {
+    slug: 'how-to-start-hacky-sack-club',
+    title: 'How to Start a Hacky Sack Circle on Campus (That Actually Sticks)',
+    description: 'Starting a circle is easy. Building one that lasts the semester takes a little more intention. Here\'s the playbook.',
+    publishedAt: '2026-04-14',
+    readTime: 5,
+    tags: ['culture', 'campus'],
+    content: `
+<p>Starting a hacky sack circle on campus requires no paperwork, no budget, and no one needs to show up on time. But if you want something that sustains itself and grows, a little more structure goes a long way.</p>
+
+<h2>Step 1: Pick Your Spot</h2>
+<p>Location is everything. You need foot traffic, flat ground, and social visibility. The middle of a campus quad works well — somewhere between the dining hall and a dorm is even better. Avoid isolated spots. Part of the appeal of a hacky sack circle is that it's easy to join, and passersby need to be able to see it and wander over.</p>
+<p>Pick a specific time and show up consistently. Same spot, same time. This is how you build regulars before any formal structure exists.</p>
+
+<h2>Step 2: Get Enough Bags</h2>
+<p>Running a circle with one bag creates dependency on whoever's holding it. Two or three bags means multiple smaller circles can form if the group grows, and the game doesn't die when one bag lands in the bushes. <a href="/shop">Grab a few at Good Kicks</a> — splitting costs across a few founding members works well.</p>
+
+<h2>Step 3: Create the Instagram</h2>
+<p>A school-specific hacky sack account is the modern version of a flyer. Name it something like @ohiostatehackysack or @ucberkeleyfootbag. Post your circles, tag your school, use location tags. Two things happen: people at your school find it and show up, and the community of school sack accounts finds and follows you.</p>
+<p>The school sack account ecosystem is real — hundreds of accounts, they follow each other, and a good video can jump your follower count and bring new people to your circle within days.</p>
+
+<h2>Step 4: Register as a Club (Optional but Worth It)</h2>
+<p>Registering with student activities usually gets you a small annual budget, access to reserved spaces, and legitimacy when posting flyers. The bar is typically low — a faculty advisor, a one-page constitution, and a few officer names. Whether this is worth the effort depends on how formal you want to get. Plenty of successful campus circles never bother.</p>
+
+<h2>Step 5: Show Up During Orientation Week</h2>
+<p>The first week of semester is when students are most open to finding their people. Set up in a high-traffic spot with a few bags. Don't make it feel like a pitch — just be there, be welcoming, and let people join. Have your Instagram handle visible. A visible, friendly circle is one of the easiest entry points on any campus.</p>
+
+<p>If you're running a school sack account, <a href="/ambassadors">check out the Good Kicks ambassador program</a>. We back campus circles with free product, your own discount code, and commission on every sale you drive.</p>
+`,
+  },
+  {
+    slug: 'foot-bag-size-weight-guide',
+    title: 'Foot Bag Size and Weight Guide: What the Numbers Actually Mean',
+    description: 'Size, weight, fill, panel count — what each spec actually means for how a foot bag plays, and what to look for when buying.',
+    publishedAt: '2026-04-18',
+    readTime: 5,
+    tags: ['buying guide'],
+    content: `
+<p>Most people pick a foot bag based on what's available. That works fine — but if you're buying for a specific person or trying to actually improve, understanding what the specs mean makes a real difference.</p>
+
+<h2>Size: How Big Should a Foot Bag Be?</h2>
+<p>Standard foot bags range from about 1.75 to 2.5 inches in diameter. Most quality bags land around 2 to 2.25 inches.</p>
+<ul>
+  <li><strong>Under 2 inches:</strong> More challenging to control, better for experienced freestyle players who want precision.</li>
+  <li><strong>2–2.25 inches:</strong> The sweet spot for circle play and beginners. Predictable flight, easy to control without being forgiving to the point of boring.</li>
+  <li><strong>2.5+ inches:</strong> More surface area, easier to trap and stall, but feels sluggish to experienced players.</li>
+</ul>
+<p>Good Kicks bags are 2.25 inches — standard range, solid for all skill levels.</p>
+
+<h2>Weight: The Most Underrated Factor</h2>
+<p>Weight affects flight more than size. A heavier bag travels in a more predictable arc and gives you more reaction time.</p>
+<ul>
+  <li><strong>Under 40g:</strong> Too light for most players. Drifts, hard to control, difficult to build technique on.</li>
+  <li><strong>45–55g:</strong> Standard range. Predictable flight, good balance of speed and control. Right for most circle play.</li>
+  <li><strong>55–65g:</strong> Slightly heavier, preferred for deliberate controlled kicks or windy environments.</li>
+</ul>
+<p>Good Kicks bags come in at approximately 50g — squarely in the ideal range.</p>
+
+<h2>Fill Material</h2>
+<ul>
+  <li><strong>Plastic pellets:</strong> Most common and reliable. Consistent weight distribution, holds shape well, predictable response. Used in most quality bags including Good Kicks.</li>
+  <li><strong>Sand or rice:</strong> Cheap to make, inconsistent distribution, gets heavy when wet. Found in low-end bags.</li>
+  <li><strong>Metal pellets:</strong> Heavy, used in training bags. Not for casual play.</li>
+</ul>
+
+<h2>Panel Count</h2>
+<p>More panels equals a rounder bag. Fewer panels equals a more angular shape with less predictable flight.</p>
+<ul>
+  <li><strong>6-panel:</strong> Roughly cube-shaped. Common in cheap bags. Unpredictable flight.</li>
+  <li><strong>14-panel:</strong> Much more spherical. Good for casual play.</li>
+  <li><strong>32-panel:</strong> Nearly perfectly round. Predictable flight, easiest to control and stall. Standard for quality circle play.</li>
+</ul>
+<p>Good Kicks bags are 32-panel — the roundest construction at this price point. <a href="/shop">Shop the collection →</a></p>
+`,
+  },
+  {
+    slug: 'hacky-sack-gifts',
+    title: 'The Best Hacky Sack Gifts for Any Budget',
+    description: 'Whether they\'re a beginner or a campus circle regular, here\'s exactly what to get — and what to avoid.',
+    publishedAt: '2026-04-22',
+    readTime: 4,
+    tags: ['buying guide'],
+    content: `
+<p>Hacky sack is one of those rare hobbies where gifting is almost frictionless. The bags are inexpensive, portable, and immediately usable. Whether you're shopping for someone who plays every day or someone who's never kicked a bag in their life, here's exactly what to get.</p>
+
+<h2>The Default Move: Just the Bag</h2>
+<p>If someone plays and you want to get them something, another bag is almost always welcome. Circles go through bags — they get lost, worn down, kicked into places they can't be retrieved from. A fresh bag in a colorway they don't have is a genuinely useful gift.</p>
+<p><a href="/shop">Good Kicks foot bags</a> are $15 each and come in six colorways. For a beginner, any color works. For a regular player, pick a colorway they don't already have.</p>
+
+<h2>For the Beginner: $15</h2>
+<p>A single quality foot bag. Cheap bags ($2–5) are a false economy — they're harder to control, fall apart quickly, and can make learning genuinely frustrating. Spending $15 on a quality bag like a Good Kick is the right call. The inside kick is free.</p>
+
+<h2>For the Regular Player: $30–45</h2>
+<p>Two or three bags in different colorways. A regular player will rotate through them, use one as a backup, or pass one to a friend. This is the most practical gift for someone who plays consistently.</p>
+
+<h2>For the Campus Circle: $60+</h2>
+<p>If you know someone running a campus hacky sack circle or school sack account, equipping them with a handful of bags is a meaningful gift. It directly supports what they're doing and removes a real practical cost. Four or five bags at $15 each will get used every week for a full semester.</p>
+
+<h2>What to Avoid</h2>
+<p>Skip the cheap gift shop bags — the thin plastic kind that come in a bag of three for $4. They look like hacky sacks but they don't play like them. The fill is inconsistent, the seams fail quickly, and they'll frustrate whoever you give them to. If you're gifting someone their first foot bag experience, make it a good one.</p>
+
+<p><a href="/shop">Shop all six colorways at Good Kicks →</a></p>
+`,
+  },
+  {
+    slug: 'foot-bag-panel-guide',
+    title: '32-Panel vs 14-Panel vs 6-Panel Foot Bags: Which One Is Right for You?',
+    description: 'Panel count is the most important spec nobody explains. Here\'s what the numbers mean and which to buy.',
+    publishedAt: '2026-04-26',
+    readTime: 4,
+    tags: ['buying guide'],
+    content: `
+<p>Panel count shows up on every foot bag listing as a selling point. Most people skip past it. Here's what it actually means — and why it matters more than almost any other spec.</p>
+
+<h2>What Panels Are</h2>
+<p>A foot bag is made by sewing multiple pieces of material together. Each piece is a panel. The number of panels determines how round the finished bag is — more panels equals a more spherical shape, which means more predictable flight and easier control.</p>
+
+<h2>6-Panel Bags</h2>
+<p>Six panels produce a roughly cube-like shape — think of a die with rounded edges. These are the most common cheap bags because they're fast and simple to manufacture. You'll find them in gift shops and toy assortments everywhere.</p>
+<p>The problem: the flat sides create unpredictable flight. When the bag spins in the air, you can't reliably predict which face will arrive toward you. That makes it genuinely harder to develop technique, especially for beginners. This is the wrong bag for anyone trying to actually improve.</p>
+
+<h2>14-Panel Bags</h2>
+<p>Fourteen panels produce a much rounder bag — closer to a true sphere. Flight is more predictable, kicks feel more natural, and the bag is easier to control. Most mid-range bags are 14-panel. This is a solid choice for casual play.</p>
+
+<h2>32-Panel Bags</h2>
+<p>Thirty-two panels produce the roundest possible construction at standard sizes. The bag is nearly perfectly spherical, which means flight is as predictable as physics allows and stalls are easier because the bag settles consistently regardless of orientation.</p>
+<p>This is the standard for quality circle play and what most serious bag makers produce. If you want to actually improve — or you're buying for someone who does — 32-panel is the answer.</p>
+
+<h2>The Bottom Line</h2>
+<p>For circle play and general use: more panels equals a better-playing bag, full stop. The roundness advantage is real and affects every single kick. The price difference between a 6-panel and a 32-panel bag at quality manufacturers is minimal. There's no reason to buy fewer panels.</p>
+
+<p>Good Kicks bags are 32-panel with plastic pellet fill — the standard for quality play. <a href="/shop">Shop the collection →</a></p>
+`,
+  },
+  {
+    slug: 'how-to-care-for-foot-bag',
+    title: 'How to Take Care of Your Foot Bag (So It Lasts)',
+    description: 'A quality foot bag can last months to years. A few simple habits will make yours last as long as possible.',
+    publishedAt: '2026-04-30',
+    readTime: 4,
+    tags: ['guides'],
+    content: `
+<p>A quality foot bag can last months to years with regular play — but a few things will kill one fast if you're not careful. Here's what to do and what to avoid.</p>
+
+<h2>Regular Cleaning: Keep It Simple</h2>
+<p>For light dirt from outdoor play, a damp cloth is all you need. Wipe it down after a muddy session, let it air dry completely. Don't soak it.</p>
+
+<h2>Deeper Cleaning: Spot Wash Only</h2>
+<p>For genuine dirt — mud, grass stains, heavier outdoor wear — spot clean:</p>
+<ol>
+  <li>Use lukewarm water and a small amount of mild soap</li>
+  <li>Work it into the affected area with your fingers or a soft brush</li>
+  <li>Rinse with clean water — dab, don't run under a tap if you can help it</li>
+  <li>Squeeze gently (never wring) and air dry completely</li>
+</ol>
+<p>Do not put your foot bag in a washing machine or dryer. The pellet fill doesn't survive full submersion well, and tumbling distorts the panel seams.</p>
+
+<h2>Storage: Air and Shade</h2>
+<p>Always air dry — never use a dryer. Direct sunlight over time fades and weakens the fabric. Keep your bag in a drawer or bag pouch when not in use. Putting it away even slightly damp can lead to mold in the fill, which is not recoverable.</p>
+
+<h2>What Kills Bags Fast</h2>
+<ul>
+  <li><strong>Constant concrete play.</strong> Abrasion wears through the exterior faster than grass or dirt. Play on soft ground when you have the choice.</li>
+  <li><strong>Kicking against walls or hard surfaces.</strong> The seams take the stress of impact with hard objects.</li>
+  <li><strong>Getting it soaking wet and leaving it wet.</strong> Once the fill is waterlogged and not dried properly, the bag loses shape and can mold.</li>
+  <li><strong>Pocket compression.</strong> A bag living crushed at the bottom of a bag will distort shape over time. Give it a little space.</li>
+</ul>
+
+<h2>When to Replace</h2>
+<p>A bag is done when seams are splitting, fill has permanently migrated to one side, or the shape is so distorted that flight is unpredictable. A well-used bag is a good thing — when it's time, <a href="/shop">grab a new one here →</a></p>
+`,
+  },
+  {
+    slug: 'hacky-sack-dorm-room',
+    title: 'Why Hacky Sack Is the Best Dorm Room Activity (And How to Run It)',
+    description: 'No equipment setup. No score. Anyone can join. Here\'s why the dorm circle works better than you\'d expect.',
+    publishedAt: '2026-05-02',
+    readTime: 4,
+    tags: ['culture', 'campus'],
+    content: `
+<p>There's a specific kind of boredom that hits in the first few weeks of college — new place, don't know everyone yet, and the standard activities haven't materialized. A hacky sack is a surprisingly effective solution.</p>
+
+<h2>Why Hacky Sack Works in the Dorm</h2>
+<p>The basics: it requires almost no space (a hallway works), makes minimal noise, needs no court or specific setup, and scales from one person to however many walk by. You can kick it solo as a low-key focus activity, or it becomes a group thing the moment someone else wants in. The barrier to entry — physically and socially — is nearly zero.</p>
+
+<h2>Hallway Circles</h2>
+<p>Dorm hallways are underrated hacky sack territory. Long enough, relatively obstacle-free, and most importantly: they create forced interactions. People leaving their rooms walk through your circle. Some stop. Some keep walking and come back later. It's one of the few organic ways to meet your floor that doesn't involve an awkward RA mixer.</p>
+
+<h2>The Common Lounge</h2>
+<p>Most dorms have a common lounge that's perpetually underused. Set up a circle here in the evening — around 8 or 9pm when people are back from dinner but not yet deep in study mode. Leave a bag on the table when you're done. You'll often come back the next night to find people already there with it.</p>
+
+<h2>It Teaches You Something About Playing With Others</h2>
+<p>Hacky sack is cooperative. No opponent. The goal is to keep the bag alive as long as possible, which means setting up other people's kicks, not just making impressive moves yourself. The best players in a circle aren't always the flashiest — they're the ones who keep the bag moving in a way that makes it easy for everyone else. That turns out to be a decent model for other things too.</p>
+
+<h2>What to Get</h2>
+<p>Start with one bag. Two is better if you're expecting a bigger group. A $15 bag fits in any drawer, handles indoor kicks off walls and ceilings (it happens), and lasts a full year with regular use.</p>
+<p><a href="/shop">Shop Good Kicks foot bags →</a></p>
+`,
+  },
+  {
+    slug: 'freestyle-footbag-vs-circle-hacky-sack',
+    title: 'Freestyle Footbag vs. Circle Hacky Sack: Two Very Different Games',
+    description: 'Most people know the circle game. Here\'s what freestyle footbag is, how the two differ, and why both are worth knowing about.',
+    publishedAt: '2026-05-04',
+    readTime: 5,
+    tags: ['culture', 'guides'],
+    content: `
+<p>Most people think hacky sack is one thing: a circle of people keeping a bag in the air. That's accurate — but there's a whole parallel world of footbag as a competitive individual sport that most casual players don't know about. Here's how the two relate and where they diverge.</p>
+
+<h2>Circle Hacky Sack: The Social Game</h2>
+<p>Circle hacky sack is what most people mean when they say "hacky sack." A group stands in a rough circle, passes the bag using only feet and body, and the goal is to keep it in the air as long as possible. No winners, no judges, no score. A good circle ends because everyone needs to leave, not because anyone wins.</p>
+<p>The social aspect is central. Circles are inherently inclusive — anyone can join mid-game, skill differences create interesting dynamics rather than exclusion, and a skilled player helping a beginner keep the bag alive is more fun for everyone than showing off.</p>
+
+<h2>Freestyle Footbag: The Competitive Sport</h2>
+<p>Freestyle footbag is a completely different discipline. Performed solo or in pairs, it involves executing sequences of tricks — stalls, delays, spins, and aerial maneuvers — judged on difficulty, execution, and choreography. Think figure skating, but with your feet and a small bag.</p>
+<p>The World Footbag Association governs competitive freestyle, with world championships held since the 1980s. Top freestyle players execute combinations that are genuinely hard to believe — multiple consecutive stalls on different body parts, spins mid-trick, delayed catches that seem to ignore physics.</p>
+
+<h2>The Equipment Difference</h2>
+<p>For circles: a standard 32-panel bag with plastic pellet fill, around 50g, roughly 2.25 inches. Predictable flight, durable, works for any skill level. This is what Good Kicks makes.</p>
+<p>For freestyle: more variation by player preference. Some use smaller lighter bags for specific kicks, some prefer slightly heavier for stall control. Dedicated freestyle bags often have softer panels to allow the bag to "stick" during complex stalls.</p>
+
+<h2>Can You Do Both?</h2>
+<p>Absolutely, and many players do. Learning freestyle tricks makes you a better circle player because the fundamentals — stalling, kick control, body awareness — transfer directly. Circle play builds endurance and the ability to set up other players.</p>
+<p>Most people start in circles and pick up individual tricks over time. The freestyle world will be there when you're ready.</p>
+
+<h2>Where to Start</h2>
+<p>Get a quality bag, find or start a circle, and let the game teach you. The tricks come naturally once you've built basic kick control.</p>
+<p><a href="/shop">Good Kicks makes the right bag for getting started →</a></p>
 `,
   },
 ];

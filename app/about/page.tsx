@@ -47,7 +47,7 @@ export default function AboutPage() {
       <div className="space-y-4 text-brand-muted leading-relaxed">
         <h2 className="font-display text-2xl text-brand-ink">the product</h2>
         <p>
-          we partnered with Global Village Imports, a co-op that&apos;s been hand-stitching foot bags for over 30 years.
+          we partnered with Global Village Imports, a co-op that&apos;s been making quality foot bags for over 30 years.
           when you buy a Good Kick, you&apos;re getting the same bag that serious circles have used for decades —
           just with our name on it, and our commitment behind it.
         </p>
