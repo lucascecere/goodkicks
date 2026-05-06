@@ -121,7 +121,7 @@ export function CartDrawer() {
                 >
                   {isCheckingOut ? 'redirecting…' : 'checkout →'}
                 </button>
-                <p className="text-center text-brand-muted text-xs">free shipping on orders $35+ · taxes at checkout</p>
+                <p className="text-center text-brand-muted text-xs">free shipping on orders $65+ · taxes at checkout</p>
               </div>
             )}
           </motion.div>

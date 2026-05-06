@@ -44,7 +44,7 @@ export function ProductDetail({ product, variants }: ProductDetailProps) {
           imageUrl={product.images[0]?.url}
         />
       )}
-      <p className="text-brand-muted text-sm">free shipping on orders $35+ · ships in 1–2 weeks</p>
+      <p className="text-brand-muted text-sm">free shipping on orders $65+ · ships in 2–3 weeks</p>
       <div className="border-t border-brand-rule pt-6">
         <h2 className="font-display text-xl mb-3">what it is</h2>
         <div className="text-brand-muted leading-relaxed" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />

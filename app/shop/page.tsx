@@ -42,7 +42,7 @@ export default async function ShopPage() {
         <p className="text-xs uppercase tracking-widest text-brand-muted font-medium mb-3 text-center max-w-none">the collection</p>
         <h1 className="font-display text-5xl sm:text-6xl text-brand-ink mb-4">pick your colorway.</h1>
         <p className="text-brand-muted max-w-md mx-auto leading-relaxed">
-          six states. six colorways. hand-stitched foot bags at $18 — free shipping on orders $35+.
+          six states. six colorways. hand-stitched foot bags at $18 — free shipping on orders $65+.
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export default async function ShopPage() {
         </div>
 
         <p className="text-center text-brand-muted text-sm mt-10">
-          free shipping on orders $35+ &nbsp;·&nbsp; ships in 1–2 weeks
+          free shipping on orders $65+ &nbsp;·&nbsp; ships in 1–2 weeks
         </p>
       </div>
     </div>
