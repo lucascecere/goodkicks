@@ -57,14 +57,14 @@ export async function InstagramFeed() {
                 href="https://instagram.com/goodkicksco"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="aspect-square relative rounded-lg overflow-hidden bg-brand-rule group"
+                className="aspect-square relative rounded-lg overflow-hidden bg-[#F5EFE3] group"
               >
                 <Image
                   src={post.src}
                   alt={post.alt}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="object-contain transition-transform duration-300 group-hover:scale-105"
                 />
               </a>
             ))}
