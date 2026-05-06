@@ -5,7 +5,7 @@ import { imageForVariant } from '@/lib/shopify/variant-colors';
 import { ProductGallery } from './product-gallery';
 import { ProductDetail } from './product-detail';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ handle: string }> };
 
@@ -18,9 +18,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProductByHandle(handle);
   if (!product) return { title: 'Product Not Found' };
   const name = stateName(product.title);
+  const imgUrl = product.featuredImage?.url;
+  const canonical = `/products/${handle}`;
   return {
     title: `${name} — good kicks foot bag`,
-    description: `Hand-stitched foot bag in the ${name} colorway. $18. Free shipping on orders $35+.`,
+    description: `Hand-stitched foot bag in the ${name} colorway. Built for dorm circles, campus quads, and every backpack that needs one.`,
+    alternates: { canonical },
+    openGraph: {
+      title: `The Good Kick — ${name}`,
+      description: `Hand-stitched foot bag in the ${name} colorway. Built for circles, campus quads, and every backpack that needs one.`,
+      url: canonical,
+      images: imgUrl
+        ? [{ url: imgUrl, width: 800, height: 800, alt: `Good Kicks foot bag — ${name}` }]
+        : [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: imgUrl ? [imgUrl] : ['/opengraph-image.png'],
+    },
   };
 }
 
@@ -53,11 +68,16 @@ export default async function ProductPage({ params }: Props) {
     '@type': 'Product',
     name: product.title,
     description: product.description,
+    url: `https://goodkicks.co/products/${shopifyProduct.handle}`,
+    image: imgSrc ?? undefined,
+    brand: { '@type': 'Brand', name: 'Good Kicks' },
     offers: {
       '@type': 'Offer',
+      url: `https://goodkicks.co/products/${shopifyProduct.handle}`,
       price: (priceInCents / 100).toFixed(2),
       priceCurrency: 'USD',
       availability: 'https://schema.org/PreOrder',
+      seller: { '@type': 'Organization', name: 'Good Kicks' },
     },
   };
 

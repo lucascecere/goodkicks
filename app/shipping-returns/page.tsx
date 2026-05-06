@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Shipping & Returns — Good Kicks',
   description: 'Shipping timelines, return policy, and order info for Good Kicks foot bags.',
+  alternates: { canonical: '/shipping-returns' },
+  robots: { index: false },
 };
 
 export default function ShippingReturnsPage() {

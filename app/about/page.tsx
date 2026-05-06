@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: 'About Good Kicks — The Story Behind the Foot Bag',
   description:
     'Two college friends, a quiet renaissance, and one simple bet. How Good Kicks became the foot bag brand built for campus circles.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About Good Kicks — The Story Behind the Foot Bag',
+    description: 'Two college friends, a quiet renaissance, and one simple bet. How Good Kicks became the foot bag brand built for campus circles.',
+    url: '/about',
+    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+  },
 };
 
 export default function AboutPage() {
@@ -27,22 +34,19 @@ export default function AboutPage() {
           in a week. and nobody was talking to the communities keeping it alive.
         </p>
         <p>
-          {/* TODO: add real origin story here */}
           so we started Good Kicks. two college friends who genuinely believe the circle is worth keeping going.
         </p>
       </div>
 
       {/* Image break placeholder */}
       <div className="my-16 aspect-video bg-brand-rule rounded-lg flex items-center justify-center text-brand-muted">
-        {/* TODO: replace with real photo */}
-        <span className="text-sm">the 25 sacs that started it.</span>
+        <span className="text-sm">the 25 sacks that started it.</span>
       </div>
 
       {/* Product section */}
       <div className="space-y-4 text-brand-muted leading-relaxed">
         <h2 className="font-display text-2xl text-brand-ink">the product</h2>
         <p>
-          {/* TODO: confirm Global Village Imports manufacturing details */}
           we partnered with Global Village Imports, a co-op that&apos;s been hand-stitching foot bags for over 30 years.
           when you buy a Good Kick, you&apos;re getting the same bag that serious circles have used for decades —
           just with our name on it, and our commitment behind it.

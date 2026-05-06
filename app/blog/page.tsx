@@ -4,9 +4,16 @@ import { blogPosts } from '@/lib/blog/posts';
 import { InstagramFeed } from '@/components/home/instagram-feed';
 
 export const metadata: Metadata = {
-  title: 'Blog — Hacky Sack Tips, Guides & Culture',
+  title: 'The Stitch — Hacky Sack Tips, Guides & Culture',
   description:
     'Guides, buying advice, and culture pieces about hacky sack and foot bags. Learn how to play, what to buy, and why the circle is worth keeping going.',
+  alternates: { canonical: '/blog' },
+  openGraph: {
+    title: 'The Stitch — Good Kicks Blog',
+    description: 'Guides, buying advice, and culture pieces about hacky sack and foot bags.',
+    url: '/blog',
+    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+  },
 };
 
 export default function BlogPage() {

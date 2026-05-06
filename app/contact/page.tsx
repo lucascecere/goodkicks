@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: 'Contact Good Kicks — Bulk Orders, Questions & Partnerships',
   description:
     'Get in touch with Good Kicks. Campus bulk orders, sack accounts, partnerships, or just questions about foot bags and hacky sacks — we answer everything.',
+  alternates: { canonical: '/contact' },
+  openGraph: {
+    title: 'Contact Good Kicks',
+    description: 'Campus bulk orders, partnerships, or just questions — we answer everything.',
+    url: '/contact',
+    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+  },
 };
 
 export default function ContactPage() {

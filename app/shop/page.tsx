@@ -5,11 +5,18 @@ import { AddToCartButton } from '@/components/product/add-to-cart-button';
 import { getAllProducts } from '@/lib/shopify/service';
 import { colorForVariant, imageForVariant } from '@/lib/shopify/variant-colors';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Shop — Good Kicks Foot Bags',
-  description: 'Six colorways. One circle. Hand-stitched foot bags at $18 — pick your state and keep the game going.',
+  description: 'Six colorways. One circle. Hand-stitched foot bags — pick your state and keep the game going.',
+  alternates: { canonical: '/shop' },
+  openGraph: {
+    title: 'Shop Good Kicks Foot Bags',
+    description: 'Six hand-stitched colorways. Built for dorm circles, campus quads, and every backpack that needs one.',
+    url: '/shop',
+    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+  },
 };
 
 type ShopifyProduct = {

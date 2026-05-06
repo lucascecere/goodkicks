@@ -18,11 +18,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   return [
-    { url: siteUrl, lastModified: new Date(), priority: 1 },
-    { url: `${siteUrl}/blog`, lastModified: new Date(), priority: 0.8 },
-    { url: `${siteUrl}/about`, lastModified: new Date(), priority: 0.6 },
-    { url: `${siteUrl}/contact`, lastModified: new Date(), priority: 0.5 },
-    { url: `${siteUrl}/cart`, lastModified: new Date(), priority: 0.3 },
+    { url: siteUrl,                              lastModified: new Date(), priority: 1.0 },
+    { url: `${siteUrl}/shop`,                    lastModified: new Date(), priority: 0.9 },
+    { url: `${siteUrl}/ambassadors`,             lastModified: new Date(), priority: 0.7 },
+    { url: `${siteUrl}/blog`,                    lastModified: new Date(), priority: 0.8 },
+    { url: `${siteUrl}/about`,                   lastModified: new Date(), priority: 0.6 },
+    { url: `${siteUrl}/contact`,                 lastModified: new Date(), priority: 0.5 },
+    { url: `${siteUrl}/shipping-returns`,        lastModified: new Date(), priority: 0.4 },
+    { url: `${siteUrl}/privacy`,                 lastModified: new Date(), priority: 0.3 },
     ...productRoutes,
     ...blogRoutes,
   ];

@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Privacy Policy & Terms — Good Kicks',
   description: 'Privacy policy and terms of service for Good Kicks foot bags.',
+  alternates: { canonical: '/privacy' },
+  robots: { index: false },
 };
 
 export default function PrivacyPage() {

@@ -2,9 +2,16 @@ import type { Metadata } from 'next';
 import { AmbassadorForm } from '@/components/partners/ambassador-form';
 
 export const metadata: Metadata = {
-  title: 'GoodKicks Brand Ambassador Program',
+  title: 'Ambassador Program — Good Kicks',
   description:
-    'Run a school hacky sack account? Join the GoodKicks Brand Ambassador Program. Get your own custom discount code, earn 8–10% commission on every sale, and receive a free starter pack.',
+    'Run a school hacky sack account? Join the Good Kicks ambassador program. Get a free starter sack, your own discount code, and earn commission on every sale you drive.',
+  alternates: { canonical: '/ambassadors' },
+  openGraph: {
+    title: 'Good Kicks Ambassador Program',
+    description: 'Get a free starter sack, your own discount code, and earn commission on every sale you drive.',
+    url: '/ambassadors',
+    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+  },
 };
 
 export default function PartnersPage() {
