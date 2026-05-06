@@ -2,11 +2,11 @@ import Image from 'next/image';
 import { fetchInstagramPosts } from '@/lib/instagram';
 
 const STATIC_POSTS = [
-  { id: 'tennessee', src: '/brand/post_tennessee.png', alt: 'Good Kicks Tennessee colorway' },
-  { id: 'maine',     src: '/brand/post_maine.png',     alt: 'Good Kicks Maine colorway' },
-  { id: 'montana',   src: '/brand/post_montana.png',   alt: 'Good Kicks Montana colorway' },
-  { id: 'newyork',   src: '/brand/post_newyork.png',   alt: 'Good Kicks New York colorway' },
-  { id: 'newmexico', src: '/brand/post_newmexico.png', alt: 'Good Kicks New Mexico colorway' },
+  { id: 'newyork',   src: '/brand/post_newyork.jpg',   alt: 'Good Kicks New York colorway' },
+  { id: 'montana',   src: '/brand/post_montana.jpg',   alt: 'Good Kicks Montana colorway' },
+  { id: 'maine',     src: '/brand/post_maine.jpg',     alt: 'Good Kicks Maine colorway' },
+  { id: 'newmexico', src: '/brand/post_newmexico.jpg', alt: 'Good Kicks New Mexico colorway' },
+  { id: 'tennessee', src: '/brand/post_tennessee.jpg', alt: 'Good Kicks Tennessee colorway' },
 ];
 
 export async function InstagramFeed() {
