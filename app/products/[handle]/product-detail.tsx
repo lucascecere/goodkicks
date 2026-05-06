@@ -41,6 +41,7 @@ export function ProductDetail({ product, variants }: ProductDetailProps) {
         <AddToCartButton
           variant={{ id: selectedVariant.id, name: selectedVariant.name, priceInCents: selectedVariant.priceInCents }}
           productTitle={product.title}
+          imageUrl={product.images[0]?.url}
         />
       )}
       <p className="text-brand-muted text-sm">free shipping on orders $35+ · ships in 1–2 weeks</p>

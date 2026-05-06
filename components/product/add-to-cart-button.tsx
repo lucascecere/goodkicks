@@ -9,9 +9,10 @@ interface AddToCartButtonProps {
     priceInCents: number;
   };
   productTitle: string;
+  imageUrl?: string;
 }
 
-export function AddToCartButton({ variant, productTitle }: AddToCartButtonProps) {
+export function AddToCartButton({ variant, productTitle, imageUrl }: AddToCartButtonProps) {
   const { addItem, openCart } = useCart();
 
   function handleClick() {
@@ -20,6 +21,7 @@ export function AddToCartButton({ variant, productTitle }: AddToCartButtonProps)
       variantName: variant.name,
       productTitle,
       priceInCents: variant.priceInCents,
+      imageUrl,
     });
     openCart();
   }

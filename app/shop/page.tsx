@@ -96,6 +96,7 @@ export default async function ShopPage() {
                   <AddToCartButton
                     variant={{ id: variant.id, name: product.title, priceInCents }}
                     productTitle="Good Kicks Foot Bag"
+                    imageUrl={imgSrc}
                   />
                 </div>
               </div>

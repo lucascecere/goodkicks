@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { X } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
@@ -71,7 +72,19 @@ export function CartDrawer() {
                 <ul className="space-y-4">
                   {items.map((item) => (
                     <li key={item.variantId} className="flex gap-4">
-                      <div className="w-20 h-20 rounded bg-brand-rule flex-shrink-0" />
+                      <div className="w-20 h-20 rounded bg-[#F5EFE3] flex-shrink-0 overflow-hidden relative">
+                        {item.imageUrl ? (
+                          <Image
+                            src={item.imageUrl}
+                            alt={item.productTitle}
+                            fill
+                            sizes="80px"
+                            className="object-contain p-1.5"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-brand-rule" />
+                        )}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-brand-ink text-sm leading-snug">{item.productTitle}</p>
                         <p className="text-brand-muted text-xs mt-0.5">{item.variantName}</p>
