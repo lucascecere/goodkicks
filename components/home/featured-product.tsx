@@ -6,7 +6,7 @@ const doubled = [...COLORWAYS, ...COLORWAYS];
 
 export function FeaturedProduct() {
   return (
-    <section id="featured" className="py-20 px-4 sm:px-8 bg-brand-ink text-white">
+    <section id="featured" className="py-20 px-6 sm:px-8 bg-brand-ink text-white">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
@@ -39,10 +39,10 @@ export function FeaturedProduct() {
           <div className="space-y-6 text-center lg:text-left">
             <p className="text-xs uppercase tracking-widest text-white/40 font-medium max-w-none">the good kick</p>
             <h2 className="font-display text-4xl sm:text-5xl text-white leading-tight">
-              hand-stitched.<br />properly weighted.<br />made to last.
+              premium materials.<br />properly weighted.<br />made to last.
             </h2>
             <p className="text-white/60 leading-relaxed">
-              six colorways. one circle. pick your state and keep the game going — hand-crocheted by the same crew that&apos;s been doing it for 30+ years.
+              six colorways. one circle. pick your state and keep the game going — made by the same crew that&apos;s been doing it for 30+ years.
             </p>
             <Link
               href="/shop"

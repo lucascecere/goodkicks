@@ -7,7 +7,7 @@ export function StitchPromo() {
     .slice(0, 3);
 
   return (
-    <section className="py-20 px-4 sm:px-8 bg-brand-ink text-white">
+    <section className="py-20 px-6 sm:px-8 bg-brand-ink text-white">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6 mb-12">

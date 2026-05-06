@@ -17,7 +17,7 @@ export default function SuccessPage() {
         <div className="text-6xl">🎉</div>
         <h1 className="font-display text-4xl text-brand-ink">order confirmed!</h1>
         <p className="text-brand-muted leading-relaxed">
-          you&apos;re in the circle now. we&apos;ll send a confirmation to your email. your sack is hand-stitched to order and ships within 2–3 weeks.
+          you&apos;re in the circle now. we&apos;ll send a confirmation to your email. your sack is made to order and ships within 2–3 weeks.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link

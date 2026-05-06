@@ -20,18 +20,18 @@ export const GOOD_KICKS_FOOT_BAG: Product = {
   id: 'good-kicks-foot-bag',
   handle: 'good-kicks-foot-bag',
   title: 'Good Kicks Foot Bag',
-  description: 'Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.',
-  descriptionHtml: '<p>Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
+  description: 'Premium foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.',
+  descriptionHtml: '<p>Premium foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
   images: [
     { url: '/brand/Photoroom_20260504_182143.jpeg', altText: 'Good Kicks Foot Bag — Georgia colorway', width: 1512, height: 2016 },
   ],
   variants: [
-    { id: 'gk-tennessee',  name: 'tennessee',  priceInCents: 1800, quantity: 1, color: '#C15A3A' },
-    { id: 'gk-maine',      name: 'maine',      priceInCents: 1800, quantity: 1, color: '#5A5E68' },
-    { id: 'gk-montana',    name: 'montana',    priceInCents: 1800, quantity: 1, color: '#5BA4B4' },
-    { id: 'gk-new-york',   name: 'new york',   priceInCents: 1800, quantity: 1, color: '#A89870' },
-    { id: 'gk-new-mexico', name: 'new mexico', priceInCents: 1800, quantity: 1, color: '#D4A84B' },
-    { id: 'gk-california', name: 'california', priceInCents: 1800, quantity: 1, color: '#4A4848' },
+    { id: 'gk-tennessee',  name: 'tennessee',  priceInCents: 1500, quantity: 1, color: '#C15A3A' },
+    { id: 'gk-maine',      name: 'maine',      priceInCents: 1500, quantity: 1, color: '#5A5E68' },
+    { id: 'gk-montana',    name: 'montana',    priceInCents: 1500, quantity: 1, color: '#5BA4B4' },
+    { id: 'gk-new-york',   name: 'new york',   priceInCents: 1500, quantity: 1, color: '#A89870' },
+    { id: 'gk-new-mexico', name: 'new mexico', priceInCents: 1500, quantity: 1, color: '#D4A84B' },
+    { id: 'gk-california', name: 'california', priceInCents: 1500, quantity: 1, color: '#4A4848' },
   ],
 };
 

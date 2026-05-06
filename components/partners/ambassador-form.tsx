@@ -72,8 +72,8 @@ export function AmbassadorForm() {
       </div>
 
       <div>
-        <label className={labelClass}>instagram handle</label>
-        <input required type="text" placeholder="@ohiostatehackysack" value={form.instagram} onChange={(e) => set('instagram', e.target.value)} className={inputClass} />
+        <label className={labelClass}>instagram profile url</label>
+        <input required type="url" placeholder="https://www.instagram.com/ohiostatehackysack" value={form.instagram} onChange={(e) => set('instagram', e.target.value)} className={inputClass} />
       </div>
 
       <div>

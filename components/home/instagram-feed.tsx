@@ -1,11 +1,19 @@
 import Image from 'next/image';
 import { fetchInstagramPosts } from '@/lib/instagram';
 
+const STATIC_POSTS = [
+  { id: 'tennessee', src: '/brand/post_tennessee.png', alt: 'Good Kicks Tennessee colorway' },
+  { id: 'maine',     src: '/brand/post_maine.png',     alt: 'Good Kicks Maine colorway' },
+  { id: 'montana',   src: '/brand/post_montana.png',   alt: 'Good Kicks Montana colorway' },
+  { id: 'newyork',   src: '/brand/post_newyork.png',   alt: 'Good Kicks New York colorway' },
+  { id: 'newmexico', src: '/brand/post_newmexico.png', alt: 'Good Kicks New Mexico colorway' },
+];
+
 export async function InstagramFeed() {
   const posts = await fetchInstagramPosts(6);
 
   return (
-    <section className="py-20 px-4 sm:px-8">
+    <section className="py-20 px-6 sm:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="font-display text-4xl sm:text-5xl text-brand-ink mb-4">
@@ -43,13 +51,22 @@ export async function InstagramFeed() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-lg bg-brand-rule flex items-center justify-center text-brand-muted/40 text-xs"
+            {STATIC_POSTS.map((post) => (
+              <a
+                key={post.id}
+                href="https://instagram.com/goodkicksco"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="aspect-square relative rounded-lg overflow-hidden bg-brand-rule group"
               >
-                @goodkicksco
-              </div>
+                <Image
+                  src={post.src}
+                  alt={post.alt}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </a>
             ))}
           </div>
         )}

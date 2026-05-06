@@ -63,7 +63,7 @@ export const blogPosts: BlogPost[] = [
 
 <p>What matters more than terminology is finding a bag that's actually worth kicking. Whether you're looking for your first foot bag or upgrading from one of those sad plastic bags you found at a gift shop, the construction details above will steer you right.</p>
 
-<p>Ready to find the right foot bag? <a href="/">Browse our collection at Good Kicks</a> — every bag is hand-stitched and built to last.</p>
+<p>Ready to find the right foot bag? <a href="/">Browse our collection at Good Kicks</a> — every bag is built to last.</p>
 `,
   },
   {
@@ -124,7 +124,7 @@ export const blogPosts: BlogPost[] = [
 
 <p>The thing that matters most isn't what you call it — it's what you're kicking. A well-made foot bag will make you a better player faster, last longer, and give you a much better feel for the sport than the cheap branded stuff you'll find at a drugstore checkout.</p>
 
-<p>Looking for a hand-stitched foot bag that'll actually hold up? <a href="/">Check out what we've got at Good Kicks</a> — our bags are built for players, not impulse purchases.</p>
+<p>Looking for a foot bag that'll actually hold up? <a href="/">Check out what we've got at Good Kicks</a> — our bags are built for players, not impulse purchases.</p>
 `,
   },
   {
@@ -197,7 +197,7 @@ export const blogPosts: BlogPost[] = [
 
 <p>For a beginner, a 32-panel hand-stitched foot bag in the 55–65 gram range is the ideal starting point. It's round enough to be predictable, heavy enough to give you reaction time, and durable enough to last through the learning phase. Avoid buying the cheapest option — you'll replace it in two weeks and have a harder time learning.</p>
 
-<p>Ready to get one? <a href="/">Check out Good Kicks foot bags</a> — hand-stitched, built for beginners and experienced players alike, and priced fairly for what you get.</p>
+<p>Ready to get one? <a href="/">Check out Good Kicks foot bags</a> — built for beginners and experienced players alike, and priced fairly for what you get.</p>
 `,
   },
   {
@@ -215,7 +215,7 @@ export const blogPosts: BlogPost[] = [
 
 <p>For most beginners: a <strong>32-panel, hand-stitched foot bag, around 60 grams, in the $12–20 range</strong>. That's the sweet spot. It's round, predictable, durable, and won't frustrate you into quitting.</p>
 
-<p>If you want to skip the breakdown and just get one: <a href="/">Good Kicks sells exactly this</a> — hand-stitched, quality pellet fill, built to last.</p>
+<p>If you want to skip the breakdown and just get one: <a href="/">Good Kicks sells exactly this</a> — quality pellet fill, built to last.</p>
 
 <h2>The $5 Bag Problem</h2>
 
@@ -273,7 +273,7 @@ export const blogPosts: BlogPost[] = [
 
 <h2>Our Pick for 2025</h2>
 
-<p>We're biased — we sell foot bags. But we built Good Kicks specifically because we couldn't find a beginner bag that hit all the marks: hand-stitched, 32 panels, proper pellet fill, correct weight, fair price. So we made one.</p>
+<p>We're biased — we sell foot bags. But we built Good Kicks specifically because we couldn't find a beginner bag that hit all the marks: 32 panels, proper pellet fill, correct weight, fair price. So we made one.</p>
 
 <p><a href="/">Browse the Good Kicks collection here.</a> If it doesn't match the specs above, we'll say so.</p>
 `,
@@ -335,7 +335,7 @@ export const blogPosts: BlogPost[] = [
 
 <p>There's no app to download, no gym membership to buy, no equipment list beyond a single small bag. Foot bag is as low-friction as outdoor social activities get — which is exactly what makes it the right fit for a generation looking for something real to do together.</p>
 
-<p>If you want to start a circle, the first step is getting a bag worth kicking. <a href="/">Good Kicks makes hand-stitched foot bags built for exactly this</a> — durable, well-weighted, and good enough to last a full semester of daily use.</p>
+<p>If you want to start a circle, the first step is getting a bag worth kicking. <a href="/">Good Kicks makes quality foot bags built for exactly this</a> — durable, well-weighted, and good enough to last a full semester of daily use.</p>
 `,
   },
   {

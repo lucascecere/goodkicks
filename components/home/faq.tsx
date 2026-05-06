@@ -1,7 +1,7 @@
 const faqs = [
   {
     question: "What is a foot bag?",
-    answer: "A foot bag is a small, hand-stitched bag filled with plastic pellets, designed to be kept in the air using only your feet and body — no hands. It's the same thing most people call a 'hacky sack.'"
+    answer: "A foot bag is a small bag filled with plastic pellets, designed to be kept in the air using only your feet and body — no hands. It's the same thing most people call a 'hacky sack.'"
   },
   {
     question: "Is a foot bag the same thing as a hacky sack?",
@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     question: "How long does a foot bag last?",
-    answer: "A hand-stitched foot bag from a quality manufacturer will last 1-2 years with regular play. Machine-stitched bags from discount brands typically fall apart within weeks. Ours are made by the same manufacturer that's been stitching foot bags for 30+ years."
+    answer: "A quality foot bag from a reputable manufacturer will last 1-2 years with regular play. Cheap bags from discount brands typically fall apart within weeks. Ours are made by the same manufacturer that's been making foot bags for 30+ years."
   },
   {
     question: "Do you offer bulk orders for campus groups or clubs?",
@@ -37,7 +37,7 @@ const faqSchema = {
 
 export function FAQ() {
   return (
-    <section className="py-20 px-4 sm:px-8 bg-brand-cream">
+    <section className="py-20 px-6 sm:px-8 bg-brand-cream">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

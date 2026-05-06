@@ -17,7 +17,7 @@ interface ProductDetailProps {
 
 const FAQ_ITEMS = [
   { question: 'How big is it? Will it fit in my bag?', answer: 'About 2.25 inches in diameter — small enough to slip in any pocket or backpack pouch.' },
-  { question: 'Is it durable? How long will it last?', answer: 'Hand-stitched cotton means it holds up well to regular use. Most circles get months to years out of one.' },
+  { question: 'Is it durable? How long will it last?', answer: 'Premium construction means it holds up well to regular use. Most circles get months to years out of one.' },
   { question: 'Can I wash it?', answer: "Spot clean only — hand wash with mild soap, air dry. The pellet fill doesn't love full submersion." },
   { question: 'How fast does it ship?', answer: 'Orders ship in 1–2 weeks. This is a pre-order — we appreciate your patience while we get the first batch out.' },
   { question: "What if I don't like it?", answer: "Reach out within 30 days. We'll make it right — that's the whole deal." },
@@ -54,7 +54,7 @@ export function ProductDetail({ product, variants }: ProductDetailProps) {
         <ul className="space-y-1 text-brand-muted text-sm">
           <li>Size: ~2.25&quot; diameter</li>
           <li>Weight: ~50g</li>
-          <li>Materials: hand-crocheted cotton exterior, plastic pellet fill</li>
+          <li>Materials: cotton exterior, plastic pellet fill</li>
           <li>Recommended for: ages 8+</li>
         </ul>
       </div>

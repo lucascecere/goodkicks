@@ -18,7 +18,7 @@ export default function PartnersPage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-brand-ink text-white py-24 px-4 sm:px-8">
+      <section className="bg-brand-ink text-white py-24 px-6 sm:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <p className="text-xs uppercase tracking-widest text-white/50 font-medium text-center max-w-none">goodkicks brand ambassador program</p>
           <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl leading-none">
@@ -37,14 +37,14 @@ export default function PartnersPage() {
       </section>
 
       {/* What is Good Kicks */}
-      <section className="py-20 px-4 sm:px-8 bg-brand-cream">
+      <section className="py-20 px-6 sm:px-8 bg-brand-cream">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
               <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">the product</p>
-              <h2 className="font-display text-4xl text-brand-ink">hand-stitched. properly weighted. $18.</h2>
+              <h2 className="font-display text-4xl text-brand-ink">premium materials. properly weighted. $15.</h2>
               <p className="text-brand-muted leading-relaxed">
-                Good Kicks foot bags are hand-crocheted by the same crew that&apos;s been making them for 30+ years. Not the $4 Amazon junk. Not the $40 premium stuff. Just the right foot bag at the right price — built for dorm circles, lunch tables, and every campus quad that needs one.
+                Good Kicks foot bags are made by the same crew that&apos;s been making them for 30+ years. Not the $4 Amazon junk. Not the $40 premium stuff. Just the right foot bag at the right price — built for dorm circles, lunch tables, and every campus quad that needs one.
               </p>
               <p className="text-brand-muted leading-relaxed">
                 we sell direct, ship in 2-3 weeks, and offer free shipping on orders $65+. six colorways. one circle.
@@ -64,7 +64,7 @@ export default function PartnersPage() {
       </section>
 
       {/* The Program */}
-      <section className="py-20 px-4 sm:px-8 bg-[#EFE8DA]">
+      <section className="py-20 px-6 sm:px-8 bg-[#EFE8DA]">
         <div className="max-w-4xl mx-auto text-center space-y-4 mb-16">
           <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">what you get</p>
           <h2 className="font-display text-4xl text-brand-ink">the goodkicks ambassador program.</h2>
@@ -94,7 +94,7 @@ export default function PartnersPage() {
       </section>
 
       {/* The Tiers */}
-      <section className="py-20 px-4 sm:px-8 bg-brand-cream">
+      <section className="py-20 px-6 sm:px-8 bg-brand-cream">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">levels</p>
@@ -125,7 +125,7 @@ export default function PartnersPage() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 px-4 sm:px-8 bg-[#EFE8DA]">
+      <section className="py-20 px-6 sm:px-8 bg-[#EFE8DA]">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16 space-y-3">
             <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">the process</p>
@@ -167,7 +167,7 @@ export default function PartnersPage() {
       </section>
 
       {/* Who we're looking for */}
-      <section className="py-16 px-4 sm:px-8 bg-brand-ink text-white">
+      <section className="py-16 px-6 sm:px-8 bg-brand-ink text-white">
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <h2 className="font-display text-4xl">who we&apos;re looking for.</h2>
           <p className="text-white/70 leading-relaxed max-w-xl mx-auto">
@@ -189,7 +189,7 @@ export default function PartnersPage() {
       </section>
 
       {/* Application form */}
-      <section id="apply" className="py-20 px-4 sm:px-8 bg-brand-cream">
+      <section id="apply" className="py-20 px-6 sm:px-8 bg-brand-cream">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12 space-y-3">
             <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">apply</p>

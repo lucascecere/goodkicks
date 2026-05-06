@@ -23,7 +23,7 @@ export default function BlogPage() {
 
   return (
     <>
-      <div className="max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
+      <div className="max-w-4xl mx-auto px-6 sm:px-8 py-16 sm:py-24">
         <h1 className="font-display text-4xl sm:text-5xl text-brand-ink mb-4">
           the circle, in words.
         </h1>

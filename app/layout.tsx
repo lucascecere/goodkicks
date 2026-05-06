@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     default: 'Good Kicks — Make the circle bigger.',
   },
   description:
-    'Hand-stitched foot bags built for dorm circles, dining-hall tosses, and every backpack that needs one.',
+    'Premium foot bags built for dorm circles, dining-hall tosses, and every backpack that needs one.',
   openGraph: {
     siteName: 'Good Kicks',
     type: 'website',
@@ -71,7 +71,7 @@ export default function RootLayout({
               name: 'Good Kicks',
               url: 'https://goodkicks.co',
               logo: 'https://goodkicks.co/icon.png',
-              description: 'Hand-stitched foot bags — what everyone calls hacky sacks — built for college circles and everyone keeping the game going.',
+              description: 'Premium foot bags — what everyone calls hacky sacks — built for college circles and everyone keeping the game going.',
             }),
           }}
         />

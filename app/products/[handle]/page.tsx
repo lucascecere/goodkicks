@@ -22,11 +22,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const canonical = `/products/${handle}`;
   return {
     title: `${name} — good kicks foot bag`,
-    description: `Hand-stitched foot bag in the ${name} colorway. Built for dorm circles, campus quads, and every backpack that needs one.`,
+    description: `Premium foot bag in the ${name} colorway. Built for dorm circles, campus quads, and every backpack that needs one.`,
     alternates: { canonical },
     openGraph: {
       title: `The Good Kick — ${name}`,
-      description: `Hand-stitched foot bag in the ${name} colorway. Built for circles, campus quads, and every backpack that needs one.`,
+      description: `Premium foot bag in the ${name} colorway. Built for circles, campus quads, and every backpack that needs one.`,
       url: canonical,
       images: imgUrl
         ? [{ url: imgUrl, width: 800, height: 800, alt: `Good Kicks foot bag — ${name}` }]
@@ -55,8 +55,8 @@ export default async function ProductPage({ params }: Props) {
     id: shopifyProduct.id,
     handle: shopifyProduct.handle,
     title: name,
-    description: 'Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.',
-    descriptionHtml: '<p>Hand-stitched foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
+    description: 'Premium foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.',
+    descriptionHtml: '<p>Premium foot bag — what everyone calls a hacky sack — built for dorm circles, campus quads, and every backpack that needs one.</p>',
     images: imgSrc
       ? [{ url: imgSrc, altText: shopifyProduct.featuredImage?.altText ?? `Good Kicks ${shopifyProduct.title}`, width: 800, height: 800 }]
       : [],
@@ -84,7 +84,7 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <ProductGallery images={product.images} productTitle={product.title} />
           <ProductDetail product={product} variants={product.variants} />

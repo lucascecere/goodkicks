@@ -17,7 +17,7 @@ export function SiteWrapper({ children }: { children: React.ReactNode }) {
   return (
     <CartProvider>
       <div className="bg-brand-ink text-white text-center py-2 px-4 text-xs tracking-wide">
-        free shipping on orders $65+ &nbsp;·&nbsp; hand-stitched in every bag
+        free shipping on orders $65+ &nbsp;·&nbsp; premium materials in every bag
       </div>
       <Header />
       <main id="main-content">{children}</main>

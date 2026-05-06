@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
+    <div className="max-w-3xl mx-auto px-6 sm:px-8 py-16 sm:py-24">
       <h1 className="font-display text-4xl sm:text-5xl text-brand-ink mb-4">privacy & terms.</h1>
       <p className="text-brand-muted mb-12">last updated May 2026</p>
 
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
           <h2 className="font-display text-2xl mb-3">terms of service</h2>
           <div className="space-y-3 text-brand-muted leading-relaxed">
             <p>By using goodkicks.co you agree to these terms. We reserve the right to refuse service or cancel orders at our discretion.</p>
-            <p>All products are sold as described. Colors may vary slightly from screen to screen due to monitor settings and the hand-stitched nature of our products.</p>
+            <p>All products are sold as described. Colors may vary slightly from screen to screen due to monitor settings.</p>
             <p>Good Kicks is not liable for any indirect, incidental, or consequential damages arising from use of our products or site.</p>
             <p>These terms are governed by the laws of the United States.</p>
           </div>

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function ShippingReturnsPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
+    <div className="max-w-3xl mx-auto px-6 sm:px-8 py-16 sm:py-24">
       <h1 className="font-display text-4xl sm:text-5xl text-brand-ink mb-4">shipping & returns.</h1>
       <p className="text-brand-muted mb-12">last updated May 2026</p>
 
@@ -18,7 +18,7 @@ export default function ShippingReturnsPage() {
         <section>
           <h2 className="font-display text-2xl mb-3">shipping</h2>
           <div className="space-y-3 text-brand-muted leading-relaxed">
-            <p>All Good Kicks foot bags are hand-stitched to order. Current processing time is <strong className="text-brand-ink">2–3 weeks</strong> from the date of purchase.</p>
+            <p>All Good Kicks foot bags are made to order. Current processing time is <strong className="text-brand-ink">2–3 weeks</strong> from the date of purchase.</p>
             <p>We ship via USPS First Class or Priority Mail depending on order size. Once shipped, domestic orders typically arrive within 3–7 business days.</p>
             <p>You'll receive a shipping confirmation email with tracking when your order leaves our hands.</p>
             <p>We currently ship within the <strong className="text-brand-ink">United States only</strong>. International shipping is not available at this time — check back soon.</p>
@@ -40,7 +40,7 @@ export default function ShippingReturnsPage() {
         <section>
           <h2 className="font-display text-2xl mb-3">returns & exchanges</h2>
           <div className="space-y-3 text-brand-muted leading-relaxed">
-            <p>Because every sack is hand-stitched to order, <strong className="text-brand-ink">we do not accept returns for change of mind</strong>.</p>
+            <p>Because every sack is made to order, <strong className="text-brand-ink">we do not accept returns for change of mind</strong>.</p>
             <p>If your order arrives damaged, defective, or incorrect, email us at <a href="mailto:goodkicksfootbags@gmail.com" className="text-brand-rust underline">goodkicksfootbags@gmail.com</a> within 7 days of delivery with a photo and your order number. We'll make it right.</p>
             <p>Exchanges are handled case by case — reach out and we'll do our best.</p>
           </div>

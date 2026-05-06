@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
             </div>
             <p style="color:#6B6B6B;font-size:14px;margin:0 0 24px">enter this code at checkout on <a href="https://goodkicks.co" style="color:#C66A3D">goodkicks.co</a> — keep the circle going.</p>
             <hr style="border:none;border-top:1px solid #D9D2C2;margin:24px 0" />
-            <p style="color:#6B6B6B;font-size:12px;margin:0">Good Kicks Foot Bags · hand-stitched for every backpack that needs one.</p>
+            <p style="color:#6B6B6B;font-size:12px;margin:0">Good Kicks Foot Bags · built for every backpack that needs one.</p>
           </div>
         `,
       });

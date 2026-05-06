@@ -1,10 +1,15 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { getOrderSummary } from '@/lib/shopify/get-orders';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function fmtMoney(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(n);
 }
 
 function StatCard({ label, value, sub, href }: { label: string; value: number; sub: string; href?: string }) {
@@ -21,7 +26,7 @@ function StatCard({ label, value, sub, href }: { label: string; value: number; s
 export default async function AdminDashboardPage() {
   const supabase = createSupabaseServiceClient();
 
-  const [{ data: apps }, { data: contacts }] = await Promise.all([
+  const [{ data: apps }, { data: contacts }, orderSummary] = await Promise.all([
     supabase
       .from('ambassador_applications')
       .select('id, name, email, instagram, status, approved, created_at')
@@ -30,6 +35,7 @@ export default async function AdminDashboardPage() {
       .from('contact_submissions')
       .select('id, name, email, type, message, created_at')
       .order('created_at', { ascending: false }),
+    getOrderSummary(),
   ]);
 
   const allApps = apps ?? [];
@@ -63,7 +69,7 @@ export default async function AdminDashboardPage() {
     <div className="p-8 max-w-5xl space-y-10">
       {/* Header */}
       <div>
-        <h1 className="font-display text-3xl text-white">Dashboard</h1>
+        <h1 className="text-xl font-semibold text-white">Dashboard</h1>
         <p className="text-white/40 text-sm mt-1">good kicks admin overview</p>
       </div>
 
@@ -93,6 +99,48 @@ export default async function AdminDashboardPage() {
           sub="form submissions"
           href="/admin/contacts"
         />
+      </div>
+
+      {/* Orders */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Orders</h2>
+          <a href="https://admin.shopify.com/store/good-kicks-foot-bags-2/orders" target="_blank" rel="noopener noreferrer" className="text-xs text-white/40 hover:text-white transition-colors">manage in shopify →</a>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-white/8 border border-white/10 rounded-xl p-5">
+            <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Total Orders</p>
+            <p className="text-4xl font-bold text-white">{orderSummary.totalOrders}</p>
+          </div>
+          <div className="bg-white/8 border border-white/10 rounded-xl p-5">
+            <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Total Revenue</p>
+            <p className="text-4xl font-bold text-white">{fmtMoney(orderSummary.totalRevenue)}</p>
+          </div>
+          <div className="bg-white/8 border border-white/10 rounded-xl p-5">
+            <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Avg Order Value</p>
+            <p className="text-4xl font-bold text-white">{fmtMoney(orderSummary.avgOrderValue)}</p>
+          </div>
+        </div>
+        {orderSummary.orders.length > 0 && (
+          <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
+            <div className="divide-y divide-brand-rule">
+              {orderSummary.orders.slice(0, 8).map((o) => (
+                <div key={o.id} className="flex items-center justify-between px-5 py-3">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <p className="text-sm font-medium text-brand-ink">{o.name}</p>
+                    {o.discountCode && (
+                      <span className="text-xs bg-brand-rule px-2 py-0.5 rounded text-brand-muted font-mono">{o.discountCode}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 shrink-0">
+                    <span className="text-xs text-brand-muted">{fmtDate(o.createdAt)}</span>
+                    <span className="text-sm font-medium text-brand-ink">{fmtMoney(o.total)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Contacts + Ambassadors panels */}

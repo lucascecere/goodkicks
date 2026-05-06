@@ -1,20 +1,3 @@
-const SHOPIFY_ADMIN_URL = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2024-10/graphql.json`;
-
-const ORDERS_BY_DISCOUNT_QUERY = `
-  query OrdersByDiscount($query: String!) {
-    orders(first: 250, query: $query, sortKey: CREATED_AT, reverse: true) {
-      nodes {
-        id
-        name
-        totalPriceSet { shopMoney { amount } }
-        createdAt
-        discountCodes
-      }
-      pageInfo { hasNextPage }
-    }
-  }
-`;
-
 export type AmbassadorOrder = {
   id: string;
   name: string;
@@ -30,44 +13,49 @@ export type AmbassadorStats = {
   hasMore: boolean;
 };
 
+type ShopifyRestOrder = {
+  id: number;
+  name: string;
+  total_price: string;
+  created_at: string;
+  discount_codes: { code: string; amount: string; type: string }[];
+};
+
 export async function getAmbassadorStats(
   discountCode: string,
   tierPct: number
 ): Promise<AmbassadorStats> {
-  if (!process.env.SHOPIFY_ADMIN_API_TOKEN) {
+  if (!process.env.SHOPIFY_ADMIN_API_TOKEN || !process.env.SHOPIFY_STORE_DOMAIN) {
     return { orders: [], totalOrders: 0, totalRevenue: 0, commissionEarned: 0, hasMore: false };
   }
 
-  const res = await fetch(SHOPIFY_ADMIN_URL, {
-    method: 'POST',
+  const url = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2024-10/orders.json?discount_code=${encodeURIComponent(discountCode)}&status=any&limit=250`;
+
+  const res = await fetch(url, {
     headers: {
-      'Content-Type': 'application/json',
       'X-Shopify-Access-Token': process.env.SHOPIFY_ADMIN_API_TOKEN,
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      query: ORDERS_BY_DISCOUNT_QUERY,
-      variables: { query: `discount_code:${discountCode} status:any` },
-    }),
-    next: { revalidate: 300 }, // cache 5 min
+    next: { revalidate: 300 },
   });
 
-  const json = await res.json() as {
-    data?: {
-      orders?: {
-        nodes: { id: string; name: string; totalPriceSet: { shopMoney: { amount: string } }; createdAt: string; discountCodes: string[] }[];
-        pageInfo: { hasNextPage: boolean };
-      };
-    };
-  };
+  if (!res.ok) {
+    console.error('[ambassador-stats] Shopify REST error', res.status, await res.text());
+    return { orders: [], totalOrders: 0, totalRevenue: 0, commissionEarned: 0, hasMore: false };
+  }
 
-  const nodes = json.data?.orders?.nodes ?? [];
-  const hasMore = json.data?.orders?.pageInfo?.hasNextPage ?? false;
+  const json = await res.json() as { orders?: ShopifyRestOrder[] };
 
-  const orders: AmbassadorOrder[] = nodes.map((n) => ({
-    id: n.id,
-    name: n.name,
-    amount: parseFloat(n.totalPriceSet.shopMoney.amount),
-    createdAt: n.createdAt,
+  if (!json.orders) {
+    console.error('[ambassador-stats] unexpected response', JSON.stringify(json));
+    return { orders: [], totalOrders: 0, totalRevenue: 0, commissionEarned: 0, hasMore: false };
+  }
+
+  const orders: AmbassadorOrder[] = json.orders.map((o) => ({
+    id: String(o.id),
+    name: o.name,
+    amount: parseFloat(o.total_price),
+    createdAt: o.created_at,
   }));
 
   const totalRevenue = orders.reduce((sum, o) => sum + o.amount, 0);
@@ -78,6 +66,6 @@ export async function getAmbassadorStats(
     totalOrders: orders.length,
     totalRevenue,
     commissionEarned,
-    hasMore,
+    hasMore: orders.length === 250,
   };
 }

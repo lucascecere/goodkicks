@@ -52,7 +52,7 @@ export default async function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <div className="max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
+      <div className="max-w-2xl mx-auto px-6 sm:px-8 py-16 sm:py-24">
         <Link href="/blog" className="text-brand-muted hover:text-brand-ink text-sm mb-8 inline-block transition-colors">
           ← all posts
         </Link>
