@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import { COLORWAYS } from './colorways-data';
 
 interface ColorWheelProps {
@@ -14,8 +13,10 @@ interface ColorWheelProps {
 export function ColorWheel({ size = 300, showLabel = true, bgColor = '#EFE8DA' }: ColorWheelProps) {
   const [selected, setSelected] = useState(0);
   const current = COLORWAYS[selected];
-  const radius = size * 0.393;
-  const ballSize = size * 0.62;
+
+  // Increased radius so dots sit further from the ball edge
+  const radius = size * 0.46;
+  const ballSize = size * 0.58;
 
   function dotPosition(i: number) {
     const angle = (i / COLORWAYS.length) * 2 * Math.PI - Math.PI / 2;
@@ -28,27 +29,29 @@ export function ColorWheel({ size = 300, showLabel = true, bgColor = '#EFE8DA' }
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="relative" style={{ width: size, height: size }}>
-        {/* Ball centered */}
+
+        {/* All ball images rendered at once — only selected is visible.
+            This preloads every image so switching is instant with no flicker. */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="relative" style={{ width: ballSize, height: ballSize }}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selected}
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.85 }}
-                transition={{ duration: 0.22, ease: 'easeOut' }}
+            {COLORWAYS.map((colorway, i) => (
+              <div
+                key={colorway.name}
                 className="absolute inset-0"
+                style={{
+                  opacity: selected === i ? 1 : 0,
+                  transition: 'opacity 0.18s ease-out',
+                }}
               >
                 <Image
-                  src={current.image}
-                  alt={`Good Kicks ${current.name} colorway`}
+                  src={colorway.image}
+                  alt={`Good Kicks ${colorway.name} colorway`}
                   fill
                   className="object-contain drop-shadow-xl"
                   priority
                 />
-              </motion.div>
-            </AnimatePresence>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -56,7 +59,7 @@ export function ColorWheel({ size = 300, showLabel = true, bgColor = '#EFE8DA' }
         {COLORWAYS.map((colorway, i) => {
           const pos = dotPosition(i);
           const active = selected === i;
-          const dotSize = active ? Math.round(size * 0.147) : Math.round(size * 0.107);
+          const dotSize = active ? Math.round(size * 0.13) : Math.round(size * 0.095);
           return (
             <button
               key={colorway.name}
@@ -71,12 +74,11 @@ export function ColorWheel({ size = 300, showLabel = true, bgColor = '#EFE8DA' }
                 height: dotSize,
                 backgroundColor: colorway.color,
                 borderRadius: '50%',
-                // ring-offset colour matches the section background
-                outline: active ? `3px solid #1a1a2e` : 'none',
+                outline: active ? `3px solid ${colorway.color}` : 'none',
                 outlineOffset: active ? '3px' : '0',
-                boxShadow: active ? `0 0 0 3px ${bgColor}` : 'none',
+                boxShadow: active ? `0 0 0 6px ${bgColor}` : 'none',
               }}
-              className={`transition-all duration-200 ${active ? 'shadow-lg' : 'opacity-60 hover:opacity-100 hover:scale-110'}`}
+              className={`transition-all duration-200 ${active ? 'shadow-lg' : 'opacity-50 hover:opacity-90 hover:scale-110'}`}
             />
           );
         })}

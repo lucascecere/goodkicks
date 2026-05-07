@@ -105,7 +105,7 @@ export default async function ShopPage() {
         </div>
 
         <p className="text-center text-brand-muted text-sm mt-10">
-          free shipping on orders $65+ &nbsp;·&nbsp; ships in 1–2 weeks
+          free shipping on orders $65+ &nbsp;·&nbsp; ships in 2–3 weeks
         </p>
       </div>
     </div>

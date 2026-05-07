@@ -64,8 +64,8 @@ export function CartDrawer() {
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-3">
-                  <div className="relative w-28 h-14">
-                    <Image src="/brand/logo-black.png" alt="Good Kicks" fill className="object-contain" />
+                  <div className="relative w-28 h-20">
+                    <Image src="/brand/logo.png" alt="Good Kicks" fill className="object-contain" />
                   </div>
                   <p className="text-brand-muted text-sm">your bag is empty.</p>
                   <Link href="/shop" onClick={closeCart} className="text-brand-rust hover:underline text-sm">find your kick →</Link>

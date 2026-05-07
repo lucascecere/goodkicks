@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
           <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#1C1917">
             <h2 style="font-size:24px;margin-bottom:8px">order confirmed. ✌️</h2>
             <p>Hey ${name}, thanks for keeping the circle going.</p>
-            <p>Your foot bag ships in <strong>1–2 business days</strong> from NH. You'll get another email with your tracking number when it's on the way.</p>
+            <p>Your foot bag ships in <strong>2–3 weeks</strong> from NH. You'll get another email with your tracking number when it's on the way.</p>
             <p style="font-size:18px;font-weight:bold;margin-top:24px">Order total: ${total}</p>
             <hr style="border:none;border-top:1px solid #E5DDD0;margin:24px 0" />
             <p style="color:#78716C;font-size:14px">Questions? Reply to this email or visit <a href="https://goodkicks.co/contact" style="color:#C0541A">goodkicks.co/contact</a></p>

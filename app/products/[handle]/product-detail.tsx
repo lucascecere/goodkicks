@@ -19,7 +19,7 @@ const FAQ_ITEMS = [
   { question: 'How big is it? Will it fit in my bag?', answer: 'About 2.25 inches in diameter — small enough to slip in any pocket or backpack pouch.' },
   { question: 'Is it durable? How long will it last?', answer: 'Premium construction means it holds up well to regular use. Most circles get months to years out of one.' },
   { question: 'Can I wash it?', answer: "Spot clean only — hand wash with mild soap, air dry. The pellet fill doesn't love full submersion." },
-  { question: 'How fast does it ship?', answer: 'Orders ship in 1–2 weeks. This is a pre-order — we appreciate your patience while we get the first batch out.' },
+  { question: 'How fast does it ship?', answer: 'Orders ship in 2–3 weeks. We appreciate your patience while we get your order out.' },
   { question: "What if I don't like it?", answer: "Reach out within 30 days. We'll make it right — that's the whole deal." },
 ];
 
