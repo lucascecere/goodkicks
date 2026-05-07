@@ -44,8 +44,7 @@ export function ColorWheel({ size = 300, showLabel = true, bgColor = '#EFE8DA' }
                   src={current.image}
                   alt={`Good Kicks ${current.name} colorway`}
                   fill
-                  className="object-contain"
-                  style={{ mixBlendMode: 'multiply' }}
+                  className="object-contain drop-shadow-xl"
                   priority
                 />
               </motion.div>
