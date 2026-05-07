@@ -9,6 +9,7 @@ here's your personal discount code:
 use it yourself or share it with your circle — everyone who uses it gets {{tier_pct}}% off, and you earn credit toward your next sack.
 
 a few things to know:
+- add this to your instagram bio: "@goodkicksco ambassador | use code '{{discount_code}}'"
 - post your sack in action and tag @goodkicksco
 - use #goodkicks so we can find and repost your content
 - reply to this email anytime with questions

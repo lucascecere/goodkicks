@@ -18,7 +18,9 @@ these aren't optional — they're how the program works:
    your discount code link lives in your bio. always. that's your storefront.
 
 2. code in bio
-   your discount code is pinned in your bio too. make it dead simple for people to find it.
+   add this exact line to your instagram bio:
+   "@goodkicksco ambassador | use code '{{discount_code}}'"
+   make it dead simple for people to find it.
 
 3. mentioned in every video
    every time you post something related to the sack, give us a shoutout. it doesn't have to be a dedicated video — just a mention, a tag, a caption. stay consistent.
@@ -42,7 +44,7 @@ you move up automatically as your numbers grow.
 ━━━ HOW TO GET STARTED ━━━
 
 1. drop your code link in your bio today
-2. pin your code in your bio description
+2. add this to your instagram bio: "@goodkicksco ambassador | use code '{{discount_code}}'"
 3. post your sack when it arrives and tag @goodkicksco
 4. use #goodkicks so we can find and repost your content
 5. mention us every time you post — keep it natural, keep it consistent
