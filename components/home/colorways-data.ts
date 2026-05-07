@@ -1,8 +1,8 @@
 export const COLORWAYS = [
-  { name: 'georgia',    color: '#C15A3A', image: '/brand/ball_tennessee.png'  },
-  { name: 'nevada',     color: '#D4A84B', image: '/brand/ball_newmexico.png'  },
-  { name: 'colorado',   color: '#5BA4B4', image: '/brand/ball_montana.png'    },
-  { name: 'new york',   color: '#A89870', image: '/brand/ball_newyork.png'    },
-  { name: 'california', color: '#4A4848', image: '/brand/ball_california.png' },
-  { name: 'maine',      color: '#5A5E68', image: '/brand/ball_maine.png'      },
+  { name: 'maine',      color: '#5B78C0', image: '/brand/sack_maine.png'      },
+  { name: 'california', color: '#C89030', image: '/brand/sack_california.png' },
+  { name: 'montana',    color: '#6B9FC8', image: '/brand/sack_montana.png'    },
+  { name: 'new york',   color: '#7A1E2C', image: '/brand/sack_newyork.png'    },
+  { name: 'new mexico', color: '#8BAA82', image: '/brand/sack_newmexico.png'  },
+  { name: 'tennessee',  color: '#D95820', image: '/brand/sack_tennessee.png'  },
 ];

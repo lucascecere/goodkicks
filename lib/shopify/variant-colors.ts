@@ -1,17 +1,20 @@
 export const VARIANT_COLORS: Record<string, string> = {
-  'georgia':    '#C15A3A',
-  'maine':      '#5A5E68',
-  'colorado':   '#5BA4B4',
-  'new york':   '#A89870',
-  'nevada':     '#D4A84B',
-  'california': '#4A4848',
+  'maine':      '#5B78C0',
+  'california': '#C89030',
+  'montana':    '#6B9FC8',
+  'new york':   '#7A1E2C',
+  'new mexico': '#8BAA82',
+  'tennessee':  '#D95820',
   'default':    '#6B6B6B',
 };
 
 export const VARIANT_IMAGES: Record<string, string> = {
-  'maine':      '/brand/ball_maine.png',
-  'new york':   '/brand/ball_newyork.png',
-  'california': '/brand/ball_california.png',
+  'maine':      '/brand/sack_maine.png',
+  'california': '/brand/sack_california.png',
+  'montana':    '/brand/sack_montana.png',
+  'new york':   '/brand/sack_newyork.png',
+  'new mexico': '/brand/sack_newmexico.png',
+  'tennessee':  '/brand/sack_tennessee.png',
 };
 
 function findStateKey(title: string, tags?: string[]): string | undefined {
