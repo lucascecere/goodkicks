@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
       const name = session.customer_details.name ?? 'friend';
       const total = formatCents(session.amount_total ?? 0);
       await resend.emails.send({
-        from: 'Good Kicks <orders@goodkicks.co>',
+        from: 'Good Kicks <info@goodkicks.co>',
         to: session.customer_details.email,
         subject: 'Your Good Kicks order is confirmed!',
         html: `

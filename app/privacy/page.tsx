@@ -60,7 +60,7 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="font-display text-2xl mb-3">contact</h2>
-          <p className="text-brand-muted">Questions about privacy or these terms? Email <a href="mailto:goodkicksfootbags@gmail.com" className="text-brand-rust underline">goodkicksfootbags@gmail.com</a>.</p>
+          <p className="text-brand-muted">Questions about privacy or these terms? Email <a href="mailto:info@goodkicks.co" className="text-brand-rust underline">info@goodkicks.co</a>.</p>
         </section>
 
       </div>

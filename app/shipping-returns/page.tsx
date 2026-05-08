@@ -41,7 +41,7 @@ export default function ShippingReturnsPage() {
           <h2 className="font-display text-2xl mb-3">returns & exchanges</h2>
           <div className="space-y-3 text-brand-muted leading-relaxed">
             <p>Because every sack is made to order, <strong className="text-brand-ink">we do not accept returns for change of mind</strong>.</p>
-            <p>If your order arrives damaged, defective, or incorrect, email us at <a href="mailto:goodkicksfootbags@gmail.com" className="text-brand-rust underline">goodkicksfootbags@gmail.com</a> within 7 days of delivery with a photo and your order number. We'll make it right.</p>
+            <p>If your order arrives damaged, defective, or incorrect, email us at <a href="mailto:info@goodkicks.co" className="text-brand-rust underline">info@goodkicks.co</a> within 7 days of delivery with a photo and your order number. We'll make it right.</p>
             <p>Exchanges are handled case by case — reach out and we'll do our best.</p>
           </div>
         </section>
@@ -60,7 +60,7 @@ export default function ShippingReturnsPage() {
 
         <section>
           <h2 className="font-display text-2xl mb-3">questions?</h2>
-          <p className="text-brand-muted">Email us at <a href="mailto:goodkicksfootbags@gmail.com" className="text-brand-rust underline">goodkicksfootbags@gmail.com</a> — we typically respond within 1–2 business days.</p>
+          <p className="text-brand-muted">Email us at <a href="mailto:info@goodkicks.co" className="text-brand-rust underline">info@goodkicks.co</a> — we typically respond within 1–2 business days.</p>
         </section>
 
       </div>

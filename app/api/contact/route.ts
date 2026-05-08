@@ -55,8 +55,8 @@ export async function POST(request: Request) {
           : `Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`;
 
         await resend.emails.send({
-          from: 'Good Kicks <orders@goodkicks.co>',
-          to: process.env.PARTNER_NOTIFICATION_EMAIL ?? 'goodkicksfootbags@gmail.com',
+          from: 'Good Kicks <info@goodkicks.co>',
+          to: process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co',
           replyTo: data.email,
           subject,
           text,

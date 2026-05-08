@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
-        from: 'Good Kicks <orders@goodkicks.co>',
+        from: 'Good Kicks <info@goodkicks.co>',
         to: email,
         subject: `your discount code: ${discountCode}`,
         html: `

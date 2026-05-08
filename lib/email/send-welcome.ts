@@ -83,9 +83,9 @@ export async function sendWelcomeEmail({
     .replace(/\{\{tier_pct\}\}/g, String(tierPct));
 
   await resend.emails.send({
-    from: 'Good Kicks <orders@goodkicks.co>',
+    from: 'Good Kicks <info@goodkicks.co>',
     to: safeEmail(email),
-    replyTo: 'goodkicksfootbags@gmail.com',
+    replyTo: 'info@goodkicks.co',
     subject: `welcome to the team, ${firstName}. ✌️`,
     text,
   });

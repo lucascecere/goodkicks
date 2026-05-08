@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
-        from: 'Good Kicks <orders@goodkicks.co>',
+        from: 'Good Kicks <info@goodkicks.co>',
         to: order.customer_email,
         subject: "Your Good Kicks is on the way! 🏐",
         html: `

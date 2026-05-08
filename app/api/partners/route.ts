@@ -25,11 +25,11 @@ export async function POST(req: NextRequest) {
 
   if (process.env.RESEND_API_KEY) {
     try {
-      const notifyEmail = process.env.PARTNER_NOTIFICATION_EMAIL ?? 'goodkicksfootbags@gmail.com';
+      const notifyEmail = process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co';
 
       // Notify the Good Kicks team
       await resend.emails.send({
-        from: 'Good Kicks <orders@goodkicks.co>',
+        from: 'Good Kicks <info@goodkicks.co>',
         to: notifyEmail,
         replyTo: email,
         subject: `New Ambassador Application — ${instagram} (${school})`,

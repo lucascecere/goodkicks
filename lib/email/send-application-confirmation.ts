@@ -23,9 +23,9 @@ export async function sendApplicationConfirmation({
   const text = TEMPLATE.replace(/\{\{first_name\}\}/g, firstName);
 
   await resend.emails.send({
-    from: 'Good Kicks <orders@goodkicks.co>',
+    from: 'Good Kicks <info@goodkicks.co>',
     to: safeEmail(email),
-    replyTo: 'goodkicksfootbags@gmail.com',
+    replyTo: 'info@goodkicks.co',
     subject: 'we got your application. ✌️',
     text,
   });

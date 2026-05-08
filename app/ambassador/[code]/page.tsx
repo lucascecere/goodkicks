@@ -145,7 +145,7 @@ export default async function AmbassadorStatsPage({ params }: { params: Promise<
         )}
 
         <p className="text-center text-brand-muted text-xs">
-          stats update every 5 minutes · <a href="mailto:goodkicksfootbags@gmail.com" className="hover:text-brand-ink transition-colors">questions?</a>
+          stats update every 5 minutes · <a href="mailto:info@goodkicks.co" className="hover:text-brand-ink transition-colors">questions?</a>
         </p>
       </div>
     </div>
