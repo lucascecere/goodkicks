@@ -58,12 +58,34 @@ function RightPanel({
   onUpdate: (id: string, fields: Partial<Ambassador>) => void;
   onDelete: (id: string) => void;
 }) {
+  const suggested = app.instagram?.replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '') + '15';
+  const [approveCode, setApproveCode] = useState(app.discount_code ?? suggested ?? '');
+  const [approving, setApproving] = useState(false);
+  const [approveErr, setApproveErr] = useState('');
   const [editCode, setEditCode] = useState(app.discount_code ?? '');
   const [editTier, setEditTier] = useState(app.tier_pct ?? 8);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  async function handleApprove() {
+    if (!approveCode.trim()) { setApproveErr('enter the discount code first'); return; }
+    setApproving(true);
+    setApproveErr('');
+    const res = await fetch('/api/admin/approve-ambassador', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ applicationId: app.id, discountCode: approveCode.trim().toUpperCase(), tierPct: 8 }),
+    });
+    setApproving(false);
+    if (res.ok) {
+      onUpdate(app.id, { approved: true, status: 'approved', discount_code: approveCode.trim().toUpperCase(), tier_pct: 8 });
+    } else {
+      const json = await res.json().catch(() => ({}));
+      setApproveErr(json.error ?? 'something went wrong');
+    }
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -145,15 +167,27 @@ function RightPanel({
         )}
       </div>
 
-      {/* Approve CTA — only shown for pending */}
+      {/* Approve flow — only shown for pending */}
       {!app.approved && app.status !== 'rejected' && (
-        <div className="p-5 border-b border-brand-rule">
-          <Link
-            href={`/admin/ambassadors/${app.id}`}
-            className="block w-full text-center bg-brand-rust text-white rounded-lg px-4 py-3 text-sm font-medium hover:bg-brand-rust/90 transition-colors"
+        <div className="p-5 border-b border-brand-rule space-y-3">
+          <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Approve Ambassador</p>
+          <div>
+            <label className="text-xs text-brand-muted block mb-1">Discount code (create in Shopify first)</label>
+            <input
+              value={approveCode}
+              onChange={(e) => setApproveCode(e.target.value.toUpperCase())}
+              placeholder="e.g. JOHNDOE15"
+              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+            />
+          </div>
+          {approveErr && <p className="text-xs text-red-500">{approveErr}</p>}
+          <button
+            onClick={handleApprove}
+            disabled={approving}
+            className="w-full bg-brand-rust text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-brand-rust/90 transition-colors disabled:opacity-50"
           >
-            approve & send welcome email →
-          </Link>
+            {approving ? 'sending…' : 'approve & send welcome email'}
+          </button>
         </div>
       )}
 
