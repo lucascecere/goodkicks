@@ -36,7 +36,7 @@ export async function getOrderSummary(): Promise<OrderSummary> {
       'X-Shopify-Access-Token': process.env.SHOPIFY_ADMIN_API_TOKEN,
       'Content-Type': 'application/json',
     },
-    next: { revalidate: 300 },
+    cache: 'no-store',
   });
 
   if (!res.ok) {
