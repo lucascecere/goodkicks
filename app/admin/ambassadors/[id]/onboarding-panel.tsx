@@ -16,12 +16,8 @@ interface App {
   welcome_email_sent_at: string | null;
 }
 
-const TIERS = [
-  { pct: 8,  label: '8% — Starter'  },
-  { pct: 12, label: '12% — Repping' },
-  { pct: 16, label: '16% — Repping+' },
-  { pct: 20, label: '20% — Anchor'  },
-];
+const STARTER_COMMISSION = 8;
+const STARTER_DISCOUNT   = 15;
 
 const EMAIL_TEMPLATE = `hey {{first_name}}, welcome to the Good Kicks team. ✌️
 
@@ -31,7 +27,7 @@ you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way 
 your discount code: {{discount_code}}
 ────────────────────────
 
-share this code with anyone. every time someone uses it, they get {{tier_pct}}% off and you earn commission. the more you push it, the more you earn.
+share this code with anyone. every time someone uses it, they get {{discount_pct}}% off — and you earn {{commission_pct}}% commission on every order. the more you push it, the more you earn.
 
 ━━━ THE THREE REQUIREMENTS ━━━
 
@@ -58,9 +54,9 @@ goodkicks.co/ambassador/{{discount_code_lower}}
 
 your tier is based on total sales driven through your code:
 
-  starter  → 0–10 orders    → {{tier_pct}}% commission
-  repping  → 11–30 orders   → 12% commission
-  anchor   → 31+ orders     → 20% commission + exclusive drops
+  starter  → 0–10 orders    → 8% commission  (your code gives followers 15% off)
+  repping  → 11–30 orders   → 12% commission (code bumps to 20% off)
+  anchor   → 31+ orders     → 20% commission (code bumps to 25% off)
 
 you move up automatically as your numbers grow.
 
@@ -85,13 +81,13 @@ function renderEmail(app: App): string {
   const firstName = app.name.split(' ')[0];
   const code = app.discount_code ?? '';
   const colorway = app.colorway_preference ?? 'your choice';
-  const tierPct = app.tier_pct;
   return EMAIL_TEMPLATE
     .replace(/\{\{first_name\}\}/g, firstName)
     .replace(/\{\{discount_code\}\}/g, code)
     .replace(/\{\{discount_code_lower\}\}/g, code.toLowerCase())
     .replace(/\{\{colorway\}\}/g, colorway)
-    .replace(/\{\{tier_pct\}\}/g, String(tierPct));
+    .replace(/\{\{discount_pct\}\}/g, String(STARTER_DISCOUNT))
+    .replace(/\{\{commission_pct\}\}/g, String(STARTER_COMMISSION));
 }
 
 function fmtDateTime(iso: string) {
@@ -118,7 +114,6 @@ export function OnboardingPanel({ app }: { app: App }) {
   const router = useRouter();
   const suggested = app.instagram.replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '') + '15';
   const [code, setCode] = useState(app.discount_code ?? suggested);
-  const [tierPct, setTierPct] = useState(8);
   const [step, setStep] = useState<'idle' | 'loading' | 'error'>('idle');
   const [err, setErr] = useState('');
   const [rejecting, setRejecting] = useState(false);
@@ -136,7 +131,7 @@ export function OnboardingPanel({ app }: { app: App }) {
     const res = await fetch('/api/admin/approve-ambassador', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ applicationId: app.id, discountCode: code.trim().toUpperCase(), tierPct }),
+      body: JSON.stringify({ applicationId: app.id, discountCode: code.trim().toUpperCase(), tierPct: STARTER_COMMISSION }),
     });
     if (res.ok) {
       router.refresh();
@@ -284,7 +279,7 @@ export function OnboardingPanel({ app }: { app: App }) {
 
       <div className="space-y-3">
         <Step n={1} label="Create discount code in Shopify" />
-        <Step n={2} label="Enter code + tier below" />
+        <Step n={2} label="Enter discount code below" />
         <Step n={3} label="Send welcome email" />
       </div>
 
@@ -305,19 +300,9 @@ export function OnboardingPanel({ app }: { app: App }) {
               className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
             />
           </div>
-
-          <div>
-            <label className="text-xs text-brand-muted block mb-1">Commission tier</label>
-            <select
-              value={tierPct}
-              onChange={(e) => setTierPct(Number(e.target.value))}
-              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
-            >
-              {TIERS.map((t) => (
-                <option key={t.pct} value={t.pct}>{t.label}</option>
-              ))}
-            </select>
-          </div>
+          <p className="text-[11px] text-brand-muted">
+            All new ambassadors start at <strong>Starter tier</strong> — 15% customer discount, 8% commission. Tier advances automatically based on order count.
+          </p>
         </div>
 
         {err && <p className="text-sm text-red-500">{err}</p>}

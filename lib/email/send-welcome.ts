@@ -8,7 +8,7 @@ you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way 
 your discount code: {{discount_code}}
 ────────────────────────
 
-share this code with anyone. every time someone uses it, they get {{tier_pct}}% off and you earn commission. the more you push it, the more you earn.
+share this code with anyone. every time someone uses it, they get 15% off — and you earn 8% commission on every order. the more you push it, the more you earn.
 
 ━━━ THE THREE REQUIREMENTS ━━━
 
@@ -35,9 +35,9 @@ goodkicks.co/ambassador/{{discount_code_lower}}
 
 your tier is based on total sales driven through your code:
 
-  starter  → 0–10 orders    → {{tier_pct}}% commission
-  repping  → 11–30 orders   → 12% commission
-  anchor   → 31+ orders     → 20% commission + exclusive drops
+  starter  → 0–10 orders    → 8% commission  (your code: 15% off for followers)
+  repping  → 11–30 orders   → 12% commission (code bumps to 20% off)
+  anchor   → 31+ orders     → 20% commission (code bumps to 25% off)
 
 you move up automatically as your numbers grow.
 
@@ -79,8 +79,7 @@ export async function sendWelcomeEmail({
     .replace(/\{\{first_name\}\}/g, firstName)
     .replace(/\{\{discount_code\}\}/g, discountCode)
     .replace(/\{\{discount_code_lower\}\}/g, discountCode.toLowerCase())
-    .replace(/\{\{colorway\}\}/g, colorway)
-    .replace(/\{\{tier_pct\}\}/g, String(tierPct));
+    .replace(/\{\{colorway\}\}/g, colorway);
 
   await resend.emails.send({
     from: 'Good Kicks <info@goodkicks.co>',
