@@ -1,7 +1,7 @@
 const faqs = [
   {
     question: "What is a foot bag?",
-    answer: "A foot bag is a small bag filled with plastic pellets, designed to be kept in the air using only your feet and body — no hands. It's the same thing most people call a 'hacky sack.'"
+    answer: "A foot bag is a small sand-filled bag designed to be kept in the air using only your feet and body — no hands. It's the same thing most people call a 'hacky sack.'"
   },
   {
     question: "Is a foot bag the same thing as a hacky sack?",

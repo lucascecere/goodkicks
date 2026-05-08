@@ -82,7 +82,7 @@ export default function PartnersPage() {
             },
             {
               title: 'free starter sack.',
-              body: 'approved ambassadors get a free sack shipped to them in your colorway of choice — so you can post with the real product in hand. hit the repping tier and we send 2 more, plus monthly resupply if you stay active.',
+              body: 'approved ambassadors get a free sack shipped to them in your colorway of choice — so you can post with the real product in hand. level up and we keep the product coming.',
             },
           ].map((item) => (
             <div key={item.title} className="bg-brand-cream rounded-xl p-8 space-y-3 border border-brand-rule">
@@ -108,11 +108,11 @@ export default function PartnersPage() {
               },
               {
                 tier: 'repping.',
-                body: 'hit 5+ tagged posts or 5+ code redemptions. bumps your code to 20% off, your commission to 12%, plus 2 more sacks and monthly resupply.',
+                body: 'hit 5+ tagged posts or 5+ code redemptions. bumps your code to 20% off, your commission to 12%, plus more product sent your way.',
               },
               {
                 tier: 'anchor.',
-                body: 'hit 15+ posts or 25+ redemptions. 25% off code, 20% commission, 6 more sacks, and a shot at a custom-colorway named partnership.',
+                body: 'hit 15+ posts or 25+ redemptions. 25% off code, 20% commission, ongoing product support, and a shot at a custom-colorway named partnership.',
               },
             ].map((item) => (
               <div key={item.tier} className="bg-[#EFE8DA] rounded-xl p-8 space-y-3 border border-brand-rule">

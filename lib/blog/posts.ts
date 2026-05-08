@@ -215,7 +215,7 @@ export const blogPosts: BlogPost[] = [
 
 <p>For most beginners: a <strong>32-panel, hand-stitched foot bag, around 60 grams, in the $12–20 range</strong>. That's the sweet spot. It's round, predictable, durable, and won't frustrate you into quitting.</p>
 
-<p>If you want to skip the breakdown and just get one: <a href="/">Good Kicks sells exactly this</a> — quality pellet fill, built to last.</p>
+<p>If you want to skip the breakdown and just get one: <a href="/">Good Kicks sells exactly this</a> — sand fill, built to last.</p>
 
 <h2>The $5 Bag Problem</h2>
 
@@ -273,7 +273,7 @@ export const blogPosts: BlogPost[] = [
 
 <h2>Our Pick for 2025</h2>
 
-<p>We're biased — we sell foot bags. But we built Good Kicks specifically because we couldn't find a beginner bag that hit all the marks: 32 panels, proper pellet fill, correct weight, fair price. So we made one.</p>
+<p>We're biased — we sell foot bags. But we built Good Kicks specifically because we couldn't find a beginner bag that hit all the marks: 32 panels, proper sand fill, correct weight, fair price. So we made one.</p>
 
 <p><a href="/">Browse the Good Kicks collection here.</a> If it doesn't match the specs above, we'll say so.</p>
 `,
@@ -640,7 +640,7 @@ export const blogPosts: BlogPost[] = [
 <h2>The Bottom Line</h2>
 <p>For circle play and general use: more panels equals a better-playing bag, full stop. The roundness advantage is real and affects every single kick. The price difference between a 6-panel and a 32-panel bag at quality manufacturers is minimal. There's no reason to buy fewer panels.</p>
 
-<p>Good Kicks bags are 32-panel with plastic pellet fill — the standard for quality play. <a href="/shop">Shop the collection →</a></p>
+<p>Good Kicks bags are 32-panel with sand fill — the standard for quality play. <a href="/shop">Shop the collection →</a></p>
 `,
   },
   {
@@ -727,7 +727,7 @@ export const blogPosts: BlogPost[] = [
 <p>The World Footbag Association governs competitive freestyle, with world championships held since the 1980s. Top freestyle players execute combinations that are genuinely hard to believe — multiple consecutive stalls on different body parts, spins mid-trick, delayed catches that seem to ignore physics.</p>
 
 <h2>The Equipment Difference</h2>
-<p>For circles: a standard 32-panel bag with plastic pellet fill, around 50g, roughly 2.25 inches. Predictable flight, durable, works for any skill level. This is what Good Kicks makes.</p>
+<p>For circles: a standard 32-panel bag with sand fill, around 50g, roughly 2.25 inches. Predictable flight, durable, works for any skill level. This is what Good Kicks makes.</p>
 <p>For freestyle: more variation by player preference. Some use smaller lighter bags for specific kicks, some prefer slightly heavier for stall control. Dedicated freestyle bags often have softer panels to allow the bag to "stick" during complex stalls.</p>
 
 <h2>Can You Do Both?</h2>

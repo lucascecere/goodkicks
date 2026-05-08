@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 
 type Ambassador = {
@@ -62,8 +62,14 @@ function RightPanel({
   const [approveCode, setApproveCode] = useState(app.discount_code ?? suggested ?? '');
   const [approving, setApproving] = useState(false);
   const [approveErr, setApproveErr] = useState('');
+  const [editEmail, setEditEmail] = useState(app.email ?? '');
   const [editCode, setEditCode] = useState(app.discount_code ?? '');
   const [editTier, setEditTier] = useState(app.tier_pct ?? 8);
+
+  useEffect(() => { setEditEmail(app.email ?? ''); }, [app.email]);
+  useEffect(() => { setEditCode(app.discount_code ?? ''); }, [app.discount_code]);
+  useEffect(() => { setEditTier(app.tier_pct ?? 8); }, [app.tier_pct]);
+
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -95,6 +101,7 @@ function RightPanel({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         applicationId: app.id,
+        email: editEmail.trim() || null,
         discount_code: editCode.trim().toUpperCase() || null,
         tier_pct: editTier,
       }),
@@ -102,7 +109,7 @@ function RightPanel({
     setSaving(false);
     if (res.ok) {
       setSaveMsg('saved');
-      onUpdate(app.id, { discount_code: editCode.trim().toUpperCase() || null, tier_pct: editTier });
+      onUpdate(app.id, { email: editEmail.trim() || app.email, discount_code: editCode.trim().toUpperCase() || null, tier_pct: editTier });
       setTimeout(() => setSaveMsg(''), 2000);
     } else {
       setSaveMsg('save failed');
@@ -211,6 +218,15 @@ function RightPanel({
       {app.approved && (
         <div className="p-5 space-y-3 border-b border-brand-rule">
           <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Discount & Commission</p>
+          <div>
+            <label className="text-xs text-brand-muted block mb-1">Email</label>
+            <input
+              value={editEmail}
+              onChange={(e) => setEditEmail(e.target.value)}
+              placeholder="email@example.com"
+              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+            />
+          </div>
           <div>
             <label className="text-xs text-brand-muted block mb-1">Discount Code</label>
             <input

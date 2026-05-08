@@ -24,18 +24,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen flex flex-col bg-[#1A1A1A]" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       {/* Mobile top bar */}
-      <div className="md:hidden bg-[#F0EAD9] flex items-center justify-between px-4 py-3 border-b border-[#D9D2C2]">
-        <div className="flex items-center gap-3">
+      <div className="md:hidden bg-[#F0EAD9] border-b border-[#D9D2C2]">
+        <div className="flex items-center justify-between px-4 py-3">
           <Image src="/brand/logo.png" alt="Good Kicks" width={36} height={36} style={{ height: '36px', width: 'auto' }} />
+          <button
+            onClick={handleLogout}
+            className="px-3 py-1.5 rounded-lg text-xs text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors"
+          >
+            Log out
+          </button>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex border-t border-[#D9D2C2]">
           {navItems.map((item) => {
             const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                className={`flex-1 text-center py-2.5 text-xs font-medium transition-colors ${
                   active ? 'bg-[#1A1A1A] text-white' : 'text-[#1A1A1A]/60 hover:text-[#1A1A1A]'
                 }`}
               >
@@ -43,12 +49,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </Link>
             );
           })}
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1.5 rounded-lg text-xs text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors"
-          >
-            Out
-          </button>
         </div>
       </div>
 
