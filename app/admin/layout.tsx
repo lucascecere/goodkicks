@@ -27,7 +27,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="md:hidden bg-[#F0EAD9] flex items-center justify-between px-4 py-3 border-b border-[#D9D2C2]">
         <div className="flex items-center gap-3">
           <Image src="/brand/logo.png" alt="Good Kicks" width={36} height={36} style={{ height: '36px', width: 'auto' }} />
-          <span className="text-[#6B6B6B] text-xs uppercase tracking-widest">admin</span>
         </div>
         <div className="flex items-center gap-1">
           {navItems.map((item) => {
