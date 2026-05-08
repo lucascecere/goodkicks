@@ -214,19 +214,37 @@ function RightPanel({
         )}
       </div>
 
+      {/* Email — always editable */}
+      <div className="p-5 space-y-2 border-b border-brand-rule">
+        <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Email</p>
+        <div className="flex items-center gap-2">
+          <input
+            value={editEmail}
+            onChange={(e) => setEditEmail(e.target.value)}
+            placeholder="email@example.com"
+            className="flex-1 border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+          />
+          <button
+            onClick={async () => {
+              if (!editEmail.trim()) return;
+              const res = await fetch('/api/admin/update-ambassador', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ applicationId: app.id, email: editEmail.trim() }),
+              });
+              if (res.ok) onUpdate(app.id, { email: editEmail.trim() });
+            }}
+            className="shrink-0 bg-brand-ink text-white rounded-lg px-3 py-2 text-xs font-medium hover:bg-brand-ink/90 transition-colors"
+          >
+            save
+          </button>
+        </div>
+      </div>
+
       {/* Edit code + tier */}
       {app.approved && (
         <div className="p-5 space-y-3 border-b border-brand-rule">
           <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Discount & Commission</p>
-          <div>
-            <label className="text-xs text-brand-muted block mb-1">Email</label>
-            <input
-              value={editEmail}
-              onChange={(e) => setEditEmail(e.target.value)}
-              placeholder="email@example.com"
-              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
-            />
-          </div>
           <div>
             <label className="text-xs text-brand-muted block mb-1">Discount Code</label>
             <input
