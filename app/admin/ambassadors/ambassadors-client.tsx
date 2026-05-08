@@ -145,6 +145,18 @@ function RightPanel({
         )}
       </div>
 
+      {/* Approve CTA — only shown for pending */}
+      {!app.approved && app.status !== 'rejected' && (
+        <div className="p-5 border-b border-brand-rule">
+          <Link
+            href={`/admin/ambassadors/${app.id}`}
+            className="block w-full text-center bg-brand-rust text-white rounded-lg px-4 py-3 text-sm font-medium hover:bg-brand-rust/90 transition-colors"
+          >
+            approve & send welcome email →
+          </Link>
+        </div>
+      )}
+
       {/* Details */}
       <div className="p-5 space-y-3 border-b border-brand-rule">
         <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Profile</p>
@@ -162,64 +174,59 @@ function RightPanel({
       </div>
 
       {/* Edit code + tier */}
-      <div className="p-5 space-y-3 border-b border-brand-rule">
-        <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Discount & Commission</p>
-        <div>
-          <label className="text-xs text-brand-muted block mb-1">Discount Code</label>
-          <input
-            value={editCode}
-            onChange={(e) => setEditCode(e.target.value.toUpperCase())}
-            placeholder="e.g. JOHNDOE15"
-            className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
-          />
-        </div>
-        <div>
-          <label className="text-xs text-brand-muted block mb-1">Commission Tier</label>
-          <select
-            value={editTier}
-            onChange={(e) => setEditTier(Number(e.target.value))}
-            className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
-          >
-            {TIERS.map((t) => <option key={t} value={t}>{t}%</option>)}
-          </select>
-        </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex-1 bg-brand-rust text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-rust/90 transition-colors disabled:opacity-50"
-          >
-            {saving ? 'saving…' : 'save changes'}
-          </button>
-          {saveMsg && (
-            <span className={`text-xs font-medium ${saveMsg === 'saved' ? 'text-green-600' : 'text-red-500'}`}>
-              {saveMsg}
-            </span>
+      {app.approved && (
+        <div className="p-5 space-y-3 border-b border-brand-rule">
+          <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Discount & Commission</p>
+          <div>
+            <label className="text-xs text-brand-muted block mb-1">Discount Code</label>
+            <input
+              value={editCode}
+              onChange={(e) => setEditCode(e.target.value.toUpperCase())}
+              placeholder="e.g. JOHNDOE15"
+              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-brand-muted block mb-1">Commission Tier</label>
+            <select
+              value={editTier}
+              onChange={(e) => setEditTier(Number(e.target.value))}
+              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+            >
+              {TIERS.map((t) => <option key={t} value={t}>{t}%</option>)}
+            </select>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 bg-brand-ink text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-ink/90 transition-colors disabled:opacity-50"
+            >
+              {saving ? 'saving…' : 'update code & commission'}
+            </button>
+            {saveMsg && (
+              <span className={`text-xs font-medium ${saveMsg === 'saved' ? 'text-green-600' : 'text-red-500'}`}>
+                {saveMsg}
+              </span>
+            )}
+          </div>
+          {app.discount_code && (
+            <a
+              href={`/ambassador/${app.discount_code.toLowerCase()}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-brand-rust hover:underline block"
+            >
+              view stats page →
+            </a>
           )}
         </div>
-        {app.discount_code && (
-          <a
-            href={`/ambassador/${app.discount_code.toLowerCase()}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-brand-rust hover:underline block"
-          >
-            view stats page →
-          </a>
-        )}
-      </div>
+      )}
 
       {/* Status controls */}
       <div className="p-5 space-y-3 border-b border-brand-rule">
         <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Change Status</p>
         <div className="flex gap-2">
-          <button
-            onClick={() => handleStatusChange('approved')}
-            disabled={app.approved}
-            className="flex-1 text-xs py-2 rounded-lg border border-green-200 text-green-700 hover:bg-green-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            approve
-          </button>
           <button
             onClick={() => handleStatusChange('pending')}
             disabled={!app.approved && app.status !== 'rejected'}
@@ -350,7 +357,7 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden gap-0">
       {/* Left — list */}
-      <div className="flex flex-col w-full lg:w-4/5 shrink-0 overflow-hidden">
+      <div className="flex flex-col w-full lg:w-3/5 shrink-0 overflow-hidden">
         {/* Header */}
         <div className="px-6 pt-6 pb-4 shrink-0">
           <h1 className="font-display text-2xl text-white mb-1">Ambassadors</h1>
@@ -425,7 +432,7 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
       </div>
 
       {/* Right — management panel */}
-      <div className="hidden lg:flex lg:w-1/5 shrink-0 overflow-hidden border-l border-white/10">
+      <div className="hidden lg:flex lg:w-2/5 shrink-0 overflow-hidden border-l border-white/10">
         <div className="flex-1 bg-white rounded-xl m-4 overflow-hidden shadow-sm">
           {selected ? (
             <RightPanel
