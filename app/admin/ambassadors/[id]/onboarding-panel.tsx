@@ -12,15 +12,94 @@ interface App {
   approved: boolean;
   status: string | null;
   discount_code: string | null;
+  tier_pct: number;
+  welcome_email_sent_at: string | null;
 }
 
 const TIERS = [
-  { pct: 10, label: '10% — Starter' },
-  { pct: 15, label: '15% — Starter+' },
-  { pct: 20, label: '20% — Repping' },
-  { pct: 25, label: '25% — Repping+' },
-  { pct: 30, label: '30% — Anchor' },
+  { pct: 8,  label: '8% — Starter'  },
+  { pct: 12, label: '12% — Repping' },
+  { pct: 16, label: '16% — Repping+' },
+  { pct: 20, label: '20% — Anchor'  },
 ];
+
+const EMAIL_TEMPLATE = `hey {{first_name}}, welcome to the Good Kicks team. ✌️
+
+you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way — no cost to you, that's your starter kit.
+
+────────────────────────
+your discount code: {{discount_code}}
+────────────────────────
+
+share this code with anyone. every time someone uses it, they get {{tier_pct}}% off and you earn commission. the more you push it, the more you earn.
+
+━━━ THE THREE REQUIREMENTS ━━━
+
+these aren't optional — they're how the program works:
+
+1. link in bio
+   your discount code link lives in your bio. always. that's your storefront.
+
+2. code in bio
+   add this exact line to your instagram bio:
+   "@goodkicksco ambassador | use code '{{discount_code}}'"
+   make it dead simple for people to find it.
+
+3. mentioned in every video
+   every time you post something related to the sack, give us a shoutout. it doesn't have to be a dedicated video — just a mention, a tag, a caption. stay consistent.
+
+━━━ YOUR STATS PAGE ━━━
+
+bookmark this link — it's your personal dashboard showing every order driven by your code, total revenue, and commission earned in real time:
+
+goodkicks.co/ambassador/{{discount_code_lower}}
+
+━━━ HOW YOU GROW ━━━
+
+your tier is based on total sales driven through your code:
+
+  starter  → 0–10 orders    → {{tier_pct}}% commission
+  repping  → 11–30 orders   → 12% commission
+  anchor   → 31+ orders     → 20% commission + exclusive drops
+
+you move up automatically as your numbers grow.
+
+━━━ HOW TO GET STARTED ━━━
+
+1. drop your code link in your bio today
+2. add this to your instagram bio: "@goodkicksco ambassador | use code '{{discount_code}}'"
+3. post your sack when it arrives and tag @goodkicksco
+4. use #goodkicks so we can find and repost your content
+5. mention us every time you post — keep it natural, keep it consistent
+
+that's it. no complicated rules. just keep the circle going.
+
+questions? just reply to this email — we check it.
+
+make the circle bigger.
+
+— The Good Kicks Team
+goodkicks.co | @goodkicksco`;
+
+function renderEmail(app: App): string {
+  const firstName = app.name.split(' ')[0];
+  const code = app.discount_code ?? '';
+  const colorway = app.colorway_preference ?? 'your choice';
+  const tierPct = app.tier_pct;
+  return EMAIL_TEMPLATE
+    .replace(/\{\{first_name\}\}/g, firstName)
+    .replace(/\{\{discount_code\}\}/g, code)
+    .replace(/\{\{discount_code_lower\}\}/g, code.toLowerCase())
+    .replace(/\{\{colorway\}\}/g, colorway)
+    .replace(/\{\{tier_pct\}\}/g, String(tierPct));
+}
+
+function fmtDateTime(iso: string) {
+  return new Date(iso).toLocaleString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit',
+  });
+}
 
 function Step({ n, label, done }: { n: number; label: string; done?: boolean }) {
   return (
@@ -39,10 +118,13 @@ export function OnboardingPanel({ app }: { app: App }) {
   const router = useRouter();
   const suggested = app.instagram.replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '') + '15';
   const [code, setCode] = useState(app.discount_code ?? suggested);
-  const [tierPct, setTierPct] = useState(15);
+  const [tierPct, setTierPct] = useState(8);
   const [step, setStep] = useState<'idle' | 'loading' | 'error'>('idle');
   const [err, setErr] = useState('');
   const [rejecting, setRejecting] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendMsg, setResendMsg] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
   const isApproved = app.approved;
   const isRejected = app.status === 'rejected';
@@ -79,7 +161,33 @@ export function OnboardingPanel({ app }: { app: App }) {
     }
   }
 
+  async function handleResend() {
+    setResending(true);
+    setResendMsg('');
+    const firstName = app.name.split(' ')[0];
+    const res = await fetch('/api/admin/send-welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        applicationId: app.id,
+        firstName,
+        email: app.email,
+        discountCode: app.discount_code,
+        colorway: app.colorway_preference ?? 'your choice',
+        tierPct: app.tier_pct,
+      }),
+    });
+    setResending(false);
+    if (res.ok) {
+      setResendMsg('email sent!');
+      router.refresh();
+    } else {
+      setResendMsg('send failed — check Resend logs.');
+    }
+  }
+
   if (isApproved) {
+    const emailText = renderEmail(app);
     return (
       <div className="bg-white rounded-xl p-6 space-y-5">
         <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Onboarding Status</h2>
@@ -88,6 +196,54 @@ export function OnboardingPanel({ app }: { app: App }) {
           <Step n={1} label="Shopify discount code created" done />
           <Step n={2} label="Welcome email sent" done />
           <Step n={3} label="Ambassador onboarded" done />
+        </div>
+
+        {/* Email delivery status */}
+        <div className="border border-brand-rule rounded-lg p-4 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs text-brand-muted uppercase tracking-wide mb-0.5">Welcome Email</p>
+              {app.welcome_email_sent_at ? (
+                <p className="text-sm text-green-700 font-medium">
+                  sent {fmtDateTime(app.welcome_email_sent_at)}
+                </p>
+              ) : (
+                <p className="text-sm text-amber-600 font-medium">no send record found</p>
+              )}
+            </div>
+            <button
+              onClick={handleResend}
+              disabled={resending}
+              className="shrink-0 text-xs border border-brand-rule rounded-lg px-3 py-1.5 text-brand-ink hover:bg-brand-rule/30 transition-colors disabled:opacity-50"
+            >
+              {resending ? 'sending…' : 'resend email'}
+            </button>
+          </div>
+          {resendMsg && (
+            <p className={`text-xs font-medium ${resendMsg.includes('failed') ? 'text-red-500' : 'text-green-600'}`}>
+              {resendMsg}
+            </p>
+          )}
+        </div>
+
+        {/* Email preview */}
+        <div>
+          <button
+            onClick={() => setShowPreview((v) => !v)}
+            className="text-xs text-brand-rust hover:underline"
+          >
+            {showPreview ? 'hide email preview ↑' : 'preview email ↓'}
+          </button>
+          {showPreview && (
+            <div className="mt-3 bg-brand-rule/20 rounded-lg p-4 border border-brand-rule">
+              <p className="text-xs text-brand-muted uppercase tracking-wide mb-2">
+                To: {app.email} · Subject: welcome to the team, {app.name.split(' ')[0]}. ✌️
+              </p>
+              <pre className="text-xs text-brand-ink whitespace-pre-wrap font-mono leading-relaxed max-h-80 overflow-y-auto">
+                {emailText}
+              </pre>
+            </div>
+          )}
         </div>
 
         <div className="border-t border-brand-rule pt-4 space-y-3">

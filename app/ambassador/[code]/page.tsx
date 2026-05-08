@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 };
 
 const TIERS = [
-  { label: 'Starter', min: 0,  max: 10,  next: 'Repping',  pct: 15 },
-  { label: 'Repping', min: 11, max: 30,  next: 'Anchor',   pct: 20 },
-  { label: 'Anchor',  min: 31, max: null, next: null,       pct: 30 },
+  { label: 'Starter', min: 0,  max: 10,  next: 'Repping',  pct: 8  },
+  { label: 'Repping', min: 11, max: 30,  next: 'Anchor',   pct: 12 },
+  { label: 'Anchor',  min: 31, max: null, next: null,       pct: 20 },
 ];
 
 function getTierInfo(orders: number) {
@@ -42,7 +42,7 @@ export default async function AmbassadorStatsPage({ params }: { params: Promise<
 
   if (!app) notFound();
 
-  const tierPct = (app.tier_pct as number | null) ?? 15;
+  const tierPct = (app.tier_pct as number | null) ?? 8;
   const stats = await getAmbassadorStats(upperCode, tierPct);
   const tier = getTierInfo(stats.totalOrders);
   const firstName = (app.name as string).split(' ')[0];

@@ -78,7 +78,7 @@ export default function PartnersPage() {
             },
             {
               title: 'earn as you grow.',
-              body: 'earn 8% commission on every order placed with your code at the starter tier. level up to 9% (repping) or 10% (anchor) by posting consistently and driving sales. paid out monthly via venmo or paypal.',
+              body: 'earn 8% commission on every order placed with your code at the starter tier. level up to 12% (repping) or 20% (anchor) by posting consistently and driving sales. paid out monthly via venmo or paypal.',
             },
             {
               title: 'free starter sack.',
@@ -108,11 +108,11 @@ export default function PartnersPage() {
               },
               {
                 tier: 'repping.',
-                body: 'hit 5+ tagged posts or 5+ code redemptions. bumps your code to 20% off, your commission to 9%, plus 2 more sacks and monthly resupply.',
+                body: 'hit 5+ tagged posts or 5+ code redemptions. bumps your code to 20% off, your commission to 12%, plus 2 more sacks and monthly resupply.',
               },
               {
                 tier: 'anchor.',
-                body: 'hit 15+ posts or 25+ redemptions. 25% off code, 10% commission, 6 more sacks, and a shot at a custom-colorway named partnership.',
+                body: 'hit 15+ posts or 25+ redemptions. 25% off code, 20% commission, 6 more sacks, and a shot at a custom-colorway named partnership.',
               },
             ].map((item) => (
               <div key={item.tier} className="bg-[#EFE8DA] rounded-xl p-8 space-y-3 border border-brand-rule">

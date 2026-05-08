@@ -110,6 +110,8 @@ export default async function AmbassadorDetailPage({ params }: { params: Promise
           approved: app.approved,
           status: app.status,
           discount_code: app.discount_code,
+          tier_pct: app.tier_pct ?? 15,
+          welcome_email_sent_at: app.welcome_email_sent_at ?? null,
         }} />
       </div>
     </div>

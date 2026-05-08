@@ -36,8 +36,8 @@ goodkicks.co/ambassador/{{discount_code_lower}}
 your tier is based on total sales driven through your code:
 
   starter  → 0–10 orders    → {{tier_pct}}% commission
-  repping  → 11–30 orders   → 20% commission
-  anchor   → 31+ orders     → 30% commission + exclusive drops
+  repping  → 11–30 orders   → 12% commission
+  anchor   → 31+ orders     → 20% commission + exclusive drops
 
 you move up automatically as your numbers grow.
 

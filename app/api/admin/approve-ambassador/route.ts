@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { applicationId, tierPct = 15 } = body ?? {};
+  const { applicationId, tierPct = 8 } = body ?? {};
 
   if (!applicationId) {
     return NextResponse.json({ error: 'missing applicationId' }, { status: 400 });
@@ -60,7 +60,13 @@ export async function POST(req: NextRequest) {
 
   await supabase
     .from('ambassador_applications')
-    .update({ approved: true, status: 'approved', discount_code: discountCode, tier_pct: tierPct })
+    .update({
+      approved: true,
+      status: 'approved',
+      discount_code: discountCode,
+      tier_pct: tierPct,
+      welcome_email_sent_at: new Date().toISOString(),
+    })
     .eq('id', applicationId);
 
   return NextResponse.json({ ok: true, discountCode });
