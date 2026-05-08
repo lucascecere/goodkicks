@@ -350,7 +350,7 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden gap-0">
       {/* Left — list */}
-      <div className="flex flex-col w-full lg:w-[420px] xl:w-[460px] shrink-0 overflow-hidden">
+      <div className="flex flex-col w-full lg:w-4/5 shrink-0 overflow-hidden">
         {/* Header */}
         <div className="px-6 pt-6 pb-4 shrink-0">
           <h1 className="font-display text-2xl text-white mb-1">Ambassadors</h1>
@@ -425,7 +425,7 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
       </div>
 
       {/* Right — management panel */}
-      <div className="hidden lg:flex flex-1 overflow-hidden border-l border-white/10">
+      <div className="hidden lg:flex lg:w-1/5 shrink-0 overflow-hidden border-l border-white/10">
         <div className="flex-1 bg-white rounded-xl m-4 overflow-hidden shadow-sm">
           {selected ? (
             <RightPanel
