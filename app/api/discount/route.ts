@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { upsertContact } from '@/lib/supabase/upsert-contact';
 
 const VALID_CODES = new Set(['KICKS10', 'KICKS15', 'KICKS20', 'FREESHIP']);
 
@@ -13,6 +14,8 @@ export async function POST(req: NextRequest) {
   if (!discountCode || !VALID_CODES.has(discountCode)) {
     return NextResponse.json({ error: 'invalid code' }, { status: 400 });
   }
+
+  await upsertContact({ email, source: 'discount' });
 
   if (process.env.RESEND_API_KEY) {
     try {
@@ -38,7 +41,6 @@ export async function POST(req: NextRequest) {
       });
     } catch (err) {
       console.error('[discount] Email send failed:', err);
-      // Don't fail the request if email fails
     }
   }
 

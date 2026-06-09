@@ -7,8 +7,10 @@ type FormState = 'idle' | 'loading' | 'success' | 'error';
 export function AmbassadorForm() {
   const [state, setState] = useState<FormState>('idle');
   const [form, setForm] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
+    age: '',
     instagram: '',
     school: '',
     accountType: '',
@@ -30,14 +32,16 @@ export function AmbassadorForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setState('loading');
-    const { addressLine1, addressLine2, city, state: st, zip, country, ...rest } = form;
+    const { addressLine1, addressLine2, city, state: st, zip, country, age, firstName, lastName, ...rest } = form;
+    const name = `${firstName.trim()} ${lastName.trim()}`.trim();
     const parts = [addressLine1, addressLine2, city, st, zip, country].filter(Boolean);
     const shippingAddress = parts.length > 1 ? parts.join(', ') : null;
+    const parsedAge = age ? parseInt(age, 10) : null;
     try {
       const res = await fetch('/api/partners', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rest, shippingAddress }),
+        body: JSON.stringify({ ...rest, name, age: parsedAge, shippingAddress }),
       });
       setState(res.ok ? 'success' : 'error');
     } catch {
@@ -62,12 +66,20 @@ export function AmbassadorForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-          <label className={labelClass}>your name</label>
-          <input required type="text" placeholder="Alex Smith" value={form.name} onChange={(e) => set('name', e.target.value)} className={inputClass} />
+          <label className={labelClass}>first name</label>
+          <input required type="text" placeholder="Alex" value={form.firstName} onChange={(e) => set('firstName', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className={labelClass}>last name</label>
+          <input required type="text" placeholder="Smith" value={form.lastName} onChange={(e) => set('lastName', e.target.value)} className={inputClass} />
         </div>
         <div>
           <label className={labelClass}>email</label>
           <input required type="email" placeholder="you@school.edu" value={form.email} onChange={(e) => set('email', e.target.value)} className={inputClass} />
+        </div>
+        <div>
+          <label className={labelClass}>age</label>
+          <input required type="number" min="13" max="100" placeholder="18" value={form.age} onChange={(e) => set('age', e.target.value)} className={inputClass} />
         </div>
       </div>
 
@@ -173,7 +185,7 @@ export function AmbassadorForm() {
           <option value="nevada">nevada (sage + mustard + cream)</option>
           <option value="colorado">colorado (cream + rust + sage)</option>
           <option value="new-york">new york (burgundy + mustard + black)</option>
-          <option value="california">california (navy + cream + burgundy)</option>
+          <option value="massachusetts">massachusetts</option>
           <option value="maine">maine (mustard + navy + black)</option>
           <option value="no-preference">no preference / surprise me</option>
         </select>

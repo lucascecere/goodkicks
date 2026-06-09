@@ -11,7 +11,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'missing params' }, { status: 400 });
   }
 
-  // Verify HMAC so only Shopify can hit this
   const params = Object.fromEntries(searchParams.entries());
   delete params.hmac;
   const message = Object.keys(params).sort().map((k) => `${k}=${params[k]}`).join('&');
@@ -24,7 +23,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'invalid hmac' }, { status: 401 });
   }
 
-  // Exchange the code for a permanent access token
   const tokenRes = await fetch(`https://${shop}/admin/oauth/access_token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -35,13 +33,10 @@ export async function GET(req: NextRequest) {
     }),
   });
 
-  const { access_token } = await tokenRes.json() as { access_token: string };
+  const json = await tokenRes.json() as { access_token?: string };
+  if (!json.access_token) {
+    return NextResponse.json({ error: 'token exchange failed' }, { status: 500 });
+  }
 
-  console.log('[shopify/callback] access_token:', access_token);
-
-  // Return the token — copy it to Vercel as SHOPIFY_ADMIN_API_TOKEN
-  return NextResponse.json({
-    message: 'Copy this token into Vercel as SHOPIFY_ADMIN_API_TOKEN then redeploy.',
-    token: access_token,
-  });
+  return NextResponse.json({ ok: true });
 }

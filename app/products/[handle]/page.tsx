@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getProductByHandle } from '@/lib/shopify/service';
+import { getProductByHandle, getAllProducts } from '@/lib/shopify/service';
 import { imageForVariant } from '@/lib/shopify/variant-colors';
 import { ProductGallery } from './product-gallery';
 import { ProductDetail } from './product-detail';
+import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
 
 export const revalidate = 3600;
+
+const BUNDLE_HANDLES = ['3-pack'];
 
 type Props = { params: Promise<{ handle: string }> };
 
@@ -17,6 +20,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
   const product = await getProductByHandle(handle);
   if (!product) return { title: 'Product Not Found' };
+  if (BUNDLE_HANDLES.includes(handle)) {
+    return {
+      title: 'The 3-Pack — Build Your Own | Good Kicks',
+      description: 'Pick any 3 foot bag colorways. Mix, match, or triple up. $24.99 — save $5 vs buying individually. $4 shipping, free on orders $35+.',
+      alternates: { canonical: `/products/${handle}` },
+      openGraph: {
+        title: 'The 3-Pack — Build Your Own | Good Kicks',
+        description: 'Pick any 3 colorways. $24.99 — save $5 vs buying individually.',
+        url: `/products/${handle}`,
+        images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'The 3-Pack — Build Your Own | Good Kicks',
+        description: 'Pick any 3 colorways. $24.99 — save $5 vs buying individually.',
+        images: ['/opengraph-image.png'],
+      },
+    };
+  }
   const name = stateName(product.title);
   const imgUrl = product.featuredImage?.url;
   const canonical = `/products/${handle}`;
@@ -49,6 +71,86 @@ export default async function ProductPage({ params }: Props) {
 
   const priceInCents = Math.round(parseFloat(variant.price.amount) * 100);
   const imgSrc = shopifyProduct.featuredImage?.url ?? imageForVariant(shopifyProduct.title);
+
+  // Bundle page
+  if (BUNDLE_HANDLES.includes(handle)) {
+    const allProducts = await getAllProducts();
+    const colorways: ColorwayProduct[] = allProducts
+      .filter((p: { handle: string }) => !BUNDLE_HANDLES.includes(p.handle))
+      .map((p: { id: string; title: string; handle: string; featuredImage?: { url: string }; variants: { edges: Array<{ node: { availableForSale: boolean } }> } }) => ({
+        id: p.id,
+        title: p.title,
+        handle: p.handle,
+        availableForSale: p.variants.edges[0]?.node.availableForSale ?? false,
+        imageUrl: p.featuredImage?.url ?? imageForVariant(p.title) ?? null,
+      }));
+
+    return (
+      <div className="bg-brand-cream min-h-screen">
+        <div className="max-w-5xl mx-auto px-6 sm:px-8 py-10 sm:py-16">
+
+          {/* Page header — always at top */}
+          <div className="mb-8">
+            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium mb-2">build your own bundle</p>
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h1 className="font-display text-4xl sm:text-5xl text-brand-ink">the 3-pack.</h1>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-medium text-brand-ink">$24.99</span>
+                <span className="text-brand-muted line-through text-base">$29.97</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Two-column on desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+
+            {/* Left: image + details (desktop only) */}
+            <div className="hidden lg:flex flex-col gap-6">
+              <div className="rounded-2xl overflow-hidden bg-[#F5EFE3] aspect-square relative">
+                <img
+                  src="/products/all-sacks.jpg"
+                  alt="The 3-Pack — all Good Kicks colorways"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="border border-brand-rule rounded-xl p-5 space-y-2">
+                <p className="text-sm font-medium text-brand-ink">what you get</p>
+                <ul className="space-y-1.5 text-sm text-brand-muted">
+                  <li>3 × Good Kicks premium foot bags</li>
+                  <li>your choice of colorways — duplicates welcome</li>
+                  <li>$4 shipping — free on orders $35+</li>
+                  <li>ships in 1–2 weeks</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Right: picker (full width on mobile) */}
+            <BundlePicker
+              bundleVariantId={variant.id}
+              priceInCents={priceInCents}
+              bundleImageUrl={imgSrc ?? null}
+              colorways={colorways}
+              packSize={3}
+            />
+          </div>
+
+          {/* Mobile-only: details after picker */}
+          <div className="lg:hidden mt-8 border border-brand-rule rounded-xl p-5 space-y-2">
+            <p className="text-sm font-medium text-brand-ink">what you get</p>
+            <ul className="space-y-1.5 text-sm text-brand-muted">
+              <li>3 × Good Kicks premium foot bags</li>
+              <li>your choice of colorways — duplicates welcome</li>
+              <li>free shipping on orders $35+</li>
+              <li>ships in 1–2 weeks</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // Standard single product page
   const name = stateName(shopifyProduct.title);
 
   const product = {
@@ -76,7 +178,7 @@ export default async function ProductPage({ params }: Props) {
       url: `https://goodkicks.co/products/${shopifyProduct.handle}`,
       price: (priceInCents / 100).toFixed(2),
       priceCurrency: 'USD',
-      availability: 'https://schema.org/PreOrder',
+      availability: 'https://schema.org/InStock',
       seller: { '@type': 'Organization', name: 'Good Kicks' },
     },
   };

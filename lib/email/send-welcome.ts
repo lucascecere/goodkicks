@@ -1,4 +1,47 @@
+import fs from 'fs';
+import path from 'path';
 import { resend } from './resend-client';
+
+const TEMPLATE_MINOR = `hey {{first_name}}, welcome to the Good Kicks team. ✌️
+
+you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way — no cost to you, that's your starter kit.
+
+────────────────────────
+your discount code: {{discount_code}}
+────────────────────────
+
+share this code with anyone. every time someone uses it, they get 15% off — and you earn 8% store credit on every order, redeemable on any good kicks purchase. the more you push it, the more credit you stack.
+
+━━━ THE THREE REQUIREMENTS ━━━
+
+these aren't optional — they're how the program works:
+
+1. link in bio
+   your discount code link lives in your bio. always. that's your storefront.
+
+2. code in bio
+   add this exact line to your instagram bio:
+   "@goodkicksco ambassador | use code '{{discount_code}}'"
+   make it dead simple for people to find it.
+
+3. mentioned in every video
+   every time you post something related to the sack, give us a shoutout. it doesn't have to be a dedicated video — just a mention, a tag, a caption. stay consistent.
+
+━━━ YOUR STATS PAGE ━━━
+
+bookmark this link — it's your personal dashboard showing every order driven by your code, total revenue, and store credit earned in real time:
+
+goodkicks.co/ambassador/{{discount_code_lower}}
+
+━━━ HOW YOU GROW ━━━
+
+your tier is based on total sales driven through your code:
+
+  starter  → 0–9 orders    → 8% store credit  (your code: 15% off for followers)
+  repping  → 10–37 orders  → 12% store credit (code bumps to 20% off)
+  anchor   → 38+ orders    → 20% store credit (code stays at 20% off)
+
+you move up automatically as your numbers grow.`;
 
 const TEMPLATE = `hey {{first_name}}, welcome to the Good Kicks team. ✌️
 
@@ -8,7 +51,7 @@ you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way 
 your discount code: {{discount_code}}
 ────────────────────────
 
-share this code with anyone. every time someone uses it, they get 15% off — and you earn 8% commission on every order. the more you push it, the more you earn.
+share this code with anyone. every time someone uses it, they get 15% off — and you earn 8% commission on every order, paid out monthly. the more you push it, the more you earn.
 
 ━━━ THE THREE REQUIREMENTS ━━━
 
@@ -35,9 +78,9 @@ goodkicks.co/ambassador/{{discount_code_lower}}
 
 your tier is based on total sales driven through your code:
 
-  starter  → 0–10 orders    → 8% commission  (your code: 15% off for followers)
-  repping  → 11–30 orders   → 12% commission (code bumps to 20% off)
-  anchor   → 31+ orders     → 20% commission (code bumps to 25% off)
+  starter  → 0–9 orders    → 8% commission  (your code: 15% off for followers)
+  repping  → 10–37 orders  → 12% commission (code bumps to 20% off)
+  anchor   → 38+ orders    → 20% commission (code stays at 20% off)
 
 you move up automatically as your numbers grow.
 
@@ -68,18 +111,24 @@ export async function sendWelcomeEmail({
   discountCode,
   colorway,
   tierPct,
+  isMinor = false,
 }: {
   firstName: string;
   email: string;
   discountCode: string;
   colorway: string;
   tierPct: number;
+  isMinor?: boolean;
 }) {
-  const text = TEMPLATE
+  const template = isMinor ? TEMPLATE_MINOR : TEMPLATE;
+  const text = template
     .replace(/\{\{first_name\}\}/g, firstName)
     .replace(/\{\{discount_code\}\}/g, discountCode)
     .replace(/\{\{discount_code_lower\}\}/g, discountCode.toLowerCase())
     .replace(/\{\{colorway\}\}/g, colorway);
+
+  const pamphletPath = path.join(process.cwd(), 'public', 'brand', 'ambassador-pamphlet.pdf');
+  const pamphletContent = fs.readFileSync(pamphletPath);
 
   await resend.emails.send({
     from: 'Good Kicks <info@goodkicks.co>',
@@ -87,5 +136,11 @@ export async function sendWelcomeEmail({
     replyTo: 'info@goodkicks.co',
     subject: `welcome to the team, ${firstName}. ✌️`,
     text,
+    attachments: [
+      {
+        filename: 'good-kicks-ambassador-guide.pdf',
+        content: pamphletContent,
+      },
+    ],
   });
 }

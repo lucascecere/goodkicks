@@ -5,5 +5,6 @@ declare namespace NodeJS {
     NEXT_PUBLIC_SITE_URL: string;
     CONTACT_EMAIL: string;
     RESEND_API_KEY?: string;
+    RESEND_WEBHOOK_SECRET?: string;
   }
 }

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { resend } from '@/lib/email/resend-client';
 
 const generalSchema = z.object({
@@ -42,6 +43,7 @@ export async function POST(request: Request) {
       ig_handle: data.type === 'partnership' ? data.igHandle : null,
     });
     if (dbError) console.error('[contact] DB insert error:', dbError.message);
+    await upsertContact({ email: data.email, name: data.name, source: 'contact' });
 
     // Email notification
     if (process.env.RESEND_API_KEY) {

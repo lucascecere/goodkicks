@@ -3,12 +3,14 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export type CartItem = {
+  cartKey?: string;
   variantId: string;
   variantName: string;
   productTitle: string;
   priceInCents: number;
   quantity: number;
   imageUrl?: string;
+  customAttributes?: Array<{ key: string; value: string }>;
 };
 
 interface CartContextValue {
@@ -20,8 +22,8 @@ interface CartContextValue {
   itemCount: number;
   subtotalCents: number;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
-  removeItem: (variantId: string) => void;
-  updateQuantity: (variantId: string, quantity: number) => void;
+  removeItem: (key: string) => void;
+  updateQuantity: (key: string, quantity: number) => void;
   clearCart: () => void;
 }
 
@@ -34,7 +36,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem('goodkicks_cart');
-      if (stored) setItems(JSON.parse(stored));
+      if (stored) {
+        const parsed: CartItem[] = JSON.parse(stored);
+        setItems(parsed.map((i) => ({ cartKey: i.variantId, ...i })));
+      }
     } catch {}
   }, []);
 
@@ -49,24 +54,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const toggleCart = useCallback(() => setCartOpen((v) => !v), []);
 
   const addItem = useCallback((item: Omit<CartItem, 'quantity'>) => {
+    const key = item.cartKey ?? item.variantId;
     setItems((prev) => {
-      const existing = prev.find((i) => i.variantId === item.variantId);
+      const existing = prev.find((i) => (i.cartKey ?? i.variantId) === key);
       if (existing) {
-        return prev.map((i) => i.variantId === item.variantId ? { ...i, quantity: i.quantity + 1 } : i);
+        return prev.map((i) => (i.cartKey ?? i.variantId) === key ? { ...i, quantity: i.quantity + 1 } : i);
       }
-      return [...prev, { ...item, quantity: 1 }];
+      return [...prev, { ...item, cartKey: key, quantity: 1 }];
     });
   }, []);
 
-  const removeItem = useCallback((variantId: string) => {
-    setItems((prev) => prev.filter((i) => i.variantId !== variantId));
+  const removeItem = useCallback((key: string) => {
+    setItems((prev) => prev.filter((i) => (i.cartKey ?? i.variantId) !== key));
   }, []);
 
-  const updateQuantity = useCallback((variantId: string, quantity: number) => {
+  const updateQuantity = useCallback((key: string, quantity: number) => {
     if (quantity <= 0) {
-      setItems((prev) => prev.filter((i) => i.variantId !== variantId));
+      setItems((prev) => prev.filter((i) => (i.cartKey ?? i.variantId) !== key));
     } else {
-      setItems((prev) => prev.map((i) => i.variantId === variantId ? { ...i, quantity } : i));
+      setItems((prev) => prev.map((i) => (i.cartKey ?? i.variantId) === key ? { ...i, quantity } : i));
     }
   }, []);
 

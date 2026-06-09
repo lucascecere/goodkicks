@@ -2,6 +2,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { OnboardingPanel } from './onboarding-panel';
+import { AccountDetailsEditor } from './account-details-editor';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,28 +77,26 @@ export default async function AmbassadorDetailPage({ params }: { params: Promise
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Account details */}
         <div className="bg-white rounded-xl border border-brand-rule p-6 space-y-5">
-          <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Account Details</h2>
-
-          <div className="space-y-4">
-            <DetailRow label="Applied" value={app.created_at ? fmtDate(app.created_at) : null} />
-            <DetailRow label="Instagram" value={app.instagram} />
-            <DetailRow label="School / Group" value={app.school} />
-            <DetailRow label="Account Type" value={typeLabels[app.account_type] ?? app.account_type} />
-            <DetailRow label="Followers" value={followerLabels[app.followers] ?? app.followers} />
-            <DetailRow label="Colorway Preference" value={app.colorway_preference} />
-            <DetailRow label="Shipping Address" value={app.shipping_address} />
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Account Details</h2>
+            {app.created_at && (
+              <p className="text-xs text-brand-muted">Applied {fmtDate(app.created_at)}</p>
+            )}
           </div>
-
-          {app.instagram && (
-            <a
-              href={`https://instagram.com/${app.instagram.replace('@', '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-brand-rust hover:underline"
-            >
-              view Instagram profile →
-            </a>
-          )}
+          <AccountDetailsEditor
+            appId={app.id}
+            initialData={{
+              name: app.name,
+              email: app.email,
+              instagram: app.instagram,
+              school: app.school,
+              account_type: app.account_type,
+              followers: app.followers,
+              colorway_preference: app.colorway_preference,
+              shipping_address: app.shipping_address,
+              age: app.age ?? null,
+            }}
+          />
         </div>
 
         {/* Onboarding panel */}

@@ -13,6 +13,10 @@ const SEGMENTS = [
   { label: 'free ship',    code: 'FREESHIP', color: '#4A4848' },
 ];
 
+const SPINNABLE = SEGMENTS
+  .map((seg, i) => i)
+  .filter((i) => SEGMENTS[i].code !== 'FREESHIP');
+
 const N = SEGMENTS.length; // 6
 const SLICE = 360 / N;     // 60deg each
 const CX = 150, CY = 150, R = 128, R_INNER = 44;
@@ -57,7 +61,7 @@ export function SpinWheelPopup() {
 
   function spin() {
     if (spinning || step !== 'idle') return;
-    const idx = Math.floor(Math.random() * N);
+    const idx = SPINNABLE[Math.floor(Math.random() * SPINNABLE.length)];
     // Rotate so that segment idx lands under the pointer (top = 0deg in our polar system)
     // Segment i center is at i*SLICE + SLICE/2 degrees from top
     // We need that center at 0deg (top), so we rotate wheel by -(i*SLICE + SLICE/2)

@@ -1,11 +1,12 @@
 import { MetadataRoute } from 'next';
-import { ALL_PRODUCTS } from '@/lib/products/catalog';
+import { getAllProducts } from '@/lib/shopify/service';
 import { blogPosts } from '@/lib/blog/posts';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://goodkicks.co';
 
-  const productRoutes: MetadataRoute.Sitemap = ALL_PRODUCTS.map((p) => ({
+  const shopifyProducts = await getAllProducts().catch(() => []);
+  const productRoutes: MetadataRoute.Sitemap = shopifyProducts.map((p: { handle: string }) => ({
     url: `${siteUrl}/products/${p.handle}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,

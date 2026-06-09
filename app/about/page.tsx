@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     url: '/about',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About Good Kicks — The Story Behind the Foot Bag',
+    description: 'Two college friends, a quiet renaissance, and one simple bet.',
+    images: ['/opengraph-image.png'],
+  },
 };
 
 export default function AboutPage() {

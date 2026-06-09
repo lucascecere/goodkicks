@@ -2,9 +2,20 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Shipping & Returns — Good Kicks',
-  description: 'Shipping timelines, return policy, and order info for Good Kicks foot bags.',
+  description: '$4 flat rate shipping on all orders. Free shipping on orders $35+. Made-to-order foot bags ship in 1–2 weeks. Read our full shipping and returns policy.',
   alternates: { canonical: '/shipping-returns' },
-  robots: { index: false },
+  openGraph: {
+    title: 'Shipping & Returns — Good Kicks',
+    description: '$4 flat rate shipping. Free on orders $35+. Ships in 1–2 weeks.',
+    url: '/shipping-returns',
+    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Shipping & Returns — Good Kicks',
+    description: '$4 flat rate shipping. Free on orders $35+. Ships in 1–2 weeks.',
+    images: ['/opengraph-image.png'],
+  },
 };
 
 export default function ShippingReturnsPage() {
@@ -18,20 +29,11 @@ export default function ShippingReturnsPage() {
         <section>
           <h2 className="font-display text-2xl mb-3">shipping</h2>
           <div className="space-y-3 text-brand-muted leading-relaxed">
-            <p>All Good Kicks foot bags are made to order. Current processing time is <strong className="text-brand-ink">2–3 weeks</strong> from the date of purchase.</p>
+            <p>All Good Kicks foot bags are made to order. Current processing time is <strong className="text-brand-ink">1–2 weeks</strong> from the date of purchase.</p>
+            <p>Shipping is <strong className="text-brand-ink">$4 flat rate</strong> on all orders. Orders over <strong className="text-brand-ink">$35 ship free</strong>.</p>
             <p>We ship via USPS First Class or Priority Mail depending on order size. Once shipped, domestic orders typically arrive within 3–7 business days.</p>
             <p>You'll receive a shipping confirmation email with tracking when your order leaves our hands.</p>
             <p>We currently ship within the <strong className="text-brand-ink">United States only</strong>. International shipping is not available at this time — check back soon.</p>
-          </div>
-        </section>
-
-        <div className="border-t border-brand-rule" />
-
-        <section>
-          <h2 className="font-display text-2xl mb-3">pre-orders</h2>
-          <div className="space-y-3 text-brand-muted leading-relaxed">
-            <p>All current orders are pre-orders. Your card is charged at checkout, and your sack ships within the 2–3 week window once it's ready.</p>
-            <p>Pre-orders help us stitch exactly what's needed — no waste, no overstock.</p>
           </div>
         </section>
 

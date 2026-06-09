@@ -31,7 +31,7 @@ export const GOOD_KICKS_FOOT_BAG: Product = {
     { id: 'gk-montana',    name: 'montana',    priceInCents: 1500, quantity: 1, color: '#5BA4B4' },
     { id: 'gk-new-york',   name: 'new york',   priceInCents: 1500, quantity: 1, color: '#A89870' },
     { id: 'gk-new-mexico', name: 'new mexico', priceInCents: 1500, quantity: 1, color: '#D4A84B' },
-    { id: 'gk-california', name: 'california', priceInCents: 1500, quantity: 1, color: '#4A4848' },
+    { id: 'gk-massachusetts', name: 'massachusetts', priceInCents: 1500, quantity: 1, color: '#4A4848' },
   ],
 };
 

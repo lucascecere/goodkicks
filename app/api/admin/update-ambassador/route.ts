@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'missing applicationId' }, { status: 400 });
   }
 
-  const allowed = ['discount_code', 'tier_pct', 'status', 'approved', 'notes', 'email'];
+  const allowed = ['discount_code', 'tier_pct', 'status', 'approved', 'notes', 'email', 'name', 'instagram', 'school', 'account_type', 'followers', 'colorway_preference', 'shipping_address', 'age'];
   const update: Record<string, unknown> = {};
   for (const key of allowed) {
     if (key in fields) update[key] = fields[key];

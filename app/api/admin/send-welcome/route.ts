@@ -14,26 +14,44 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { applicationId, firstName, email, discountCode, colorway, tierPct = 8 } = body ?? {};
+  let { applicationId, firstName, email, discountCode, colorway, tierPct = 8 } = body ?? {};
+  let isMinor = false;
+
+  // Always fetch fresh email + name from DB when applicationId is present
+  // so a recently-updated email is used, not a stale client-side value
+  if (applicationId) {
+    const supabase = createSupabaseServiceClient();
+    const { data: app } = await supabase
+      .from('ambassador_applications')
+      .select('name, email, discount_code, colorway_preference, age')
+      .eq('id', applicationId)
+      .single();
+
+    if (app) {
+      firstName = app.name.split(' ')[0];
+      email = app.email;
+      discountCode = discountCode ?? app.discount_code;
+      colorway = colorway ?? app.colorway_preference ?? 'your choice';
+      isMinor = typeof app.age === 'number' && app.age < 18;
+    }
+  }
 
   if (!firstName || !email || !discountCode) {
     return NextResponse.json({ error: 'missing required fields' }, { status: 400 });
   }
 
   try {
-    await sendWelcomeEmail({ firstName, email, discountCode, colorway: colorway ?? 'your choice', tierPct });
+    await sendWelcomeEmail({ firstName, email, discountCode, colorway: colorway ?? 'your choice', tierPct, isMinor });
   } catch (err) {
     console.error('[send-welcome] Error:', err);
     return NextResponse.json({ error: 'failed to send email' }, { status: 500 });
   }
 
-  if (applicationId) {
-    const supabase = createSupabaseServiceClient();
-    await supabase
-      .from('ambassador_applications')
-      .update({ welcome_email_sent_at: new Date().toISOString() })
-      .eq('id', applicationId);
-  }
+  const supabase = createSupabaseServiceClient();
+  await supabase
+    .from('ambassador_applications')
+    .update({ welcome_email_sent_at: new Date().toISOString() })
+    .eq('id', applicationId);
 
   return NextResponse.json({ ok: true });
 }

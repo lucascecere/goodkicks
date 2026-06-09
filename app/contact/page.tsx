@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     url: '/contact',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact Good Kicks',
+    description: 'Bulk orders, partnerships, or just questions — we answer everything.',
+    images: ['/opengraph-image.png'],
+  },
 };
 
 export default function ContactPage() {

@@ -9,7 +9,7 @@ const shopLinks = [
   { href: '/products/the-good-kick-nevada',     label: 'nevada'     },
   { href: '/products/the-good-kick-colorado',   label: 'colorado'   },
   { href: '/products/the-good-kick-new-york',   label: 'new york'   },
-  { href: '/products/the-good-kick-california', label: 'california' },
+  { href: '/products/the-good-kick-massachusetts', label: 'massachusetts' },
   { href: '/products/the-good-kick-maine',      label: 'maine'      },
 ];
 
@@ -153,6 +153,19 @@ export function Footer() {
           >
             @goodkicksco
           </a>
+        </div>
+        <div className="max-w-7xl mx-auto flex justify-end mt-2">
+          <p className="text-[10px] text-white/20">
+            managed by{' '}
+            <a
+              href="https://www.yourwebsitefriend.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white/50 transition-colors"
+            >
+              Your Website Friend
+            </a>
+          </p>
         </div>
       </div>
     </footer>

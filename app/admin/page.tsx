@@ -1,5 +1,6 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { getOrderSummary } from '@/lib/shopify/get-orders';
+import { getBundleTally } from '@/lib/shopify/get-bundle-tally';
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,7 @@ function StatCard({ label, value, sub, href }: { label: string; value: number; s
 export default async function AdminDashboardPage() {
   const supabase = createSupabaseServiceClient();
 
-  const [{ data: apps }, { data: contacts }, orderSummary] = await Promise.all([
+  const [{ data: apps }, { data: contacts }, orderSummary, bundleTallies] = await Promise.all([
     supabase
       .from('ambassador_applications')
       .select('id, name, email, instagram, status, approved, created_at')
@@ -36,6 +37,7 @@ export default async function AdminDashboardPage() {
       .select('id, name, email, type, message, created_at')
       .order('created_at', { ascending: false }),
     getOrderSummary(),
+    getBundleTally(),
   ]);
 
   const allApps = apps ?? [];
@@ -121,24 +123,63 @@ export default async function AdminDashboardPage() {
             <p className="text-4xl font-bold text-white">{fmtMoney(orderSummary.avgOrderValue)}</p>
           </div>
         </div>
-        {orderSummary.orders.length > 0 && (
-          <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
-            <div className="divide-y divide-brand-rule">
-              {orderSummary.orders.slice(0, 8).map((o) => (
-                <div key={o.id} className="flex items-center justify-between px-5 py-3">
-                  <div className="flex items-center gap-4 min-w-0">
-                    <p className="text-sm font-medium text-brand-ink">{o.name}</p>
-                    {o.discountCode && (
-                      <span className="text-xs bg-brand-rule px-2 py-0.5 rounded text-brand-muted font-mono">{o.discountCode}</span>
-                    )}
+      </div>
+
+      {/* Bundle Inventory Tracker */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Bundle Inventory</h2>
+          <a
+            href="https://admin.shopify.com/store/good-kicks-foot-bags-2/products"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-white/40 hover:text-white transition-colors"
+          >
+            update shopify inventory →
+          </a>
+        </div>
+
+        {bundleTallies.length === 0 ? (
+          <div className="bg-white/8 border border-white/10 rounded-xl p-6 text-center">
+            <p className="text-white/40 text-sm">no bundle orders yet — colorway picks will appear here.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {bundleTallies.map((bundle) => {
+              const max = bundle.colorways[0]?.units ?? 1;
+              return (
+                <div key={bundle.bundleTitle} className="bg-white rounded-xl border border-brand-rule overflow-hidden">
+                  <div className="px-5 py-4 border-b border-brand-rule flex items-center justify-between">
+                    <div>
+                      <h3 className="text-sm font-medium text-brand-ink">{bundle.bundleTitle} — Colorway Picks</h3>
+                      <p className="text-xs text-brand-muted mt-0.5">
+                        {bundle.totalOrders} order{bundle.totalOrders !== 1 ? 's' : ''} · {bundle.totalUnits} total units to fulfill
+                      </p>
+                    </div>
+                    <span className="text-xs bg-amber-100 text-amber-700 font-medium px-2.5 py-1 rounded-full">
+                      deduct from shopify
+                    </span>
                   </div>
-                  <div className="flex items-center gap-4 shrink-0">
-                    <span className="text-xs text-brand-muted">{fmtDate(o.createdAt)}</span>
-                    <span className="text-sm font-medium text-brand-ink">{fmtMoney(o.total)}</span>
+                  <div className="px-5 py-4 space-y-3">
+                    {bundle.colorways.map((cw) => {
+                      const pct = Math.round((cw.units / max) * 100);
+                      return (
+                        <div key={cw.name} className="flex items-center gap-4">
+                          <span className="text-sm text-brand-ink capitalize w-28 shrink-0 font-medium">{cw.name}</span>
+                          <div className="flex-1 h-2 bg-brand-rule rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-brand-rust rounded-full transition-all"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-bold text-brand-ink w-6 text-right shrink-0">{cw.units}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         )}
       </div>

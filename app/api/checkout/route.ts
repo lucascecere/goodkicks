@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createShopifyCart } from '@/lib/shopify/service';
 
-type CheckoutItem = { variantId: string; quantity: number };
+type CheckoutItem = {
+  variantId: string;
+  quantity: number;
+  customAttributes?: Array<{ key: string; value: string }>;
+};
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -15,6 +19,7 @@ export async function POST(req: NextRequest) {
   const lines = items.map((item) => ({
     merchandiseId: item.variantId,
     quantity: item.quantity,
+    ...(item.customAttributes?.length ? { attributes: item.customAttributes } : {}),
   }));
 
   try {

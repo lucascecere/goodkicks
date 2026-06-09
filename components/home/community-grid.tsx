@@ -7,7 +7,7 @@ const colorways = [
   { name: 'nevada',     src: '/brand/ball_newmexico.png'  },
   { name: 'colorado',   src: '/brand/ball_montana.png'    },
   { name: 'new york',   src: '/brand/ball_newyork.png'    },
-  { name: 'california', src: '/brand/ball_california.png' },
+  { name: 'massachusetts', src: '/brand/ball_massachusetts.png' },
   { name: 'maine',      src: '/brand/ball_maine.png'      },
 ];
 

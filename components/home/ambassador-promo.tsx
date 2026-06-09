@@ -3,7 +3,7 @@ import Link from 'next/link';
 const perks = [
   { label: 'your own code', desc: 'custom code that gives your followers 20% off — tied to your school or account.' },
   { label: '8–10% commission', desc: 'earn on every order placed through your code. paid out monthly.' },
-  { label: 'free starter pack', desc: 'a 3-pack shipped to you on approval.' },
+  { label: 'free starter sack', desc: 'one sack shipped to you on approval.' },
 ];
 
 export function AmbassadorPromo() {
@@ -19,7 +19,7 @@ export function AmbassadorPromo() {
               run a school sack account?<br />we&apos;ll back you.
             </h2>
             <p className="text-brand-muted leading-relaxed max-w-md mx-auto lg:mx-0">
-              we partner with high school and college hacky sack accounts — give your followers 20% off with your own code, pay you 8–10% commission on every sale, and ship you a free starter pack to kick things off.
+              we partner with high school and college hacky sack accounts — give your followers 20% off with your own code, pay you 8–10% commission on every sale, and ship you a free starter sack to kick things off.
             </p>
             <Link
               href="/ambassadors"

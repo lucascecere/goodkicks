@@ -7,20 +7,21 @@ export type InstagramPost = {
   caption?: string;
 };
 
-export async function fetchInstagramPosts(limit = 6): Promise<InstagramPost[]> {
+// Fetch more than needed so we can filter to VIDEO only
+export async function fetchInstagramReels(limit = 6): Promise<InstagramPost[]> {
   const token = process.env.INSTAGRAM_ACCESS_TOKEN;
   if (!token) return [];
 
   try {
     const res = await fetch(
-      `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,permalink,caption&limit=${limit}&access_token=${token}`,
-      { next: { revalidate: 3600 } } // refresh every hour
+      `https://graph.instagram.com/me/media?fields=id,media_type,media_url,thumbnail_url,permalink,caption&limit=20&access_token=${token}`,
+      { next: { revalidate: 3600 } }
     );
     if (!res.ok) return [];
     const json = await res.json();
-    return (json.data as InstagramPost[]).filter(
-      (p) => p.media_type === 'IMAGE' || p.media_type === 'CAROUSEL_ALBUM'
-    );
+    return (json.data as InstagramPost[])
+      .filter((p) => p.media_type === 'VIDEO')
+      .slice(0, limit);
   } catch {
     return [];
   }

@@ -19,7 +19,7 @@ const FAQ_ITEMS = [
   { question: 'How big is it? Will it fit in my bag?', answer: 'About 2.25 inches in diameter — small enough to slip in any pocket or backpack pouch.' },
   { question: 'Is it durable? How long will it last?', answer: 'Premium construction means it holds up well to regular use. Most circles get months to years out of one.' },
   { question: 'Can I wash it?', answer: "Spot clean only — hand wash with mild soap, air dry. The sand fill doesn't love full submersion." },
-  { question: 'How fast does it ship?', answer: 'Orders ship in 2–3 weeks. We appreciate your patience while we get your order out.' },
+  { question: 'How fast does it ship?', answer: 'Orders ship in 1–2 weeks. Shipping is $4 flat rate, free on orders $35+.' },
   { question: "What if I don't like it?", answer: "Reach out within 30 days. We'll make it right — that's the whole deal." },
 ];
 
@@ -44,7 +44,7 @@ export function ProductDetail({ product, variants }: ProductDetailProps) {
           imageUrl={product.images[0]?.url}
         />
       )}
-      <p className="text-brand-muted text-sm">free shipping on orders $65+ · ships in 2–3 weeks</p>
+      <p className="text-brand-muted text-sm">$4 shipping · free on orders $35+ · ships in 1–2 weeks</p>
       <div className="border-t border-brand-rule pt-6">
         <h2 className="font-display text-xl mb-3">what it is</h2>
         <div className="text-brand-muted leading-relaxed" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />

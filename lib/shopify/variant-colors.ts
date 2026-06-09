@@ -1,6 +1,6 @@
 export const VARIANT_COLORS: Record<string, string> = {
   'maine':      '#5B78C0',
-  'california': '#C89030',
+  'massachusetts': '#C89030',
   'montana':    '#6B9FC8',
   'new york':   '#7A1E2C',
   'new mexico': '#8BAA82',
@@ -8,13 +8,14 @@ export const VARIANT_COLORS: Record<string, string> = {
   'default':    '#6B6B6B',
 };
 
+// With-background versions — used on shop cards and product detail pages
 export const VARIANT_IMAGES: Record<string, string> = {
-  'maine':      '/brand/sack_maine.png',
-  'california': '/brand/sack_california.png',
-  'montana':    '/brand/sack_montana.png',
-  'new york':   '/brand/sack_newyork.png',
-  'new mexico': '/brand/sack_newmexico.png',
-  'tennessee':  '/brand/sack_tennessee.png',
+  'maine':         '/products/blue-white-bg.jpg',
+  'massachusetts': '/products/blue-yellow-bg.jpg',
+  'montana':       '/products/blue-red-bg.jpg',
+  'new york':      '/products/black-red-bg.jpg',
+  'new mexico':    '/products/tan-green-bg.jpg',
+  'tennessee':     '/products/orange-gray-bg.jpg',
 };
 
 function findStateKey(title: string, tags?: string[]): string | undefined {

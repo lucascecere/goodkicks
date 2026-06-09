@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { resend } from '@/lib/email/resend-client';
 import { sendApplicationConfirmation } from '@/lib/email/send-application-confirmation';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, email, instagram, school, accountType, followers, message, shippingAddress, colorwayPreference } = body ?? {};
+  const { name, email, instagram, school, accountType, followers, message, shippingAddress, colorwayPreference, age } = body ?? {};
 
   if (!name || !email || !instagram || !school) {
     return NextResponse.json({ error: 'missing required fields' }, { status: 400 });
@@ -20,8 +21,10 @@ export async function POST(req: NextRequest) {
     message: message ?? null,
     shipping_address: shippingAddress ?? null,
     colorway_preference: colorwayPreference ?? null,
+    age: typeof age === 'number' ? age : null,
   });
   if (dbError) console.error('[partners] DB insert error:', dbError.message, dbError.details, dbError.hint);
+  await upsertContact({ email, name, source: 'ambassador' });
 
   if (process.env.RESEND_API_KEY) {
     try {
@@ -42,6 +45,7 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding:8px 0;color:#6B6B6B">Email</td><td style="padding:8px 0"><a href="mailto:${email}" style="color:#C66A3D">${email}</a></td></tr>
               <tr><td style="padding:8px 0;color:#6B6B6B">Instagram</td><td style="padding:8px 0"><a href="https://instagram.com/${instagram.replace('@','')}" style="color:#C66A3D">${instagram}</a></td></tr>
               <tr><td style="padding:8px 0;color:#6B6B6B">School</td><td style="padding:8px 0">${school}</td></tr>
+              <tr><td style="padding:8px 0;color:#6B6B6B">Age</td><td style="padding:8px 0">${age ?? '—'}${age && age < 18 ? ' <strong style="color:#C66A3D">(minor — credit only)</strong>' : ''}</td></tr>
               <tr><td style="padding:8px 0;color:#6B6B6B">Account type</td><td style="padding:8px 0">${accountType ?? '—'}</td></tr>
               <tr><td style="padding:8px 0;color:#6B6B6B">Followers</td><td style="padding:8px 0">${followers ?? '—'}</td></tr>
               <tr><td style="padding:8px 0;color:#6B6B6B">Colorway</td><td style="padding:8px 0">${colorwayPreference ?? '—'}</td></tr>

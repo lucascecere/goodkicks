@@ -29,9 +29,9 @@ export function AddToCartButton({ variant, productTitle, imageUrl }: AddToCartBu
   return (
     <button
       onClick={handleClick}
-      className="w-full bg-brand-rust text-white py-4 rounded font-medium hover:bg-brand-rust/90 transition-colors text-lg"
+      className="w-full bg-brand-rust text-white py-2.5 sm:py-4 rounded font-medium hover:bg-brand-rust/90 transition-colors text-sm sm:text-lg"
     >
-      pre-order
+      buy now
     </button>
   );
 }

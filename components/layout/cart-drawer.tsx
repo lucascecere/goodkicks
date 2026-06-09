@@ -39,7 +39,13 @@ export function CartDrawer() {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: items.map((i) => ({ variantId: i.variantId, quantity: i.quantity })) }),
+        body: JSON.stringify({
+          items: items.map((i) => ({
+            variantId: i.variantId,
+            quantity: i.quantity,
+            ...(i.customAttributes?.length ? { customAttributes: i.customAttributes } : {}),
+          })),
+        }),
       });
       const { url } = await res.json();
       if (url) window.location.href = url;
@@ -72,8 +78,10 @@ export function CartDrawer() {
                 </div>
               ) : (
                 <ul className="space-y-4">
-                  {items.map((item) => (
-                    <li key={item.variantId} className="flex gap-4">
+                  {items.map((item) => {
+                    const itemKey = item.cartKey ?? item.variantId;
+                    return (
+                    <li key={itemKey} className="flex gap-4">
                       <div className="w-20 h-20 rounded bg-[#F5EFE3] flex-shrink-0 overflow-hidden relative">
                         {item.imageUrl ? (
                           <Image
@@ -89,14 +97,22 @@ export function CartDrawer() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-brand-ink text-sm leading-snug">{item.productTitle}</p>
-                        <p className="text-brand-muted text-xs mt-0.5">{item.variantName}</p>
+                        {item.customAttributes?.length ? (
+                          <ul className="mt-0.5 space-y-0">
+                            {item.customAttributes.map((a) => (
+                              <li key={a.key} className="text-brand-muted text-xs">• {a.value}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-brand-muted text-xs mt-0.5">{item.variantName}</p>
+                        )}
                         <div className="flex items-center justify-between mt-2">
                           <QuantityStepper
                             quantity={item.quantity}
-                            onDecrement={() => updateQuantity(item.variantId, item.quantity - 1)}
-                            onIncrement={() => updateQuantity(item.variantId, item.quantity + 1)}
+                            onDecrement={() => updateQuantity(itemKey, item.quantity - 1)}
+                            onIncrement={() => updateQuantity(itemKey, item.quantity + 1)}
                           />
-                          <button onClick={() => removeItem(item.variantId)} aria-label={`Remove ${item.productTitle} from bag`} className="text-brand-muted hover:text-brand-ink transition-colors text-xs p-1">
+                          <button onClick={() => removeItem(itemKey)} aria-label={`Remove ${item.productTitle} from bag`} className="text-brand-muted hover:text-brand-ink transition-colors text-xs p-1">
                             <X size={14} />
                           </button>
                         </div>
@@ -105,7 +121,8 @@ export function CartDrawer() {
                         <p className="text-sm text-brand-ink">{formatCents(item.priceInCents * item.quantity)}</p>
                       </div>
                     </li>
-                  ))}
+                  );
+                  })}
                 </ul>
               )}
             </div>
@@ -123,7 +140,7 @@ export function CartDrawer() {
                 >
                   {isCheckingOut ? 'redirecting…' : 'checkout →'}
                 </button>
-                <p className="text-center text-brand-muted text-xs">free shipping on orders $65+ · taxes at checkout</p>
+                <p className="text-center text-brand-muted text-xs">$4 shipping · free on orders $35+ · taxes at checkout</p>
               </div>
             )}
           </motion.div>

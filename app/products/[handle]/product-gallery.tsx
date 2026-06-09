@@ -25,7 +25,7 @@ export function ProductGallery({ images, productTitle = 'Product' }: ProductGall
   return (
     <div className="space-y-4">
       {/* Main image */}
-      <div className="aspect-square relative rounded-lg overflow-hidden bg-brand-rule/20">
+      <div className="aspect-square relative rounded-2xl overflow-hidden bg-[#F5EFE3]">
         <Image
           src={activeImage.url}
           alt={activeImage.altText ?? productTitle}
@@ -44,7 +44,7 @@ export function ProductGallery({ images, productTitle = 'Product' }: ProductGall
               key={i}
               onClick={() => setActiveIndex(i)}
               className={[
-                'relative w-20 h-20 flex-shrink-0 rounded overflow-hidden transition-all',
+                'relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-[#F5EFE3] transition-all',
                 i === activeIndex
                   ? 'ring-2 ring-brand-rust ring-offset-2 ring-offset-brand-cream'
                   : 'ring-1 ring-brand-rule hover:ring-brand-muted',

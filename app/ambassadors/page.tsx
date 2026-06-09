@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     url: '/ambassadors',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Good Kicks Ambassador Program',
+    description: 'Free starter sack, your own discount code, earn commission on every sale.',
+    images: ['/opengraph-image.png'],
+  },
 };
 
 export default function PartnersPage() {
@@ -42,16 +48,16 @@ export default function PartnersPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-4">
               <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">the product</p>
-              <h2 className="font-display text-4xl text-brand-ink">premium materials. properly weighted. $15.</h2>
+              <h2 className="font-display text-4xl text-brand-ink">premium materials. properly weighted. $9.99.</h2>
               <p className="text-brand-muted leading-relaxed">
                 Good Kicks foot bags are made by the same crew that&apos;s been making them for 30+ years. Not the $4 Amazon junk. Not the $40 premium stuff. Just the right foot bag at the right price — built for dorm circles, lunch tables, and every campus quad that needs one.
               </p>
               <p className="text-brand-muted leading-relaxed">
-                we sell direct, ship in 2-3 weeks, and offer free shipping on orders $65+. six colorways. one circle.
+                we sell direct, ship in 1–2 weeks, and offer $4 flat-rate shipping — free on orders $35+. six colorways. one circle.
               </p>
             </div>
             <div className="grid grid-cols-3 gap-3">
-              {['#C15A3A','#5A5E68','#5BA4B4','#A89870','#D4A84B','#4A4848'].map((color, i) => ( // georgia, maine, colorado, new york, nevada, california
+              {['#C15A3A','#5A5E68','#5BA4B4','#A89870','#D4A84B','#4A4848'].map((color, i) => ( // georgia, maine, colorado, new york, nevada, massachusetts
                 <div
                   key={i}
                   className="aspect-square rounded-full shadow-sm ring-1 ring-brand-rule"
@@ -74,7 +80,7 @@ export default function PartnersPage() {
           {[
             {
               title: 'your own code.',
-              body: 'get a custom discount code tied to your school or account (e.g. OHIO15, DUKE15). your followers start at 15% off and get bigger codes (20%, 25%) as you level up.',
+              body: 'get a custom discount code tied to your school or account (e.g. OHIO15, DUKE15). your followers start at 15% off and get bigger codes (up to 20%) as you level up.',
             },
             {
               title: 'earn as you grow.',
@@ -108,11 +114,11 @@ export default function PartnersPage() {
               },
               {
                 tier: 'repping.',
-                body: 'hit 5+ tagged posts or 5+ code redemptions. bumps your code to 20% off, your commission to 12%, plus more product sent your way.',
+                body: 'hit 8+ tagged posts or 10+ code redemptions. bumps your code to 20% off, your commission to 12%, plus more product sent your way.',
               },
               {
                 tier: 'anchor.',
-                body: 'hit 15+ posts or 25+ redemptions. 25% off code, 20% commission, ongoing product support, and a shot at a custom-colorway named partnership.',
+                body: 'hit 23+ posts or 38+ redemptions. 20% off code, 20% commission, ongoing product support, and a shot at a custom-colorway named partnership.',
               },
             ].map((item) => (
               <div key={item.tier} className="bg-[#EFE8DA] rounded-xl p-8 space-y-3 border border-brand-rule">

@@ -14,6 +14,12 @@ export const metadata: Metadata = {
     url: '/blog',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The Stitch — Hacky Sack Tips, Guides & Culture',
+    description: 'Guides, buying advice, and culture pieces about hacky sack and foot bags.',
+    images: ['/opengraph-image.png'],
+  },
 };
 
 export default function BlogPage() {

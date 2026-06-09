@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 };
 
 const TIERS = [
-  { label: 'Starter', min: 0,  max: 10,  next: 'Repping',  pct: 8  },
-  { label: 'Repping', min: 11, max: 30,  next: 'Anchor',   pct: 12 },
-  { label: 'Anchor',  min: 31, max: null, next: null,       pct: 20 },
+  { label: 'Starter', min: 0,  max: 9,   next: 'Repping',  pct: 8  },
+  { label: 'Repping', min: 10, max: 37,  next: 'Anchor',   pct: 12 },
+  { label: 'Anchor',  min: 38, max: null, next: null,       pct: 20 },
 ];
 
 function getTierInfo(orders: number) {
@@ -35,16 +35,18 @@ export default async function AmbassadorStatsPage({ params }: { params: Promise<
   const supabase = createSupabaseServiceClient();
   const { data: app } = await supabase
     .from('ambassador_applications')
-    .select('name, instagram, tier_pct, approved')
+    .select('name, instagram, tier_pct, approved, age')
     .eq('discount_code', upperCode)
-    .eq('approved', true)
+    .not('discount_code', 'is', null)
     .single();
 
   if (!app) notFound();
 
-  const tierPct = (app.tier_pct as number | null) ?? 8;
-  const stats = await getAmbassadorStats(upperCode, tierPct);
+  const isMinor = typeof app.age === 'number' && app.age < 18;
+  const stats = await getAmbassadorStats(upperCode, 8); // pct placeholder; recalculated below
   const tier = getTierInfo(stats.totalOrders);
+  const tierPct = tier.pct; // always derived from actual order count, not stale DB value
+  const commissionEarned = stats.totalProfit * (tierPct / 100);
   const firstName = (app.name as string).split(' ')[0];
 
   const progressPct = tier.max
@@ -96,7 +98,7 @@ export default async function AmbassadorStatsPage({ params }: { params: Promise<
           {[
             { label: 'Orders', value: String(stats.totalOrders) },
             { label: 'Revenue Driven', value: fmt(stats.totalRevenue) },
-            { label: 'Commission', value: fmt(stats.commissionEarned) },
+            { label: isMinor ? 'Credit Earned' : 'Commission Earned', value: fmt(commissionEarned) },
           ].map((s) => (
             <div key={s.label} className="bg-white border border-brand-rule rounded-xl p-4 text-center">
               <p className="text-xs text-brand-muted uppercase tracking-wide mb-1">{s.label}</p>
@@ -105,11 +107,14 @@ export default async function AmbassadorStatsPage({ params }: { params: Promise<
           ))}
         </div>
 
-        {/* Commission note */}
+        {/* Earnings note */}
         <p className="text-brand-muted text-xs">
-          commission is calculated at {tierPct}% of order value. reach {tier.next ?? 'the top'} tier
+          {isMinor
+            ? `you earn ${tierPct}% store credit on every order through your code — redeemable on any good kicks purchase.`
+            : `you earn ${tierPct}% commission on every order through your code — paid out monthly.`
+          }{' '}reach {tier.next ?? 'the top'} tier
           {tier.next ? ` (${tier.max! + 1}+ orders) to earn ${TIERS.find(t => t.label === tier.next)?.pct}%` : ' — you\'re at the top'}.
-          we settle commissions monthly — any questions, reply to your welcome email.
+          {isMinor ? ' credit is applied monthly — any questions, reply to your welcome email.' : ' any questions, reply to your welcome email.'}
         </p>
 
         {/* Recent orders */}
@@ -125,7 +130,7 @@ export default async function AmbassadorStatsPage({ params }: { params: Promise<
                     <p className="text-sm font-medium text-brand-ink">{order.name}</p>
                     <p className="text-xs text-brand-muted">{fmtDate(order.createdAt)}</p>
                   </div>
-                  <p className="text-sm text-brand-ink font-medium">{fmt(order.amount)}</p>
+                  <p className="text-sm text-brand-ink font-medium">{fmt(order.revenue)}</p>
                 </div>
               ))}
             </div>
