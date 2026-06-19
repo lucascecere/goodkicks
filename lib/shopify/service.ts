@@ -5,7 +5,7 @@ import type { ShopifyCart } from './types';
 function shopifyFetch(query: string, variables?: Record<string, unknown>) {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-  return fetch(`https://${domain}/api/2024-10/graphql.json`, {
+  return fetch(`https://${domain}/api/2026-04/graphql.json`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
