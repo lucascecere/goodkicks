@@ -104,15 +104,24 @@ export async function createShopifyCart(
   lines: Array<{ merchandiseId: string; quantity: number }>,
   discountCodes?: string[]
 ): Promise<{ cartId: string; checkoutUrl: string } | null> {
+  console.log('[createShopifyCart] domain:', process.env.SHOPIFY_STORE_DOMAIN, 'token set:', !!process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN);
   try {
     const { data, errors } = await storefrontClient.request<CartCreateResult>(
       CART_CREATE_MUTATION,
       { variables: { lines, discountCodes: discountCodes ?? [] } }
     );
-    if (errors || !data?.cartCreate?.cart) return null;
+    if (errors) {
+      console.error('[createShopifyCart] errors:', JSON.stringify(errors));
+      return null;
+    }
+    if (!data?.cartCreate?.cart) {
+      console.error('[createShopifyCart] no cart in response:', JSON.stringify(data));
+      return null;
+    }
     const cart = data.cartCreate.cart;
     return { cartId: cart.id, checkoutUrl: cart.checkoutUrl };
-  } catch {
+  } catch (err) {
+    console.error('[createShopifyCart] threw:', err);
     return null;
   }
 }
