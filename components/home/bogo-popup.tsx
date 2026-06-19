@@ -60,7 +60,7 @@ export function BogoPopup() {
           {step === 'offer' ? (
             <>
               <div className="text-center space-y-2">
-                <span className="inline-block bg-brand-rust text-white text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full">limited time</span>
+                <span className="inline-block bg-brand-green text-white text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full">limited time</span>
                 <h2 className="font-display text-4xl text-brand-ink leading-tight">buy one,<br />get one free.</h2>
                 <p className="text-brand-muted text-sm">two sacks for the price of one. drop your email and we&apos;ll send your code.</p>
               </div>
@@ -76,7 +76,7 @@ export function BogoPopup() {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="w-full bg-brand-rust text-white py-3.5 rounded-lg font-medium text-lg hover:bg-brand-rust/90 transition-colors disabled:opacity-60"
+                  className="w-full bg-brand-green text-white py-3.5 rounded-lg font-medium text-lg hover:bg-brand-green/90 transition-colors disabled:opacity-60"
                 >
                   {sending ? 'sending…' : 'get my free sack →'}
                 </button>
@@ -92,7 +92,7 @@ export function BogoPopup() {
               <p className="text-brand-muted text-xs">add 2 sacks to your cart · enter code at checkout · second one&apos;s free.</p>
               <button
                 onClick={dismiss}
-                className="w-full bg-brand-rust text-white py-3.5 rounded-lg font-medium text-lg hover:bg-brand-rust/90 transition-colors"
+                className="w-full bg-brand-green text-white py-3.5 rounded-lg font-medium text-lg hover:bg-brand-green/90 transition-colors"
               >
                 shop now →
               </button>
