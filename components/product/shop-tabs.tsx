@@ -40,7 +40,7 @@ export function IndividualCard({ product }: { product: ShopProduct }) {
           )}
           {product.lowStock && (
             <span className="absolute top-2 right-2 bg-brand-rust text-white text-[10px] font-semibold uppercase tracking-widest px-2 py-1 rounded">
-              low stock
+              5 left
             </span>
           )}
         </div>
