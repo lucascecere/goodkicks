@@ -60,7 +60,7 @@ export function BogoPopup() {
           {step === 'offer' ? (
             <>
               <div className="text-center space-y-2">
-                <span className="inline-block bg-brand-green text-white text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full">limited time</span>
+                <span className="inline-block bg-brand-rust text-white text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full">limited time</span>
                 <h2 className="font-display text-4xl text-brand-ink leading-tight">buy one,<br />get one free.</h2>
                 <p className="text-brand-muted text-sm">two sacks for the price of one. drop your email and we&apos;ll send your code.</p>
               </div>
