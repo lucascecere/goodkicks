@@ -5,6 +5,7 @@ import { Pillars } from '@/components/home/pillars';
 import { StitchPromo } from '@/components/home/stitch-promo';
 import { InstagramFeed } from '@/components/home/instagram-feed';
 import { AmbassadorPromo } from '@/components/home/ambassador-promo';
+import { BogoSection } from '@/components/home/bogo-section';
 import { FAQ } from '@/components/home/faq';
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function HomePage() {
       <Hero />
       <Pillars />
       <FeaturedProduct />
+      <BogoSection />
       <AmbassadorPromo />
       <InstagramFeed />
       <StitchPromo />

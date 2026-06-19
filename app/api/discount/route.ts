@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 
-const VALID_CODES = new Set(['KICKS10', 'KICKS15', 'KICKS20', 'FREESHIP']);
+const VALID_CODES = new Set(['KICKS10', 'KICKS15', 'KICKS20', 'FREESHIP', 'BOGOKICKS']);
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
