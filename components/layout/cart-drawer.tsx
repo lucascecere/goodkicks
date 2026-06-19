@@ -15,6 +15,7 @@ function formatCents(cents: number): string {
 export function CartDrawer() {
   const { items, cartOpen, closeCart, subtotalCents, removeItem, updateQuantity } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -35,6 +36,7 @@ export function CartDrawer() {
 
   async function handleCheckout() {
     setIsCheckingOut(true);
+    setCheckoutError(false);
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -48,9 +50,15 @@ export function CartDrawer() {
         }),
       });
       const { url } = await res.json();
-      if (url) window.location.href = url;
+      if (url) {
+        window.location.href = url;
+      } else {
+        setIsCheckingOut(false);
+        setCheckoutError(true);
+      }
     } catch {
       setIsCheckingOut(false);
+      setCheckoutError(true);
     }
   }
 
@@ -140,6 +148,9 @@ export function CartDrawer() {
                 >
                   {isCheckingOut ? 'redirecting…' : 'checkout →'}
                 </button>
+                {checkoutError && (
+                  <p className="text-center text-red-600 text-xs">something went wrong — please try again.</p>
+                )}
                 <p className="text-center text-brand-muted text-xs">$4 shipping · free on orders $35+ · taxes at checkout</p>
               </div>
             )}
