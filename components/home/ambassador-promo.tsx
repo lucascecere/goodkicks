@@ -8,7 +8,7 @@ const perks = [
 
 export function AmbassadorPromo() {
   return (
-    <section className="py-20 px-6 sm:px-8 bg-[#EFE8DA]">
+    <section id="ambassadors" className="scroll-mt-24 py-20 px-6 sm:px-8 bg-[#EFE8DA]">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
@@ -22,7 +22,7 @@ export function AmbassadorPromo() {
               we partner with high school and college hacky sack accounts — give your followers 20% off with your own code, pay you 8–10% commission on every sale, and ship you a free starter sack to kick things off.
             </p>
             <Link
-              href="/ambassadors"
+              href="/contact"
               className="inline-block bg-brand-rust text-white px-7 py-3.5 rounded font-medium hover:bg-brand-rust/90 transition-colors"
             >
               apply to be an ambassador →

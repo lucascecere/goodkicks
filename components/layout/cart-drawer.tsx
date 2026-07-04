@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { X } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
+import { BrandLogo } from '@/components/brand/brand-logo';
 
 function formatCents(cents: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(cents / 100);
@@ -66,11 +67,11 @@ export function CartDrawer() {
     <AnimatePresence>
       {cartOpen && (
         <>
-          <motion.div key="backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="fixed inset-0 bg-brand-ink/40 z-40" onClick={closeCart} aria-hidden="true" />
-          <motion.div key="drawer" role="dialog" aria-modal="true" aria-label="Your bag" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'tween', duration: 0.25, ease: 'easeOut' }} className="fixed right-0 top-0 h-full w-full max-w-[420px] bg-brand-cream z-50 flex flex-col shadow-2xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-brand-rule">
-              <h2 className="font-display text-xl">your bag</h2>
-              <button ref={closeBtnRef} onClick={closeCart} aria-label="Close cart" className="p-2 text-brand-muted hover:text-brand-ink transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-rust">
+          <motion.div key="backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="fixed inset-0 bg-text/40 z-40" onClick={closeCart} aria-hidden="true" />
+          <motion.div key="drawer" role="dialog" aria-modal="true" aria-label="Your bag" initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'tween', duration: 0.25, ease: 'easeOut' }} className="fixed right-0 top-0 h-full w-full max-w-[420px] bg-bg z-50 flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-rule">
+              <h2 className="font-heading uppercase tracking-[0.12em] text-lg text-text">Your bag</h2>
+              <button ref={closeBtnRef} onClick={closeCart} aria-label="Close cart" className="p-2 text-muted hover:text-text transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
                 <X size={18} />
               </button>
             </div>
@@ -78,11 +79,9 @@ export function CartDrawer() {
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-3">
-                  <div className="relative w-28 h-20">
-                    <Image src="/brand/logo.png" alt="Good Kicks" fill className="object-contain" />
-                  </div>
-                  <p className="text-brand-muted text-sm">your bag is empty.</p>
-                  <Link href="/shop" onClick={closeCart} className="text-brand-rust hover:underline text-sm">find your kick →</Link>
+                  <BrandLogo variant="script" className="h-10 w-auto opacity-90" />
+                  <p className="text-muted text-sm">Your bag is empty.</p>
+                  <Link href="/shop" onClick={closeCart} className="text-accent hover:underline text-sm">find your town →</Link>
                 </div>
               ) : (
                 <ul className="space-y-4">
@@ -90,43 +89,47 @@ export function CartDrawer() {
                     const itemKey = item.cartKey ?? item.variantId;
                     return (
                     <li key={itemKey} className="flex gap-4">
-                      <div className="w-20 h-20 rounded bg-[#F5EFE3] flex-shrink-0 overflow-hidden relative">
+                      <div className="w-20 h-20 rounded bg-surface flex-shrink-0 overflow-hidden relative">
                         {item.imageUrl ? (
                           <Image
                             src={item.imageUrl}
                             alt={item.productTitle}
                             fill
                             sizes="80px"
-                            className="object-contain p-1.5"
+                            className="object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full bg-brand-rule" />
+                          <div className="w-full h-full bg-rule" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-brand-ink text-sm leading-snug">{item.productTitle}</p>
-                        {item.customAttributes?.length ? (
-                          <ul className="mt-0.5 space-y-0">
-                            {item.customAttributes.map((a) => (
-                              <li key={a.key} className="text-brand-muted text-xs">• {a.value}</li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-brand-muted text-xs mt-0.5">{item.variantName}</p>
-                        )}
+                        <p className="font-medium text-text text-sm leading-snug">{item.productTitle}</p>
+                        {(() => {
+                          // Hide internal attributes (keys starting with "_", e.g. _brand).
+                          const shown = item.customAttributes?.filter((a) => !a.key.startsWith('_')) ?? [];
+                          return shown.length ? (
+                            <ul className="mt-0.5 space-y-0">
+                              {shown.map((a) => (
+                                <li key={a.key} className="text-muted text-xs">• {a.value}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-muted text-xs mt-0.5">{item.variantName}</p>
+                          );
+                        })()}
                         <div className="flex items-center justify-between mt-2">
                           <QuantityStepper
                             quantity={item.quantity}
                             onDecrement={() => updateQuantity(itemKey, item.quantity - 1)}
                             onIncrement={() => updateQuantity(itemKey, item.quantity + 1)}
                           />
-                          <button onClick={() => removeItem(itemKey)} aria-label={`Remove ${item.productTitle} from bag`} className="text-brand-muted hover:text-brand-ink transition-colors text-xs p-1">
+                          <button onClick={() => removeItem(itemKey)} aria-label={`Remove ${item.productTitle} from bag`} className="text-muted hover:text-text transition-colors text-xs p-1">
                             <X size={14} />
                           </button>
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-sm text-brand-ink">{formatCents(item.priceInCents * item.quantity)}</p>
+                        <p className="text-sm text-text">{formatCents(item.priceInCents * item.quantity)}</p>
                       </div>
                     </li>
                   );
@@ -136,22 +139,22 @@ export function CartDrawer() {
             </div>
 
             {items.length > 0 && (
-              <div className="border-t border-brand-rule px-6 py-4 space-y-3">
+              <div className="border-t border-rule px-6 py-4 space-y-3">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-brand-muted">subtotal</span>
-                  <span className="font-medium text-brand-ink">{formatCents(subtotalCents)}</span>
+                  <span className="text-muted">Subtotal</span>
+                  <span className="font-medium text-text">{formatCents(subtotalCents)}</span>
                 </div>
                 <button
                   onClick={handleCheckout}
                   disabled={isCheckingOut}
-                  className="block w-full bg-brand-rust text-white text-center py-3.5 rounded font-medium hover:bg-brand-rust/90 transition-colors disabled:opacity-60"
+                  className="block w-full bg-accent text-accent-contrast text-center py-3.5 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm hover:bg-accent/90 transition-colors disabled:opacity-60"
                 >
-                  {isCheckingOut ? 'redirecting…' : 'checkout →'}
+                  {isCheckingOut ? 'Redirecting…' : 'Checkout →'}
                 </button>
                 {checkoutError && (
-                  <p className="text-center text-red-600 text-xs">something went wrong — please try again.</p>
+                  <p className="text-center text-red-600 text-xs">Something went wrong — please try again.</p>
                 )}
-                <p className="text-center text-brand-muted text-xs">$4 shipping · free on orders $35+ · taxes at checkout</p>
+                <p className="text-center text-muted text-xs">Shipping &amp; taxes calculated at checkout</p>
               </div>
             )}
           </motion.div>

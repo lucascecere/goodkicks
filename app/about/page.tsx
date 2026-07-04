@@ -1,92 +1,86 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { EditorialSplit } from '@/components/townies/editorial-split';
+import { BrandLogo } from '@/components/brand/brand-logo';
+import { BrandPattern } from '@/components/townies/brand-pattern';
 
 export const metadata: Metadata = {
-  title: 'About Good Kicks — The Story Behind the Foot Bag',
+  title: 'About Townies — Town-Pride Apparel from Massachusetts',
   description:
-    'Two college friends, a quiet renaissance, and one simple bet. How Good Kicks became the foot bag brand built for campus circles.',
+    'The town is the hero, Townies is the label. How a Massachusetts apparel brand started on the South Shore — and grew out of Good Kicks.',
   alternates: { canonical: '/about' },
   openGraph: {
-    title: 'About Good Kicks — The Story Behind the Foot Bag',
-    description: 'Two college friends, a quiet renaissance, and one simple bet. How Good Kicks became the foot bag brand built for campus circles.',
+    title: 'About Townies — Town-Pride Apparel from Massachusetts',
+    description: 'The town is the hero, Townies is the label.',
     url: '/about',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'About Good Kicks — The Story Behind the Foot Bag',
-    description: 'Two college friends, a quiet renaissance, and one simple bet.',
-    images: ['/opengraph-image.png'],
   },
 };
 
 export default function AboutPage() {
   return (
-    <div className="max-w-2xl mx-auto px-4 py-16 sm:py-24">
-      {/* Hero text */}
-      <h1 className="font-display text-4xl sm:text-5xl text-brand-ink mb-12 leading-tight">
-        two college friends. a quiet renaissance. one simple bet.
-      </h1>
+    <div className="bg-town-cream">
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <BrandPattern variant="ma" color="forest" opacity={0.06} size={160} fade="b" />
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-8 pt-16 sm:pt-24 pb-6 text-center">
+        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-4">
+          From Massachusetts, for Massachusetts
+        </p>
+        <h1 className="font-script text-5xl sm:text-7xl text-town-navy mb-6">
+          Rep your town.
+        </h1>
+        <p className="text-town-muted leading-relaxed text-lg">
+          We make one thing well: apparel that puts your hometown front and center. The town
+          name is the headline. Townies is just the small label on the tag — the part that
+          says it&apos;s made right.
+        </p>
+        </div>
+      </section>
 
-      {/* Story */}
-      <div className="space-y-6 text-brand-muted leading-relaxed">
-        <p>
-          it started the way most good things do: with a circle. not a brand, not a business — just a group
-          of people kicking a little bag around a quad, trying not to let it hit the ground.
-        </p>
-        <p>
-          somewhere in there we realized that the hacky sack was dying — not because people stopped caring,
-          but because nobody was doing it right. the good ones were hard to find. the cheap ones fell apart
-          in a week. and nobody was talking to the communities keeping it alive.
-        </p>
-        <p>
-          so we started Good Kicks. two college friends who genuinely believe the circle is worth keeping going.
-        </p>
-      </div>
+      <EditorialSplit
+        eyebrow="The principle"
+        headline="Town first. Always."
+        body="No loud logos. No state-shape clichés stamped across the chest. Just where you're from, set in clean collegiate type and built into heavyweight pieces you'll actually wear out. The Massachusetts mark stays small — a quiet thread that ties every town together."
+        cta={{ href: '/shop', label: 'see the towns' }}
+        imageSrc="/brand/lifestyle/town-hingham.jpg"
+        imageAlt="Hingham, Massachusetts town center"
+        imageLabel="Townies"
+        tone="forest"
+      />
 
-      {/* Image break placeholder */}
-      <div className="my-16 aspect-video bg-brand-rule rounded-lg flex items-center justify-center text-brand-muted">
-        <span className="text-sm">the 25 sacks that started it.</span>
-      </div>
-
-      {/* Product section */}
-      <div className="space-y-4 text-brand-muted leading-relaxed">
-        <h2 className="font-display text-2xl text-brand-ink">the product</h2>
-        <p>
-          we partnered with Global Village Imports, a co-op that&apos;s been making quality foot bags for over 30 years.
-          when you buy a Good Kick, you&apos;re getting the same bag that serious circles have used for decades —
-          just with our name on it, and our commitment behind it.
-        </p>
-      </div>
+      <EditorialSplit
+        eyebrow="Our sister brand"
+        headline="Good Kicks taught us how."
+        body="Before Townies there was Good Kicks — premium foot bags built to make the circle bigger. It was small, it was scrappy, and it taught us how to make something people genuinely keep. Good Kicks is still going strong — a live line of its own — and Townies is what grew out of it."
+        cta={{ href: '/goodkicks', label: 'shop good kicks' }}
+        imageAlt="Good Kicks foot bags"
+        imageLabel="Good Kicks"
+        reverse
+        tone="cream"
+      />
 
       {/* Mission */}
-      <div className="my-16 text-center space-y-4">
-        <p className="text-brand-muted leading-relaxed">
-          we&apos;re not trying to be the biggest name in foot bags. we&apos;re trying to be the right one.
-          the one that shows up when your campus crew needs a restock. the one that goes in every freshman&apos;s
-          care package. the one that keeps the circle going.
+      <section className="relative overflow-hidden bg-town-cream">
+        <BrandPattern variant="ma" color="forest" opacity={0.05} size={150} fade="radial" />
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
+        <BrandLogo variant="arch" className="w-60 sm:w-72 mx-auto mb-8" />
+        <p className="font-block uppercase text-4xl sm:text-5xl text-town-navy leading-[0.95] mb-6">
+          Small towns. Strong roots.
         </p>
-        <p className="font-display text-4xl sm:text-5xl text-brand-ink mt-8">
-          make the circle bigger.
+        <p className="text-town-muted leading-relaxed mb-10">
+          We&apos;re not trying to be the biggest apparel brand in New England. We&apos;re trying
+          to be the one your town actually wears — the shirt that shows up at the reunion, the
+          hoodie that goes off to college, the hat that says exactly where you&apos;re from.
         </p>
-        {/* Color block decoration */}
-        <div className="flex justify-center gap-1 mt-4">
-          <div className="w-8 h-1.5 bg-brand-rust rounded-full" />
-          <div className="w-8 h-1.5 bg-brand-blue rounded-full" />
-          <div className="w-8 h-1.5 bg-brand-green rounded-full" />
-        </div>
-      </div>
-
-      {/* CTA band */}
-      <div className="rounded-xl bg-brand-rust text-white p-8 text-center space-y-4 mt-12">
-        <p className="font-display text-2xl">get one going.</p>
         <Link
-          href="/"
-          className="inline-flex items-center justify-center bg-white text-brand-rust px-6 py-3 rounded font-medium hover:bg-brand-cream transition-colors"
+          href="/shop"
+          className="inline-flex items-center bg-town-forest text-white px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-forest/90 transition-colors"
         >
-          shop the good kick →
+          Find your town
         </Link>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

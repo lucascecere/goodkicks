@@ -17,13 +17,13 @@ export function Hero() {
           </p>
           <div className="flex flex-wrap gap-4 pt-2 justify-center lg:justify-start">
             <Link
-              href="/shop"
+              href="/goodkicks/shop"
               className="inline-flex items-center justify-center bg-brand-rust text-white px-7 py-3.5 rounded font-medium hover:bg-brand-rust/90 transition-colors"
             >
               shop the collection
             </Link>
             <Link
-              href="/ambassadors"
+              href="/goodkicks#ambassadors"
               className="inline-flex items-center text-brand-ink hover:text-brand-rust transition-colors font-medium py-3.5"
             >
               become an ambassador →

@@ -5,7 +5,6 @@ import { CartProvider } from '@/lib/cart/cart-context';
 import { Header } from './header';
 import { Footer } from './footer';
 import { CartDrawer } from './cart-drawer';
-import { BogoPopup } from '@/components/home/bogo-popup';
 
 export function SiteWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -14,16 +13,20 @@ export function SiteWrapper({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
+  // Good Kicks is a scoped mini-site: suppress Townies chrome (its own header/
+  // footer come from app/goodkicks/layout.tsx) but KEEP the shared CartProvider +
+  // CartDrawer so the cart is shared across both brands. data-brand scopes the
+  // semantic CSS vars for the whole subtree — including the shared CartDrawer.
+  const isGoodKicks = pathname === '/goodkicks' || pathname.startsWith('/goodkicks/');
+
   return (
-    <CartProvider>
-      <div className="bg-brand-rust text-white text-center py-2 px-4 text-xs tracking-wide font-medium">
-        buy one get one free &nbsp;·&nbsp; use code <span className="font-mono font-bold tracking-widest">BOGOKICKS</span> at checkout
-      </div>
-      <Header />
-      <main id="main-content">{children}</main>
-      <Footer />
-      <CartDrawer />
-      <BogoPopup />
-    </CartProvider>
+    <div data-brand={isGoodKicks ? 'goodkicks' : undefined}>
+      <CartProvider>
+        {!isGoodKicks && <Header />}
+        <main id="main-content">{children}</main>
+        {!isGoodKicks && <Footer />}
+        <CartDrawer />
+      </CartProvider>
+    </div>
   );
 }

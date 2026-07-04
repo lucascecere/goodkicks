@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand palette */
+  /* Good Kicks palette (retained — used by /clearance + legacy GK routes) */
   --color-brand-cream: #F5EFE3;
   --color-brand-rust: #C66A3D;
   --color-brand-blue: #5C6F82;
@@ -10,9 +10,52 @@
   --color-brand-muted: #6B6B6B;
   --color-brand-rule: #D9D2C2;
 
-  /* Typography */
+  /* Townies palette — navy text/UI, cream page, forest accents/CTAs */
+  --color-town-navy: #0D1B2A;
+  --color-town-forest: #2F4F3A;
+  --color-town-cream: #F2EFE8;
+  --color-town-stone: #8F918D;
+  --color-town-white: #FFFFFF;
+  --color-town-rule: #E0DCD2;
+  --color-town-muted: #5C6168;
+
+  /* Typography
+     - font-display (DM Serif) is left UNTOUCHED so the 38 existing GK/admin
+       files render identically.
+     - Townies type tokens: block = collegiate headline face (town names +
+       structural headers), script = brand-level signature, body = Inter.
+       next/font/local can replace --font-anton / --font-sacramento later
+       with zero token changes. */
   --font-display: var(--font-dm-serif);
   --font-sans: var(--font-inter);
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-block: var(--font-rokkitt), "Rockwell", "Arial Black", serif;
+  --font-script: var(--font-yellowtail), "Brush Script MT", cursive;
+
+  /* Semantic (brand-scoped) tokens — defaults = Townies. Shared chrome (cart
+     drawer, shared ui primitives) uses these so it recolors per active brand.
+     Overridden to Good Kicks under [data-brand="goodkicks"] below. */
+  --color-bg: var(--color-town-cream);
+  --color-surface: var(--color-town-white);
+  --color-text: var(--color-town-navy);
+  --color-muted: var(--color-town-muted);
+  --color-accent: var(--color-town-forest);
+  --color-accent-contrast: var(--color-town-white);
+  --color-rule: var(--color-town-rule);
+  --font-heading: var(--font-block);
+}
+
+/* Good Kicks theme scope — redefines the semantic tokens for the /goodkicks
+   subtree (and the shared CartDrawer when a GK route is active). */
+[data-brand="goodkicks"] {
+  --color-bg: var(--color-brand-cream);
+  --color-surface: #FFFFFF;
+  --color-text: var(--color-brand-ink);
+  --color-muted: var(--color-brand-muted);
+  --color-accent: var(--color-brand-rust);
+  --color-accent-contrast: #FFFFFF;
+  --color-rule: var(--color-brand-rule);
+  --font-heading: var(--font-display);
 }
 
 @layer base {

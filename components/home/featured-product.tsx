@@ -45,7 +45,7 @@ export function FeaturedProduct() {
               six colorways. one circle. pick your state and keep the game going — made by the same crew that&apos;s been doing it for 30+ years.
             </p>
             <Link
-              href="/shop"
+              href="/goodkicks/shop"
               className="inline-flex items-center justify-center bg-brand-rust text-white px-8 py-4 rounded font-medium text-lg hover:bg-brand-rust/90 transition-colors"
             >
               shop all colorways →

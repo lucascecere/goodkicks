@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { DM_Serif_Display, Inter } from 'next/font/google';
-import Script from 'next/script';
+import { DM_Serif_Display, Inter, Rokkitt, Yellowtail } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SiteWrapper } from '@/components/layout/site-wrapper';
 import './globals.css';
 
+// Retained for the GK clearance section + legacy GK/admin routes.
 const dmSerifDisplay = DM_Serif_Display({
   subsets: ['latin'],
   variable: '--font-dm-serif',
@@ -19,16 +19,42 @@ const inter = Inter({
   display: 'swap',
 });
 
+// Townies "College Block" stand-in (town names + structural headers).
+// Rokkitt (bold slab serif) is the closest free match to the brand kit's bold
+// collegiate-slab logo lettering — heavier than Graduate, matches the logo art.
+// Loaded heavy-only so every `font-block` element renders bold by default.
+// Swap to next/font/local "College Block" when a real file lands — token unchanged.
+const rokkitt = Rokkitt({
+  subsets: ['latin'],
+  variable: '--font-rokkitt',
+  weight: ['700', '800'],
+  display: 'swap',
+});
+
+// Townies brand-level signature "Script" stand-in (hero signature, footer).
+// Yellowtail = vintage baseball/sports script — closest free match to the brand
+// kit's "Script". Swap to next/font/local with the real file later (token stays
+// --font-script, so no downstream changes).
+const yellowtail = Yellowtail({
+  subsets: ['latin'],
+  variable: '--font-yellowtail',
+  weight: '400',
+  display: 'swap',
+});
+
+// goodkicks.co stays primary until the townies.shop cutover.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://goodkicks.co';
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://goodkicks.co'),
+  metadataBase: new URL(siteUrl),
   title: {
-    template: '%s | Good Kicks',
-    default: 'Good Kicks — Make the circle bigger.',
+    template: '%s | Townies',
+    default: 'Townies — Rep Your Town.',
   },
   description:
-    'Premium foot bags built for dorm circles, dining-hall tosses, and every backpack that needs one.',
+    'Massachusetts town-pride apparel. The town is the hero. Starting with the South Shore — Scituate, Marshfield, Hingham, Weymouth, Hanover and more.',
   openGraph: {
-    siteName: 'Good Kicks',
+    siteName: 'Townies',
     type: 'website',
     locale: 'en_US',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
@@ -59,7 +85,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSerifDisplay.variable} ${inter.variable}`}
+      className={`${dmSerifDisplay.variable} ${inter.variable} ${rokkitt.variable} ${yellowtail.variable}`}
     >
       <body>
         <script
@@ -69,22 +95,22 @@ export default function RootLayout({
               {
                 '@context': 'https://schema.org',
                 '@type': 'Organization',
-                name: 'Good Kicks',
-                url: 'https://goodkicks.co',
-                logo: 'https://goodkicks.co/icon.png',
-                sameAs: ['https://www.instagram.com/goodkicksco'],
-                description: 'Premium foot bags — what everyone calls hacky sacks — built for college circles and everyone keeping the game going.',
+                name: 'Townies',
+                url: siteUrl,
+                logo: `${siteUrl}/icon.png`,
+                sameAs: ['https://www.instagram.com/townies'],
+                description: 'Massachusetts town-pride apparel. The town is the hero, Townies is the label.',
               },
               {
                 '@context': 'https://schema.org',
                 '@type': 'WebSite',
-                name: 'Good Kicks',
-                url: 'https://goodkicks.co',
+                name: 'Townies',
+                url: siteUrl,
                 potentialAction: {
                   '@type': 'SearchAction',
                   target: {
                     '@type': 'EntryPoint',
-                    urlTemplate: 'https://goodkicks.co/shop?q={search_term_string}',
+                    urlTemplate: `${siteUrl}/shop?q={search_term_string}`,
                   },
                   'query-input': 'required name=search_term_string',
                 },
@@ -94,24 +120,12 @@ export default function RootLayout({
         />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-rust text-white px-4 py-2 rounded z-[100]"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-town-forest text-white px-4 py-2 rounded z-[100]"
         >
           Skip to content
         </a>
         <SiteWrapper>{children}</SiteWrapper>
         <Analytics />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-7M4VXBHXB7"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-7M4VXBHXB7');
-          `}
-        </Script>
       </body>
     </html>
   );

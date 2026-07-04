@@ -1,30 +1,33 @@
 import type { Metadata } from 'next';
 import { ContactForms } from './contact-forms';
+import { BrandPattern } from '@/components/townies/brand-pattern';
 
 export const metadata: Metadata = {
-  title: 'Contact Good Kicks — Bulk Orders, Questions & Partnerships',
+  title: 'Contact Townies — Request a Town, Wholesale & Questions',
   description:
-    'Get in touch with Good Kicks. Campus bulk orders, sack accounts, partnerships, or just questions about foot bags and hacky sacks — we answer everything.',
+    'Get in touch with Townies. Request your hometown, ask about wholesale for your shop, or just say hi — we answer everything.',
   alternates: { canonical: '/contact' },
   openGraph: {
-    title: 'Contact Good Kicks',
-    description: 'Campus bulk orders, partnerships, or just questions — we answer everything.',
+    title: 'Contact Townies',
+    description: 'Request your town, wholesale, or just questions — we answer everything.',
     url: '/contact',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Contact Good Kicks',
-    description: 'Bulk orders, partnerships, or just questions — we answer everything.',
-    images: ['/opengraph-image.png'],
   },
 };
 
 export default function ContactPage() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
-      <h1 className="font-display text-4xl sm:text-5xl text-brand-ink mb-12">get in touch.</h1>
-      <ContactForms />
+    <div className="relative overflow-hidden bg-town-cream min-h-screen">
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={160} fade="b" />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
+        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
+          We&apos;re listening
+        </p>
+        <h1 className="font-block uppercase text-5xl sm:text-6xl text-town-navy mb-10">
+          Get in touch.
+        </h1>
+        <ContactForms />
+      </div>
     </div>
   );
 }

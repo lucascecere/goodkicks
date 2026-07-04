@@ -2,24 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Search, User } from 'lucide-react';
 import { CartIconButton } from './cart-icon-button';
+import { BrandLogo } from '@/components/brand/brand-logo';
 import { cn } from '@/lib/utils';
 
+// Minimal, category-led nav — town-first storefront keeps the chrome quiet.
 const navLinks = [
-  { href: '/shop', label: 'shop' },
-  { href: '/ambassadors', label: 'ambassadors' },
-  { href: '/blog', label: 'the stitch' },
-  { href: '/contact', label: 'contact' },
+  { href: '/shop', label: 'Towns' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
 ];
+
+// Accounts + policies live on Shopify-hosted pages — link out.
+const ACCOUNT_URL = 'https://goodkicks.myshopify.com/account';
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 80);
+    const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -29,49 +32,52 @@ export function Header() {
       className={cn(
         'sticky top-0 z-50 transition-all duration-300',
         scrolled
-          ? 'bg-brand-cream/95 backdrop-blur-sm border-b border-brand-rule shadow-sm'
-          : 'bg-transparent'
+          ? 'bg-town-cream/95 backdrop-blur-sm border-b border-town-rule'
+          : 'bg-town-cream/0 border-b border-transparent',
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[10px] grid grid-cols-3 items-center">
-        {/* Left: desktop nav / mobile hamburger */}
-        <div className="flex items-center">
-          <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm tracking-wide text-brand-ink/80 hover:text-brand-rust transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        {/* Left: mobile hamburger + script wordmark */}
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden p-2 text-brand-ink hover:text-brand-rust transition-colors"
+            className="md:hidden p-2 -ml-2 text-town-navy hover:text-town-forest transition-colors"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
+          <BrandLogo variant="script" href="/" className="h-7 sm:h-8 w-auto" alt="Townies — home" priority />
         </div>
 
-        {/* Center: logo */}
-        <div className="flex justify-center">
-          <Link href="/" className="flex-shrink-0">
-            <Image
-              src="/brand/logo.png"
-              alt="Good Kicks Foot Bags"
-              width={80}
-              height={80}
-              style={{ height: '80px', width: 'auto' }}
-              priority
-            />
+        {/* Center: nav */}
+        <nav className="hidden md:flex items-center gap-9" aria-label="Main navigation">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-xs uppercase tracking-[0.18em] text-town-navy/80 hover:text-town-forest transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Right: utility icons */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Link
+            href="/shop"
+            aria-label="Search towns"
+            className="p-2 text-town-navy hover:text-town-forest transition-colors"
+          >
+            <Search size={19} />
           </Link>
-        </div>
-
-        {/* Right: cart */}
-        <div className="flex items-center justify-end">
+          <a
+            href={ACCOUNT_URL}
+            aria-label="Account"
+            className="hidden sm:inline-flex p-2 text-town-navy hover:text-town-forest transition-colors"
+          >
+            <User size={19} />
+          </a>
           <CartIconButton />
         </div>
       </div>
@@ -79,7 +85,7 @@ export function Header() {
       {/* Mobile nav */}
       {mobileOpen && (
         <nav
-          className="md:hidden bg-brand-cream border-t border-brand-rule px-4 pb-4 flex flex-col gap-1"
+          className="md:hidden bg-town-cream border-t border-town-rule px-4 pb-4 flex flex-col"
           aria-label="Mobile navigation"
         >
           {navLinks.map((link) => (
@@ -87,20 +93,18 @@ export function Header() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="py-3 text-brand-ink hover:text-brand-rust transition-colors border-b border-brand-rule/50"
+              className="py-3 text-sm uppercase tracking-[0.15em] text-town-navy hover:text-town-forest transition-colors border-b border-town-rule/60"
             >
               {link.label}
             </Link>
           ))}
-          <div className="pt-4 pb-1">
-            <Link
-              href="/ambassadors"
-              onClick={() => setMobileOpen(false)}
-              className="block w-full bg-brand-rust text-white text-center py-3 rounded font-medium hover:bg-brand-rust/90 transition-colors"
-            >
-              get a discount today
-            </Link>
-          </div>
+          <Link
+            href="/goodkicks"
+            onClick={() => setMobileOpen(false)}
+            className="py-3 text-sm uppercase tracking-[0.15em] text-town-muted hover:text-town-forest transition-colors"
+          >
+            Good Kicks
+          </Link>
         </nav>
       )}
     </header>

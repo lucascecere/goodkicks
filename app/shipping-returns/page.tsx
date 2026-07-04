@@ -1,70 +1,96 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { BrandPattern } from '@/components/townies/brand-pattern';
 
 export const metadata: Metadata = {
-  title: 'Shipping & Returns — Good Kicks',
-  description: '$4 flat rate shipping on all orders. Free shipping on orders $35+. Made-to-order foot bags ship in 1–2 weeks. Read our full shipping and returns policy.',
+  title: 'Shipping & Returns — Townies',
+  description:
+    'How Townies ships and handles returns. Town-pride apparel shipped from Massachusetts, with a straightforward returns policy.',
   alternates: { canonical: '/shipping-returns' },
   openGraph: {
-    title: 'Shipping & Returns — Good Kicks',
-    description: '$4 flat rate shipping. Free on orders $35+. Ships in 1–2 weeks.',
+    title: 'Shipping & Returns — Townies',
+    description: 'Town-pride apparel shipped from Massachusetts. Our shipping & returns policy.',
     url: '/shipping-returns',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Shipping & Returns — Good Kicks',
-    description: '$4 flat rate shipping. Free on orders $35+. Ships in 1–2 weeks.',
+    title: 'Shipping & Returns — Townies',
+    description: 'Town-pride apparel shipped from Massachusetts. Our shipping & returns policy.',
     images: ['/opengraph-image.png'],
   },
 };
 
 export default function ShippingReturnsPage() {
   return (
-    <div className="max-w-3xl mx-auto px-6 sm:px-8 py-16 sm:py-24">
-      <h1 className="font-display text-4xl sm:text-5xl text-brand-ink mb-4">shipping & returns.</h1>
-      <p className="text-brand-muted mb-12">last updated May 2026</p>
+    <div className="bg-town-cream">
+      <div className="relative overflow-hidden">
+        <BrandPattern variant="ma" color="forest" opacity={0.06} size={150} fade="b" />
+        <div className="relative max-w-3xl mx-auto px-6 sm:px-8 pt-16 sm:pt-24 pb-6">
+          <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
+            From Massachusetts, to your door
+          </p>
+          <h1 className="font-block uppercase text-4xl sm:text-6xl text-town-navy mb-3">
+            Shipping &amp; Returns
+          </h1>
+          <p className="text-town-muted">Last updated June 2026</p>
+        </div>
+      </div>
 
-      <div className="space-y-10 text-brand-ink">
+      <div className="max-w-3xl mx-auto px-6 sm:px-8 pb-20 sm:pb-28">
+        <div className="space-y-10 text-town-navy">
+          <section>
+            <h2 className="font-block uppercase text-xl sm:text-2xl text-town-navy mb-3">Shipping</h2>
+            <div className="space-y-3 text-town-muted leading-relaxed">
+              <p>Every Townies order ships from <strong className="text-town-navy">Massachusetts</strong>. Most orders leave our hands within <strong className="text-town-navy">1–3 business days</strong>; new town drops made to order may take a little longer, and we&apos;ll always say so on the product page.</p>
+              <p>Standard shipping is a <strong className="text-town-navy">flat rate calculated at checkout</strong>, and orders over <strong className="text-town-navy">$75 ship free</strong>.</p>
+              <p>We ship via USPS or UPS depending on order size. Once it&apos;s on the way, domestic orders typically arrive within <strong className="text-town-navy">3–7 business days</strong>, and you&apos;ll get a tracking email the moment it ships.</p>
+              <p>We currently ship within the <strong className="text-town-navy">United States only</strong>. International shipping isn&apos;t available yet — check back soon.</p>
+            </div>
+          </section>
 
-        <section>
-          <h2 className="font-display text-2xl mb-3">shipping</h2>
-          <div className="space-y-3 text-brand-muted leading-relaxed">
-            <p>All Good Kicks foot bags are made to order. Current processing time is <strong className="text-brand-ink">1–2 weeks</strong> from the date of purchase.</p>
-            <p>Shipping is <strong className="text-brand-ink">$4 flat rate</strong> on all orders. Orders over <strong className="text-brand-ink">$35 ship free</strong>.</p>
-            <p>We ship via USPS First Class or Priority Mail depending on order size. Once shipped, domestic orders typically arrive within 3–7 business days.</p>
-            <p>You'll receive a shipping confirmation email with tracking when your order leaves our hands.</p>
-            <p>We currently ship within the <strong className="text-brand-ink">United States only</strong>. International shipping is not available at this time — check back soon.</p>
-          </div>
-        </section>
+          <div className="border-t border-town-rule" />
 
-        <div className="border-t border-brand-rule" />
+          <section>
+            <h2 className="font-block uppercase text-xl sm:text-2xl text-town-navy mb-3">Returns &amp; Exchanges</h2>
+            <div className="space-y-3 text-town-muted leading-relaxed">
+              <p>Not the right fit? Unworn, unwashed items with tags can be returned within <strong className="text-town-navy">30 days</strong> of delivery for a refund or exchange.</p>
+              <p>Return shipping is on us if we got something wrong — otherwise the customer covers return postage. Refunds land on your original payment method once we&apos;ve got the item back.</p>
+              <p>Made-to-order town drops are produced just for you, so those are <strong className="text-town-navy">final sale</strong> unless they arrive damaged or incorrect.</p>
+            </div>
+          </section>
 
-        <section>
-          <h2 className="font-display text-2xl mb-3">returns & exchanges</h2>
-          <div className="space-y-3 text-brand-muted leading-relaxed">
-            <p>Because every sack is made to order, <strong className="text-brand-ink">we do not accept returns for change of mind</strong>.</p>
-            <p>If your order arrives damaged, defective, or incorrect, email us at <a href="mailto:info@goodkicks.co" className="text-brand-rust underline">info@goodkicks.co</a> within 7 days of delivery with a photo and your order number. We'll make it right.</p>
-            <p>Exchanges are handled case by case — reach out and we'll do our best.</p>
-          </div>
-        </section>
+          <div className="border-t border-town-rule" />
 
-        <div className="border-t border-brand-rule" />
+          <section>
+            <h2 className="font-block uppercase text-xl sm:text-2xl text-town-navy mb-3">Damaged or Wrong Items</h2>
+            <div className="space-y-3 text-town-muted leading-relaxed">
+              <p>If your order shows up damaged, defective, or just plain wrong, reach out within <strong className="text-town-navy">7 days</strong> of delivery with a photo and your order number and we&apos;ll make it right — no runaround.</p>
+            </div>
+          </section>
 
-        <section>
-          <h2 className="font-display text-2xl mb-3">lost or stolen packages</h2>
-          <div className="space-y-3 text-brand-muted leading-relaxed">
-            <p>Once a package is marked delivered by USPS, we are not responsible for lost or stolen parcels. We recommend checking with neighbors or your local post office first.</p>
-            <p>If your tracking shows delivered but you haven't received your order, contact us and we'll do our best to help.</p>
-          </div>
-        </section>
+          <div className="border-t border-town-rule" />
 
-        <div className="border-t border-brand-rule" />
+          <section>
+            <h2 className="font-block uppercase text-xl sm:text-2xl text-town-navy mb-3">Lost or Stolen Packages</h2>
+            <div className="space-y-3 text-town-muted leading-relaxed">
+              <p>Once tracking shows a package delivered, we can&apos;t take responsibility for lost or stolen parcels — check with neighbors and your local post office first. If it says delivered and it&apos;s nowhere to be found, get in touch and we&apos;ll do our best to help.</p>
+            </div>
+          </section>
 
-        <section>
-          <h2 className="font-display text-2xl mb-3">questions?</h2>
-          <p className="text-brand-muted">Email us at <a href="mailto:info@goodkicks.co" className="text-brand-rust underline">info@goodkicks.co</a> — we typically respond within 1–2 business days.</p>
-        </section>
+          <div className="border-t border-town-rule" />
 
+          <section>
+            <h2 className="font-block uppercase text-xl sm:text-2xl text-town-navy mb-3">Questions?</h2>
+            <p className="text-town-muted leading-relaxed">
+              Hit us up on the{' '}
+              <Link href="/contact" className="text-town-forest underline underline-offset-4 hover:text-town-navy transition-colors">
+                contact page
+              </Link>{' '}
+              — we typically answer within 1–2 business days.
+            </p>
+          </section>
+        </div>
       </div>
     </div>
   );

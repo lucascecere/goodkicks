@@ -14,7 +14,7 @@ export function BogoSection() {
           at checkout.
         </p>
         <Link
-          href="/shop"
+          href="/goodkicks/shop"
           className="inline-block bg-brand-rust text-white px-8 py-4 rounded-lg font-medium text-lg hover:bg-brand-rust/90 transition-colors"
         >
           shop the deal →

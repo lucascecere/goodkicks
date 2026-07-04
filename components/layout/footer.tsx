@@ -2,30 +2,35 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { MaMark } from '@/components/brand/wordmark';
+import { BrandLogo } from '@/components/brand/brand-logo';
+import { BrandPattern } from '@/components/townies/brand-pattern';
 
-const shopLinks = [
-  { href: '/products/the-good-kick-georgia',    label: 'georgia'    },
-  { href: '/products/the-good-kick-nevada',     label: 'nevada'     },
-  { href: '/products/the-good-kick-colorado',   label: 'colorado'   },
-  { href: '/products/the-good-kick-new-york',   label: 'new york'   },
-  { href: '/products/the-good-kick-massachusetts', label: 'massachusetts' },
-  { href: '/products/the-good-kick-maine',      label: 'maine'      },
+const shopByLinks = [
+  { href: '/shop', label: 'All Towns' },
+  { href: '/shop#south-shore', label: 'South Shore' },
+  { href: '/goodkicks', label: 'Good Kicks' },
 ];
 
-const brandLinks = [
-  { href: '/ambassadors', label: 'ambassador program' },
-  { href: '/blog', label: 'the stitch' },
-  { href: '/contact', label: 'contact' },
+const aboutLinks = [
+  { href: '/about', label: 'Our Story' },
+  { href: '/contact', label: 'Request Your Town' },
+  { href: '/contact', label: 'Wholesale' },
 ];
 
-const helpLinks = [
-  { href: '/shipping-returns', label: 'shipping & returns' },
-  { href: '/privacy', label: 'privacy & terms' },
+const serviceLinks = [
+  { href: 'https://goodkicks.myshopify.com/account', label: 'Account', external: true },
+  { href: '/shipping-returns', label: 'Shipping & Returns' },
+  { href: '/contact', label: 'Contact Us' },
 ];
 
-function SubscribeForm() {
+const termsLinks = [
+  { href: '/privacy', label: 'Privacy & Terms' },
+];
+
+function SignupForm() {
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   async function handleSubmit(e: React.FormEvent) {
@@ -35,7 +40,8 @@ function SubscribeForm() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        // brand-scoped so Townies + Good Kicks signups don't collide in Supabase
+        body: JSON.stringify({ email, phone: phone || undefined, brand: 'townies' }),
       });
       setStatus(res.ok ? 'success' : 'error');
     } catch {
@@ -44,29 +50,45 @@ function SubscribeForm() {
   }
 
   if (status === 'success') {
-    return <p className="text-white/60 text-sm">you&apos;re in. check your inbox for a welcome discount. ✌️</p>;
+    return (
+      <p className="text-town-cream/70 text-sm">
+        You&apos;re in. Watch your inbox for your welcome offer.
+      </p>
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-      <input
-        type="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="your@email.com"
-        aria-label="Email address"
-        className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-rust/50"
-      />
-      <button
-        type="submit"
-        disabled={status === 'loading'}
-        className="bg-brand-rust text-white px-5 py-2.5 rounded text-sm font-medium hover:bg-brand-rust/90 transition-colors whitespace-nowrap disabled:opacity-60"
-      >
-        {status === 'loading' ? 'sending…' : 'get the discount'}
-      </button>
+    <form onSubmit={handleSubmit} className="space-y-3 w-full max-w-sm">
+      <div className="flex flex-col sm:flex-row gap-3">
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email address"
+          aria-label="Email address"
+          className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-town-forest"
+        />
+      </div>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="Mobile for SMS (optional)"
+          aria-label="Mobile number for SMS"
+          className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-town-forest"
+        />
+        <button
+          type="submit"
+          disabled={status === 'loading'}
+          className="bg-town-forest text-white px-5 py-2.5 rounded text-sm font-medium hover:bg-town-forest/90 transition-colors whitespace-nowrap disabled:opacity-60"
+        >
+          {status === 'loading' ? 'Joining…' : 'Get the offer'}
+        </button>
+      </div>
       {status === 'error' && (
-        <p className="text-red-400 text-xs mt-1 w-full">something went wrong — try again.</p>
+        <p className="text-red-300 text-xs">Something went wrong — try again.</p>
       )}
     </form>
   );
@@ -76,98 +98,92 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-brand-ink text-white">
-      {/* Main footer body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Left: logo + tagline */}
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-4">
-            <Image
-              src="/goodkicks_logo_inverted.svg"
-              alt="Good Kicks Foot Bags"
-              width={120}
-              height={120}
-              className="mx-auto lg:mx-0"
-              style={{ height: '120px', width: 'auto' }}
-            />
-            <p className="font-display text-2xl text-white/80">make the circle bigger<span className="text-[#C66A3D]">.</span></p>
-            <p className="text-white/50 text-sm leading-relaxed max-w-xs">
-              premium foot bags built for dorm circles, dining-hall tosses, and every backpack that needs one.
+    <footer className="bg-town-navy text-white">
+      {/* Signup hook */}
+      <div className="relative overflow-hidden border-b border-white/10">
+        <BrandPattern variant="ma" color="cream" opacity={0.05} size={140} fade="r" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-12 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+          <div>
+            <p className="font-script text-3xl text-white mb-2">Join the town list.</p>
+            <p className="text-town-cream/60 text-sm max-w-md leading-relaxed">
+              New towns, restocks, and members-only offers — email and text. We&apos;ll
+              tell you the moment your town drops.
+            </p>
+          </div>
+          <SignupForm />
+        </div>
+      </div>
+
+      {/* Columns */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
+          <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
+            <BrandLogo variant="script-cream" href="/" className="w-44 h-auto" alt="Townies Apparel Co." />
+            <p className="text-town-cream/50 text-sm leading-relaxed max-w-xs">
+              Town-pride apparel from Massachusetts, for Massachusetts. The town is the
+              hero — we&apos;re just the label on the tag.
             </p>
           </div>
 
-          {/* Right: nav columns + subscribe */}
-          <div className="flex flex-col gap-10 text-sm lg:pt-2">
-            <div className="grid grid-cols-3 gap-8 text-center lg:text-left">
-              <div>
-                <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">v1 collection</h3>
-                <ul className="space-y-3">
-                  {shopLinks.map((l) => (
-                    <li key={l.href}>
-                      <Link href={l.href} className="text-white/70 hover:text-white transition-colors">{l.label}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">brand</h3>
-                <ul className="space-y-3">
-                  {brandLinks.map((l) => (
-                    <li key={l.href}>
-                      <Link href={l.href} className="text-white/70 hover:text-white transition-colors">{l.label}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-white/40 text-xs uppercase tracking-wider mb-4 font-medium">help</h3>
-                <ul className="space-y-3">
-                  {helpLinks.map((l) => (
-                    <li key={l.href}>
-                      <Link href={l.href} className="text-white/70 hover:text-white transition-colors">{l.label}</Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Subscribe — below nav, right-aligned */}
-            <div className="space-y-3 border-t border-white/10 pt-8">
-              <p className="text-white text-sm font-medium uppercase tracking-wider">offers &amp; discounts</p>
-              <p className="text-white/50 text-xs">subscribe for exclusive drops and discount codes.</p>
-              <SubscribeForm />
-            </div>
-          </div>
+          <FooterCol title="Shop By" links={shopByLinks} />
+          <FooterCol title="About" links={aboutLinks} />
+          <FooterCol title="Customer Service" links={serviceLinks} />
+          <FooterCol title="Terms" links={termsLinks} />
         </div>
       </div>
 
       {/* Bottom bar */}
       <div className="border-t border-white/10 px-4 sm:px-8 py-5">
-        <div className="max-w-7xl mx-auto flex flex-col items-center gap-2 sm:flex-row sm:justify-between text-xs text-white/40">
-          <p>© {year} Good Kicks Foot Bags</p>
-          <a
-            href="https://instagram.com/goodkicksco"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition-colors tracking-wide"
-          >
-            @goodkicksco
-          </a>
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-2 sm:flex-row sm:justify-between text-xs text-town-cream/40">
+          <p className="flex items-center gap-2">
+            <MaMark className="h-3 w-auto text-town-cream/40" />
+            Massachusetts · © {year} Townies Apparel Co.
+          </p>
+          <div className="flex items-center gap-5 tracking-wide">
+            <a href="https://instagram.com/townies" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
+            <a href="https://tiktok.com/@townies" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">TikTok</a>
+          </div>
         </div>
         <div className="max-w-7xl mx-auto flex justify-end mt-2">
-          <p className="text-[10px] text-white/20">
+          <p className="text-[10px] text-town-cream/20">
             managed by{' '}
-            <a
-              href="https://www.yourwebsitefriend.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white/50 transition-colors"
-            >
+            <a href="https://www.yourwebsitefriend.com" target="_blank" rel="noopener noreferrer" className="hover:text-white/50 transition-colors">
               Your Website Friend
             </a>
           </p>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterCol({
+  title,
+  links,
+}: {
+  title: string;
+  links: Array<{ href: string; label: string; external?: boolean }>;
+}) {
+  return (
+    <div>
+      <h3 className="text-town-cream/40 text-[11px] uppercase tracking-[0.15em] mb-4 font-medium">
+        {title}
+      </h3>
+      <ul className="space-y-3 text-sm">
+        {links.map((l) => (
+          <li key={l.label}>
+            {l.external ? (
+              <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-town-cream/70 hover:text-white transition-colors">
+                {l.label}
+              </a>
+            ) : (
+              <Link href={l.href} className="text-town-cream/70 hover:text-white transition-colors">
+                {l.label}
+              </Link>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
