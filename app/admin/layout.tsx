@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import { BrandSwitcher } from '@/components/admin/brand-switcher';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard' },
@@ -30,7 +30,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Mobile top bar */}
       <div className="md:hidden bg-[#F0EAD9] border-b border-[#D9D2C2]">
         <div className="flex items-center justify-between px-4 py-3">
-          <Image src="/brand/logo.png" alt="Good Kicks" width={36} height={36} style={{ height: '36px', width: 'auto' }} />
+          <div>
+            <p className="text-[#1A1A1A] text-base font-bold tracking-tight leading-none">Store Admin</p>
+            <p className="text-[#6B6B6B] text-[9px] mt-1 uppercase tracking-[0.18em]">Townies · Good Kicks</p>
+          </div>
           <div className="flex items-center gap-1">
             <Link
               href="/admin/settings"
@@ -66,6 +69,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
         </div>
+        <div className="px-4 py-2 border-t border-[#D9D2C2]">
+          <BrandSwitcher />
+        </div>
       </div>
 
       {/* Desktop layout */}
@@ -73,8 +79,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Sidebar */}
         <aside className="hidden md:flex w-56 bg-[#F0EAD9] flex-col flex-shrink-0">
           <div className="px-5 py-6 border-b border-[#D9D2C2]">
-            <Image src="/brand/logo.png" alt="Good Kicks" width={48} height={48} style={{ height: '48px', width: 'auto' }} />
-            <p className="text-[#6B6B6B] text-xs mt-2 uppercase tracking-widest">admin</p>
+            <p className="text-[#1A1A1A] text-lg font-bold tracking-tight leading-none">Store Admin</p>
+            <p className="text-[#6B6B6B] text-[10px] mt-1.5 uppercase tracking-[0.2em]">Townies · Good Kicks</p>
+            <div className="mt-4">
+              <BrandSwitcher />
+            </div>
           </div>
           <nav className="flex-1 px-3 py-4 space-y-1">
             {navItems.map((item) => {
