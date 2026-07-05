@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { DM_Serif_Display, Inter, Rokkitt, Yellowtail } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SiteWrapper } from '@/components/layout/site-wrapper';
+import { GoogleAnalytics } from '@/components/analytics/google-analytics';
 import './globals.css';
 
 // Retained for the GK clearance section + legacy GK/admin routes.
@@ -126,6 +127,7 @@ export default function RootLayout({
         </a>
         <SiteWrapper>{children}</SiteWrapper>
         <Analytics />
+        <GoogleAnalytics />
       </body>
     </html>
   );
