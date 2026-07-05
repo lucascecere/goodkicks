@@ -1,7 +1,8 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { getOrderSummary } from '@/lib/shopify/get-orders';
 import { getBundleTally } from '@/lib/shopify/get-bundle-tally';
-import { getAdminBrand, BRAND_LABELS, type AdminBrand, type RealBrand } from '@/lib/admin/brand';
+import { BRAND_LABELS, type AdminBrand, type RealBrand } from '@/lib/admin/brand';
+import { getAdminBrand } from '@/lib/admin/brand-server';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import Link from 'next/link';
 

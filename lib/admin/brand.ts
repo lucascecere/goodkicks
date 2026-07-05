@@ -1,10 +1,12 @@
 // Admin brand filter — the single dimension the universal (two-brand) admin
 // slices on. Townies + Good Kicks share one Shopify + one Supabase; this just
 // scopes what the admin shows. Persisted in a cookie so it survives navigation
-// and is readable by server components (getAdminBrand) without threading a
-// query param through every link.
-
-import { cookies } from 'next/headers';
+// and is readable by server components without threading a query param through
+// every link.
+//
+// Client-safe: pure types + constants only (no next/headers). The server-only
+// cookie reader lives in ./brand-server so this module can be imported by the
+// client BrandSwitcher without pulling server APIs into the browser bundle.
 
 export type AdminBrand = 'all' | 'townies' | 'goodkicks';
 
@@ -21,12 +23,6 @@ export type RealBrand = 'townies' | 'goodkicks';
 
 export function normalizeBrand(value: string | undefined | null): AdminBrand {
   return value === 'townies' || value === 'goodkicks' ? value : 'all';
-}
-
-// Server-side read of the active brand filter (App Router: cookies() is async).
-export async function getAdminBrand(): Promise<AdminBrand> {
-  const store = await cookies();
-  return normalizeBrand(store.get(ADMIN_BRAND_COOKIE)?.value);
 }
 
 // Does an item of `itemBrand` pass the current `filter`?
