@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { TowniesBanner } from '@/components/goodkicks/townies-banner';
 import { GoodKicksHeader } from '@/components/goodkicks/header';
 import { GoodKicksFooter } from '@/components/goodkicks/footer';
 
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
 export default function GoodKicksLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-bg text-text min-h-screen font-body">
+      <TowniesBanner />
       <GoodKicksHeader />
       {children}
       <GoodKicksFooter />
