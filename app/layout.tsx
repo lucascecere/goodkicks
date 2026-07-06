@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { DM_Serif_Display, Inter, Rokkitt, Yellowtail } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SiteWrapper } from '@/components/layout/site-wrapper';
@@ -78,11 +79,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const host = (await headers()).get('host') ?? '';
+
   return (
     <html
       lang="en"
@@ -125,7 +128,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <SiteWrapper>{children}</SiteWrapper>
+        <SiteWrapper host={host}>{children}</SiteWrapper>
         <Analytics />
         <GoogleAnalytics />
       </body>
