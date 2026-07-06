@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { CartIconButton } from '@/components/layout/cart-icon-button';
 import { cn } from '@/lib/utils';
 
@@ -71,14 +71,8 @@ export function GoodKicksHeader() {
           </Link>
         </div>
 
-        {/* Right: Townies cross-link + cart */}
+        {/* Right: cart (Townies link lives in the banner above) */}
         <div className="flex items-center justify-end gap-3">
-          <Link
-            href="/"
-            className="hidden sm:inline-flex items-center gap-0.5 text-xs uppercase tracking-[0.14em] text-brand-ink/60 hover:text-brand-ink transition-colors"
-          >
-            Townies <ArrowUpRight size={13} />
-          </Link>
           <CartIconButton />
         </div>
       </div>
@@ -99,13 +93,6 @@ export function GoodKicksHeader() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/"
-            onClick={() => setMobileOpen(false)}
-            className="py-3 text-brand-ink/70 hover:text-brand-ink transition-colors border-b border-brand-rule/50 inline-flex items-center gap-1"
-          >
-            Townies <ArrowUpRight size={13} />
-          </Link>
           <div className="pt-4 pb-1">
             <Link
               href="/goodkicks/shop"
