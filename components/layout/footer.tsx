@@ -123,7 +123,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
-            <BrandLogo variant="script-cream" href="/" className="w-32 h-auto" alt="Townies Apparel Co." />
+            <BrandLogo variant="script-cream" href="/" className="w-28 h-auto" alt="Townies Apparel Co." />
             <p className="text-town-cream/50 text-sm leading-relaxed max-w-xs">
               Town-pride apparel for real Massholes.
             </p>
