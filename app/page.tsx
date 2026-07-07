@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Hero } from '@/components/townies/hero';
 import { EditorialSplit } from '@/components/townies/editorial-split';
 import { StoryCarousel } from '@/components/townies/story-carousel';
@@ -51,7 +50,7 @@ export default async function HomePage() {
       />
 
       <section className="relative overflow-hidden bg-town-cream py-12 sm:py-16">
-        <BrandPattern variant="ma" color="forest" opacity={0.06} size={230} fade="y" />
+        <BrandPattern variant="ma" color="forest" opacity={0.1} size={230} fade="y" />
         <div className="relative">
           <StoryCarousel towns={towns} includeOrigin />
         </div>
@@ -68,29 +67,6 @@ export default async function HomePage() {
         reverse
         tone="navy"
       />
-
-      {/* Request-your-town closing band */}
-      <section className="relative overflow-hidden bg-town-navy text-white">
-        <BrandPattern variant="ma" color="cream" opacity={0.08} size={150} fade="radial" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-20 text-center">
-          <p className="text-xs uppercase tracking-[0.22em] text-town-cream/60 mb-4">
-            Don&apos;t see your town?
-          </p>
-          <h2 className="font-block uppercase text-4xl sm:text-5xl mb-5">
-            We&apos;ll make it.
-          </h2>
-          <p className="text-town-cream/70 max-w-md mx-auto mb-8 leading-relaxed">
-            Tell us where you&apos;re from. Enough requests and your town joins the lineup —
-            from Massachusetts, for Massachusetts.
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center bg-town-cream text-town-navy px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-white transition-colors"
-          >
-            Request your town
-          </Link>
-        </div>
-      </section>
     </>
   );
 }

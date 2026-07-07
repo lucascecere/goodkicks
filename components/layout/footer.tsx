@@ -82,7 +82,7 @@ function SignupForm() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="bg-town-forest text-white px-5 py-2.5 rounded text-sm font-medium hover:bg-town-forest/90 transition-colors whitespace-nowrap disabled:opacity-60"
+          className="bg-town-cream text-town-navy px-5 py-2.5 rounded text-sm font-semibold hover:bg-white transition-colors whitespace-nowrap disabled:opacity-60"
         >
           {status === 'loading' ? 'Joining…' : 'Get the offer'}
         </button>
@@ -99,18 +99,23 @@ export function Footer() {
 
   return (
     <footer className="bg-town-navy text-white">
-      {/* Signup hook */}
+      {/* Signup hook — town-list band */}
       <div className="relative overflow-hidden border-b border-white/10">
-        <BrandPattern variant="ma" color="cream" opacity={0.05} size={140} fade="r" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-12 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          <div>
-            <p className="font-script text-3xl text-white mb-2">Join the town list.</p>
-            <p className="text-town-cream/60 text-sm max-w-md leading-relaxed">
-              New towns, restocks, and members-only offers — email and text. We&apos;ll
-              tell you the moment your town drops.
-            </p>
+        <BrandPattern variant="ma" color="cream" opacity={0.08} size={150} fade="radial" />
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
+          <p className="text-xs uppercase tracking-[0.22em] text-town-cream/60 mb-4">
+            New towns · restocks · first dibs
+          </p>
+          <h2 className="font-block uppercase text-4xl sm:text-6xl mb-5">
+            Join the town list.
+          </h2>
+          <p className="text-town-cream/70 max-w-md mx-auto mb-8 leading-relaxed">
+            We&apos;ll tell you the moment your town drops — new towns, restocks, and
+            members-only offers, by email and text.
+          </p>
+          <div className="flex justify-center">
+            <SignupForm />
           </div>
-          <SignupForm />
         </div>
       </div>
 

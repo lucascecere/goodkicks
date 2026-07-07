@@ -7,10 +7,11 @@ import { CartIconButton } from './cart-icon-button';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { cn } from '@/lib/utils';
 
-// Minimal, category-led nav — town-first storefront keeps the chrome quiet.
+// Region-led nav — the three area sections of the shop, plus contact.
 const navLinks = [
-  { href: '/shop', label: 'Towns' },
-  { href: '/about', label: 'About' },
+  { href: '/shop#south-shore', label: 'South Shore' },
+  { href: '/shop#greater-boston', label: 'Boston' },
+  { href: '/shop#north-shore', label: 'North Shore' },
   { href: '/contact', label: 'Contact' },
 ];
 
