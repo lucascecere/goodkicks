@@ -125,8 +125,7 @@ export function Footer() {
           <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
             <BrandLogo variant="script-cream" href="/" className="w-44 h-auto" alt="Townies Apparel Co." />
             <p className="text-town-cream/50 text-sm leading-relaxed max-w-xs">
-              Town-pride apparel from Massachusetts, for Massachusetts. The town is the
-              hero — we&apos;re just the label on the tag.
+              Town-pride apparel for real Massholes.
             </p>
           </div>
 
