@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { MaMark } from '@/components/brand/wordmark';
 import { BrandLogo } from '@/components/brand/brand-logo';
+import { HeroSlider } from './hero-slider';
 
 /**
  * Full-bleed editorial hero. Supports a background <video> with a poster image
@@ -16,6 +17,7 @@ export function Hero({
   secondaryCta = { href: '/about', label: 'our story' },
   videoSrc,
   posterSrc,
+  slides,
 }: {
   eyebrow?: string;
   headline?: string;
@@ -24,11 +26,15 @@ export function Hero({
   secondaryCta?: { href: string; label: string };
   videoSrc?: string;
   posterSrc?: string;
+  /** Multiple background images to cross-fade through. Takes precedence over posterSrc. */
+  slides?: string[];
 }) {
   return (
     <section className="relative min-h-[82vh] flex items-end overflow-hidden bg-town-navy">
       {/* Background media (graceful) */}
-      {videoSrc ? (
+      {slides && slides.length > 0 ? (
+        <HeroSlider slides={slides} />
+      ) : videoSrc ? (
         <video
           className="absolute inset-0 h-full w-full object-cover"
           autoPlay

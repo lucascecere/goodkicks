@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
  */
 
 const LOGOS = {
-  script: { src: '/brand/logos/script-word.png', w: 422, h: 161, alt: 'Townies' },
+  script: { src: '/brand/logos/script-word.png', w: 420, h: 159, alt: 'Townies' },
   'script-cream': { src: '/brand/logos/script-cream.png', w: 426, h: 214, alt: 'Townies Apparel Co.' },
   arch: { src: '/brand/logos/arch.png', w: 420, h: 253, alt: 'Townies Apparel Co.' },
   sign: { src: '/brand/logos/sign.png', w: 340, h: 339, alt: 'Welcome to Townies, Massachusetts' },

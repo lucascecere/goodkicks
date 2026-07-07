@@ -30,7 +30,14 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero posterSrc="/brand/lifestyle/hero.jpg" />
+      <Hero
+        slides={[
+          '/brand/lifestyle/hero.jpg',
+          '/brand/lifestyle/split-harbor.jpg',
+          '/brand/lifestyle/town-scituate.jpg',
+          '/brand/lifestyle/town-cohasset.jpg',
+        ]}
+      />
 
       <EditorialSplit
         eyebrow="Small towns. Strong roots."
@@ -44,7 +51,7 @@ export default async function HomePage() {
       />
 
       <section className="relative overflow-hidden bg-town-cream py-12 sm:py-16">
-        <BrandPattern variant="ma" color="forest" opacity={0.05} size={170} fade="y" />
+        <BrandPattern variant="ma" color="forest" opacity={0.06} size={230} fade="y" />
         <div className="relative">
           <StoryCarousel towns={towns} includeOrigin />
         </div>
