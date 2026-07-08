@@ -4,6 +4,7 @@ import { getTownieProducts } from '@/lib/shopify/collections';
 import { toTownView, groupByRegion, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
 import { TownCard } from '@/components/townies/town-card';
 import { BrandPattern } from '@/components/townies/brand-pattern';
+import { breadcrumbSchema } from '@/lib/seo/site';
 
 export const revalidate = 3600;
 
@@ -29,6 +30,17 @@ export default async function ShopPage() {
 
   return (
     <div className="bg-town-cream min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbSchema([
+              { name: 'Home', path: '/' },
+              { name: 'Towns', path: '/shop' },
+            ]),
+          ),
+        }}
+      />
       {/* Header */}
       <div className="relative overflow-hidden">
         <BrandPattern variant="ma" color="forest" opacity={0.06} size={150} fade="b" />

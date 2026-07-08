@@ -4,6 +4,7 @@ import { DM_Serif_Display, Inter, Rokkitt, Yellowtail } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SiteWrapper } from '@/components/layout/site-wrapper';
 import { GoogleAnalytics } from '@/components/analytics/google-analytics';
+import { SITE_URL, organizationSchema, websiteSchema } from '@/lib/seo/site';
 import './globals.css';
 
 // Retained for the GK clearance section + legacy GK/admin routes.
@@ -44,8 +45,7 @@ const yellowtail = Yellowtail({
   display: 'swap',
 });
 
-// goodkicks.co stays primary until the townies.shop cutover.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://goodkicks.co';
+const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -75,7 +75,9 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   verification: {
-    google: 'jj1VpQq3Fpy3uZj8gXTk13Kbl86fUXlSvyXX-SoRsaY',
+    // townies.shop's own Google Search Console token — set via env once the
+    // property is verified (the previous hardcoded token was Good Kicks').
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
 };
 
@@ -95,31 +97,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                '@context': 'https://schema.org',
-                '@type': 'Organization',
-                name: 'Townies',
-                url: siteUrl,
-                logo: `${siteUrl}/icon.png`,
-                sameAs: ['https://www.instagram.com/townies'],
-                description: 'Massachusetts town-pride apparel. The town is the hero, Townies is the label.',
-              },
-              {
-                '@context': 'https://schema.org',
-                '@type': 'WebSite',
-                name: 'Townies',
-                url: siteUrl,
-                potentialAction: {
-                  '@type': 'SearchAction',
-                  target: {
-                    '@type': 'EntryPoint',
-                    urlTemplate: `${siteUrl}/shop?q={search_term_string}`,
-                  },
-                  'query-input': 'required name=search_term_string',
-                },
-              },
-            ]),
+            __html: JSON.stringify([organizationSchema(), websiteSchema()]),
           }}
         />
         <a

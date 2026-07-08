@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getProductByHandle, getAllProducts } from '@/lib/shopify/service';
 import { getTownieProducts, getGoodKicksProducts, type CollectionProduct } from '@/lib/shopify/collections';
+import { breadcrumbSchema } from '@/lib/seo/site';
 import { toTownView } from '@/lib/townies/towns';
 import { imageForVariant } from '@/lib/shopify/variant-colors';
 import { BrandImage } from '@/components/ui/brand-image';
@@ -142,22 +143,41 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
     name,
     url: `${productBase}/${handle}`,
     image: imgSrc ?? undefined,
+    description: gk
+      ? `${name} — a premium Good Kicks foot bag, properly weighted and hand-stitched to last.`
+      : `${name}, Massachusetts town-pride apparel from Townies. Heavyweight, well-worn from day one.`,
     brand: { '@type': 'Brand', name: gk ? 'Good Kicks' : 'Townies' },
     offers: {
       '@type': 'Offer',
       price: (variants[0].priceInCents / 100).toFixed(2),
       priceCurrency: 'USD',
+      url: `${productBase}/${handle}`,
+      itemCondition: 'https://schema.org/NewCondition',
       availability: variants.some((v) => v.available)
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
     },
   };
 
+  const crumbs = gk
+    ? [
+        { name: 'Good Kicks', path: '/goodkicks' },
+        { name: 'Shop', path: '/goodkicks/shop' },
+        { name, path: `/goodkicks/products/${handle}` },
+      ]
+    : [
+        { name: 'Home', path: '/' },
+        { name: 'Towns', path: '/shop' },
+        { name, path: `/products/${handle}` },
+      ];
+
   return (
     <div className="bg-bg min-h-screen">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([jsonLd, breadcrumbSchema(crumbs)]).replace(/</g, '\\u003c'),
+        }}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-16">

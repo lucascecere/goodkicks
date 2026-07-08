@@ -1,23 +1,23 @@
 {
-  "name": "Good Kicks",
-  "short_name": "Good Kicks",
-  "description": "Hand-stitched foot bags — what everyone calls hacky sacks — built for dorm circles and every backpack that needs one.",
+  "name": "Townies Apparel Co.",
+  "short_name": "Townies",
+  "description": "Massachusetts town-pride apparel. The town is the hero — rep your town.",
   "start_url": "/",
   "display": "browser",
-  "background_color": "#EFE8DA",
-  "theme_color": "#EFE8DA",
+  "background_color": "#F2EFE8",
+  "theme_color": "#0D1B2A",
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
