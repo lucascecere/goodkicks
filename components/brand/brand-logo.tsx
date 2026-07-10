@@ -46,7 +46,7 @@ export function BrandLogo({
       height={l.h}
       alt={alt ?? l.alt}
       priority={priority}
-      className={cn('h-auto w-auto', className)}
+      className={cn('max-w-full', className)}
     />
   );
   if (href == null) return img;
