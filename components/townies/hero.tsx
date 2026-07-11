@@ -30,7 +30,7 @@ export function Hero({
   slides?: string[];
 }) {
   return (
-    <section className="relative min-h-[82vh] flex items-end overflow-hidden bg-town-navy">
+    <section className="relative min-h-[82vh] lg:min-h-[92vh] flex items-end overflow-hidden bg-town-navy">
       {/* Background media (graceful) */}
       {slides && slides.length > 0 ? (
         <HeroSlider slides={slides} />

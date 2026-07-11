@@ -7,11 +7,12 @@ import { CartIconButton } from './cart-icon-button';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { cn } from '@/lib/utils';
 
-// Region-led nav — the three area sections of the shop, plus contact.
+// Region-led nav. South Shore is live (the shop); Boston + North Shore are
+// coming-soon pages until those drops land.
 const navLinks = [
-  { href: '/shop#south-shore', label: 'South Shore' },
-  { href: '/shop#greater-boston', label: 'Boston' },
-  { href: '/shop#north-shore', label: 'North Shore' },
+  { href: '/shop', label: 'South Shore' },
+  { href: '/boston', label: 'Boston' },
+  { href: '/north-shore', label: 'North Shore' },
   { href: '/contact', label: 'Contact' },
 ];
 
