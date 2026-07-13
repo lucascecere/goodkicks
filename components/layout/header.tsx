@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 // Region-led nav. South Shore is live (the shop); Boston + North Shore are
 // coming-soon pages until those drops land.
 const navLinks = [
-  { href: '/shop', label: 'South Shore' },
+  { href: '/south-shore', label: 'South Shore' },
   { href: '/boston', label: 'Boston' },
   { href: '/north-shore', label: 'North Shore' },
   { href: '/contact', label: 'Contact' },

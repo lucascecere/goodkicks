@@ -100,7 +100,7 @@ export function Footer() {
   return (
     <footer className="bg-town-navy text-white">
       {/* Signup hook — town-list band */}
-      <div className="relative overflow-hidden border-b border-white/10">
+      <div id="join" className="relative overflow-hidden border-b border-white/10 scroll-mt-24">
         <BrandPattern variant="ma" color="cream" opacity={0.08} size={150} fade="radial" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
           <p className="text-xs uppercase tracking-[0.22em] text-town-cream/60 mb-4">

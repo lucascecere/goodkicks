@@ -12,6 +12,7 @@ import { TowniesBlock } from '@/components/brand/wordmark';
 import { TownCard } from '@/components/townies/town-card';
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
+import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 
 // Shared product-detail body, rendered by BOTH the Townies route
 // (app/products/[handle]) and the Good Kicks route (app/goodkicks/products/[handle]).
@@ -86,6 +87,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
 
   const gk = resolveGk(handle, shopifyProduct.title, brand);
   const name = displayName(handle, shopifyProduct.title, gk);
+  const preorder = isPreorder(shopifyProduct.tags);
   const imgSrc =
     shopifyProduct.featuredImage?.url ?? (gk ? imageForVariant(shopifyProduct.title) : undefined);
   const productBase = gk ? '/goodkicks/products' : '/products';
@@ -153,9 +155,11 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
       priceCurrency: 'USD',
       url: `${productBase}/${handle}`,
       itemCondition: 'https://schema.org/NewCondition',
-      availability: variants.some((v) => v.available)
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
+      availability: preorder
+        ? 'https://schema.org/PreOrder'
+        : variants.some((v) => v.available)
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
     },
   };
 
@@ -217,6 +221,8 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               productTitle={name}
               imageUrl={imgSrc}
               flavor={gk ? 'goodkicks' : 'townies'}
+              preorder={preorder}
+              shipNote={PREORDER_SHIP_NOTE}
             />
           </div>
         </div>

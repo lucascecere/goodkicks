@@ -35,6 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: siteUrl,                        lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 1.0 },
     { url: `${siteUrl}/shop`,              lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.9 },
+    { url: `${siteUrl}/south-shore`,       lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.9 },
     { url: `${siteUrl}/boston`,            lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${siteUrl}/north-shore`,       lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${siteUrl}/goodkicks`,         lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },

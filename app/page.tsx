@@ -3,6 +3,7 @@ import { Hero } from '@/components/townies/hero';
 import { EditorialSplit } from '@/components/townies/editorial-split';
 import { StoryCarousel } from '@/components/townies/story-carousel';
 import { BrandPattern } from '@/components/townies/brand-pattern';
+import { ProductCard } from '@/components/townies/product-card';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { toTownView, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
 
@@ -27,6 +28,13 @@ export default async function HomePage() {
   // Degrade gracefully before the townies collection is populated at cutover.
   const towns: TownView[] = live.length > 0 ? live : PLACEHOLDER_TOWNS;
 
+  // The launch drop: products tagged south-shore (fall back to the whole
+  // collection). Empty until the first Townies products exist → section hides.
+  const ssTagged = products.filter((p) =>
+    p.tags.some((t) => t.toLowerCase() === 'south-shore'),
+  );
+  const launchItems = (ssTagged.length > 0 ? ssTagged : products).slice(0, 4);
+
   return (
     <>
       <Hero
@@ -38,16 +46,27 @@ export default async function HomePage() {
         ]}
       />
 
+      {/* South Shore launch feature — swap imageSrc for the drop photo. */}
       <EditorialSplit
-        eyebrow="Small towns. Strong roots."
-        headline="Your town, on the tag."
-        body="We make one thing well: apparel that puts your hometown front and center. The town name is the headline — Townies is just the small label that says it's made right. No loud logos. No state-shape clichés. Just where you're from, worn proud."
-        cta={{ href: '/about', label: 'read our story' }}
+        eyebrow="The first drop"
+        headline="The South Shore."
+        body="Where it starts — hats and designs repping the towns off the line. Heavyweight, built to last, and open for pre-order now. Get yours before the run's gone."
+        cta={{ href: '/south-shore', label: 'shop the drop' }}
         imageSrc="/brand/lifestyle/split-foliage.jpg"
-        imageAlt="New England autumn foliage"
-        imageLabel="Townies"
-        tone="forest"
+        imageAlt="Townies — the South Shore drop"
+        imageLabel="South Shore"
+        tone="navy"
       />
+
+      {launchItems.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-8 -mt-6 sm:-mt-10 pb-4 sm:pb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {launchItems.map((p, i) => (
+              <ProductCard key={p.id} product={p} priority={i < 2} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="relative overflow-hidden bg-town-cream py-12 sm:py-16">
         <BrandPattern variant="ma" color="forest" opacity={0.1} size={230} fade="y" />
@@ -60,7 +79,7 @@ export default async function HomePage() {
         eyebrow="The South Shore"
         headline="Started where the tide turns."
         body="Scituate. Marshfield. Hingham. Weymouth. Hanover. The first towns off the line, because these are the streets we know. Each drop is a town done right — heavyweight, well-worn from day one, built to last past the season."
-        cta={{ href: '/shop', label: 'shop the south shore' }}
+        cta={{ href: '/south-shore', label: 'shop the south shore' }}
         imageSrc="/brand/lifestyle/split-harbor.jpg"
         imageAlt="Scituate Harbor, Massachusetts"
         imageLabel="South Shore"

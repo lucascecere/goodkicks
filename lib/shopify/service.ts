@@ -22,6 +22,7 @@ const PRODUCT_QUERY = `
       id
       title
       handle
+      tags
       featuredImage {
         url
         altText

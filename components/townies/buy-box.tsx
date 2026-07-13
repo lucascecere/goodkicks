@@ -20,11 +20,15 @@ export function BuyBox({
   productTitle,
   imageUrl,
   flavor = 'townies',
+  preorder = false,
+  shipNote,
 }: {
   variants: BuyVariant[];
   productTitle: string;
   imageUrl?: string;
   flavor?: 'townies' | 'goodkicks';
+  preorder?: boolean;
+  shipNote?: string;
 }) {
   const { addItem, openCart } = useCart();
   const [selectedId, setSelectedId] = useState(
@@ -57,7 +61,14 @@ export function BuyBox({
       imageUrl,
       // Tag the line by brand so the shared cart/checkout knows its origin.
       // Leading underscore = hidden from the Shopify checkout + our cart display.
-      customAttributes: [{ key: '_brand', value: flavor }],
+      // Preorder lines get a VISIBLE fulfillment note so it shows at checkout + on
+      // the order (no leading underscore).
+      customAttributes: [
+        { key: '_brand', value: flavor },
+        ...(preorder
+          ? [{ key: 'Fulfillment', value: `Pre-order${shipNote ? ` — ${shipNote}` : ''}` }]
+          : []),
+      ],
     });
     openCart();
   }
@@ -93,16 +104,23 @@ export function BuyBox({
         </div>
       )}
 
-      <button
-        onClick={handleAdd}
-        disabled={!selected.available}
-        className={cn(
-          'w-full text-white py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-50 disabled:cursor-not-allowed',
-          accent,
+      <div className="space-y-3">
+        <button
+          onClick={handleAdd}
+          disabled={!selected.available}
+          className={cn(
+            'w-full text-white py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-50 disabled:cursor-not-allowed',
+            accent,
+          )}
+        >
+          {selected.available ? (preorder ? 'Pre-order' : 'Add to cart') : 'Sold out'}
+        </button>
+        {preorder && selected.available && shipNote && (
+          <p className="text-center text-xs uppercase tracking-[0.14em] text-muted">
+            Pre-order · {shipNote}
+          </p>
         )}
-      >
-        {selected.available ? 'Add to cart' : 'Sold out'}
-      </button>
+      </div>
     </div>
   );
 }
