@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
 import { Hero } from '@/components/townies/hero';
 import { EditorialSplit } from '@/components/townies/editorial-split';
-import { DropFeature } from '@/components/townies/drop-feature';
-import { CURRENT_DROP } from '@/lib/townies/drops';
 import { StoryCarousel } from '@/components/townies/story-carousel';
 import { BrandPattern } from '@/components/townies/brand-pattern';
-import { ProductCard } from '@/components/townies/product-card';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { toTownView, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
 
@@ -27,46 +24,19 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const products = await getTownieProducts();
   const live = products.map(toTownView);
-  // Degrade gracefully before the townies collection is populated at cutover.
+  // Degrade gracefully before the townies collection is populated.
   const towns: TownView[] = live.length > 0 ? live : PLACEHOLDER_TOWNS;
-
-  // The launch drop: products tagged south-shore (fall back to the whole
-  // collection). Empty until the first Townies products exist → section hides.
-  const ssTagged = products.filter((p) =>
-    p.tags.some((t) => t.toLowerCase() === 'south-shore'),
-  );
-  const launchItems = (ssTagged.length > 0 ? ssTagged : products).slice(0, 4);
 
   return (
     <>
       <Hero
         slides={[
           '/brand/lifestyle/hero.jpg',
+          '/brand/drops/milton.jpg',
+          '/brand/drops/braintree.jpg',
           '/brand/lifestyle/split-harbor.jpg',
-          '/brand/lifestyle/town-scituate.jpg',
-          '/brand/lifestyle/town-cohasset.jpg',
         ]}
       />
-
-      {/* First drop — real lifestyle photos of the Milton + Braintree hats. */}
-      <DropFeature
-        eyebrow="The first drop"
-        headline="Milton & Braintree."
-        blurb="Heavyweight town hats, embroidered and built to last — repping where you're from. Pre-order now; more towns coming down the line."
-        drops={CURRENT_DROP}
-        cardHref="/south-shore"
-        cta={{ href: '/south-shore', label: 'Shop the drop' }}
-      />
-
-      {launchItems.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-8 -mt-6 sm:-mt-10 pb-4 sm:pb-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {launchItems.map((p, i) => (
-              <ProductCard key={p.id} product={p} priority={i < 2} />
-            ))}
-          </div>
-        </section>
-      )}
 
       <section className="relative overflow-hidden bg-town-cream py-12 sm:py-16">
         <BrandPattern variant="ma" color="forest" opacity={0.1} size={230} fade="y" />

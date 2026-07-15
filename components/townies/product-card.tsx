@@ -24,7 +24,7 @@ export function ProductCard({
 
   return (
     <Link href={`/products/${product.handle}`} className="group block">
-      <div className="relative aspect-[4/5] rounded-sm overflow-hidden bg-town-cream border border-town-rule">
+      <div className="relative aspect-square rounded-sm overflow-hidden bg-white border border-town-rule">
         {product.featuredImage?.url ? (
           <Image
             src={product.featuredImage.url}
@@ -32,7 +32,7 @@ export function ProductCard({
             fill
             priority={priority}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="absolute inset-0 bg-town-rule" />
