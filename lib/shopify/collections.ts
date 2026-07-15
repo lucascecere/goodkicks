@@ -24,8 +24,10 @@ export type CollectionProduct = {
   };
 };
 
+// `||` (not `??`) so an empty env value falls back to the default too. The
+// Townies catalog currently lives in the `south-shore` collection.
 export const TOWNIES_COLLECTION =
-  process.env.SHOPIFY_TOWNIES_COLLECTION ?? 'townies';
+  process.env.SHOPIFY_TOWNIES_COLLECTION || 'south-shore';
 export const GOODKICKS_COLLECTION =
   process.env.SHOPIFY_GOODKICKS_COLLECTION ?? 'good-kicks';
 
