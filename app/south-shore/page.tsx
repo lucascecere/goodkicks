@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { ProductCard } from '@/components/townies/product-card';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 import { breadcrumbSchema } from '@/lib/seo/site';
+import { CURRENT_DROP } from '@/lib/townies/drops';
 
 export const revalidate = 3600;
 
@@ -52,18 +54,46 @@ export default async function SouthShorePage() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pb-24">
         {items.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-town-muted text-sm mb-6">
-              The first drop lands soon. Get on the town list and we&apos;ll tell you
-              the moment it&apos;s live.
-            </p>
-            <Link
-              href="/#join"
-              className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-navy/90 transition-colors"
-            >
-              Join the town list
-            </Link>
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-8 mb-12">
+              {CURRENT_DROP.map((d, i) => (
+                <div
+                  key={d.town}
+                  className="relative aspect-[4/3] rounded-sm overflow-hidden bg-town-navy"
+                >
+                  <Image
+                    src={d.image}
+                    alt={d.alt}
+                    fill
+                    priority={i === 0}
+                    sizes="(max-width: 640px) 100vw, 50vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-town-navy/70 via-town-navy/5 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+                    <p className="text-town-cream/80 text-[0.65rem] uppercase tracking-[0.2em] mb-1">
+                      Pre-order
+                    </p>
+                    <h3 className="font-block uppercase text-white text-4xl sm:text-5xl leading-none">
+                      {d.town}
+                    </h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="text-center">
+              <p className="text-town-muted text-sm mb-6">
+                Pre-order opens shortly. Get on the town list and we&apos;ll tell you
+                the moment it&apos;s live.
+              </p>
+              <Link
+                href="/#join"
+                className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-navy/90 transition-colors"
+              >
+                Join the town list
+              </Link>
+            </div>
+          </>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {items.map((p, i) => (

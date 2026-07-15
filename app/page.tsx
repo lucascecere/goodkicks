@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Hero } from '@/components/townies/hero';
 import { EditorialSplit } from '@/components/townies/editorial-split';
+import { DropFeature } from '@/components/townies/drop-feature';
+import { CURRENT_DROP } from '@/lib/townies/drops';
 import { StoryCarousel } from '@/components/townies/story-carousel';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 import { ProductCard } from '@/components/townies/product-card';
@@ -46,16 +48,14 @@ export default async function HomePage() {
         ]}
       />
 
-      {/* South Shore launch feature — swap imageSrc for the drop photo. */}
-      <EditorialSplit
+      {/* First drop — real lifestyle photos of the Milton + Braintree hats. */}
+      <DropFeature
         eyebrow="The first drop"
-        headline="The South Shore."
-        body="Where it starts — hats and designs repping the towns off the line. Heavyweight, built to last, and open for pre-order now. Get yours before the run's gone."
-        cta={{ href: '/south-shore', label: 'shop the drop' }}
-        imageSrc="/brand/lifestyle/split-foliage.jpg"
-        imageAlt="Townies — the South Shore drop"
-        imageLabel="South Shore"
-        tone="navy"
+        headline="Milton & Braintree."
+        blurb="Heavyweight town hats, embroidered and built to last — repping where you're from. Pre-order now; more towns coming down the line."
+        drops={CURRENT_DROP}
+        cardHref="/south-shore"
+        cta={{ href: '/south-shore', label: 'Shop the drop' }}
       />
 
       {launchItems.length > 0 && (
