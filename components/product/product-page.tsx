@@ -87,7 +87,9 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
 
   const gk = resolveGk(handle, shopifyProduct.title, brand);
   const name = displayName(handle, shopifyProduct.title, gk);
-  const preorder = isPreorder(shopifyProduct.tags);
+  // Pre-order is a Townies mechanic. Good Kicks ships from stock, so ignore any
+  // stale `preorder` tags on GK products — its PDPs must never promise a delay.
+  const preorder = !gk && isPreorder(shopifyProduct.tags);
   const imgSrc =
     shopifyProduct.featuredImage?.url ?? (gk ? imageForVariant(shopifyProduct.title) : undefined);
   const productBase = gk ? '/goodkicks/products' : '/products';
