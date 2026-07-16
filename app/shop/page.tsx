@@ -6,7 +6,7 @@ import { TownCard } from '@/components/townies/town-card';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 import { breadcrumbSchema } from '@/lib/seo/site';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Shop the Towns — Townies',

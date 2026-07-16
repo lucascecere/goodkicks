@@ -6,7 +6,7 @@ import { BrandPattern } from '@/components/townies/brand-pattern';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { groupByTown, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Townies — Rep Your Town. Massachusetts Town-Pride Apparel',

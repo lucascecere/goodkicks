@@ -60,7 +60,7 @@ const COLLECTION_PRODUCTS_QUERY = `
 
 export async function getProductsByCollection(
   handle: string,
-  first = 50,
+  first = 100,
 ): Promise<CollectionProduct[]> {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
@@ -77,7 +77,10 @@ export async function getProductsByCollection(
         query: COLLECTION_PRODUCTS_QUERY,
         variables: { handle, first },
       }),
-      next: { revalidate: 3600 },
+      // Short window so newly-added Shopify products appear within ~a minute.
+      // (Vercel's data cache persists across deployments — a redeploy alone will
+      // NOT refresh this, so keep the window short rather than relying on deploys.)
+      next: { revalidate: 60, tags: ['shopify-collections'] },
     });
     const json = await res.json();
     if (json?.errors) {
