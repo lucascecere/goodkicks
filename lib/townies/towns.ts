@@ -45,11 +45,10 @@ function titleCase(slug: string): string {
 }
 
 function regionFromTags(tags: string[]): string {
-  // Prefer a known region tag; otherwise fall back to the first tag; otherwise "other".
+  // Prefer a known region tag; otherwise default to South Shore (the launch
+  // region) rather than a random tag. Tag products `north-shore` etc. to move them.
   const known = tags.find((t) => REGION_LABELS[t.toLowerCase()]);
-  if (known) return known.toLowerCase();
-  const first = tags.find((t) => t.trim().length > 0);
-  return first ? first.toLowerCase() : OTHER_REGION;
+  return known ? known.toLowerCase() : 'south-shore';
 }
 
 function regionLabel(region: string): string {
