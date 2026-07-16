@@ -4,7 +4,7 @@ import { EditorialSplit } from '@/components/townies/editorial-split';
 import { StoryCarousel } from '@/components/townies/story-carousel';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 import { getTownieProducts } from '@/lib/shopify/collections';
-import { toTownView, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
+import { groupByTown, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
 
 export const revalidate = 3600;
 
@@ -23,19 +23,14 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const products = await getTownieProducts();
-  const live = products.map(toTownView);
+  const live = groupByTown(products);
   // Degrade gracefully before the townies collection is populated.
   const towns: TownView[] = live.length > 0 ? live : PLACEHOLDER_TOWNS;
 
   return (
     <>
       <Hero
-        slides={[
-          '/brand/lifestyle/hero.jpg',
-          '/brand/drops/milton.jpg',
-          '/brand/drops/braintree.jpg',
-          '/brand/lifestyle/split-harbor.jpg',
-        ]}
+        slides={['/brand/drops/milton.jpg', '/brand/drops/braintree.jpg']}
       />
 
       <section className="relative overflow-hidden bg-town-cream py-12 sm:py-16">

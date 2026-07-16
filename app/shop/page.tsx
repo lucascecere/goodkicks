@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
-import { toTownView, groupByRegion, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
+import { groupByTown, groupByRegion, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
 import { TownCard } from '@/components/townies/town-card';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 import { breadcrumbSchema } from '@/lib/seo/site';
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default async function ShopPage() {
   const products = await getTownieProducts();
-  const live = products.map(toTownView);
+  const live = groupByTown(products);
   const towns: TownView[] = live.length > 0 ? live : PLACEHOLDER_TOWNS;
   const groups = groupByRegion(towns);
   const isPlaceholder = live.length === 0;

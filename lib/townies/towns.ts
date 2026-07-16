@@ -10,6 +10,7 @@ export type TownView = {
   id: string;
   name: string; // town name — the hero
   handle: string;
+  href?: string; // explicit link target (grouped towns → the shop)
   region: string; // raw region tag, e.g. "south-shore"
   regionLabel: string; // display label, e.g. "South Shore"
   image: string | null;
@@ -81,6 +82,64 @@ export function toTownView(product: CollectionProduct): TownView {
     priceInCents: variant ? Math.round(parseFloat(variant.price.amount) * 100) : null,
     available: variant?.availableForSale ?? false,
   };
+}
+
+// A TOWN can have several products (e.g. two Milton hats). Group them into one
+// town card instead of showing each hat as its own "town". Town identity comes
+// from a `town:<name>` tag if present, else the first word of the product title
+// (our naming convention is "<Town> <style>", e.g. "Milton Classic Snapback").
+// Curated lifestyle photo per town (falls back to the product image).
+const TOWN_IMAGES: Record<string, string> = {
+  milton: '/brand/drops/milton.jpg',
+  braintree: '/brand/drops/braintree.jpg',
+};
+
+function townKey(p: CollectionProduct): { slug: string; name: string } {
+  const tag = p.tags.find((t) => t.toLowerCase().startsWith('town:'));
+  if (tag) {
+    const slug = tag
+      .slice(5)
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    return { slug, name: titleCase(slug) };
+  }
+  const first = p.title.trim().split(/\s+/)[0]?.replace(/[^A-Za-z0-9]/g, '') ?? 'town';
+  return { slug: first.toLowerCase(), name: first };
+}
+
+export function groupByTown(products: CollectionProduct[]): TownView[] {
+  const map = new Map<string, { name: string; products: CollectionProduct[] }>();
+  for (const p of products) {
+    const { slug, name } = townKey(p);
+    const entry = map.get(slug) ?? { name, products: [] };
+    entry.products.push(p);
+    map.set(slug, entry);
+  }
+
+  const towns: TownView[] = [];
+  for (const [slug, { name, products: ps }] of map) {
+    const withImage = ps.find((p) => p.featuredImage?.url) ?? ps[0];
+    const region = regionFromTags(withImage.tags);
+    towns.push({
+      id: `town-${slug}`,
+      name,
+      handle: '',
+      href: '/south-shore',
+      region,
+      regionLabel: regionLabel(region),
+      image: TOWN_IMAGES[slug] ?? withImage.featuredImage?.url ?? null,
+      imageAlt: `${name}, Massachusetts — Townies`,
+      price: null,
+      variantId: null,
+      priceInCents: null,
+      available: ps.some((p) => p.variants.edges[0]?.node.availableForSale ?? false),
+    });
+  }
+
+  towns.sort((a, b) => a.name.localeCompare(b.name));
+  return towns;
 }
 
 export type RegionGroup = { region: string; label: string; towns: TownView[] };

@@ -19,7 +19,8 @@ export function TownCard({
   priority?: boolean;
   className?: string;
 }) {
-  const href = town.isPlaceholder || !town.handle ? '/shop' : `/products/${town.handle}`;
+  const href =
+    town.href ?? (town.isPlaceholder || !town.handle ? '/shop' : `/products/${town.handle}`);
 
   return (
     <Link
