@@ -8,6 +8,7 @@ import { X } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import { BrandLogo } from '@/components/brand/brand-logo';
+import { PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 
 function formatCents(cents: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(cents / 100);
@@ -15,6 +16,9 @@ function formatCents(cents: number): string {
 
 export function CartDrawer() {
   const { items, cartOpen, closeCart, subtotalCents, removeItem, updateQuantity } = useCart();
+  const hasPreorder = items.some((i) =>
+    i.customAttributes?.some((a) => a.value.toLowerCase().includes('pre-order')),
+  );
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -140,6 +144,12 @@ export function CartDrawer() {
 
             {items.length > 0 && (
               <div className="border-t border-rule px-6 py-4 space-y-3">
+                {hasPreorder && (
+                  <p className="text-xs leading-relaxed bg-surface text-muted rounded-sm px-3 py-2.5 border border-rule">
+                    <span className="font-semibold text-text uppercase tracking-wide">Pre-order in bag.</span>{' '}
+                    Your whole order ships together once the pre-order is ready — {PREORDER_SHIP_NOTE.toLowerCase()}.
+                  </p>
+                )}
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted">Subtotal</span>
                   <span className="font-medium text-text">{formatCents(subtotalCents)}</span>
