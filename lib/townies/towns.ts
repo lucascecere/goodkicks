@@ -87,10 +87,21 @@ export function toTownView(product: CollectionProduct): TownView {
 // town card instead of showing each hat as its own "town". Town identity comes
 // from a `town:<name>` tag if present, else the first word of the product title
 // (our naming convention is "<Town> <style>", e.g. "Milton Classic Snapback").
-// Curated lifestyle photo per town (falls back to the product image).
+// Curated lifestyle photo per town, so a town card never falls back to a
+// white product shot (which reads wrong next to the lifestyle cards).
+// Milton/Braintree use their real hat-drop photos; the rest use town photography
+// until each town has its own drop shot.
 const TOWN_IMAGES: Record<string, string> = {
   milton: '/brand/drops/milton.jpg',
   braintree: '/brand/drops/braintree.jpg',
+  hingham: '/brand/lifestyle/town-hingham.jpg',
+  scituate: '/brand/lifestyle/town-scituate.jpg',
+  marshfield: '/brand/lifestyle/town-marshfield.jpg',
+  weymouth: '/brand/lifestyle/town-weymouth.jpg',
+  hanover: '/brand/lifestyle/town-hanover.jpg',
+  cohasset: '/brand/lifestyle/town-cohasset.jpg',
+  norwell: '/brand/lifestyle/town-norwell.jpg',
+  duxbury: '/brand/lifestyle/town-duxbury.jpg',
 };
 
 function townKey(p: CollectionProduct): { slug: string; name: string } {
