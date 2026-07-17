@@ -5,8 +5,10 @@
 
 export const PREORDER_TAG = 'preorder';
 
+// Must stay in sync with the Shopify "Pre-order" shipping option (its name,
+// delivery details, and transit time) — the checkout promise is the binding one.
 export const PREORDER_SHIP_NOTE =
-  process.env.NEXT_PUBLIC_PREORDER_SHIP_NOTE ?? 'Ships in 4–6 weeks';
+  process.env.NEXT_PUBLIC_PREORDER_SHIP_NOTE ?? 'Ships in 3–4 weeks';
 
 export function isPreorder(tags: string[] | undefined | null): boolean {
   return Array.isArray(tags) && tags.some((t) => t.toLowerCase() === PREORDER_TAG);
