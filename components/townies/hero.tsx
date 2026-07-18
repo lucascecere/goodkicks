@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { MaMark } from '@/components/brand/wordmark';
-import { BrandLogo } from '@/components/brand/brand-logo';
 import { HeroSlider } from './hero-slider';
 
 /**
@@ -83,9 +82,6 @@ export function Hero({
         </div>
       </div>
 
-      <div className="absolute top-6 right-4 sm:right-8 opacity-80">
-        <BrandLogo variant="script-cream" className="w-40 sm:w-96 h-auto opacity-85" />
-      </div>
     </section>
   );
 }
