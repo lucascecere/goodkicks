@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     default: 'Townies — Rep Your Town.',
   },
   description:
-    'Massachusetts town-pride apparel for people who rep where they’re from. Heavyweight hats and tees — Milton, Weymouth, Hingham, Braintree and more. South Shore first.',
+    'Massachusetts town-pride hats for people who rep where they’re from. Heavyweight — Milton, Weymouth, Hingham, Braintree and more. South Shore first.',
   openGraph: {
     siteName: 'Townies',
     type: 'website',

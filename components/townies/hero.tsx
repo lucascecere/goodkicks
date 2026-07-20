@@ -11,7 +11,7 @@ import { HeroSlider } from './hero-slider';
 export function Hero({
   eyebrow = 'For real Massholes',
   headline = 'Rep your town.',
-  sub = 'Hats and tees for people who’ll defend their exit off the expressway to the death. Your town, stitched heavy, worn proud. South Shore first — the rest of the map’s coming.',
+  sub = 'Hats for people who’d defend their exit off the expressway. Your town, stitched heavy — South Shore first, the rest of the map’s coming.',
   primaryCta = { href: '/shop', label: 'Shop the towns' },
   secondaryCta = { href: '/about', label: 'our story' },
   videoSrc,

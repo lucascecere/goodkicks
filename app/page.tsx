@@ -11,7 +11,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: 'Townies — Rep Your Town. Massachusetts Town-Pride Apparel',
   description:
-    'Massachusetts town-pride apparel for people who rep where they’re from. Heavyweight hats and tees, one town at a time — Milton, Weymouth, Hingham, Braintree and more. South Shore first.',
+    'Massachusetts town-pride hats for people who rep where they’re from. Heavyweight, one town at a time — Milton, Weymouth, Hingham, Braintree and more. South Shore first.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'Townies — Rep Your Town.',

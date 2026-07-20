@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MaMark } from '@/components/brand/wordmark';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { BrandPattern } from '@/components/townies/brand-pattern';
+import { SocialLinks } from '@/components/townies/social-links';
 
 const shopByLinks = [
   { href: '/shop', label: 'All Towns' },
@@ -143,18 +144,17 @@ export function Footer() {
             <MaMark className="h-3 w-auto text-town-cream/40" />
             Massachusetts · © {year} Townies Apparel Co.
           </p>
-          <div className="flex items-center gap-5 tracking-wide">
-            <a href="https://instagram.com/townies" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
-            <a href="https://tiktok.com/@townies" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">TikTok</a>
-          </div>
+          <SocialLinks />
         </div>
-        <div className="max-w-7xl mx-auto flex justify-end mt-2">
-          <p className="text-[10px] text-town-cream/20">
-            managed by{' '}
-            <a href="https://www.yourwebsitefriend.com" target="_blank" rel="noopener noreferrer" className="hover:text-white/50 transition-colors">
-              Your Website Friend
-            </a>
-          </p>
+        <div className="max-w-7xl mx-auto flex justify-center sm:justify-end mt-4">
+          <a
+            href="https://www.yourwebsitefriend.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded border border-white/15 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.16em] text-town-cream/40 hover:text-white hover:border-white/35 transition-colors"
+          >
+            Managed by Your Website Friend
+          </a>
         </div>
       </div>
     </footer>

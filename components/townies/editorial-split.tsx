@@ -41,7 +41,7 @@ export function EditorialSplit({
           />
         </div>
 
-        <div className={cn('max-w-md', reverse && 'lg:order-1 lg:ml-auto')}>
+        <div className={cn('max-w-md lg:max-w-xl', reverse && 'lg:order-1 lg:ml-auto')}>
           <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-4">
             {eyebrow}
           </p>

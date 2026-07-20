@@ -70,8 +70,8 @@ export default function AboutPage() {
         </p>
         <p className="text-town-muted leading-relaxed mb-10">
           We&apos;re not trying to be the biggest brand in New England. We&apos;re trying to be the
-          one your town actually wears — the shirt at the reunion, the hoodie that goes off to
-          school, the hat that says exactly where you&apos;re from before you open your mouth.
+          one your town actually wears — the hat at the reunion, the one on your head all
+          summer, the one that says exactly where you&apos;re from before you open your mouth.
         </p>
         <Link
           href="/shop"
