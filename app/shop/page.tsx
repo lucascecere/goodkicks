@@ -1,93 +1,89 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
-import { groupByTown, groupByRegion, PLACEHOLDER_TOWNS, type TownView } from '@/lib/townies/towns';
-import { TownCard } from '@/components/townies/town-card';
+import { townKey } from '@/lib/townies/towns';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 import { breadcrumbSchema } from '@/lib/seo/site';
+import { ShopFilter, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Shop the Towns — Townies',
+  title: 'Shop — Townies',
   description:
-    'Every town, the town as hero. Massachusetts town-pride apparel grouped by region — starting with the South Shore.',
+    'Every town, one place. Massachusetts town-pride apparel — filter by your town. Milton, Weymouth, Hingham, Braintree and more.',
   alternates: { canonical: '/shop' },
   openGraph: {
-    title: 'Shop the Towns — Townies',
-    description: 'Massachusetts town-pride apparel. Pick your town.',
+    title: 'Shop — Townies',
+    description: 'Massachusetts town-pride apparel. Filter by your town.',
     url: '/shop',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
   },
 };
 
-export default async function ShopPage() {
+export default async function ShopPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ town?: string }>;
+}) {
+  const { town } = await searchParams;
   const products = await getTownieProducts();
-  const live = groupByTown(products);
-  const towns: TownView[] = live.length > 0 ? live : PLACEHOLDER_TOWNS;
-  const groups = groupByRegion(towns);
-  const isPlaceholder = live.length === 0;
+
+  const items: ShopItem[] = products.map((p) => {
+    const { slug, name } = townKey(p);
+    return { product: p, slug, name };
+  });
+
+  // Distinct towns → tabs, alphabetical.
+  const townMap = new Map<string, string>();
+  for (const i of items) townMap.set(i.slug, i.name);
+  const towns: TownTab[] = [...townMap.entries()]
+    .map(([slug, name]) => ({ slug, name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="bg-town-cream min-h-screen">
+    <div className="relative overflow-hidden bg-town-cream min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(
             breadcrumbSchema([
               { name: 'Home', path: '/' },
-              { name: 'Towns', path: '/shop' },
+              { name: 'Shop', path: '/shop' },
             ]),
           ),
         }}
       />
-      {/* Header */}
-      <div className="relative overflow-hidden">
-        <BrandPattern variant="ma" color="forest" opacity={0.06} size={150} fade="b" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-10 text-center">
-          <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-            The towns
-          </p>
-          <h1 className="font-block uppercase text-5xl sm:text-7xl text-town-navy mb-4">
-            Pick your town.
-          </h1>
-          <p className="text-town-muted max-w-md mx-auto leading-relaxed">
-            Town-pride apparel, grouped by region. The town is the hero — Townies is just
-            the label on the tag.
-          </p>
-        </div>
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
+        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
+          The shop
+        </p>
+        <h1 className="font-block uppercase text-5xl sm:text-7xl text-town-navy mb-4">
+          Every town.
+        </h1>
+        <p className="text-town-muted max-w-md mx-auto leading-relaxed">
+          All in one place — filter by yours. More towns dropping down the line.
+        </p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 pb-24 space-y-16 sm:space-y-20">
-        {groups.map((group) => (
-          <section key={group.region} id={group.region} className="scroll-mt-24">
-            <div className="flex items-center gap-4 mb-6">
-              <h2 className="font-block uppercase text-2xl sm:text-3xl text-town-navy whitespace-nowrap">
-                {group.label}
-              </h2>
-              <div className="h-px flex-1 bg-town-rule" />
-              <span className="text-xs uppercase tracking-[0.18em] text-town-muted">
-                {group.towns.length} {group.towns.length === 1 ? 'town' : 'towns'}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-              {group.towns.map((town, i) => (
-                <TownCard key={town.id} town={town} priority={i < 2} />
-              ))}
-            </div>
-          </section>
-        ))}
-
-        {/* Quiet empty / pre-launch note */}
-        {isPlaceholder && (
-          <p className="text-center text-town-muted text-sm">
-            These towns are coming soon. {' '}
-            <Link href="/contact" className="underline underline-offset-4 hover:text-town-forest">
-              Request your town
-            </Link>{' '}
-            and we&apos;ll put it on the line.
-          </p>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pb-24">
+        {items.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-town-muted text-sm mb-6">
+              The first drop lands soon. Get on the town list and we&apos;ll tell you
+              the moment it&apos;s live.
+            </p>
+            <Link
+              href="/#join"
+              className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-navy/90 transition-colors"
+            >
+              Join the town list
+            </Link>
+          </div>
+        ) : (
+          <ShopFilter items={items} towns={towns} initialTown={town} />
         )}
       </div>
     </div>

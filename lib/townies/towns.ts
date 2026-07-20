@@ -104,7 +104,7 @@ const TOWN_IMAGES: Record<string, string> = {
   duxbury: '/brand/lifestyle/town-duxbury.jpg',
 };
 
-function townKey(p: CollectionProduct): { slug: string; name: string } {
+export function townKey(p: CollectionProduct): { slug: string; name: string } {
   const tag = p.tags.find((t) => t.toLowerCase().startsWith('town:'));
   if (tag) {
     const slug = tag
@@ -136,7 +136,7 @@ export function groupByTown(products: CollectionProduct[]): TownView[] {
       id: `town-${slug}`,
       name,
       handle: '',
-      href: '/south-shore',
+      href: `/shop?town=${slug}`,
       region,
       regionLabel: regionLabel(region),
       image: TOWN_IMAGES[slug] ?? withImage.featuredImage?.url ?? null,
