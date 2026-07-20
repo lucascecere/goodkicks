@@ -9,9 +9,9 @@ import { HeroSlider } from './hero-slider';
  * /public/brand and pass `videoSrc` / `posterSrc` to light it up.
  */
 export function Hero({
-  eyebrow = 'From Massachusetts, for Massachusetts',
+  eyebrow = 'For real Massholes',
   headline = 'Rep your town.',
-  sub = 'Small towns. Strong roots. Town-pride apparel where the town is the hero — starting with the South Shore.',
+  sub = 'Hats and tees for people who’ll defend their exit off the expressway to the death. Your town, stitched heavy, worn proud. South Shore first — the rest of the map’s coming.',
   primaryCta = { href: '/shop', label: 'Shop the towns' },
   secondaryCta = { href: '/about', label: 'our story' },
   videoSrc,

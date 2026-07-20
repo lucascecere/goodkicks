@@ -7,7 +7,7 @@ import { BrandPattern } from '@/components/townies/brand-pattern';
 export const metadata: Metadata = {
   title: 'About Townies — Town-Pride Apparel from Massachusetts',
   description:
-    'The town is the hero, Townies is the label. How a Massachusetts apparel brand started on the South Shore — and grew out of Good Kicks.',
+    'The town is the hero, Townies is the label. How a Massachusetts apparel brand — made by Massholes, for Massholes — started on the South Shore and grew out of Good Kicks.',
   alternates: { canonical: '/about' },
   openGraph: {
     title: 'About Townies — Town-Pride Apparel from Massachusetts',
@@ -25,15 +25,15 @@ export default function AboutPage() {
         <BrandPattern variant="ma" color="forest" opacity={0.06} size={160} fade="b" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-8 pt-16 sm:pt-24 pb-6 text-center">
         <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-4">
-          From Massachusetts, for Massachusetts
+          Made by Massholes
         </p>
         <h1 className="font-script text-5xl sm:text-7xl text-town-navy mb-6">
           Rep your town.
         </h1>
         <p className="text-town-muted leading-relaxed text-lg">
-          We make one thing well: apparel that puts your hometown front and center. The town
-          name is the headline. Townies is just the small label on the tag — the part that
-          says it&apos;s made right.
+          We make one thing, and we make it right: apparel that puts your hometown front and
+          center — not a logo, not a state-shape cliché. The town&apos;s the headline. Townies is
+          just the little tag that says it&apos;s built to last.
         </p>
         </div>
       </section>
@@ -41,7 +41,7 @@ export default function AboutPage() {
       <EditorialSplit
         eyebrow="The principle"
         headline="Town first. Always."
-        body="No loud logos. No state-shape clichés stamped across the chest. Just where you're from, set in clean collegiate type and built into heavyweight pieces you'll actually wear out. The Massachusetts mark stays small — a quiet thread that ties every town together."
+        body="No loud logos. No 'Massachusetts' slapped across your chest like you're passing through. Just where you're from, set in clean collegiate type on heavyweight pieces you'll wear 'til they fall apart. The MA mark stays small — the quiet thread tying every town together."
         cta={{ href: '/shop', label: 'see the towns' }}
         imageSrc="/brand/lifestyle/town-hingham.jpg"
         imageAlt="Hingham, Massachusetts town center"
@@ -52,7 +52,7 @@ export default function AboutPage() {
       <EditorialSplit
         eyebrow="Our sister brand"
         headline="Good Kicks taught us how."
-        body="Before Townies there was Good Kicks — premium foot bags built to make the circle bigger. It was small, it was scrappy, and it taught us how to make something people genuinely keep. Good Kicks is still going strong — a live line of its own — and Townies is what grew out of it."
+        body="Before Townies there was Good Kicks — hand-stitched foot bags built to keep the circle going. Small, scrappy, and it taught us how to make something people actually keep instead of toss. Good Kicks is still kicking, a live line of its own — and Townies is what grew out of it."
         cta={{ href: '/goodkicks', label: 'shop good kicks' }}
         imageAlt="Good Kicks foot bags"
         imageLabel="Good Kicks"
@@ -69,9 +69,9 @@ export default function AboutPage() {
           Small towns. Strong roots.
         </p>
         <p className="text-town-muted leading-relaxed mb-10">
-          We&apos;re not trying to be the biggest apparel brand in New England. We&apos;re trying
-          to be the one your town actually wears — the shirt that shows up at the reunion, the
-          hoodie that goes off to college, the hat that says exactly where you&apos;re from.
+          We&apos;re not trying to be the biggest brand in New England. We&apos;re trying to be the
+          one your town actually wears — the shirt at the reunion, the hoodie that goes off to
+          school, the hat that says exactly where you&apos;re from before you open your mouth.
         </p>
         <Link
           href="/shop"

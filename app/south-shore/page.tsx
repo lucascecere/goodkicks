@@ -45,8 +45,8 @@ export default async function SouthShorePage() {
           The South Shore.
         </h1>
         <p className="text-town-muted max-w-md mx-auto leading-relaxed">
-          Where it starts. Hats and designs repping the towns off the line — from
-          Massachusetts, for Massachusetts. Pre-order now.
+          Where it all kicked off. Hats repping the towns we actually know — Milton,
+          Weymouth, Hingham, Braintree. Grab yours before the run&apos;s gone.
         </p>
       </div>
 

@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     default: 'Townies — Rep Your Town.',
   },
   description:
-    'Massachusetts town-pride apparel. The town is the hero. Starting with the South Shore — Scituate, Marshfield, Hingham, Weymouth, Hanover and more.',
+    'Massachusetts town-pride apparel for people who rep where they’re from. Heavyweight hats and tees — Milton, Weymouth, Hingham, Braintree and more. South Shore first.',
   openGraph: {
     siteName: 'Townies',
     type: 'website',

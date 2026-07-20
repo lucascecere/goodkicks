@@ -31,7 +31,7 @@ export function ComingSoonRegion({
             href="/shop"
             className="inline-flex items-center bg-town-cream text-town-navy px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-white transition-colors"
           >
-            Shop the South Shore
+            Shop what&apos;s live
           </Link>
           <Link
             href="/contact"

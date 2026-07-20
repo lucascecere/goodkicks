@@ -110,8 +110,8 @@ export function Footer() {
             Join the town list.
           </h2>
           <p className="text-town-cream/70 max-w-md mx-auto mb-8 leading-relaxed">
-            We&apos;ll tell you the moment your town drops — new towns, restocks, and
-            members-only offers, by email and text.
+            Be first when your town drops. New towns, restocks, and members-only stuff —
+            straight to your inbox. No spam, no BS.
           </p>
           <div className="flex justify-center">
             <SignupForm />

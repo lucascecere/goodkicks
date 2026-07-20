@@ -12,7 +12,7 @@ export default function BostonPage() {
   return (
     <ComingSoonRegion
       region="Boston"
-      blurb="Greater Boston is on the board. We're starting with the South Shore and working up the map from there. Join the town list and we'll tell you the moment Boston drops — and request your town while you're at it."
+      blurb="Boston's coming — don't rush us. We started on the South Shore and we're working our way up the map, town by town, doing each one right. Get on the list and you'll know the second Boston drops. Or tell us which town to do first."
     />
   );
 }

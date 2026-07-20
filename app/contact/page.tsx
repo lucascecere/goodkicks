@@ -21,7 +21,7 @@ export default function ContactPage() {
       <BrandPattern variant="ma" color="forest" opacity={0.05} size={160} fade="b" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
         <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-          We&apos;re listening
+          Holler at us
         </p>
         <h1 className="font-block uppercase text-5xl sm:text-6xl text-town-navy mb-10">
           Get in touch.

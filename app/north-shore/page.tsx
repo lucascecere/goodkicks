@@ -12,7 +12,7 @@ export default function NorthShorePage() {
   return (
     <ComingSoonRegion
       region="North Shore"
-      blurb="The North Shore is on the board. We're starting with the South Shore and working up the map from there. Join the town list and we'll tell you the moment the North Shore drops — and request your town while you're at it."
+      blurb="North Shore, we didn't forget you. We started on the South Shore and we're working our way up the map, town by town, doing each one right. Get on the list and you'll know the second it drops. Or tell us which town to do first."
     />
   );
 }

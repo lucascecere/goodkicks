@@ -64,7 +64,8 @@ export default async function ShopPage({
           Every town.
         </h1>
         <p className="text-town-muted max-w-md mx-auto leading-relaxed">
-          All in one place — filter by yours. More towns dropping down the line.
+          Every drop, one place. Find yours and rep it. Don&apos;t see your town?
+          It&apos;s coming — or tell us to hurry up.
         </p>
       </div>
 

@@ -148,8 +148,8 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
     url: `${productBase}/${handle}`,
     image: imgSrc ?? undefined,
     description: gk
-      ? `${name} — a premium Good Kicks foot bag, properly weighted and hand-stitched to last.`
-      : `${name}, Massachusetts town-pride apparel from Townies. Heavyweight, well-worn from day one.`,
+      ? `${name} — a hand-stitched Good Kicks foot bag, properly weighted and built to take a beating.`
+      : `${name} — heavyweight Massachusetts town-pride apparel from Townies. Stitched, not printed, and built to last.`,
     brand: { '@type': 'Brand', name: gk ? 'Good Kicks' : 'Townies' },
     offers: {
       '@type': 'Offer',
@@ -214,8 +214,8 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             </h1>
             <p className="text-muted leading-relaxed mb-8 max-w-md">
               {gk
-                ? 'A premium Good Kicks foot bag — properly weighted, hand-stitched, and built to last. Pick your colorway and keep the circle going.'
-                : `Heavyweight town-pride apparel for ${name}, Massachusetts. Well-worn from day one, built to last past the season.`}
+                ? 'A hand-stitched Good Kicks foot bag — properly weighted, built to take a beating, made to keep the circle going. Pick your colorway.'
+                : 'Heavyweight and built to last — stitched, not slapped on. Rep your town before anyone has to ask where you’re from. Wear it ’til it’s got a story.'}
             </p>
 
             <BuyBox

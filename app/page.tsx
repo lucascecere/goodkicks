@@ -11,7 +11,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: 'Townies — Rep Your Town. Massachusetts Town-Pride Apparel',
   description:
-    'Town-pride apparel from Massachusetts, for Massachusetts. The town is the hero. Starting with the South Shore — Scituate, Marshfield, Hingham, Weymouth, Hanover and more.',
+    'Massachusetts town-pride apparel for people who rep where they’re from. Heavyweight hats and tees, one town at a time — Milton, Weymouth, Hingham, Braintree and more. South Shore first.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'Townies — Rep Your Town.',
@@ -41,10 +41,10 @@ export default async function HomePage() {
       </section>
 
       <EditorialSplit
-        eyebrow="The South Shore"
-        headline="Started where the tide turns."
-        body="Scituate. Marshfield. Hingham. Weymouth. Hanover. The first towns off the line, because these are the streets we know. Each drop is a town done right — heavyweight, well-worn from day one, built to last past the season."
-        cta={{ href: '/south-shore', label: 'shop the south shore' }}
+        eyebrow="Where it started"
+        headline="South Shore 'til I die."
+        body="Milton. Weymouth. Hingham. Braintree. The towns we actually know — off the line first. These are the streets, the packies, the fields, the exits you'd never let anyone talk down. Every drop is one town done right: heavyweight, worn-in from day one, built to outlast the season. Down here we don't do disposable."
+        cta={{ href: '/shop', label: 'shop the towns' }}
         imageSrc="/brand/lifestyle/split-harbor.jpg"
         imageAlt="Scituate Harbor, Massachusetts"
         imageLabel="South Shore"
