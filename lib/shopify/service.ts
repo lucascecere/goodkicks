@@ -31,6 +31,18 @@ const PRODUCT_QUERY = `
       featuredImage {
         url
         altText
+        width
+        height
+      }
+      images(first: 20) {
+        edges {
+          node {
+            url
+            altText
+            width
+            height
+          }
+        }
       }
       variants(first: 20) {
         edges {
