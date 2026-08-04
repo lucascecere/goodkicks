@@ -30,8 +30,12 @@ export type CollectionProduct = {
 // SEO region pages only.
 export const TOWNIES_COLLECTION =
   process.env.SHOPIFY_TOWNIES_COLLECTION || 'townies';
+// `the-good-kicks-v1` is the real handle in the store — there is no `good-kicks`
+// collection, so the old default silently resolved to nothing (this read degrades
+// to [], which is why it went unnoticed). Rep discount codes scope to this too,
+// and there the miss is loud: the collection lookup throws.
 export const GOODKICKS_COLLECTION =
-  process.env.SHOPIFY_GOODKICKS_COLLECTION ?? 'good-kicks';
+  process.env.SHOPIFY_GOODKICKS_COLLECTION || 'the-good-kicks-v1';
 
 const COLLECTION_PRODUCTS_QUERY = `
   query CollectionProducts($handle: String!, $first: Int!) {
