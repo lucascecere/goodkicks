@@ -2,128 +2,135 @@ import type { Metadata } from 'next';
 import { AmbassadorForm } from '@/components/partners/ambassador-form';
 
 export const metadata: Metadata = {
-  title: 'Ambassador Program — Good Kicks',
+  title: 'Town Rep Program — Townies',
   description:
-    'Run a school hacky sack account? Join the Good Kicks ambassador program. Get a free starter sack, your own discount code, and earn commission on every sale you drive.',
+    'Rep your town the loudest? Become a Townies Town Rep. Get a free hat, your own discount code, and earn commission on every sale you drive.',
   alternates: { canonical: '/ambassadors' },
   openGraph: {
-    title: 'Good Kicks Ambassador Program',
-    description: 'Get a free starter sack, your own discount code, and earn commission on every sale you drive.',
+    title: 'Townies Town Rep Program',
+    description: 'Free hat, your own discount code, and commission on every sale you drive.',
     url: '/ambassadors',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Good Kicks Ambassador Program',
-    description: 'Free starter sack, your own discount code, earn commission on every sale.',
+    title: 'Townies Town Rep Program',
+    description: 'Free hat, your own discount code, earn commission on every sale.',
     images: ['/opengraph-image.png'],
   },
 };
 
-export default function PartnersPage() {
+export default function TownRepPage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-brand-ink text-white py-24 px-6 sm:px-8">
+      <section className="bg-town-navy text-town-cream py-20 sm:py-24 px-4 sm:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <p className="text-xs uppercase tracking-widest text-white/50 font-medium text-center max-w-none">goodkicks brand ambassador program</p>
-          <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl leading-none">
-            you run the circle.<br />we&apos;ll back it.
+          <p className="text-xs uppercase tracking-[0.22em] text-town-cream/50 font-medium">
+            Townies Town Rep Program
+          </p>
+          <h1 className="font-block uppercase text-4xl sm:text-6xl lg:text-7xl leading-[0.9]">
+            Rep your town.<br />We&apos;ll back you.
           </h1>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed">
-            we&apos;re building partnerships with school hacky sack accounts — high school, college, whatever. if you&apos;re already hyping the scene at your school, we want to back you with free product, your own discount code, and a cut of every sale.
+          <p className="text-town-cream/70 text-lg max-w-2xl mx-auto leading-relaxed">
+            If you&apos;re already the one repping your town the loudest — the local account, the
+            hometown-proud creator, the person everyone knows is from there — we want to back you.
+            Free hats, your own code, and a cut of every sale you drive.
           </p>
           <a
             href="#apply"
-            className="inline-block bg-brand-rust text-white px-8 py-4 rounded font-medium text-lg hover:bg-brand-rust/90 transition-colors"
+            className="inline-block bg-town-forest text-white px-8 py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm hover:bg-town-forest/90 transition-colors"
           >
-            apply now →
+            Apply now →
           </a>
         </div>
       </section>
 
-      {/* What is Good Kicks */}
-      <section className="py-20 px-6 sm:px-8 bg-brand-cream">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-4">
-              <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">the product</p>
-              <h2 className="font-display text-4xl text-brand-ink">premium materials. properly weighted. $9.99.</h2>
-              <p className="text-brand-muted leading-relaxed">
-                Good Kicks foot bags are made by the same crew that&apos;s been making them for 30+ years. Not the $4 Amazon junk. Not the $40 premium stuff. Just the right foot bag at the right price — built for dorm circles, lunch tables, and every campus quad that needs one.
-              </p>
-              <p className="text-brand-muted leading-relaxed">
-                we sell direct, ship in 1–2 weeks, and offer $4 flat-rate shipping — free on orders $35+. six colorways. one circle.
-              </p>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {['#C15A3A','#5A5E68','#5BA4B4','#A89870','#D4A84B','#4A4848'].map((color, i) => ( // georgia, maine, colorado, new york, nevada, massachusetts
-                <div
-                  key={i}
-                  className="aspect-square rounded-full shadow-sm ring-1 ring-brand-rule"
-                  style={{ background: color }}
-                />
-              ))}
-            </div>
+      {/* The deal */}
+      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-town-cream">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-center">
+          <div className="space-y-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium">The deal</p>
+            <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy leading-[0.95]">
+              Free hat. Your own code. Real commission.
+            </h2>
+            <p className="text-town-muted leading-relaxed">
+              Townies makes town-pride hats for people who actually rep where they&apos;re from. If
+              that&apos;s you — and your people trust what you put on — a Town Rep partnership gets
+              you the product free, your own discount code, and a cut of every order you drive.
+            </p>
+            <p className="text-town-muted leading-relaxed">
+              No quotas you can&apos;t hit, no corporate nonsense. You promote your town, your
+              followers save, you earn.
+            </p>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {['#0D1B2A', '#2F4F3A', '#F2EFE8', '#7A1E1E', '#4B2E83', '#111111'].map((color, i) => (
+              <div
+                key={i}
+                className="aspect-square rounded-sm shadow-sm ring-1 ring-town-rule"
+                style={{ background: color }}
+              />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* The Program */}
-      <section className="py-20 px-6 sm:px-8 bg-[#EFE8DA]">
-        <div className="max-w-4xl mx-auto text-center space-y-4 mb-16">
-          <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">what you get</p>
-          <h2 className="font-display text-4xl text-brand-ink">the goodkicks ambassador program.</h2>
-          <p className="text-brand-muted max-w-xl mx-auto">we keep it simple. you promote, your followers save, you earn.</p>
+      {/* What you get */}
+      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE6DB]">
+        <div className="max-w-4xl mx-auto text-center space-y-3 mb-12 sm:mb-16">
+          <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium">What you get</p>
+          <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy">The perks.</h2>
+          <p className="text-town-muted max-w-xl mx-auto">We keep it simple. You promote, your followers save, you earn.</p>
         </div>
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
           {[
             {
-              title: 'your own code.',
-              body: 'get a custom discount code tied to your school or account (e.g. OHIO15, DUKE15). your followers start at 15% off and get bigger codes (up to 20%) as you level up.',
+              title: 'Your own code.',
+              body: 'A custom code tied to your town (think MILTON15, WEYMOUTH15). Your followers start at 15% off and unlock bigger codes — up to 20% — as you level up.',
             },
             {
-              title: 'earn as you grow.',
-              body: 'earn 8% commission on every order placed with your code at the starter tier. level up to 12% (repping) or 20% (anchor) by posting consistently and driving sales. paid out monthly via venmo or paypal.',
+              title: 'Earn as you grow.',
+              body: 'Start at 10% commission on every order placed with your code. Level up to 15% or 20% by posting consistently and driving sales. Paid out monthly via Venmo or PayPal.',
             },
             {
-              title: 'free starter sack.',
-              body: 'approved ambassadors get a free sack shipped to them in your colorway of choice — so you can post with the real product in hand. level up and we keep the product coming.',
+              title: 'Free hat.',
+              body: 'Approved reps get their town’s hat shipped free, so you can post with the real thing in hand. Keep leveling and we keep the product coming.',
             },
           ].map((item) => (
-            <div key={item.title} className="bg-brand-cream rounded-xl p-8 space-y-3 border border-brand-rule">
-              <h3 className="font-display text-2xl text-brand-ink">{item.title}</h3>
-              <p className="text-brand-muted text-sm leading-relaxed">{item.body}</p>
+            <div key={item.title} className="bg-town-cream rounded-sm p-8 space-y-3 border border-town-rule">
+              <h3 className="font-block uppercase text-xl text-town-navy">{item.title}</h3>
+              <p className="text-town-muted text-sm leading-relaxed">{item.body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* The Tiers */}
-      <section className="py-20 px-6 sm:px-8 bg-brand-cream">
+      {/* The tiers */}
+      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-town-cream">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
-            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">levels</p>
-            <h2 className="font-display text-4xl text-brand-ink">the tiers.</h2>
+          <div className="text-center mb-12 sm:mb-16 space-y-3">
+            <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium">Levels</p>
+            <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy">The tiers.</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
-                tier: 'starter.',
-                body: 'sign up, get approved. 1 free sack, your personal 15% off code, 8% commission on every sale through your code.',
+                tier: 'Local.',
+                body: 'Sign up, get approved. One free hat, your personal 15%-off code, and 10% commission on every sale through your code.',
               },
               {
-                tier: 'repping.',
-                body: 'hit 8+ tagged posts or 10+ code redemptions. bumps your code to 20% off, your commission to 12%, plus more product sent your way.',
+                tier: 'Regular.',
+                body: 'Hit 8+ tagged posts or 10+ code redemptions. Bumps your code to 20% off, your commission to 15%, plus more product sent your way.',
               },
               {
-                tier: 'anchor.',
-                body: 'hit 23+ posts or 38+ redemptions. 20% off code, 20% commission, ongoing product support, and a shot at a custom-colorway named partnership.',
+                tier: 'Legend.',
+                body: 'Hit 20+ posts or 35+ redemptions. 20%-off code, 20% commission, ongoing hats, and a shot at a custom town collab with your name on it.',
               },
             ].map((item) => (
-              <div key={item.tier} className="bg-[#EFE8DA] rounded-xl p-8 space-y-3 border border-brand-rule">
-                <h3 className="font-display text-2xl text-brand-ink">{item.tier}</h3>
-                <p className="text-brand-muted text-sm leading-relaxed">{item.body}</p>
+              <div key={item.tier} className="bg-[#EAE6DB] rounded-sm p-8 space-y-3 border border-town-rule">
+                <h3 className="font-block uppercase text-xl text-town-navy">{item.tier}</h3>
+                <p className="text-town-muted text-sm leading-relaxed">{item.body}</p>
               </div>
             ))}
           </div>
@@ -131,40 +138,24 @@ export default function PartnersPage() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 px-6 sm:px-8 bg-[#EFE8DA]">
+      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE6DB]">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16 space-y-3">
-            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">the process</p>
-            <h2 className="font-display text-4xl text-brand-ink">how it works.</h2>
+          <div className="text-center mb-12 sm:mb-16 space-y-3">
+            <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium">The process</p>
+            <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy">How it works.</h2>
           </div>
           <div className="space-y-0">
             {[
-              {
-                step: '01',
-                title: 'apply below.',
-                body: 'fill out the form. tell us about your account, your school, and how you hype the sack community. takes 2 minutes.',
-              },
-              {
-                step: '02',
-                title: 'we review + approve.',
-                body: "we look at your account, make sure it's a real school sack community (not 12 followers and a burner), and reach out within a few days.",
-              },
-              {
-                step: '03',
-                title: 'get your code + free sack.',
-                body: "once approved, we send your custom promo code and a free starter sack in your colorway of choice so you can post with the real product in hand.",
-              },
-              {
-                step: '04',
-                title: 'post. earn. repeat.',
-                body: "share your code with your followers, watch the orders come in, and get paid monthly. we track everything on our end.",
-              },
+              { step: '01', title: 'Apply below.', body: 'Fill out the form. Tell us your town, your account, and how you rep it. Takes two minutes.' },
+              { step: '02', title: 'We review + approve.', body: "We check that you're the real deal — actually from the town, actually repping it — and reach out within a few days." },
+              { step: '03', title: 'Get your code + free hat.', body: 'Once approved, we send your custom code and your town’s hat free, so you can post with the real product in hand.' },
+              { step: '04', title: 'Post. Earn. Repeat.', body: 'Share your code, watch the orders come in, and get paid monthly. We track everything on our end.' },
             ].map((item, i, arr) => (
-              <div key={item.step} className={`flex gap-8 py-8 ${i < arr.length - 1 ? 'border-b border-brand-rule' : ''}`}>
-                <span className="font-display text-4xl text-brand-rule flex-shrink-0 w-14">{item.step}</span>
+              <div key={item.step} className={`flex gap-6 sm:gap-8 py-8 ${i < arr.length - 1 ? 'border-b border-town-rule' : ''}`}>
+                <span className="font-block text-4xl text-town-navy/25 flex-shrink-0 w-14">{item.step}</span>
                 <div className="space-y-1">
-                  <h3 className="font-display text-2xl text-brand-ink">{item.title}</h3>
-                  <p className="text-brand-muted leading-relaxed">{item.body}</p>
+                  <h3 className="font-block uppercase text-xl sm:text-2xl text-town-navy">{item.title}</h3>
+                  <p className="text-town-muted leading-relaxed">{item.body}</p>
                 </div>
               </div>
             ))}
@@ -173,21 +164,23 @@ export default function PartnersPage() {
       </section>
 
       {/* Who we're looking for */}
-      <section className="py-16 px-6 sm:px-8 bg-brand-ink text-white">
+      <section className="py-16 px-4 sm:px-8 bg-town-navy text-town-cream">
         <div className="max-w-3xl mx-auto text-center space-y-4">
-          <h2 className="font-display text-4xl">who we&apos;re looking for.</h2>
-          <p className="text-white/70 leading-relaxed max-w-xl mx-auto">
-            school hacky sack accounts — doesn&apos;t matter if it&apos;s 200 followers or 20k. we care more about engagement and genuine community than numbers. if your followers actually sack, you&apos;re probably a fit.
+          <h2 className="font-block uppercase text-3xl sm:text-4xl">Who we&apos;re looking for.</h2>
+          <p className="text-town-cream/70 leading-relaxed max-w-xl mx-auto">
+            People who rep their town for real — doesn&apos;t matter if it&apos;s 200 followers or
+            20k. We care about genuine hometown pride and engagement over follower count. If your
+            people actually know where you&apos;re from, you&apos;re probably a fit.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 text-left">
             {[
-              { label: 'high school accounts', desc: 'lunchtime circles, after-school crews, school-named sack accounts.' },
-              { label: 'college accounts', desc: 'dorm circles, campus quads, greek chapter groups, rec clubs.' },
-              { label: 'general sack accounts', desc: 'freestyle channels, trick accounts, sack-focused creators.' },
+              { label: 'Town & local accounts', desc: 'Pages built around a town, neighborhood, or region — the ones everyone from there follows.' },
+              { label: 'Hometown creators', desc: 'Local personalities, athletes, and creators who lead with where they’re from.' },
+              { label: 'Massholes with a following', desc: 'If your whole thing is Massachusetts pride and your audience is here, let’s talk.' },
             ].map((item) => (
-              <div key={item.label} className="border border-white/20 rounded-lg p-5 space-y-2">
-                <p className="font-medium text-white text-sm">{item.label}</p>
-                <p className="text-white/50 text-xs leading-relaxed">{item.desc}</p>
+              <div key={item.label} className="border border-town-cream/20 rounded-sm p-5 space-y-2">
+                <p className="font-semibold text-town-cream text-sm">{item.label}</p>
+                <p className="text-town-cream/50 text-xs leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -195,12 +188,12 @@ export default function PartnersPage() {
       </section>
 
       {/* Application form */}
-      <section id="apply" className="py-20 px-6 sm:px-8 bg-brand-cream">
+      <section id="apply" className="py-16 sm:py-20 px-4 sm:px-8 bg-town-cream">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12 space-y-3">
-            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium text-center max-w-none">apply</p>
-            <h2 className="font-display text-4xl text-brand-ink">become an ambassador.</h2>
-            <p className="text-brand-muted">we&apos;ll get back to you within a few days.</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium">Apply</p>
+            <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy">Become a Town Rep.</h2>
+            <p className="text-town-muted">We&apos;ll get back to you within a few days.</p>
           </div>
           <AmbassadorForm />
         </div>

@@ -26,6 +26,8 @@ export type TownView = {
 // title-case them), so a new region just needs a tag in Shopify.
 const REGION_LABELS: Record<string, string> = {
   'south-shore': 'South Shore',
+  'south-east': 'Southeastern Mass',
+  'boston': 'Boston',
   'north-shore': 'North Shore',
   'cape-cod': 'Cape Cod',
   'metro-west': 'MetroWest',

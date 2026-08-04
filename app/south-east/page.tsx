@@ -8,15 +8,15 @@ import { breadcrumbSchema } from '@/lib/seo/site';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Boston — Neighborhood Hats',
+  title: 'Southeastern Mass — Town Hats',
   description:
-    'Boston neighborhood town-pride hats from Townies — West Roxbury, Roslindale, and more of the city, corner by corner. Massachusetts apparel, pre-order now.',
-  alternates: { canonical: '/boston' },
+    'Southeastern Massachusetts town-pride hats from Townies — Norton up first, with Mansfield, Foxboro, and Attleboro on deck. Pre-order now.',
+  alternates: { canonical: '/south-east' },
 };
 
-export default async function BostonPage() {
+export default async function SouthEastPage() {
   const all = await getTownieProducts();
-  const items = all.filter((p) => p.tags.some((t) => t.toLowerCase() === 'boston'));
+  const items = all.filter((p) => p.tags.some((t) => t.toLowerCase() === 'south-east'));
 
   return (
     <div className="relative overflow-hidden bg-town-cream min-h-screen">
@@ -26,7 +26,7 @@ export default async function BostonPage() {
           __html: JSON.stringify(
             breadcrumbSchema([
               { name: 'Home', path: '/' },
-              { name: 'Boston', path: '/boston' },
+              { name: 'Southeastern Mass', path: '/south-east' },
             ]),
           ),
         }}
@@ -35,15 +35,14 @@ export default async function BostonPage() {
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-10 text-center">
         <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-          The city
+          Down the map
         </p>
         <h1 className="font-block uppercase text-4xl sm:text-6xl lg:text-7xl text-town-navy mb-4">
-          Boston.
+          Southeastern Mass.
         </h1>
         <p className="text-town-muted max-w-md mx-auto leading-relaxed">
-          Neighborhood pride, done right. West Roxbury and Roslindale are up first — Southie,
-          Dorchester, and the rest of the city are working their way onto the map, corner by
-          corner. Rep yours.
+          The part of the map everyone forgets — we didn&apos;t. Norton&apos;s up first, with
+          Mansfield, Foxboro, and Attleboro on deck. Down 24 and 495, this one&apos;s for you.
         </p>
       </div>
 
@@ -51,8 +50,8 @@ export default async function BostonPage() {
         {items.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-town-muted text-sm mb-6">
-              Boston&apos;s just getting started. Get on the town list and we&apos;ll tell you the
-              moment your neighborhood drops.
+              More Southeastern Mass towns are coming. Get on the town list and we&apos;ll tell you
+              the moment yours drops.
             </p>
             <Link
               href="/#join"

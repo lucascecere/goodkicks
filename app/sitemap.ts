@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 import { getTownieProducts, getGoodKicksProducts } from '@/lib/shopify/collections';
-import { blogPosts } from '@/lib/blog/posts';
+import { towniePosts } from '@/lib/townies/blog-posts';
 import { SITE_URL } from '@/lib/seo/site';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -25,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+  const blogRoutes: MetadataRoute.Sitemap = towniePosts.map((post) => ({
     url: `${siteUrl}/blog/${post.slug}`,
     lastModified: new Date(post.publishedAt),
     changeFrequency: 'monthly' as const,
@@ -36,7 +36,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: siteUrl,                        lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 1.0 },
     { url: `${siteUrl}/shop`,              lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.9 },
     { url: `${siteUrl}/south-shore`,       lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.9 },
-    { url: `${siteUrl}/boston`,            lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${siteUrl}/boston`,            lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
+    { url: `${siteUrl}/south-east`,        lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
     { url: `${siteUrl}/north-shore`,       lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${siteUrl}/goodkicks`,         lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
     { url: `${siteUrl}/goodkicks/shop`,    lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
@@ -44,6 +45,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/ambassadors`,       lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${siteUrl}/about`,             lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.6 },
     { url: `${siteUrl}/contact`,           lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.5 },
+    { url: `${siteUrl}/faq`,               lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: `${siteUrl}/size-guide`,        lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.4 },
     { url: `${siteUrl}/shipping-returns`,  lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.4 },
     { url: `${siteUrl}/privacy`,           lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.3 },
     ...townRoutes,

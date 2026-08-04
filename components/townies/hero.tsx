@@ -60,7 +60,7 @@ export function Hero({
         <p className="text-[0.7rem] sm:text-xs uppercase tracking-[0.25em] text-town-cream/70 mb-4">
           {eyebrow}
         </p>
-        <h1 className="font-script text-6xl sm:text-8xl leading-[0.95] text-white mb-5">
+        <h1 className="font-script text-5xl sm:text-7xl lg:text-8xl leading-[0.95] text-white mb-5">
           {headline}
         </h1>
         <p className="max-w-xl text-town-cream/80 text-base sm:text-lg leading-relaxed mb-8">

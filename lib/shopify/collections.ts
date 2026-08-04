@@ -25,9 +25,11 @@ export type CollectionProduct = {
 };
 
 // `||` (not `??`) so an empty env value falls back to the default too. The
-// Townies catalog currently lives in the `south-shore` collection.
+// Townies catalog lives in the master `townies` collection (holds every town
+// across all regions); region collections (south-shore/boston/…) are kept for
+// SEO region pages only.
 export const TOWNIES_COLLECTION =
-  process.env.SHOPIFY_TOWNIES_COLLECTION || 'south-shore';
+  process.env.SHOPIFY_TOWNIES_COLLECTION || 'townies';
 export const GOODKICKS_COLLECTION =
   process.env.SHOPIFY_GOODKICKS_COLLECTION ?? 'good-kicks';
 

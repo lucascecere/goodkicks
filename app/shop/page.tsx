@@ -60,7 +60,7 @@ export default async function ShopPage({
         <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
           The shop
         </p>
-        <h1 className="font-block uppercase text-5xl sm:text-7xl text-town-navy mb-4">
+        <h1 className="font-block uppercase text-4xl sm:text-6xl lg:text-7xl text-town-navy mb-4">
           Every town.
         </h1>
         <p className="text-town-muted max-w-md mx-auto leading-relaxed">

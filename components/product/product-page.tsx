@@ -12,6 +12,7 @@ import { TowniesBlock } from '@/components/brand/wordmark';
 import { TownCard } from '@/components/townies/town-card';
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
+import { ProductMedia, type ProductMediaImage } from '@/components/product/product-media';
 import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 
 // Shared product-detail body, rendered by BOTH the Townies route
@@ -62,14 +63,21 @@ export async function productPageMetadata(handle: string, brand?: Brand): Promis
   const label = gk ? 'Good Kicks' : 'Townies';
   const imgUrl = product.featuredImage?.url;
   const canonical = gk ? `/goodkicks/products/${handle}` : `/products/${handle}`;
-  return {
-    title: `${name} — ${label}`,
-    description: gk
+  // Prefer the Shopify SEO metafields (global.title_tag / description_tag, exposed
+  // as product.seo) when set; fall back to the generic template otherwise.
+  const seoTitle = product.seo?.title?.trim() || `${name} — ${label}`;
+  const seoDescription =
+    product.seo?.description?.trim() ||
+    (gk
       ? `${name} — a premium Good Kicks foot bag. Properly weighted, built to last.`
-      : `${name}, Massachusetts. Town-pride apparel — the town is the hero, Townies is the label.`,
+      : `${name}, Massachusetts. Town-pride apparel — the town is the hero, Townies is the label.`);
+  return {
+    title: seoTitle,
+    description: seoDescription,
     alternates: { canonical },
     openGraph: {
-      title: `${name} — ${label}`,
+      title: seoTitle,
+      description: seoDescription,
       url: canonical,
       images: imgUrl
         ? [{ url: imgUrl, width: 1000, height: 1000, alt: `${name} — ${label}` }]
@@ -93,6 +101,19 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
   const imgSrc =
     shopifyProduct.featuredImage?.url ?? (gk ? imageForVariant(shopifyProduct.title) : undefined);
   const productBase = gk ? '/goodkicks/products' : '/products';
+
+  // Every image on the product, featured first. Shopify already returns them in
+  // position order, but featuredImage is the merchandiser's explicit pick, so it
+  // leads and is de-duped out of the rest.
+  const galleryImages: ProductMediaImage[] = (
+    (shopifyProduct.images?.edges ?? []) as Array<{ node: ProductMediaImage }>
+  ).map((e) => e.node);
+  const orderedImages: ProductMediaImage[] = shopifyProduct.featuredImage
+    ? [
+        shopifyProduct.featuredImage as ProductMediaImage,
+        ...galleryImages.filter((i) => i.url !== shopifyProduct.featuredImage.url),
+      ]
+    : galleryImages;
 
   // ── Good Kicks build-your-own bundle ────────────────────────────────────────
   if (BUNDLE_HANDLES.includes(handle)) {
@@ -188,17 +209,23 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
-          {/* Gallery */}
-          <div className="relative aspect-square overflow-hidden rounded-sm">
-            <BrandImage
-              src={imgSrc}
-              alt={`${name} — ${gk ? 'Good Kicks' : 'Townies'}`}
-              tone={gk ? 'cream' : 'navy'}
-              label={name}
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-            />
-          </div>
+          {/* Gallery — thumbnails only when the product actually has more than one
+              image. Single-image and image-less products keep the BrandImage slot so
+              the branded placeholder fallback is preserved. */}
+          {orderedImages.length > 1 ? (
+            <ProductMedia images={orderedImages} productTitle={name} />
+          ) : (
+            <div className="relative aspect-square overflow-hidden rounded-sm">
+              <BrandImage
+                src={imgSrc}
+                alt={`${name} — ${gk ? 'Good Kicks' : 'Townies'}`}
+                tone={gk ? 'cream' : 'navy'}
+                label={name}
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+          )}
 
           {/* Details */}
           <div className="lg:pt-6">
@@ -209,14 +236,23 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             ) : (
               <TowniesBlock className="block text-[0.65rem] mb-1" />
             )}
-            <h1 className="font-heading uppercase leading-[0.88] tracking-[0.01em] text-text text-6xl sm:text-7xl mb-3">
+            <h1 className="font-heading uppercase leading-[0.9] tracking-[0.01em] text-text text-3xl sm:text-5xl lg:text-7xl mb-3 break-words">
               {name}
             </h1>
-            <p className="text-muted leading-relaxed mb-8 max-w-md">
-              {gk
-                ? 'A hand-stitched Good Kicks foot bag — properly weighted, built to take a beating, made to keep the circle going. Pick your colorway.'
-                : 'Heavyweight and built to last — stitched, not slapped on. Rep your town before anyone has to ask where you’re from. Wear it ’til it’s got a story.'}
-            </p>
+            {gk ? (
+              <p className="text-muted leading-relaxed mb-8 max-w-md">
+                A hand-stitched Good Kicks foot bag — properly weighted, built to take a beating, made to keep the circle going. Pick your colorway.
+              </p>
+            ) : shopifyProduct.descriptionHtml ? (
+              <div
+                className="text-muted leading-relaxed mb-8 max-w-md space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:mt-1 [&_p]:leading-relaxed [&_strong]:text-text [&_strong]:font-semibold"
+                dangerouslySetInnerHTML={{ __html: shopifyProduct.descriptionHtml }}
+              />
+            ) : (
+              <p className="text-muted leading-relaxed mb-8 max-w-md">
+                Rep your town before anyone has to ask where you’re from. Wear it ’til it’s got a story.
+              </p>
+            )}
 
             <BuyBox
               variants={variants}
@@ -226,6 +262,17 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               preorder={preorder}
               shipNote={PREORDER_SHIP_NOTE}
             />
+            {!gk && (
+              <p className="mt-4 text-xs text-muted">
+                One size fits most, adjustable snapback —{' '}
+                <Link
+                  href="/size-guide"
+                  className="underline underline-offset-2 hover:text-text transition-colors"
+                >
+                  size guide
+                </Link>
+              </p>
+            )}
           </div>
         </div>
 

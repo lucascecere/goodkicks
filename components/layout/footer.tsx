@@ -9,7 +9,9 @@ import { SocialLinks } from '@/components/townies/social-links';
 
 const shopByLinks = [
   { href: '/shop', label: 'All Towns' },
-  { href: '/shop#south-shore', label: 'South Shore' },
+  { href: '/south-shore', label: 'South Shore' },
+  { href: '/boston', label: 'Boston' },
+  { href: '/south-east', label: 'Southeastern Mass' },
   { href: '/goodkicks', label: 'Good Kicks' },
 ];
 
@@ -21,7 +23,9 @@ const aboutLinks = [
 
 const serviceLinks = [
   { href: 'https://goodkicks.myshopify.com/account', label: 'Account', external: true },
+  { href: '/size-guide', label: 'Size Guide' },
   { href: '/shipping-returns', label: 'Shipping & Returns' },
+  { href: '/faq', label: 'FAQ' },
   { href: '/contact', label: 'Contact Us' },
 ];
 
@@ -53,7 +57,7 @@ function SignupForm() {
   if (status === 'success') {
     return (
       <p className="text-town-cream/70 text-sm">
-        You&apos;re in. Watch your inbox for your welcome offer.
+        You&apos;re in. We&apos;ll holler the moment your town drops.
       </p>
     );
   }
@@ -85,7 +89,7 @@ function SignupForm() {
           disabled={status === 'loading'}
           className="bg-town-cream text-town-navy px-5 py-2.5 rounded text-sm font-semibold hover:bg-white transition-colors whitespace-nowrap disabled:opacity-60"
         >
-          {status === 'loading' ? 'Joining…' : 'Get the offer'}
+          {status === 'loading' ? 'Joining…' : 'Join the list'}
         </button>
       </div>
       {status === 'error' && (

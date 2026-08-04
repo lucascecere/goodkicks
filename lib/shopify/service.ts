@@ -23,6 +23,11 @@ const PRODUCT_QUERY = `
       title
       handle
       tags
+      descriptionHtml
+      seo {
+        title
+        description
+      }
       featuredImage {
         url
         altText

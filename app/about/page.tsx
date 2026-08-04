@@ -27,7 +27,7 @@ export default function AboutPage() {
         <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-4">
           Made by Massholes
         </p>
-        <h1 className="font-script text-5xl sm:text-7xl text-town-navy mb-6">
+        <h1 className="font-script text-4xl sm:text-6xl lg:text-7xl text-town-navy mb-6">
           Rep your town.
         </h1>
         <p className="text-town-muted leading-relaxed text-lg">
