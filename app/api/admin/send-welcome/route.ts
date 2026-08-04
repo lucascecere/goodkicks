@@ -1,47 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendWelcomeEmail } from '@/lib/email/send-welcome';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { isAdminAuthed, loadRep, sendWelcomeForRep } from '@/lib/reps/server';
 
-function isAuthed(req: NextRequest) {
-  const cookie = req.cookies.get('gk_admin')?.value;
-  return cookie === process.env.ADMIN_PASSWORD;
-}
-
-// POST body: { applicationId, firstName, email, discountCode, colorway, tierPct }
+// POST { applicationId } — re-sends the welcome email in the rep's brand voice.
+// Everything is read fresh from the DB so a just-edited email/code is used, not
+// a stale client-side copy.
 export async function POST(req: NextRequest) {
-  if (!isAuthed(req)) {
+  if (!isAdminAuthed(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
-  const body = await req.json();
-  let { applicationId, firstName, email, discountCode, colorway, tierPct = 8 } = body ?? {};
-  let isMinor = false;
-
-  // Always fetch fresh email + name from DB when applicationId is present
-  // so a recently-updated email is used, not a stale client-side value
-  if (applicationId) {
-    const supabase = createSupabaseServiceClient();
-    const { data: app } = await supabase
-      .from('ambassador_applications')
-      .select('name, email, discount_code, colorway_preference, age')
-      .eq('id', applicationId)
-      .single();
-
-    if (app) {
-      firstName = app.name.split(' ')[0];
-      email = app.email;
-      discountCode = discountCode ?? app.discount_code;
-      colorway = colorway ?? app.colorway_preference ?? 'your choice';
-      isMinor = typeof app.age === 'number' && app.age < 18;
-    }
+  const body = await req.json().catch(() => null);
+  const applicationId = body?.applicationId as string | undefined;
+  if (!applicationId) {
+    return NextResponse.json({ error: 'missing applicationId' }, { status: 400 });
   }
 
-  if (!firstName || !email || !discountCode) {
-    return NextResponse.json({ error: 'missing required fields' }, { status: 400 });
+  const rep = await loadRep(applicationId);
+  if (!rep) {
+    return NextResponse.json({ error: 'application not found' }, { status: 404 });
+  }
+
+  const discountCode = rep.discount_code;
+  if (!discountCode || !rep.email) {
+    return NextResponse.json({ error: 'rep needs an email and a discount code first' }, { status: 400 });
   }
 
   try {
-    await sendWelcomeEmail({ firstName, email, discountCode, colorway: colorway ?? 'your choice', tierPct, isMinor });
+    await sendWelcomeForRep(rep, {
+      discountCode,
+      discountPct: rep.discount_pct ?? 15,
+      commissionPct: rep.commission_pct ?? rep.tier_pct ?? 10,
+    });
   } catch (err) {
     console.error('[send-welcome] Error:', err);
     return NextResponse.json({ error: 'failed to send email' }, { status: 500 });

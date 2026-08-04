@@ -4,24 +4,35 @@ import { useState } from 'react';
 
 type Props = {
   appId: string;
+  brand: 'townies' | 'goodkicks';
   initialData: {
     name: string | null;
     email: string | null;
     instagram: string | null;
     school: string | null;
+    town: string | null;
+    hat_preference: string | null;
     account_type: string | null;
     followers: string | null;
     colorway_preference: string | null;
     shipping_address: string | null;
+    notes: string | null;
     age: number | null;
   };
 };
 
-const ACCOUNT_TYPES = [
+const GK_ACCOUNT_TYPES = [
   { value: 'high-school', label: 'High School' },
   { value: 'college', label: 'College' },
   { value: 'freestyle', label: 'Freestyle' },
   { value: 'general', label: 'General' },
+];
+
+const TOWNIES_ACCOUNT_TYPES = [
+  { value: 'town-page', label: 'Town / local page' },
+  { value: 'creator', label: 'Hometown creator' },
+  { value: 'athlete', label: 'Local athlete' },
+  { value: 'other', label: 'Other' },
 ];
 
 const FOLLOWER_RANGES = [
@@ -31,16 +42,22 @@ const FOLLOWER_RANGES = [
   { value: '10k+', label: '10k+' },
 ];
 
-export function AccountDetailsEditor({ appId, initialData }: Props) {
+export function AccountDetailsEditor({ appId, brand, initialData }: Props) {
+  const isTownies = brand === 'townies';
+  const accountTypes = isTownies ? TOWNIES_ACCOUNT_TYPES : GK_ACCOUNT_TYPES;
+
   const [fields, setFields] = useState({
     name: initialData.name ?? '',
     email: initialData.email ?? '',
     instagram: initialData.instagram ?? '',
     school: initialData.school ?? '',
+    town: initialData.town ?? '',
+    hat_preference: initialData.hat_preference ?? '',
     account_type: initialData.account_type ?? '',
     followers: initialData.followers ?? '',
     colorway_preference: initialData.colorway_preference ?? '',
     shipping_address: initialData.shipping_address ?? '',
+    notes: initialData.notes ?? '',
     age: initialData.age != null ? String(initialData.age) : '',
   });
   const [saving, setSaving] = useState(false);
@@ -88,14 +105,18 @@ export function AccountDetailsEditor({ appId, initialData }: Props) {
           <input className={inputCls} value={fields.instagram} onChange={(e) => set('instagram', e.target.value)} />
         </div>
         <div className="space-y-1">
-          <p className={labelCls}>School / Group</p>
-          <input className={inputCls} value={fields.school} onChange={(e) => set('school', e.target.value)} />
+          <p className={labelCls}>{isTownies ? 'Town' : 'School / Group'}</p>
+          {isTownies ? (
+            <input className={inputCls} value={fields.town} onChange={(e) => set('town', e.target.value)} />
+          ) : (
+            <input className={inputCls} value={fields.school} onChange={(e) => set('school', e.target.value)} />
+          )}
         </div>
         <div className="space-y-1">
           <p className={labelCls}>Account Type</p>
           <select className={inputCls} value={fields.account_type} onChange={(e) => set('account_type', e.target.value)}>
             <option value="">Select type</option>
-            {ACCOUNT_TYPES.map((t) => (
+            {accountTypes.map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
@@ -114,8 +135,12 @@ export function AccountDetailsEditor({ appId, initialData }: Props) {
           <input className={inputCls} type="number" min="13" max="100" value={fields.age} onChange={(e) => set('age', e.target.value)} />
         </div>
         <div className="space-y-1">
-          <p className={labelCls}>Colorway Preference</p>
-          <input className={inputCls} value={fields.colorway_preference} onChange={(e) => set('colorway_preference', e.target.value)} />
+          <p className={labelCls}>{isTownies ? 'Hat Wanted' : 'Colorway Preference'}</p>
+          {isTownies ? (
+            <input className={inputCls} value={fields.hat_preference} onChange={(e) => set('hat_preference', e.target.value)} />
+          ) : (
+            <input className={inputCls} value={fields.colorway_preference} onChange={(e) => set('colorway_preference', e.target.value)} />
+          )}
         </div>
       </div>
       <div className="space-y-1">
@@ -125,6 +150,16 @@ export function AccountDetailsEditor({ appId, initialData }: Props) {
           rows={2}
           value={fields.shipping_address}
           onChange={(e) => set('shipping_address', e.target.value)}
+        />
+      </div>
+      <div className="space-y-1">
+        <p className={labelCls}>Internal Notes</p>
+        <textarea
+          className={`${inputCls} resize-none`}
+          rows={2}
+          placeholder="only you see this"
+          value={fields.notes}
+          onChange={(e) => set('notes', e.target.value)}
         />
       </div>
 

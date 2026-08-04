@@ -1,23 +1,5 @@
 import type { AdminBrand, RealBrand } from '@/lib/admin/brand';
-
-type LineItemProperty = { name: string; value: string };
-
-type ShopifyLineItem = {
-  title: string;
-  quantity: number;
-  price: string;
-  properties?: LineItemProperty[];
-};
-
-type ShopifyOrder = {
-  id: number;
-  name: string;
-  total_price: string;
-  created_at: string;
-  financial_status: string;
-  discount_codes: { code: string }[];
-  line_items: ShopifyLineItem[];
-};
+import { fetchAllOrders, lineBrand, brandRevenue, type ShopifyOrder } from './orders-source';
 
 export type OrderBrand = RealBrand | 'mixed';
 
@@ -40,14 +22,6 @@ export type OrderSummary = {
 
 const EMPTY: OrderSummary = { orders: [], totalOrders: 0, totalRevenue: 0, avgOrderValue: 0 };
 
-// Brand of a single line item. New carts tag each line with a `_brand` custom
-// attribute (see components/townies/buy-box.tsx). Legacy orders placed before
-// the two-brand cart have no tag → attributed to Good Kicks, the original brand.
-function lineBrand(item: ShopifyLineItem): RealBrand {
-  const tag = item.properties?.find((p) => p.name === '_brand')?.value;
-  return tag === 'townies' ? 'townies' : 'goodkicks';
-}
-
 function orderBrand(order: ShopifyOrder): OrderBrand {
   const brands = new Set(order.line_items.map(lineBrand));
   if (brands.size > 1) return 'mixed';
@@ -56,34 +30,19 @@ function orderBrand(order: ShopifyOrder): OrderBrand {
 
 /**
  * Order summary, optionally scoped to one brand.
- * - 'all': every order, revenue = Shopify order total (incl. shipping/discounts).
- * - a brand: orders containing ≥1 line item of that brand; revenue = the sum of
- *   THAT brand's line-item subtotals (price × qty), so a mixed order only
- *   contributes its own brand's share. Per-brand revenue therefore excludes
- *   shipping/order-level discounts — a known, acceptable v1 approximation.
+ * - 'all': every order, revenue = Shopify order total (incl. shipping/tax).
+ * - a brand: orders containing ≥1 line item of that brand; revenue = that
+ *   brand's net line totals (price × qty, minus each line's share of order
+ *   discounts), so a mixed order only contributes its own brand's share.
+ *   Per-brand revenue therefore excludes shipping and tax — the same figure rep
+ *   commission is calculated from, so the two views agree.
  */
 export async function getOrderSummary(brand: AdminBrand = 'all'): Promise<OrderSummary> {
   if (!process.env.SHOPIFY_ADMIN_API_TOKEN || !process.env.SHOPIFY_STORE_DOMAIN) {
     return EMPTY;
   }
 
-  const url = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2024-10/orders.json?status=any&limit=250`;
-
-  const res = await fetch(url, {
-    headers: {
-      'X-Shopify-Access-Token': process.env.SHOPIFY_ADMIN_API_TOKEN,
-      'Content-Type': 'application/json',
-    },
-    cache: 'no-store',
-  });
-
-  if (!res.ok) {
-    console.error('[get-orders] Shopify error', res.status);
-    return EMPTY;
-  }
-
-  const json = (await res.json()) as { orders?: ShopifyOrder[] };
-  const raw = json.orders ?? [];
+  const { orders: raw } = await fetchAllOrders();
 
   const orders: AdminOrder[] = [];
   for (const o of raw) {
@@ -91,12 +50,7 @@ export async function getOrderSummary(brand: AdminBrand = 'all'): Promise<OrderS
     const matches = brand === 'all' || o.line_items.some((li) => lineBrand(li) === brand);
     if (!matches) continue;
 
-    const total =
-      brand === 'all'
-        ? parseFloat(o.total_price)
-        : o.line_items
-            .filter((li) => lineBrand(li) === brand)
-            .reduce((sum, li) => sum + parseFloat(li.price) * li.quantity, 0);
+    const total = brand === 'all' ? parseFloat(o.total_price) : brandRevenue(o, brand);
 
     orders.push({
       id: String(o.id),

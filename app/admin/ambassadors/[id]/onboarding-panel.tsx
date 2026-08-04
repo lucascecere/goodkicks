@@ -1,93 +1,36 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { renderRepWelcome, repWelcomeSubject } from '@/lib/email/rep-welcome-template';
+import type { RealBrand } from '@/lib/admin/brand';
 
 interface App {
   id: string;
   name: string;
   email: string;
   instagram: string;
+  brand: RealBrand;
+  town: string | null;
+  hat_preference: string | null;
   colorway_preference: string | null;
   approved: boolean;
   status: string | null;
   discount_code: string | null;
-  tier_pct: number;
+  discount_pct: number;
+  commission_pct: number;
+  shopify_discount_gid: string | null;
+  hat_delivered: boolean;
+  age: number | null;
   welcome_email_sent_at: string | null;
 }
 
-const STARTER_COMMISSION = 8;
-const STARTER_DISCOUNT   = 15;
+const MAX_PCT = 20;
 
-const EMAIL_TEMPLATE = `hey {{first_name}}, welcome to the Good Kicks team. ✌️
-
-you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way — no cost to you, that's your starter kit.
-
-────────────────────────
-your discount code: {{discount_code}}
-────────────────────────
-
-share this code with anyone. every time someone uses it, they get {{discount_pct}}% off — and you earn {{commission_pct}}% commission on every order. the more you push it, the more you earn.
-
-━━━ THE THREE REQUIREMENTS ━━━
-
-these aren't optional — they're how the program works:
-
-1. link in bio
-   your discount code link lives in your bio. always. that's your storefront.
-
-2. code in bio
-   add this exact line to your instagram bio:
-   "@goodkicksco ambassador | use code '{{discount_code}}'"
-   make it dead simple for people to find it.
-
-3. mentioned in every video
-   every time you post something related to the sack, give us a shoutout. it doesn't have to be a dedicated video — just a mention, a tag, a caption. stay consistent.
-
-━━━ YOUR STATS PAGE ━━━
-
-bookmark this link — it's your personal dashboard showing every order driven by your code, total revenue, and commission earned in real time:
-
-goodkicks.co/ambassador/{{discount_code_lower}}
-
-━━━ HOW YOU GROW ━━━
-
-your tier is based on total sales driven through your code:
-
-  starter  → 0–9 orders    → 8% commission  (your code gives followers 15% off)
-  repping  → 10–37 orders  → 12% commission (code bumps to 20% off)
-  anchor   → 38+ orders    → 20% commission (code stays at 20% off)
-
-you move up automatically as your numbers grow.
-
-━━━ HOW TO GET STARTED ━━━
-
-1. drop your code link in your bio today
-2. add this to your instagram bio: "@goodkicksco ambassador | use code '{{discount_code}}'"
-3. post your sack when it arrives and tag @goodkicksco
-4. use #goodkicks so we can find and repost your content
-5. mention us every time you post — keep it natural, keep it consistent
-
-that's it. no complicated rules. just keep the circle going.
-
-questions? just reply to this email — we check it.
-
-make the circle bigger.
-
-— The Good Kicks Team
-goodkicks.co | @goodkicksco`;
-
-function renderEmail(app: App): string {
-  const firstName = app.name.split(' ')[0];
-  const code = app.discount_code ?? '';
-  const colorway = app.colorway_preference ?? 'your choice';
-  return EMAIL_TEMPLATE
-    .replace(/\{\{first_name\}\}/g, firstName)
-    .replace(/\{\{discount_code\}\}/g, code)
-    .replace(/\{\{discount_code_lower\}\}/g, code.toLowerCase())
-    .replace(/\{\{colorway\}\}/g, colorway)
-    .replace(/\{\{discount_pct\}\}/g, String(STARTER_DISCOUNT))
-    .replace(/\{\{commission_pct\}\}/g, String(STARTER_COMMISSION));
+function suggestCode(app: App, discountPct: number): string {
+  const label = app.brand === 'townies' ? app.town ?? app.name : app.instagram ?? app.name;
+  const slug = label.replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  return slug ? `${slug}${discountPct}` : '';
 }
 
 function fmtDateTime(iso: string) {
@@ -110,35 +53,91 @@ function Step({ n, label, done }: { n: number; label: string; done?: boolean }) 
   );
 }
 
+function PctField({
+  label,
+  hint,
+  value,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  value: number;
+  onChange: (n: number) => void;
+}) {
+  return (
+    <div>
+      <label className="text-xs text-brand-muted block mb-1">{label}</label>
+      <div className="relative">
+        <input
+          type="number"
+          min={0}
+          max={MAX_PCT}
+          value={value}
+          onChange={(e) => {
+            const n = Number(e.target.value);
+            onChange(Number.isFinite(n) ? Math.max(0, Math.min(MAX_PCT, Math.round(n))) : 0);
+          }}
+          className="w-full border border-brand-rule rounded-lg px-3 py-2 pr-7 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-brand-muted pointer-events-none">%</span>
+      </div>
+      <p className="text-[10px] text-brand-muted mt-1">{hint}</p>
+    </div>
+  );
+}
+
 export function OnboardingPanel({ app }: { app: App }) {
   const router = useRouter();
-  const suggested = app.instagram.replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '') + '15';
-  const [code, setCode] = useState(app.discount_code ?? suggested);
+  const isTownies = app.brand === 'townies';
+  const isApproved = app.approved;
+  const isRejected = app.status === 'rejected';
+
+  const [discountPct, setDiscountPct] = useState(app.discount_pct);
+  const [commissionPct, setCommissionPct] = useState(app.commission_pct);
+  const [code, setCode] = useState(app.discount_code ?? '');
+  const [codeTouched, setCodeTouched] = useState(Boolean(app.discount_code));
   const [step, setStep] = useState<'idle' | 'loading' | 'error'>('idle');
   const [err, setErr] = useState('');
+  const [scopeErr, setScopeErr] = useState('');
   const [rejecting, setRejecting] = useState(false);
   const [resending, setResending] = useState(false);
   const [resendMsg, setResendMsg] = useState('');
   const [showPreview, setShowPreview] = useState(false);
 
-  const isApproved = app.approved;
-  const isRejected = app.status === 'rejected';
+  const suggested = suggestCode(app, discountPct);
+  useEffect(() => {
+    if (!codeTouched) setCode(suggested);
+  }, [suggested, codeTouched]);
 
-  async function handleApprove() {
-    if (!code.trim()) { setErr('enter the discount code you created in Shopify first.'); return; }
+  async function handleApprove(createInShopify: boolean) {
+    if (!createInShopify && !code.trim()) {
+      setErr('enter a discount code first.');
+      return;
+    }
     setStep('loading');
     setErr('');
+    setScopeErr('');
     const res = await fetch('/api/admin/approve-ambassador', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ applicationId: app.id, discountCode: code.trim().toUpperCase(), tierPct: STARTER_COMMISSION }),
+      body: JSON.stringify({
+        applicationId: app.id,
+        discountCode: code.trim().toUpperCase(),
+        discountPct,
+        commissionPct,
+        createInShopify,
+      }),
     });
     if (res.ok) {
       router.refresh();
+      return;
+    }
+    const json = await res.json().catch(() => ({}));
+    setStep('error');
+    if (json.code === 'shopify_scope' || json.code === 'shopify_unconfigured') {
+      setScopeErr(json.error);
     } else {
-      const json = await res.json().catch(() => ({}));
       setErr(json.error ?? 'something went wrong');
-      setStep('error');
     }
   }
 
@@ -149,28 +148,17 @@ export function OnboardingPanel({ app }: { app: App }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ applicationId: app.id }),
     });
-    if (res.ok) {
-      router.refresh();
-    } else {
-      setRejecting(false);
-    }
+    if (res.ok) router.refresh();
+    else setRejecting(false);
   }
 
   async function handleResend() {
     setResending(true);
     setResendMsg('');
-    const firstName = app.name.split(' ')[0];
     const res = await fetch('/api/admin/send-welcome', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        applicationId: app.id,
-        firstName,
-        email: app.email,
-        discountCode: app.discount_code,
-        colorway: app.colorway_preference ?? 'your choice',
-        tierPct: app.tier_pct,
-      }),
+      body: JSON.stringify({ applicationId: app.id }),
     });
     setResending(false);
     if (res.ok) {
@@ -182,16 +170,39 @@ export function OnboardingPanel({ app }: { app: App }) {
   }
 
   if (isApproved) {
-    const emailText = renderEmail(app);
+    const firstName = app.name.split(' ')[0];
+    const isMinor = typeof app.age === 'number' && app.age < 18;
+    const emailText = isTownies
+      ? renderRepWelcome({
+          firstName,
+          town: app.town ?? '',
+          discountCode: app.discount_code ?? '',
+          discountPct: app.discount_pct,
+          commissionPct: app.commission_pct,
+          isMinor,
+          hatDelivered: app.hat_delivered,
+        })
+      : null;
+
     return (
       <div className="bg-white rounded-xl p-6 space-y-5">
         <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Onboarding Status</h2>
 
         <div className="space-y-3">
-          <Step n={1} label="Shopify discount code created" done />
-          <Step n={2} label="Welcome email sent" done />
-          <Step n={3} label="Ambassador onboarded" done />
+          <Step n={1} label="Discount code created in Shopify" done={Boolean(app.shopify_discount_gid)} />
+          <Step n={2} label="Welcome email sent" done={Boolean(app.welcome_email_sent_at)} />
+          <Step n={3} label={isTownies ? 'Town Rep onboarded' : 'Ambassador onboarded'} done />
         </div>
+
+        {!app.shopify_discount_gid && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <p className="text-[11px] text-amber-800 leading-relaxed">
+              This rep is approved but their code isn&apos;t linked to a Shopify discount — it was
+              either created by hand or the API call was skipped. Changing the discount % here will
+              not update Shopify. Link or recreate it from the roster panel.
+            </p>
+          </div>
+        )}
 
         {/* Email delivery status */}
         <div className="border border-brand-rule rounded-lg p-4 space-y-3">
@@ -221,30 +232,40 @@ export function OnboardingPanel({ app }: { app: App }) {
           )}
         </div>
 
-        {/* Email preview */}
-        <div>
-          <button
-            onClick={() => setShowPreview((v) => !v)}
-            className="text-xs text-brand-rust hover:underline"
-          >
-            {showPreview ? 'hide email preview ↑' : 'preview email ↓'}
-          </button>
-          {showPreview && (
-            <div className="mt-3 bg-brand-rule/20 rounded-lg p-4 border border-brand-rule">
-              <p className="text-xs text-brand-muted uppercase tracking-wide mb-2">
-                To: {app.email} · Subject: welcome to the team, {app.name.split(' ')[0]}. ✌️
-              </p>
-              <pre className="text-xs text-brand-ink whitespace-pre-wrap font-mono leading-relaxed max-h-80 overflow-y-auto">
-                {emailText}
-              </pre>
-            </div>
-          )}
-        </div>
+        {/* Email preview — rendered from the same template that gets sent */}
+        {emailText && (
+          <div>
+            <button
+              onClick={() => setShowPreview((v) => !v)}
+              className="text-xs text-brand-rust hover:underline"
+            >
+              {showPreview ? 'hide email preview ↑' : 'preview email ↓'}
+            </button>
+            {showPreview && (
+              <div className="mt-3 bg-brand-rule/20 rounded-lg p-4 border border-brand-rule">
+                <p className="text-xs text-brand-muted uppercase tracking-wide mb-2">
+                  To: {app.email} · Subject: {repWelcomeSubject(firstName)}
+                </p>
+                <pre className="text-xs text-brand-ink whitespace-pre-wrap font-mono leading-relaxed max-h-80 overflow-y-auto">
+                  {emailText}
+                </pre>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="border-t border-brand-rule pt-4 space-y-3">
-          <div>
-            <p className="text-xs text-brand-muted uppercase tracking-wide">Discount Code</p>
-            <p className="font-mono text-lg font-bold text-brand-ink">{app.discount_code ?? '—'}</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs text-brand-muted uppercase tracking-wide">Discount Code</p>
+              <p className="font-mono text-lg font-bold text-brand-ink">{app.discount_code ?? '—'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-brand-muted uppercase tracking-wide">Off / Earns</p>
+              <p className="text-lg font-bold text-brand-ink">
+                {app.discount_pct}% / {app.commission_pct}%
+              </p>
+            </div>
           </div>
           {app.discount_code && (
             <a
@@ -278,42 +299,62 @@ export function OnboardingPanel({ app }: { app: App }) {
       <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Onboarding Checklist</h2>
 
       <div className="space-y-3">
-        <Step n={1} label="Create discount code in Shopify" />
-        <Step n={2} label="Enter discount code below" />
-        <Step n={3} label="Send welcome email" />
+        <Step n={1} label="Set the discount + commission rates" />
+        <Step n={2} label="Create the code in Shopify" />
+        <Step n={3} label="Send the welcome email" />
       </div>
 
       <div className="border-t border-brand-rule pt-5 space-y-4">
-        <div>
-          <p className="text-xs text-brand-muted mb-1">Suggested code</p>
-          <p className="font-mono text-sm font-bold text-brand-ink bg-brand-rule/30 px-3 py-2 rounded">{suggested}</p>
-          <p className="text-[11px] text-brand-muted mt-1">Create this exact code in Shopify → Discounts before approving.</p>
+        <div className="grid grid-cols-2 gap-3">
+          <PctField
+            label="Customer discount"
+            hint="what followers save"
+            value={discountPct}
+            onChange={setDiscountPct}
+          />
+          <PctField
+            label="Rep commission"
+            hint="% of revenue driven"
+            value={commissionPct}
+            onChange={setCommissionPct}
+          />
         </div>
 
-        <div className="space-y-3">
-          <div>
-            <label className="text-xs text-brand-muted block mb-1">Discount code (from Shopify)</label>
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="e.g. JOHNDOE15"
-              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
-            />
-          </div>
-          <p className="text-[11px] text-brand-muted">
-            All new ambassadors start at <strong>Starter tier</strong> — 15% customer discount, 8% commission. Tier advances automatically based on order count.
+        <div>
+          <label className="text-xs text-brand-muted block mb-1">Discount code</label>
+          <input
+            value={code}
+            onChange={(e) => { setCodeTouched(true); setCode(e.target.value.toUpperCase()); }}
+            placeholder={suggested || 'e.g. MILTON15'}
+            className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+          />
+          <p className="text-[11px] text-brand-muted mt-1">
+            Created in Shopify limited to the {isTownies ? 'Townies' : 'Good Kicks'} collection, so it
+            can&apos;t discount the other brand&apos;s products.
           </p>
         </div>
 
+        {scopeErr && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
+            <p className="text-[11px] text-amber-800 leading-relaxed">{scopeErr}</p>
+            <button
+              onClick={() => handleApprove(false)}
+              disabled={step === 'loading' || !code.trim()}
+              className="w-full border border-amber-300 text-amber-800 rounded-lg px-3 py-2 text-xs font-medium hover:bg-amber-100 transition-colors disabled:opacity-50"
+            >
+              approve with this code anyway (create it in Shopify by hand)
+            </button>
+          </div>
+        )}
         {err && <p className="text-sm text-red-500">{err}</p>}
 
         <div className="flex gap-3 pt-1">
           <button
-            onClick={handleApprove}
+            onClick={() => handleApprove(true)}
             disabled={step === 'loading'}
             className="flex-1 bg-brand-rust text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-brand-rust/90 transition-colors disabled:opacity-50"
           >
-            {step === 'loading' ? 'sending…' : 'approve & send welcome email'}
+            {step === 'loading' ? 'working…' : 'create code, approve & send welcome'}
           </button>
           <button
             onClick={handleReject}

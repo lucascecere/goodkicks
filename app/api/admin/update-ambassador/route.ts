@@ -1,14 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { isAdminAuthed, loadRep } from '@/lib/reps/server';
+import { updateRepDiscountCode, ShopifyScopeError } from '@/lib/shopify/create-discount-code';
 
-function isAuthed(req: NextRequest) {
-  const cookie = req.cookies.get('gk_admin')?.value;
-  return cookie === process.env.ADMIN_PASSWORD;
-}
+const ALLOWED = [
+  'discount_code',
+  'discount_pct',
+  'commission_pct',
+  'tier_pct',
+  'status',
+  'approved',
+  'notes',
+  'email',
+  'name',
+  'instagram',
+  'brand',
+  'town',
+  'school',
+  'hat_preference',
+  'hat_delivered',
+  'account_type',
+  'followers',
+  'colorway_preference',
+  'shipping_address',
+  'age',
+  'shopify_discount_gid',
+] as const;
 
-// PATCH body: { applicationId, discount_code?, tier_pct?, status?, approved? }
+const PERCENT_FIELDS = ['discount_pct', 'commission_pct'] as const;
+
 export async function POST(req: NextRequest) {
-  if (!isAuthed(req)) {
+  if (!isAdminAuthed(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
@@ -17,14 +39,48 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'missing applicationId' }, { status: 400 });
   }
 
-  const allowed = ['discount_code', 'tier_pct', 'status', 'approved', 'notes', 'email', 'name', 'instagram', 'school', 'account_type', 'followers', 'colorway_preference', 'shipping_address', 'age'];
   const update: Record<string, unknown> = {};
-  for (const key of allowed) {
+  for (const key of ALLOWED) {
     if (key in fields) update[key] = fields[key];
   }
 
   if (Object.keys(update).length === 0) {
     return NextResponse.json({ error: 'no valid fields to update' }, { status: 400 });
+  }
+
+  // The DB has check constraints on these; fail with a readable message rather
+  // than a raw Postgres violation.
+  for (const key of PERCENT_FIELDS) {
+    if (update[key] === null || update[key] === undefined) continue;
+    const value = Number(update[key]);
+    if (!Number.isInteger(value) || value < 0 || value > 20) {
+      return NextResponse.json({ error: `${key} must be a whole number from 0 to 20` }, { status: 400 });
+    }
+    update[key] = value;
+  }
+
+  // Keep the live Shopify code in step with the admin. Without this the stored
+  // percentage and the percentage customers actually get silently diverge.
+  let shopifySynced: boolean | undefined;
+  let shopifyWarning: string | undefined;
+  if ('discount_pct' in update && update.discount_pct != null) {
+    const rep = await loadRep(applicationId);
+    if (rep?.shopify_discount_gid && rep.discount_pct !== update.discount_pct) {
+      try {
+        await updateRepDiscountCode({
+          gid: rep.shopify_discount_gid,
+          discountPct: Number(update.discount_pct),
+        });
+        shopifySynced = true;
+      } catch (err) {
+        shopifySynced = false;
+        shopifyWarning =
+          err instanceof ShopifyScopeError
+            ? err.message
+            : `Saved, but Shopify was not updated: ${err instanceof Error ? err.message : 'unknown error'}`;
+        console.error('[update-ambassador] Shopify sync failed:', err);
+      }
+    }
   }
 
   const supabase = createSupabaseServiceClient();
@@ -38,5 +94,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, shopifySynced, shopifyWarning });
 }

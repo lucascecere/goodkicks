@@ -87,15 +87,15 @@ export default function TownRepPage() {
           {[
             {
               title: 'Your own code.',
-              body: 'A custom code tied to your town (think MILTON15, WEYMOUTH15). Your followers start at 15% off and unlock bigger codes — up to 20% — as you level up.',
+              body: 'A custom code tied to your town — think MILTON15, WEYMOUTH15. Anyone who uses it saves on any Townies hat, and every order it touches is tracked back to you automatically.',
             },
             {
-              title: 'Earn as you grow.',
-              body: 'Start at 10% commission on every order placed with your code. Level up to 15% or 20% by posting consistently and driving sales. Paid out monthly via Venmo or PayPal.',
+              title: 'Real commission.',
+              body: 'You earn a straight percentage of every order placed with your code — no thresholds to clear, no points to chase. We set your rate when we bring you on. Paid out monthly via Venmo or PayPal.',
             },
             {
               title: 'Free hat.',
-              body: 'Approved reps get their town’s hat shipped free, so you can post with the real thing in hand. Keep leveling and we keep the product coming.',
+              body: 'Approved reps get their town’s hat shipped free, so you can post with the real thing in hand. Keep it moving and we keep the product coming.',
             },
           ].map((item) => (
             <div key={item.title} className="bg-town-cream rounded-sm p-8 space-y-3 border border-town-rule">
@@ -106,30 +106,38 @@ export default function TownRepPage() {
         </div>
       </section>
 
-      {/* The tiers */}
+      {/* The numbers */}
       <section className="py-16 sm:py-20 px-4 sm:px-8 bg-town-cream">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 sm:mb-16 space-y-3">
-            <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium">Levels</p>
-            <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy">The tiers.</h2>
+            <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium">The numbers</p>
+            <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy">No tiers. No games.</h2>
+            <p className="text-town-muted max-w-xl mx-auto">
+              We don&apos;t make you grind through levels to earn a real rate. We agree on your
+              numbers when you come on, and that&apos;s what you get from order one.
+            </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {[
               {
-                tier: 'Local.',
-                body: 'Sign up, get approved. One free hat, your personal 15%-off code, and 10% commission on every sale through your code.',
+                stat: '15%',
+                label: 'Off for your followers',
+                body: 'The standard code we start reps at. Bigger audience, or a town we really want? We go higher.',
               },
               {
-                tier: 'Regular.',
-                body: 'Hit 8+ tagged posts or 10+ code redemptions. Bumps your code to 20% off, your commission to 15%, plus more product sent your way.',
+                stat: 'Up to 20%',
+                label: 'Commission to you',
+                body: 'A straight cut of every order your code brings in — not of our margin, not of some adjusted number.',
               },
               {
-                tier: 'Legend.',
-                body: 'Hit 20+ posts or 35+ redemptions. 20%-off code, 20% commission, ongoing hats, and a shot at a custom town collab with your name on it.',
+                stat: 'Monthly',
+                label: 'Payouts',
+                body: 'Venmo or PayPal, with your own live dashboard so you always know what you are owed before we send it.',
               },
             ].map((item) => (
-              <div key={item.tier} className="bg-[#EAE6DB] rounded-sm p-8 space-y-3 border border-town-rule">
-                <h3 className="font-block uppercase text-xl text-town-navy">{item.tier}</h3>
+              <div key={item.label} className="bg-[#EAE6DB] rounded-sm p-8 space-y-2 border border-town-rule">
+                <p className="font-block uppercase text-4xl text-town-navy leading-none">{item.stat}</p>
+                <h3 className="font-semibold text-town-navy text-sm uppercase tracking-wide">{item.label}</h3>
                 <p className="text-town-muted text-sm leading-relaxed">{item.body}</p>
               </div>
             ))}
@@ -195,7 +203,7 @@ export default function TownRepPage() {
             <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy">Become a Town Rep.</h2>
             <p className="text-town-muted">We&apos;ll get back to you within a few days.</p>
           </div>
-          <AmbassadorForm />
+          <AmbassadorForm brand="townies" />
         </div>
       </section>
     </>

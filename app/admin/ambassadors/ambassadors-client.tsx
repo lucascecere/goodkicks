@@ -2,13 +2,21 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { BrandBadge } from '@/components/admin/brand-badge';
+import { RepTabs } from './rep-tabs';
+import { AddRepForm, type NewRep } from './add-rep-form';
+import type { AdminBrand, RealBrand } from '@/lib/admin/brand';
+import type { DiscountReadiness } from '@/lib/shopify/discount-readiness';
 
 type Ambassador = {
   id: string;
   name: string;
   email: string;
   instagram: string;
+  brand: RealBrand | null;
+  town: string | null;
   school: string | null;
+  hat_preference: string | null;
   account_type: string | null;
   followers: string | null;
   colorway_preference: string | null;
@@ -16,14 +24,35 @@ type Ambassador = {
   approved: boolean;
   status: string | null;
   discount_code: string | null;
+  discount_pct: number | null;
+  commission_pct: number | null;
   tier_pct: number | null;
+  shopify_discount_gid: string | null;
+  hat_delivered: boolean | null;
   created_at: string | null;
   welcome_email_sent_at: string | null;
 };
 
 type FilterTab = 'all' | 'pending' | 'approved' | 'rejected';
 
-const TIERS = [8, 12, 16, 20];
+// Program ceiling — a rep never earns or discounts more than this.
+const MAX_PCT = 20;
+const DEFAULT_DISCOUNT = 15;
+const DEFAULT_COMMISSION = 10;
+
+function repBrand(app: Ambassador): RealBrand {
+  return app.brand === 'townies' ? 'townies' : 'goodkicks';
+}
+
+/** The label a rep's code is built from: their town (Townies) or handle (GK). */
+function codeLabel(app: Ambassador): string {
+  return repBrand(app) === 'townies' ? app.town ?? app.name : app.instagram ?? app.name;
+}
+
+function suggestCode(app: Ambassador, discountPct: number): string {
+  const slug = (codeLabel(app) ?? '').replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  return slug ? `${slug}${discountPct}` : '';
+}
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -49,48 +78,152 @@ function DetailRow({ label, value }: { label: string; value: string | null | und
   );
 }
 
+/** Numeric percentage field clamped to the program ceiling. */
+function PctInput({
+  label,
+  hint,
+  value,
+  onChange,
+}: {
+  label: string;
+  hint?: string;
+  value: number;
+  onChange: (n: number) => void;
+}) {
+  return (
+    <div>
+      <label className="text-xs text-brand-muted block mb-1">
+        {label}
+        {hint && <span className="text-brand-muted/70"> · {hint}</span>}
+      </label>
+      <div className="relative">
+        <input
+          type="number"
+          min={0}
+          max={MAX_PCT}
+          value={value}
+          onChange={(e) => {
+            const n = Number(e.target.value);
+            onChange(Number.isFinite(n) ? Math.max(0, Math.min(MAX_PCT, Math.round(n))) : 0);
+          }}
+          className="w-full border border-brand-rule rounded-lg px-3 py-2 pr-7 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-brand-muted pointer-events-none">%</span>
+      </div>
+    </div>
+  );
+}
+
 function RightPanel({
   app,
+  discounts,
   onUpdate,
   onDelete,
   onClose,
 }: {
   app: Ambassador;
+  discounts: DiscountReadiness;
   onUpdate: (id: string, fields: Partial<Ambassador>) => void;
   onDelete: (id: string) => void;
   onClose?: () => void;
 }) {
-  const suggested = app.instagram?.replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '') + '15';
-  const [approveCode, setApproveCode] = useState(app.discount_code ?? suggested ?? '');
+  const brand = repBrand(app);
+  const isTownies = brand === 'townies';
+
+  const [discountPct, setDiscountPct] = useState(app.discount_pct ?? DEFAULT_DISCOUNT);
+  const [commissionPct, setCommissionPct] = useState(
+    app.commission_pct ?? app.tier_pct ?? DEFAULT_COMMISSION,
+  );
+  const [approveCode, setApproveCode] = useState(app.discount_code ?? '');
+  const [codeTouched, setCodeTouched] = useState(Boolean(app.discount_code));
   const [approving, setApproving] = useState(false);
   const [approveErr, setApproveErr] = useState('');
+  const [scopeErr, setScopeErr] = useState('');
   const [editEmail, setEditEmail] = useState(app.email ?? '');
   const [editCode, setEditCode] = useState(app.discount_code ?? '');
-  const [editTier, setEditTier] = useState(app.tier_pct ?? 8);
+
+  // Until the admin types their own code, keep the suggestion in step with the
+  // discount they've chosen (Milton at 15% off → MILTON15).
+  const suggested = suggestCode(app, discountPct);
+  useEffect(() => {
+    if (!codeTouched) setApproveCode(suggested);
+  }, [suggested, codeTouched]);
 
   useEffect(() => { setEditEmail(app.email ?? ''); }, [app.email]);
   useEffect(() => { setEditCode(app.discount_code ?? ''); }, [app.discount_code]);
-  useEffect(() => { setEditTier(app.tier_pct ?? 8); }, [app.tier_pct]);
+  useEffect(() => { setDiscountPct(app.discount_pct ?? DEFAULT_DISCOUNT); }, [app.discount_pct]);
+  useEffect(() => {
+    setCommissionPct(app.commission_pct ?? app.tier_pct ?? DEFAULT_COMMISSION);
+  }, [app.commission_pct, app.tier_pct]);
 
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  async function handleApprove() {
-    if (!approveCode.trim()) { setApproveErr('enter the discount code first'); return; }
+  async function handleApprove(createInShopify: boolean) {
+    if (!createInShopify && !approveCode.trim()) {
+      setApproveErr('enter the discount code first');
+      return;
+    }
     setApproving(true);
     setApproveErr('');
+    setScopeErr('');
+
     const res = await fetch('/api/admin/approve-ambassador', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ applicationId: app.id, discountCode: approveCode.trim().toUpperCase(), tierPct: 8 }),
+      body: JSON.stringify({
+        applicationId: app.id,
+        discountCode: approveCode.trim().toUpperCase(),
+        discountPct,
+        commissionPct,
+        createInShopify,
+      }),
     });
     setApproving(false);
+
+    const json = await res.json().catch(() => ({}));
     if (res.ok) {
-      onUpdate(app.id, { approved: true, status: 'approved', discount_code: approveCode.trim().toUpperCase(), tier_pct: 8 });
+      onUpdate(app.id, {
+        approved: true,
+        status: 'approved',
+        discount_code: json.discountCode ?? approveCode.trim().toUpperCase(),
+        discount_pct: discountPct,
+        commission_pct: commissionPct,
+        shopify_discount_gid: json.gid ?? app.shopify_discount_gid,
+      });
+      return;
+    }
+    if (json.code === 'shopify_scope' || json.code === 'shopify_unconfigured') {
+      setScopeErr(json.error);
     } else {
-      const json = await res.json().catch(() => ({}));
+      setApproveErr(json.error ?? 'something went wrong');
+    }
+  }
+
+  async function handleCreateCodeOnly() {
+    setApproving(true);
+    setApproveErr('');
+    setScopeErr('');
+    const res = await fetch('/api/admin/create-discount-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ applicationId: app.id, code: approveCode.trim(), discountPct }),
+    });
+    setApproving(false);
+    const json = await res.json().catch(() => ({}));
+    if (res.ok) {
+      setApproveCode(json.code);
+      setCodeTouched(true);
+      onUpdate(app.id, {
+        discount_code: json.code,
+        discount_pct: discountPct,
+        shopify_discount_gid: json.gid,
+      });
+    } else if (json.code === 'shopify_scope' || json.code === 'shopify_unconfigured') {
+      setScopeErr(json.error);
+    } else {
       setApproveErr(json.error ?? 'something went wrong');
     }
   }
@@ -105,16 +238,41 @@ function RightPanel({
         applicationId: app.id,
         email: editEmail.trim() || null,
         discount_code: editCode.trim().toUpperCase() || null,
-        tier_pct: editTier,
+        discount_pct: discountPct,
+        commission_pct: commissionPct,
       }),
     });
     setSaving(false);
+    const json = await res.json().catch(() => ({}));
     if (res.ok) {
-      setSaveMsg('saved');
-      onUpdate(app.id, { email: editEmail.trim() || app.email, discount_code: editCode.trim().toUpperCase() || null, tier_pct: editTier });
-      setTimeout(() => setSaveMsg(''), 2000);
+      setSaveMsg(json.shopifyWarning ? 'saved (Shopify not synced)' : 'saved');
+      if (json.shopifyWarning) setApproveErr(json.shopifyWarning);
+      onUpdate(app.id, {
+        email: editEmail.trim() || app.email,
+        discount_code: editCode.trim().toUpperCase() || null,
+        discount_pct: discountPct,
+        commission_pct: commissionPct,
+      });
+      setTimeout(() => setSaveMsg(''), 3000);
     } else {
-      setSaveMsg('save failed');
+      setSaveMsg(json.error ?? 'save failed');
+    }
+  }
+
+  async function handleResendWelcome() {
+    setSaving(true);
+    const res = await fetch('/api/admin/send-welcome', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ applicationId: app.id }),
+    });
+    setSaving(false);
+    if (res.ok) {
+      setSaveMsg('welcome email sent');
+      onUpdate(app.id, { welcome_email_sent_at: new Date().toISOString() });
+      setTimeout(() => setSaveMsg(''), 3000);
+    } else {
+      setSaveMsg('send failed');
     }
   }
 
@@ -126,9 +284,7 @@ function RightPanel({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ applicationId: app.id, approved, status }),
     });
-    if (res.ok) {
-      onUpdate(app.id, { approved, status });
-    }
+    if (res.ok) onUpdate(app.id, { approved, status });
   }
 
   async function handleDelete() {
@@ -152,6 +308,7 @@ function RightPanel({
   };
   const typeLabels: Record<string, string> = {
     'high-school': 'High School', 'college': 'College', 'freestyle': 'Freestyle', 'general': 'General',
+    'town-page': 'Town / local page', 'creator': 'Hometown creator', 'athlete': 'Local athlete', 'other': 'Other',
   };
 
   return (
@@ -164,6 +321,7 @@ function RightPanel({
             <a href={`mailto:${app.email}`} className="text-xs text-brand-muted hover:text-brand-rust transition-colors truncate block">{app.email}</a>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            <BrandBadge brand={brand} />
             <StatusBadge app={app} />
             {onClose && (
               <button
@@ -190,26 +348,109 @@ function RightPanel({
         )}
       </div>
 
+      {/* Rates — the two numbers that drive everything else */}
+      <div className="p-5 border-b border-brand-rule space-y-3">
+        <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Rates</p>
+        <div className="grid grid-cols-2 gap-3">
+          <PctInput label="Customer discount" hint="off" value={discountPct} onChange={setDiscountPct} />
+          <PctInput label="Rep commission" hint="of revenue" value={commissionPct} onChange={setCommissionPct} />
+        </div>
+        <p className="text-[11px] text-brand-muted leading-relaxed">
+          Followers save {discountPct}% on {isTownies ? 'Townies hats' : 'Good Kicks gear'}; the rep earns{' '}
+          {commissionPct}% of what those orders actually bring in. Max {MAX_PCT}% either way.
+        </p>
+      </div>
+
       {/* Approve flow */}
       {!app.approved && app.status !== 'rejected' && (
         <div className="p-5 border-b border-brand-rule space-y-3">
-          <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Approve Ambassador</p>
+          <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">
+            Approve {isTownies ? 'Town Rep' : 'Ambassador'}
+          </p>
           <div>
-            <label className="text-xs text-brand-muted block mb-1">Discount code (create in Shopify first)</label>
+            <label className="text-xs text-brand-muted block mb-1">Discount code</label>
             <input
               value={approveCode}
-              onChange={(e) => setApproveCode(e.target.value.toUpperCase())}
-              placeholder="e.g. JOHNDOE15"
+              onChange={(e) => { setCodeTouched(true); setApproveCode(e.target.value.toUpperCase()); }}
+              placeholder={suggested || 'e.g. MILTON15'}
               className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
             />
+            <p className="text-[11px] text-brand-muted mt-1">
+              Created in Shopify scoped to the {isTownies ? 'Townies' : 'Good Kicks'} collection only.
+            </p>
           </div>
+          {isTownies && (
+            <label className="flex items-start gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={Boolean(app.hat_delivered)}
+                onChange={async (e) => {
+                  const hat_delivered = e.target.checked;
+                  onUpdate(app.id, { hat_delivered });
+                  await fetch('/api/admin/update-ambassador', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ applicationId: app.id, hat_delivered }),
+                  });
+                }}
+                className="mt-0.5 shrink-0"
+              />
+              <span className="text-[11px] text-brand-ink leading-relaxed">
+                They already have their hat
+                <span className="text-brand-muted"> — changes what the welcome email says.</span>
+              </span>
+            </label>
+          )}
+          {/* Known up front, so the by-hand route is the primary flow rather
+              than something discovered by failing once per rep. */}
+          {!discounts.ready && !scopeErr && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                {discounts.reason} Create <strong className="font-mono">{approveCode || suggested}</strong> in
+                Shopify first, set to <strong>{discountPct}% off</strong> the{' '}
+                {isTownies ? 'Townies' : 'Good Kicks'} collection, then approve below.
+              </p>
+              <a
+                href={discounts.discountsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center border border-amber-300 text-amber-800 rounded-lg px-3 py-2 text-xs font-medium hover:bg-amber-100 transition-colors"
+              >
+                open Shopify Discounts ↗
+              </a>
+            </div>
+          )}
+          {scopeErr && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
+              <p className="text-[11px] text-amber-800 leading-relaxed">{scopeErr}</p>
+              <a
+                href={discounts.discountsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center border border-amber-300 text-amber-800 rounded-lg px-3 py-2 text-xs font-medium hover:bg-amber-100 transition-colors"
+              >
+                open Shopify Discounts ↗
+              </a>
+              <button
+                onClick={() => handleApprove(false)}
+                disabled={approving || !approveCode.trim()}
+                className="w-full border border-amber-300 text-amber-800 rounded-lg px-3 py-2 text-xs font-medium hover:bg-amber-100 transition-colors disabled:opacity-50"
+              >
+                approve with this code anyway
+              </button>
+            </div>
+          )}
           {approveErr && <p className="text-xs text-red-500">{approveErr}</p>}
           <button
-            onClick={handleApprove}
-            disabled={approving}
+            onClick={() => handleApprove(discounts.ready)}
+            disabled={approving || (!discounts.ready && !approveCode.trim())}
             className="w-full bg-brand-rust text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-brand-rust/90 transition-colors disabled:opacity-50"
           >
-            {approving ? 'sending…' : 'approve & send welcome email'}
+            {approving
+              ? 'working…'
+              : discounts.ready
+                ? 'create code in Shopify, approve & send welcome'
+                : 'approve & send welcome'}
           </button>
         </div>
       )}
@@ -218,10 +459,13 @@ function RightPanel({
       <div className="p-5 space-y-3 border-b border-brand-rule">
         <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Profile</p>
         <div className="grid grid-cols-2 gap-3">
+          <DetailRow label={isTownies ? 'Town' : 'School / Group'} value={isTownies ? app.town : app.school} />
           <DetailRow label="Account Type" value={typeLabels[app.account_type ?? ''] ?? app.account_type} />
           <DetailRow label="Followers" value={followerLabels[app.followers ?? ''] ?? app.followers} />
-          <DetailRow label="Colorway" value={app.colorway_preference} />
-          <DetailRow label="School / Group" value={app.school} />
+          <DetailRow
+            label={isTownies ? 'Hat wanted' : 'Colorway'}
+            value={isTownies ? app.hat_preference : app.colorway_preference}
+          />
         </div>
         <DetailRow label="Shipping Address" value={app.shipping_address} />
         {app.created_at && <DetailRow label="Applied" value={fmtDate(app.created_at)} />}
@@ -257,43 +501,53 @@ function RightPanel({
         </div>
       </div>
 
-      {/* Edit code + tier */}
+      {/* Code + rates for approved reps */}
       {app.approved && (
         <div className="p-5 space-y-3 border-b border-brand-rule">
-          <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Discount & Commission</p>
+          <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Discount Code</p>
           <div>
-            <label className="text-xs text-brand-muted block mb-1">Discount Code</label>
             <input
               value={editCode}
               onChange={(e) => setEditCode(e.target.value.toUpperCase())}
-              placeholder="e.g. JOHNDOE15"
+              placeholder="e.g. MILTON15"
               className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
             />
+            <p className="text-[11px] text-brand-muted mt-1">
+              {app.shopify_discount_gid
+                ? 'Linked to Shopify — changing the discount % above updates the live code.'
+                : 'Not linked to a Shopify discount yet.'}
+            </p>
           </div>
-          <div>
-            <label className="text-xs text-brand-muted block mb-1">Commission Tier</label>
-            <select
-              value={editTier}
-              onChange={(e) => setEditTier(Number(e.target.value))}
-              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+          {!app.shopify_discount_gid && (
+            <button
+              onClick={handleCreateCodeOnly}
+              disabled={approving}
+              className="w-full border border-brand-rule text-brand-ink rounded-lg px-4 py-2 text-sm hover:border-brand-ink transition-colors disabled:opacity-50"
             >
-              {TIERS.map((t) => <option key={t} value={t}>{t}%</option>)}
-            </select>
-          </div>
+              {approving ? 'creating…' : 'create this code in Shopify'}
+            </button>
+          )}
           <div className="flex items-center gap-3">
             <button
               onClick={handleSave}
               disabled={saving}
               className="flex-1 bg-brand-ink text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-ink/90 transition-colors disabled:opacity-50"
             >
-              {saving ? 'saving…' : 'update code & commission'}
+              {saving ? 'saving…' : 'save code & rates'}
             </button>
             {saveMsg && (
-              <span className={`text-xs font-medium ${saveMsg === 'saved' ? 'text-green-600' : 'text-red-500'}`}>
+              <span className={`text-xs font-medium ${saveMsg.startsWith('saved') || saveMsg.includes('sent') ? 'text-green-600' : 'text-red-500'}`}>
                 {saveMsg}
               </span>
             )}
           </div>
+          <button
+            onClick={handleResendWelcome}
+            disabled={saving}
+            className="w-full border border-brand-rule text-brand-muted rounded-lg px-4 py-2 text-xs hover:text-brand-ink hover:border-brand-ink transition-colors disabled:opacity-50"
+          >
+            resend welcome email
+          </button>
           {app.discount_code && (
             <a
               href={`/ambassador/${app.discount_code.toLowerCase()}`}
@@ -301,7 +555,7 @@ function RightPanel({
               rel="noopener noreferrer"
               className="text-xs text-brand-rust hover:underline block"
             >
-              view stats page →
+              view their stats page →
             </a>
           )}
         </div>
@@ -342,11 +596,14 @@ function RightPanel({
             onClick={() => setConfirmDelete(true)}
             className="block w-full text-center text-xs text-red-400 hover:text-red-600 transition-colors py-1"
           >
-            delete ambassador
+            delete rep
           </button>
         ) : (
           <div className="bg-red-50 border border-red-200 rounded-lg p-3 space-y-2">
-            <p className="text-xs text-red-700 font-medium">Permanently delete {app.name}? This cannot be undone.</p>
+            <p className="text-xs text-red-700 font-medium">
+              Permanently delete {app.name}? This cannot be undone. Their Shopify discount code is
+              not removed — delete it in Shopify too if you want it dead.
+            </p>
             <div className="flex gap-2">
               <button
                 onClick={handleDelete}
@@ -385,18 +642,44 @@ function EmptyPanel({ stats }: { stats: { total: number; approved: number; pendi
           </div>
         ))}
       </div>
-      <p className="text-brand-muted text-sm mt-2">select an ambassador to manage</p>
+      <p className="text-brand-muted text-sm mt-2">select a rep to manage</p>
     </div>
   );
 }
 
-export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
+export function AmbassadorsClient({
+  initial,
+  brand,
+  discounts,
+}: {
+  initial: Ambassador[];
+  brand: AdminBrand;
+  discounts: DiscountReadiness;
+}) {
   const [ambassadors, setAmbassadors] = useState<Ambassador[]>(initial);
   const [selected, setSelected] = useState<Ambassador | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterTab>('all');
+  const [adding, setAdding] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
+
+  // A brand switch re-renders the server component with a fresh list.
+  useEffect(() => {
+    setAmbassadors(initial);
+    setSelected(null);
+    setSheetOpen(false);
+  }, [initial]);
+
+  // A newly added rep goes straight into the detail panel — the next step is
+  // always setting their rates and sending the welcome email.
+  function handleCreated(rep: NewRep) {
+    const created = rep as unknown as Ambassador;
+    setAmbassadors((prev) => [created, ...prev]);
+    setAdding(false);
+    setSelected(created);
+    setSheetOpen(true);
+  }
 
   // Lock body scroll when sheet is open on mobile
   useEffect(() => {
@@ -420,6 +703,7 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
           a.name.toLowerCase().includes(q) ||
           a.email.toLowerCase().includes(q) ||
           (a.instagram ?? '').toLowerCase().includes(q) ||
+          (a.town ?? '').toLowerCase().includes(q) ||
           (a.discount_code ?? '').toLowerCase().includes(q)
       );
     }
@@ -460,21 +744,35 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
     { key: 'rejected', label: 'Rejected', count: stats.rejected },
   ];
 
+  const title = brand === 'townies' ? 'Town Reps' : brand === 'goodkicks' ? 'Ambassadors' : 'Reps';
+
   return (
     <>
       <div className="flex h-[calc(100vh-64px)] md:h-[calc(100vh-64px)] overflow-hidden gap-0">
         {/* Left — list */}
         <div className="flex flex-col w-full lg:w-3/5 shrink-0 overflow-hidden">
-          <div className="px-4 sm:px-6 pt-5 pb-3 shrink-0">
-            <h1 className="font-display text-2xl text-white mb-0.5">Ambassadors</h1>
-            <p className="text-white/40 text-xs">{stats.total} total · {stats.pending} pending</p>
+          <div className="px-4 sm:px-6 pt-5 pb-3 shrink-0 flex items-start justify-between gap-3">
+            <div>
+              <h1 className="font-display text-2xl text-white mb-0.5">{title}</h1>
+              <p className="text-white/40 text-xs">{stats.total} total · {stats.pending} pending</p>
+            </div>
+            <button
+              onClick={() => { setAdding(true); setSelected(null); setSheetOpen(true); }}
+              className="shrink-0 bg-white text-[#1A1A1A] rounded-lg px-3 py-2 text-xs font-medium hover:bg-white/90 transition-colors"
+            >
+              + Add rep
+            </button>
+          </div>
+
+          <div className="px-4 sm:px-6 shrink-0">
+            <RepTabs active="roster" />
           </div>
 
           <div className="px-4 sm:px-6 pb-3 shrink-0">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="search name, email, instagram, code…"
+              placeholder="search name, email, instagram, town, code…"
               className="w-full bg-white/8 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/30"
             />
           </div>
@@ -512,9 +810,12 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-medium text-brand-ink text-sm truncate">{app.name}</p>
-                      <p className="text-brand-muted text-xs mt-0.5 truncate">{app.instagram} · {app.school ?? app.email}</p>
+                      <p className="text-brand-muted text-xs mt-0.5 truncate">
+                        {app.instagram} · {(repBrand(app) === 'townies' ? app.town : app.school) ?? app.email}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
+                      {brand === 'all' && <BrandBadge brand={repBrand(app)} />}
                       {app.discount_code && (
                         <span className="font-mono text-[10px] bg-brand-rule px-1.5 py-0.5 rounded text-brand-muted hidden sm:block">
                           {app.discount_code}
@@ -536,9 +837,11 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
 
         {/* Right panel — desktop only */}
         <div className="hidden lg:flex lg:w-2/5 shrink-0 overflow-hidden border-l border-white/10">
-          <div className="flex-1 bg-white rounded-xl m-4 overflow-hidden shadow-sm">
-            {selected ? (
-              <RightPanel key={selected.id} app={selected} onUpdate={handleUpdate} onDelete={handleDelete} />
+          <div className="flex-1 bg-white rounded-xl m-4 overflow-y-auto shadow-sm">
+            {adding ? (
+              <AddRepForm brand={brand} onCreated={handleCreated} onClose={() => setAdding(false)} />
+            ) : selected ? (
+              <RightPanel key={selected.id} app={selected} discounts={discounts} onUpdate={handleUpdate} onDelete={handleDelete} />
             ) : (
               <EmptyPanel stats={stats} />
             )}
@@ -547,12 +850,12 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
       </div>
 
       {/* Mobile bottom sheet */}
-      {sheetOpen && selected && (
+      {sheetOpen && (selected || adding) && (
         <>
           {/* Backdrop */}
           <div
             className="lg:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={closeSheet}
+            onClick={() => { setAdding(false); closeSheet(); }}
           />
           {/* Sheet */}
           <div
@@ -565,13 +868,22 @@ export function AmbassadorsClient({ initial }: { initial: Ambassador[] }) {
               <div className="w-10 h-1 bg-brand-rule rounded-full" />
             </div>
             <div className="flex-1 overflow-y-auto">
-              <RightPanel
-                key={selected.id}
-                app={selected}
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-                onClose={closeSheet}
-              />
+              {adding ? (
+                <AddRepForm
+                  brand={brand}
+                  onCreated={handleCreated}
+                  onClose={() => { setAdding(false); closeSheet(); }}
+                />
+              ) : selected ? (
+                <RightPanel
+                  key={selected.id}
+                  app={selected}
+                  discounts={discounts}
+                  onUpdate={handleUpdate}
+                  onDelete={handleDelete}
+                  onClose={closeSheet}
+                />
+              ) : null}
             </div>
           </div>
         </>

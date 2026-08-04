@@ -10,7 +10,7 @@ you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way 
 your discount code: {{discount_code}}
 ────────────────────────
 
-share this code with anyone. every time someone uses it, they get 15% off — and you earn 8% store credit on every order, redeemable on any good kicks purchase. the more you push it, the more credit you stack.
+share this code with anyone. every time someone uses it, they get {{discount_pct}}% off — and you earn {{commission_pct}}% store credit on every order, redeemable on any good kicks purchase. the more you push it, the more credit you stack.
 
 ━━━ THE THREE REQUIREMENTS ━━━
 
@@ -51,7 +51,7 @@ you're officially a Good Kicks ambassador. your {{colorway}} sack is on its way 
 your discount code: {{discount_code}}
 ────────────────────────
 
-share this code with anyone. every time someone uses it, they get 15% off — and you earn 8% commission on every order, paid out monthly. the more you push it, the more you earn.
+share this code with anyone. every time someone uses it, they get {{discount_pct}}% off — and you earn {{commission_pct}}% commission on every order, paid out monthly. the more you push it, the more you earn.
 
 ━━━ THE THREE REQUIREMENTS ━━━
 
@@ -110,14 +110,18 @@ export async function sendWelcomeEmail({
   email,
   discountCode,
   colorway,
-  tierPct,
+  commissionPct,
+  discountPct,
   isMinor = false,
 }: {
   firstName: string;
   email: string;
   discountCode: string;
   colorway: string;
-  tierPct: number;
+  /** What the rep earns. Set per-rep in the admin, so the copy must follow it. */
+  commissionPct: number;
+  /** What the customer saves. */
+  discountPct: number;
   isMinor?: boolean;
 }) {
   const template = isMinor ? TEMPLATE_MINOR : TEMPLATE;
@@ -125,7 +129,9 @@ export async function sendWelcomeEmail({
     .replace(/\{\{first_name\}\}/g, firstName)
     .replace(/\{\{discount_code\}\}/g, discountCode)
     .replace(/\{\{discount_code_lower\}\}/g, discountCode.toLowerCase())
-    .replace(/\{\{colorway\}\}/g, colorway);
+    .replace(/\{\{colorway\}\}/g, colorway)
+    .replace(/\{\{commission_pct\}\}/g, String(commissionPct))
+    .replace(/\{\{discount_pct\}\}/g, String(discountPct));
 
   const pamphletPath = path.join(process.cwd(), 'public', 'brand', 'ambassador-pamphlet.pdf');
   const pamphletContent = fs.readFileSync(pamphletPath);

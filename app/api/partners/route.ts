@@ -3,19 +3,49 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { resend } from '@/lib/email/resend-client';
 import { sendApplicationConfirmation } from '@/lib/email/send-application-confirmation';
+import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
+
+const GK_FROM = 'Good Kicks <info@goodkicks.co>';
+
+function row(label: string, value: string) {
+  return `<tr><td style="padding:8px 0;color:#6B6B6B;width:140px">${label}</td><td style="padding:8px 0">${value}</td></tr>`;
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, email, instagram, school, accountType, followers, message, shippingAddress, colorwayPreference, age } = body ?? {};
+  const {
+    name,
+    email,
+    instagram,
+    school,
+    town,
+    hatPreference,
+    accountType,
+    followers,
+    message,
+    shippingAddress,
+    colorwayPreference,
+    age,
+  } = body ?? {};
 
-  if (!name || !email || !instagram || !school) {
+  const brand = body?.brand === 'townies' ? 'townies' : 'goodkicks';
+  const isTownies = brand === 'townies';
+
+  // Townies reps rep a town; Good Kicks ambassadors rep a school.
+  const place = isTownies ? town : school;
+  if (!name || !email || !instagram || !place) {
     return NextResponse.json({ error: 'missing required fields' }, { status: 400 });
   }
 
-  // Save to Supabase
   const supabase = createSupabaseServiceClient();
   const { error: dbError } = await supabase.from('ambassador_applications').insert({
-    name, email, instagram, school,
+    brand,
+    name,
+    email,
+    instagram,
+    school: school ?? null,
+    town: town ?? null,
+    hat_preference: hatPreference ?? null,
     account_type: accountType ?? null,
     followers: followers ?? null,
     message: message ?? null,
@@ -29,27 +59,29 @@ export async function POST(req: NextRequest) {
   if (process.env.RESEND_API_KEY) {
     try {
       const notifyEmail = process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co';
+      const accent = isTownies ? '#2F4F3A' : '#C66A3D';
+      const heading = isTownies ? 'New Town Rep Application' : 'New Ambassador Application';
+      const sourcePath = isTownies ? 'townies.shop/ambassadors' : 'goodkicks.co/ambassadors';
 
-      // Notify the Good Kicks team
       await resend.emails.send({
-        from: 'Good Kicks <info@goodkicks.co>',
+        from: isTownies ? TOWNIES_FROM : GK_FROM,
         to: notifyEmail,
         replyTo: email,
-        subject: `New Ambassador Application — ${instagram} (${school})`,
+        subject: `${heading} — ${instagram} (${place})`,
         html: `
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#1C1917">
-            <h2 style="font-size:22px;margin-bottom:4px">New Ambassador Application</h2>
-            <p style="color:#6B6B6B;margin:0 0 24px;font-size:14px">submitted via goodkicks.co/ambassadors</p>
+            <h2 style="font-size:22px;margin-bottom:4px">${heading}</h2>
+            <p style="color:#6B6B6B;margin:0 0 24px;font-size:14px">submitted via ${sourcePath}</p>
             <table style="width:100%;border-collapse:collapse;font-size:14px">
-              <tr><td style="padding:8px 0;color:#6B6B6B;width:140px">Name</td><td style="padding:8px 0;font-weight:500">${name}</td></tr>
-              <tr><td style="padding:8px 0;color:#6B6B6B">Email</td><td style="padding:8px 0"><a href="mailto:${email}" style="color:#C66A3D">${email}</a></td></tr>
-              <tr><td style="padding:8px 0;color:#6B6B6B">Instagram</td><td style="padding:8px 0"><a href="https://instagram.com/${instagram.replace('@','')}" style="color:#C66A3D">${instagram}</a></td></tr>
-              <tr><td style="padding:8px 0;color:#6B6B6B">School</td><td style="padding:8px 0">${school}</td></tr>
-              <tr><td style="padding:8px 0;color:#6B6B6B">Age</td><td style="padding:8px 0">${age ?? '—'}${age && age < 18 ? ' <strong style="color:#C66A3D">(minor — credit only)</strong>' : ''}</td></tr>
-              <tr><td style="padding:8px 0;color:#6B6B6B">Account type</td><td style="padding:8px 0">${accountType ?? '—'}</td></tr>
-              <tr><td style="padding:8px 0;color:#6B6B6B">Followers</td><td style="padding:8px 0">${followers ?? '—'}</td></tr>
-              <tr><td style="padding:8px 0;color:#6B6B6B">Colorway</td><td style="padding:8px 0">${colorwayPreference ?? '—'}</td></tr>
-              <tr><td style="padding:8px 0;color:#6B6B6B;vertical-align:top">Ship to</td><td style="padding:8px 0;white-space:pre-line">${shippingAddress ?? '—'}</td></tr>
+              ${row('Name', `<strong>${name}</strong>`)}
+              ${row('Email', `<a href="mailto:${email}" style="color:${accent}">${email}</a>`)}
+              ${row('Instagram', `<a href="https://instagram.com/${String(instagram).replace('@', '')}" style="color:${accent}">${instagram}</a>`)}
+              ${row(isTownies ? 'Town' : 'School', String(place))}
+              ${row('Age', `${age ?? '—'}${age && age < 18 ? ` <strong style="color:${accent}">(minor — credit only)</strong>` : ''}`)}
+              ${row('Account type', accountType ?? '—')}
+              ${row('Followers', followers ?? '—')}
+              ${row(isTownies ? 'Hat wanted' : 'Colorway', (isTownies ? hatPreference : colorwayPreference) ?? '—')}
+              ${row('Ship to', `<span style="white-space:pre-line">${shippingAddress ?? '—'}</span>`)}
             </table>
             <hr style="border:none;border-top:1px solid #E5DDD0;margin:20px 0" />
             <p style="color:#6B6B6B;font-size:13px;margin-bottom:4px">their message:</p>
@@ -60,8 +92,7 @@ export async function POST(req: NextRequest) {
         `,
       });
 
-      // Auto-reply to applicant (plain text)
-      await sendApplicationConfirmation({ firstName: name.split(' ')[0], email });
+      await sendApplicationConfirmation({ firstName: String(name).split(' ')[0], email, brand });
     } catch (err) {
       console.error('[partners] Email error:', err);
     }

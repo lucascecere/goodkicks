@@ -1,10 +1,49 @@
 'use client';
 
 import { useState } from 'react';
+import type { RealBrand } from '@/lib/admin/brand';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
-export function AmbassadorForm() {
+// The Townies catalog, for "which hat do you want". Kept as a static list
+// rather than a live Shopify read so the form never blocks on the API — update
+// it when the collection grows.
+const TOWN_HATS = [
+  'Milton',
+  'Braintree',
+  'Weymouth',
+  'Hingham',
+  'Roslindale',
+  'West Roxbury',
+  'Norton',
+];
+
+const GK_COLORWAYS = [
+  { value: 'georgia', label: 'georgia (rust + cream + dark brown)' },
+  { value: 'nevada', label: 'nevada (sage + mustard + cream)' },
+  { value: 'colorado', label: 'colorado (cream + rust + sage)' },
+  { value: 'new-york', label: 'new york (burgundy + mustard + black)' },
+  { value: 'massachusetts', label: 'massachusetts' },
+  { value: 'maine', label: 'maine (mustard + navy + black)' },
+  { value: 'no-preference', label: 'no preference / surprise me' },
+];
+
+const GK_ACCOUNT_TYPES = [
+  { value: 'high-school', label: 'high school' },
+  { value: 'college', label: 'college / university' },
+  { value: 'freestyle', label: 'freestyle / tricks' },
+  { value: 'general', label: 'general sack community' },
+];
+
+const TOWNIES_ACCOUNT_TYPES = [
+  { value: 'town-page', label: 'town / local page' },
+  { value: 'creator', label: 'hometown creator' },
+  { value: 'athlete', label: 'local athlete' },
+  { value: 'other', label: 'something else' },
+];
+
+export function AmbassadorForm({ brand = 'goodkicks' }: { brand?: RealBrand }) {
+  const isTownies = brand === 'townies';
   const [state, setState] = useState<FormState>('idle');
   const [form, setForm] = useState({
     firstName: '',
@@ -13,6 +52,8 @@ export function AmbassadorForm() {
     age: '',
     instagram: '',
     school: '',
+    town: '',
+    hatPreference: '',
     accountType: '',
     followers: '',
     message: '',
@@ -41,7 +82,7 @@ export function AmbassadorForm() {
       const res = await fetch('/api/partners', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rest, name, age: parsedAge, shippingAddress }),
+        body: JSON.stringify({ ...rest, brand, name, age: parsedAge, shippingAddress }),
       });
       setState(res.ok ? 'success' : 'error');
     } catch {
@@ -49,8 +90,28 @@ export function AmbassadorForm() {
     }
   }
 
+  // Townies uses the semantic/town tokens; Good Kicks keeps its original palette.
+  const inputClass = isTownies
+    ? 'w-full border border-town-rule rounded-sm px-4 py-3 text-town-navy placeholder:text-town-muted/50 focus:outline-none focus:ring-2 focus:ring-town-forest/40 bg-white text-sm'
+    : 'w-full border border-brand-rule rounded-lg px-4 py-3 text-brand-ink placeholder:text-brand-muted/50 focus:outline-none focus:ring-2 focus:ring-brand-rust/40 bg-white text-sm';
+  const labelClass = isTownies
+    ? 'block text-sm font-medium text-town-navy mb-1.5'
+    : 'block text-sm font-medium text-brand-ink mb-1.5';
+  const buttonClass = isTownies
+    ? 'w-full bg-town-forest text-white py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm hover:bg-town-forest/90 transition-colors disabled:opacity-60'
+    : 'w-full bg-brand-rust text-white py-4 rounded-lg font-medium text-lg hover:bg-brand-rust/90 transition-colors disabled:opacity-60';
+  const mutedClass = isTownies ? 'text-town-muted' : 'text-brand-muted';
+
   if (state === 'success') {
-    return (
+    return isTownies ? (
+      <div className="text-center space-y-4 py-12">
+        <h3 className="font-block uppercase text-3xl text-town-navy">Application in.</h3>
+        <p className="text-town-muted">
+          we read every one of these ourselves. give us a few days and we&apos;ll come back to you
+          either way.
+        </p>
+      </div>
+    ) : (
       <div className="text-center space-y-4 py-12">
         <div className="text-5xl">✌️</div>
         <h3 className="font-display text-3xl text-brand-ink">application received.</h3>
@@ -58,9 +119,6 @@ export function AmbassadorForm() {
       </div>
     );
   }
-
-  const inputClass = 'w-full border border-brand-rule rounded-lg px-4 py-3 text-brand-ink placeholder:text-brand-muted/50 focus:outline-none focus:ring-2 focus:ring-brand-rust/40 bg-white text-sm';
-  const labelClass = 'block text-sm font-medium text-brand-ink mb-1.5';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -75,7 +133,7 @@ export function AmbassadorForm() {
         </div>
         <div>
           <label className={labelClass}>email</label>
-          <input required type="email" placeholder="you@school.edu" value={form.email} onChange={(e) => set('email', e.target.value)} className={inputClass} />
+          <input required type="email" placeholder={isTownies ? 'you@email.com' : 'you@school.edu'} value={form.email} onChange={(e) => set('email', e.target.value)} className={inputClass} />
         </div>
         <div>
           <label className={labelClass}>age</label>
@@ -85,23 +143,38 @@ export function AmbassadorForm() {
 
       <div>
         <label className={labelClass}>instagram profile url</label>
-        <input required type="url" placeholder="https://www.instagram.com/ohiostatehackysack" value={form.instagram} onChange={(e) => set('instagram', e.target.value)} className={inputClass} />
+        <input
+          required
+          type="url"
+          placeholder={isTownies ? 'https://www.instagram.com/yourhandle' : 'https://www.instagram.com/ohiostatehackysack'}
+          value={form.instagram}
+          onChange={(e) => set('instagram', e.target.value)}
+          className={inputClass}
+        />
       </div>
 
-      <div>
-        <label className={labelClass}>school / university</label>
-        <input required type="text" placeholder="Ohio State University" value={form.school} onChange={(e) => set('school', e.target.value)} className={inputClass} />
-      </div>
+      {isTownies ? (
+        <div>
+          <label className={labelClass}>
+            what town do you rep? <span className={`${mutedClass} font-normal`}>(this becomes your code)</span>
+          </label>
+          <input required type="text" placeholder="Milton" value={form.town} onChange={(e) => set('town', e.target.value)} className={inputClass} />
+        </div>
+      ) : (
+        <div>
+          <label className={labelClass}>school / university</label>
+          <input required type="text" placeholder="Ohio State University" value={form.school} onChange={(e) => set('school', e.target.value)} className={inputClass} />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label className={labelClass}>account type</label>
           <select required value={form.accountType} onChange={(e) => set('accountType', e.target.value)} className={inputClass}>
             <option value="">select one</option>
-            <option value="high-school">high school</option>
-            <option value="college">college / university</option>
-            <option value="freestyle">freestyle / tricks</option>
-            <option value="general">general sack community</option>
+            {(isTownies ? TOWNIES_ACCOUNT_TYPES : GK_ACCOUNT_TYPES).map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -117,11 +190,17 @@ export function AmbassadorForm() {
       </div>
 
       <div>
-        <label className={labelClass}>tell us about your account</label>
+        <label className={labelClass}>
+          {isTownies ? 'tell us how you rep your town' : 'tell us about your account'}
+        </label>
         <textarea
           required
           rows={4}
-          placeholder="what school, how active is your circle, what kind of content do you post..."
+          placeholder={
+            isTownies
+              ? 'what town, what you post, who follows you, why people know you as being from there...'
+              : 'what school, how active is your circle, what kind of content do you post...'
+          }
           value={form.message}
           onChange={(e) => set('message', e.target.value)}
           className={inputClass}
@@ -130,43 +209,18 @@ export function AmbassadorForm() {
       </div>
 
       <div className="space-y-3">
-        <label className={labelClass}>shipping address <span className="text-brand-muted font-normal">(optional — where we send your free sack)</span></label>
-        <input
-          type="text"
-          placeholder="street address"
-          value={form.addressLine1}
-          onChange={(e) => set('addressLine1', e.target.value)}
-          className={inputClass}
-        />
-        <input
-          type="text"
-          placeholder="apt, suite, unit (optional)"
-          value={form.addressLine2}
-          onChange={(e) => set('addressLine2', e.target.value)}
-          className={inputClass}
-        />
+        <label className={labelClass}>
+          shipping address{' '}
+          <span className={`${mutedClass} font-normal`}>
+            {isTownies ? '(where we send your free hat)' : '(optional — where we send your free sack)'}
+          </span>
+        </label>
+        <input type="text" placeholder="street address" value={form.addressLine1} onChange={(e) => set('addressLine1', e.target.value)} className={inputClass} />
+        <input type="text" placeholder="apt, suite, unit (optional)" value={form.addressLine2} onChange={(e) => set('addressLine2', e.target.value)} className={inputClass} />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <input
-            type="text"
-            placeholder="city"
-            value={form.city}
-            onChange={(e) => set('city', e.target.value)}
-            className={`${inputClass} col-span-2 sm:col-span-1`}
-          />
-          <input
-            type="text"
-            placeholder="state"
-            value={form.state}
-            onChange={(e) => set('state', e.target.value)}
-            className={inputClass}
-          />
-          <input
-            type="text"
-            placeholder="zip"
-            value={form.zip}
-            onChange={(e) => set('zip', e.target.value)}
-            className={inputClass}
-          />
+          <input type="text" placeholder="city" value={form.city} onChange={(e) => set('city', e.target.value)} className={`${inputClass} col-span-2 sm:col-span-1`} />
+          <input type="text" placeholder="state" value={form.state} onChange={(e) => set('state', e.target.value)} className={inputClass} />
+          <input type="text" placeholder="zip" value={form.zip} onChange={(e) => set('zip', e.target.value)} className={inputClass} />
         </div>
         <select value={form.country} onChange={(e) => set('country', e.target.value)} className={inputClass}>
           <option value="US">United States</option>
@@ -177,33 +231,46 @@ export function AmbassadorForm() {
         </select>
       </div>
 
-      <div>
-        <label className={labelClass}>which colorway do you want?</label>
-        <select required value={form.colorwayPreference} onChange={(e) => set('colorwayPreference', e.target.value)} className={inputClass}>
-          <option value="" disabled>select one</option>
-          <option value="georgia">georgia (rust + cream + dark brown)</option>
-          <option value="nevada">nevada (sage + mustard + cream)</option>
-          <option value="colorado">colorado (cream + rust + sage)</option>
-          <option value="new-york">new york (burgundy + mustard + black)</option>
-          <option value="massachusetts">massachusetts</option>
-          <option value="maine">maine (mustard + navy + black)</option>
-          <option value="no-preference">no preference / surprise me</option>
-        </select>
-      </div>
-
-      {state === 'error' && (
-        <p className="text-red-500 text-sm">something went wrong — try again or email us at info@goodkicks.co</p>
+      {isTownies ? (
+        <div>
+          <label className={labelClass}>which hat do you want?</label>
+          <select required value={form.hatPreference} onChange={(e) => set('hatPreference', e.target.value)} className={inputClass}>
+            <option value="" disabled>select one</option>
+            {TOWN_HATS.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+            <option value="not-listed">my town isn&apos;t listed yet</option>
+          </select>
+          <p className={`${mutedClass} text-xs mt-1.5`}>
+            don&apos;t see your town? pick &ldquo;not listed&rdquo; — we make new ones all the time.
+          </p>
+        </div>
+      ) : (
+        <div>
+          <label className={labelClass}>which colorway do you want?</label>
+          <select required value={form.colorwayPreference} onChange={(e) => set('colorwayPreference', e.target.value)} className={inputClass}>
+            <option value="" disabled>select one</option>
+            {GK_COLORWAYS.map((c) => (
+              <option key={c.value} value={c.value}>{c.label}</option>
+            ))}
+          </select>
+        </div>
       )}
 
-      <button
-        type="submit"
-        disabled={state === 'loading'}
-        className="w-full bg-brand-rust text-white py-4 rounded-lg font-medium text-lg hover:bg-brand-rust/90 transition-colors disabled:opacity-60"
-      >
-        {state === 'loading' ? 'submitting…' : 'submit application →'}
+      {state === 'error' && (
+        <p className="text-red-500 text-sm">
+          something went wrong — try again or email us at{' '}
+          {isTownies ? 'hello@townies.shop' : 'info@goodkicks.co'}
+        </p>
+      )}
+
+      <button type="submit" disabled={state === 'loading'} className={buttonClass}>
+        {state === 'loading' ? 'submitting…' : isTownies ? 'submit application →' : 'submit application →'}
       </button>
 
-      <p className="text-center text-brand-muted text-xs">we review every application personally. we&apos;ll reach out via email.</p>
+      <p className={`text-center ${mutedClass} text-xs`}>
+        we review every application personally. we&apos;ll reach out via email.
+      </p>
     </form>
   );
 }

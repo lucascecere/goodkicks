@@ -1,96 +1,116 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
-import { getAmbassadorStats } from '@/lib/shopify/get-ambassador-stats';
+import { getRepStats } from '@/lib/shopify/get-rep-stats';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import type { RealBrand } from '@/lib/admin/brand';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Ambassador Stats — Good Kicks',
+  title: 'Rep Stats',
   robots: 'noindex',
 };
 
-const TIERS = [
-  { label: 'Starter', min: 0,  max: 9,   next: 'Repping',  pct: 8  },
-  { label: 'Repping', min: 10, max: 37,  next: 'Anchor',   pct: 12 },
-  { label: 'Anchor',  min: 38, max: null, next: null,       pct: 20 },
-];
-
-function getTierInfo(orders: number) {
-  return TIERS.find((t) => t.max === null || orders <= t.max) ?? TIERS[2];
-}
-
 function fmt(n: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(n);
 }
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export default async function AmbassadorStatsPage({ params }: { params: Promise<{ code: string }> }) {
+// Per-brand chrome. The page is unauthenticated (knowing the code is the only
+// credential) and noindexed, so it renders standalone rather than inheriting
+// site layout.
+const THEME = {
+  townies: {
+    page: 'bg-town-cream',
+    eyebrow: 'text-town-muted',
+    heading: 'font-block uppercase text-town-navy',
+    sub: 'text-town-muted',
+    card: 'bg-town-navy',
+    accent: '#2F4F3A',
+    panel: 'bg-white border-town-rule',
+    panelText: 'text-town-navy',
+    divide: 'divide-town-rule',
+    label: 'townie',
+    contact: 'hello@townies.shop',
+    rounded: 'rounded-sm',
+  },
+  goodkicks: {
+    page: 'bg-[#FAF7F2]',
+    eyebrow: 'text-brand-muted',
+    heading: 'font-display text-brand-ink',
+    sub: 'text-brand-muted',
+    card: 'bg-brand-ink',
+    accent: '#C66A3D',
+    panel: 'bg-white border-brand-rule',
+    panelText: 'text-brand-ink',
+    divide: 'divide-brand-rule',
+    label: 'good kicks ambassador',
+    contact: 'info@goodkicks.co',
+    rounded: 'rounded-2xl',
+  },
+} as const;
+
+export default async function RepStatsPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const upperCode = code.toUpperCase();
 
   const supabase = createSupabaseServiceClient();
   const { data: app } = await supabase
     .from('ambassador_applications')
-    .select('name, instagram, tier_pct, approved, age')
+    .select('name, brand, town, discount_code, discount_pct, commission_pct, tier_pct, approved, age')
     .eq('discount_code', upperCode)
     .not('discount_code', 'is', null)
     .single();
 
-  if (!app) notFound();
+  if (!app || !app.approved) notFound();
 
+  const brand: RealBrand = app.brand === 'townies' ? 'townies' : 'goodkicks';
+  const t = THEME[brand];
+  const isTownies = brand === 'townies';
   const isMinor = typeof app.age === 'number' && app.age < 18;
-  const stats = await getAmbassadorStats(upperCode, 8); // pct placeholder; recalculated below
-  const tier = getTierInfo(stats.totalOrders);
-  const tierPct = tier.pct; // always derived from actual order count, not stale DB value
-  const commissionEarned = stats.totalProfit * (tierPct / 100);
-  const firstName = (app.name as string).split(' ')[0];
+  const commissionPct = app.commission_pct ?? app.tier_pct ?? 0;
+  const discountPct = app.discount_pct ?? 15;
 
-  const progressPct = tier.max
-    ? Math.min(100, Math.round((stats.totalOrders / tier.max) * 100))
-    : 100;
+  const stats = await getRepStats({ code: upperCode, commissionPct, brand });
+  const firstName = (app.name as string).split(' ')[0];
+  const earnedLabel = isMinor ? 'Credit Earned' : 'Commission Earned';
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2]">
+    <div className={`min-h-screen ${t.page}`}>
       <div className="max-w-2xl mx-auto px-4 py-16 sm:py-24 space-y-10">
 
         {/* Header */}
         <div>
-          <p className="text-brand-muted text-sm mb-1">good kicks ambassador</p>
-          <h1 className="font-display text-4xl sm:text-5xl text-brand-ink">hey {firstName}.</h1>
-          <p className="text-brand-muted mt-2">here&apos;s how your circle is growing.</p>
+          <p className={`${t.eyebrow} text-sm mb-1`}>
+            {isTownies ? `Townies town rep${app.town ? ` · ${app.town}` : ''}` : t.label}
+          </p>
+          <h1 className={`${t.heading} text-4xl sm:text-5xl`}>hey {firstName}.</h1>
+          <p className={`${t.sub} mt-2`}>
+            {isTownies ? "here's what your code has done." : "here's how your circle is growing."}
+          </p>
         </div>
 
-        {/* Code + tier */}
-        <div className="bg-brand-ink rounded-2xl p-6 text-white space-y-4">
+        {/* Code */}
+        <div className={`${t.card} ${t.rounded} p-6 text-white space-y-4`}>
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-white/40 text-xs uppercase tracking-wider mb-1">your code</p>
               <p className="font-mono text-2xl font-bold tracking-widest">{upperCode}</p>
             </div>
             <div className="text-right">
-              <p className="text-white/40 text-xs uppercase tracking-wider mb-1">tier</p>
-              <span className="text-sm font-medium bg-white/10 px-3 py-1 rounded-full">{tier.label}</span>
+              <p className="text-white/40 text-xs uppercase tracking-wider mb-1">your rate</p>
+              <p className="text-sm font-medium">
+                {discountPct}% off · you earn {commissionPct}%
+              </p>
             </div>
           </div>
-
-          {tier.next && (
-            <div>
-              <div className="flex justify-between text-xs text-white/40 mb-1.5">
-                <span>{stats.totalOrders} orders</span>
-                <span>{tier.max} to reach {tier.next}</span>
-              </div>
-              <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[#C66A3D] rounded-full transition-all"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Stats row */}
@@ -98,59 +118,61 @@ export default async function AmbassadorStatsPage({ params }: { params: Promise<
           {[
             { label: 'Orders', value: String(stats.totalOrders) },
             { label: 'Revenue Driven', value: fmt(stats.totalRevenue) },
-            { label: isMinor ? 'Credit Earned' : 'Commission Earned', value: fmt(commissionEarned) },
+            { label: earnedLabel, value: fmt(stats.commissionEarned) },
           ].map((s) => (
-            <div key={s.label} className="bg-white border border-brand-rule rounded-xl p-4 text-center">
-              <p className="text-xs text-brand-muted uppercase tracking-wide mb-1">{s.label}</p>
-              <p className="font-bold text-brand-ink text-lg">{s.value}</p>
+            <div key={s.label} className={`${t.panel} border ${t.rounded} p-4 text-center`}>
+              <p className={`text-xs ${t.sub} uppercase tracking-wide mb-1`}>{s.label}</p>
+              <p className={`font-bold ${t.panelText} text-lg`}>{s.value}</p>
             </div>
           ))}
         </div>
 
         {/* Earnings note */}
-        <p className="text-brand-muted text-xs">
+        <p className={`${t.sub} text-xs leading-relaxed`}>
           {isMinor
-            ? `you earn ${tierPct}% store credit on every order through your code — redeemable on any good kicks purchase.`
-            : `you earn ${tierPct}% commission on every order through your code — paid out monthly.`
-          }{' '}reach {tier.next ?? 'the top'} tier
-          {tier.next ? ` (${tier.max! + 1}+ orders) to earn ${TIERS.find(t => t.label === tier.next)?.pct}%` : ' — you\'re at the top'}.
-          {isMinor ? ' credit is applied monthly — any questions, reply to your welcome email.' : ' any questions, reply to your welcome email.'}
+            ? `you earn ${commissionPct}% store credit on every order through your code — redeemable on anything we make, applied monthly.`
+            : `you earn ${commissionPct}% of every order placed with your code — paid out monthly.`}
+          {isTownies && ' only Townies orders count toward your total.'} any questions, reply to your
+          welcome email.
         </p>
 
         {/* Recent orders */}
         {stats.orders.length > 0 && (
-          <div className="bg-white border border-brand-rule rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-brand-rule">
-              <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Recent Orders</h2>
+          <div className={`${t.panel} border ${t.rounded} overflow-hidden`}>
+            <div className={`px-5 py-4 border-b ${isTownies ? 'border-town-rule' : 'border-brand-rule'}`}>
+              <h2 className={`text-sm font-medium ${t.panelText} uppercase tracking-wide`}>Recent Orders</h2>
             </div>
-            <div className="divide-y divide-brand-rule">
+            <div className={`divide-y ${t.divide}`}>
               {stats.orders.slice(0, 10).map((order) => (
                 <div key={order.id} className="flex items-center justify-between px-5 py-3.5">
                   <div>
-                    <p className="text-sm font-medium text-brand-ink">{order.name}</p>
-                    <p className="text-xs text-brand-muted">{fmtDate(order.createdAt)}</p>
+                    <p className={`text-sm font-medium ${t.panelText}`}>{order.name}</p>
+                    <p className={`text-xs ${t.sub}`}>{fmtDate(order.createdAt)}</p>
                   </div>
-                  <p className="text-sm text-brand-ink font-medium">{fmt(order.revenue)}</p>
+                  <p className={`text-sm ${t.panelText} font-medium`}>{fmt(order.revenue)}</p>
                 </div>
               ))}
             </div>
-            {stats.hasMore && (
-              <p className="px-5 py-3 text-xs text-brand-muted border-t border-brand-rule">
-                showing first 250 orders
+            {stats.orders.length > 10 && (
+              <p className={`px-5 py-3 text-xs ${t.sub} border-t ${isTownies ? 'border-town-rule' : 'border-brand-rule'}`}>
+                showing your 10 most recent of {stats.orders.length} orders
               </p>
             )}
           </div>
         )}
 
         {stats.orders.length === 0 && (
-          <div className="bg-white border border-brand-rule rounded-xl p-10 text-center space-y-2">
-            <p className="font-display text-xl text-brand-ink">no orders yet.</p>
-            <p className="text-brand-muted text-sm">share your code and make the circle bigger.</p>
+          <div className={`${t.panel} border ${t.rounded} p-10 text-center space-y-2`}>
+            <p className={`${t.heading} text-xl`}>no orders yet.</p>
+            <p className={`${t.sub} text-sm`}>
+              {isTownies ? 'get your code out there and rep your town.' : 'share your code and make the circle bigger.'}
+            </p>
           </div>
         )}
 
-        <p className="text-center text-brand-muted text-xs">
-          stats update every 5 minutes · <a href="mailto:info@goodkicks.co" className="hover:text-brand-ink transition-colors">questions?</a>
+        <p className={`text-center ${t.sub} text-xs`}>
+          stats update every 5 minutes ·{' '}
+          <a href={`mailto:${t.contact}`} className="hover:underline">questions?</a>
         </p>
       </div>
     </div>

@@ -47,6 +47,8 @@ export default async function AmbassadorDetailPage({ params }: { params: Promise
 
   if (!app) notFound();
 
+  const brand: 'townies' | 'goodkicks' = app.brand === 'townies' ? 'townies' : 'goodkicks';
+
   const statusBadge = app.approved
     ? { label: 'approved', cls: 'bg-green-100 text-green-700' }
     : app.status === 'rejected'
@@ -85,15 +87,19 @@ export default async function AmbassadorDetailPage({ params }: { params: Promise
           </div>
           <AccountDetailsEditor
             appId={app.id}
+            brand={brand}
             initialData={{
               name: app.name,
               email: app.email,
               instagram: app.instagram,
               school: app.school,
+              town: app.town ?? null,
+              hat_preference: app.hat_preference ?? null,
               account_type: app.account_type,
               followers: app.followers,
               colorway_preference: app.colorway_preference,
               shipping_address: app.shipping_address,
+              notes: app.notes ?? null,
               age: app.age ?? null,
             }}
           />
@@ -105,11 +111,18 @@ export default async function AmbassadorDetailPage({ params }: { params: Promise
           name: app.name,
           email: app.email,
           instagram: app.instagram,
+          brand,
+          town: app.town ?? null,
+          hat_preference: app.hat_preference ?? null,
           colorway_preference: app.colorway_preference,
           approved: app.approved,
           status: app.status,
           discount_code: app.discount_code,
-          tier_pct: app.tier_pct ?? 15,
+          discount_pct: app.discount_pct ?? 15,
+          commission_pct: app.commission_pct ?? app.tier_pct ?? 10,
+          shopify_discount_gid: app.shopify_discount_gid ?? null,
+          hat_delivered: Boolean(app.hat_delivered),
+          age: app.age ?? null,
           welcome_email_sent_at: app.welcome_email_sent_at ?? null,
         }} />
       </div>

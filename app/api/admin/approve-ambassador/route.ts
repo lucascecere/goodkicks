@@ -1,73 +1,112 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
-import { createAmbassadorDiscountCode } from '@/lib/shopify/create-discount-code';
-import { sendWelcomeEmail } from '@/lib/email/send-welcome';
+import { isAdminAuthed, loadRep, repCodeLabel, sendWelcomeForRep } from '@/lib/reps/server';
+import {
+  createRepDiscountCode,
+  slugifyCode,
+  suggestCode,
+  ShopifyScopeError,
+  ShopifyNotConfiguredError,
+} from '@/lib/shopify/create-discount-code';
 
-function isAuthed(req: NextRequest) {
-  const cookie = req.cookies.get('gk_admin')?.value;
-  return cookie === process.env.ADMIN_PASSWORD;
-}
-
+// POST { applicationId, discountCode?, discountPct, commissionPct, createInShopify? }
+//
+// `discountPct` is what the customer saves; `commissionPct` is what the rep
+// earns. They are separate numbers — the old single `tierPct` meant an 8%
+// commission minted a code giving 8% off.
 export async function POST(req: NextRequest) {
-  if (!isAuthed(req)) {
+  if (!isAdminAuthed(req)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
-  const body = await req.json();
-  const { applicationId, tierPct = 8 } = body ?? {};
+  const body = await req.json().catch(() => null);
+  const applicationId = body?.applicationId as string | undefined;
+  const discountPct = Number(body?.discountPct ?? 15);
+  const commissionPct = Number(body?.commissionPct ?? 10);
+  const createInShopify = body?.createInShopify !== false;
 
   if (!applicationId) {
     return NextResponse.json({ error: 'missing applicationId' }, { status: 400 });
   }
+  for (const [label, value] of [['discountPct', discountPct], ['commissionPct', commissionPct]] as const) {
+    if (!Number.isInteger(value) || value < 0 || value > 20) {
+      return NextResponse.json({ error: `${label} must be a whole number from 0 to 20` }, { status: 400 });
+    }
+  }
 
-  const supabase = createSupabaseServiceClient();
-
-  const { data: app, error } = await supabase
-    .from('ambassador_applications')
-    .select('name, email, instagram, colorway_preference')
-    .eq('id', applicationId)
-    .single();
-
-  if (error || !app) {
+  const rep = await loadRep(applicationId);
+  if (!rep) {
     return NextResponse.json({ error: 'application not found' }, { status: 404 });
   }
 
-  const firstName = (app.name as string).split(' ')[0];
-  const instagram = app.instagram as string;
-  const email = app.email as string;
-  const colorway = (app.colorway_preference as string | null) ?? 'your choice';
+  const requestedCode = slugifyCode(String(body?.discountCode ?? ''));
+  let discountCode = requestedCode || rep.discount_code || '';
+  let shopifyGid = rep.shopify_discount_gid;
 
-  // Use provided code, or auto-create via Shopify Admin API if token is available
-  let discountCode: string = body.discountCode ?? '';
-  if (!discountCode) {
-    if (!process.env.SHOPIFY_ADMIN_API_TOKEN) {
-      return NextResponse.json({ error: 'discountCode is required (no SHOPIFY_ADMIN_API_TOKEN set)' }, { status: 400 });
+  // Create the code in Shopify unless one already exists there for this rep, or
+  // the admin explicitly opted out (manual-entry fallback).
+  if (createInShopify && !shopifyGid) {
+    const code = discountCode || suggestCode(repCodeLabel(rep), discountPct);
+    if (!code) {
+      return NextResponse.json({ error: 'could not derive a code — enter one manually' }, { status: 400 });
     }
     try {
-      discountCode = await createAmbassadorDiscountCode({ instagramHandle: instagram, tierPct });
+      const created = await createRepDiscountCode({
+        code,
+        discountPct,
+        brand: rep.brand,
+        title:
+          rep.brand === 'townies'
+            ? `Town Rep — ${rep.town ?? rep.name}`
+            : `Ambassador — ${rep.instagram ?? rep.name}`,
+      });
+      discountCode = created.code;
+      shopifyGid = created.gid;
     } catch (err) {
+      if (err instanceof ShopifyScopeError) {
+        return NextResponse.json(
+          { error: err.message, code: 'shopify_scope', requiredScope: err.requiredScope },
+          { status: 409 },
+        );
+      }
+      if (err instanceof ShopifyNotConfiguredError) {
+        return NextResponse.json({ error: err.message, code: 'shopify_unconfigured' }, { status: 409 });
+      }
+      const message = err instanceof Error ? err.message : 'failed to create discount code';
       console.error('[approve-ambassador] Discount code error:', err);
-      return NextResponse.json({ error: 'failed to create discount code' }, { status: 500 });
+      return NextResponse.json({ error: message }, { status: 500 });
     }
   }
 
+  if (!discountCode) {
+    return NextResponse.json({ error: 'a discount code is required' }, { status: 400 });
+  }
+
   try {
-    await sendWelcomeEmail({ firstName, email, discountCode, colorway, tierPct });
+    await sendWelcomeForRep(rep, { discountCode, discountPct, commissionPct });
   } catch (err) {
     console.error('[approve-ambassador] Welcome email error:', err);
     return NextResponse.json({ error: 'failed to send welcome email' }, { status: 500 });
   }
 
-  await supabase
+  const supabase = createSupabaseServiceClient();
+  const { error } = await supabase
     .from('ambassador_applications')
     .update({
       approved: true,
       status: 'approved',
       discount_code: discountCode,
-      tier_pct: tierPct,
+      discount_pct: discountPct,
+      commission_pct: commissionPct,
+      shopify_discount_gid: shopifyGid,
       welcome_email_sent_at: new Date().toISOString(),
     })
     .eq('id', applicationId);
 
-  return NextResponse.json({ ok: true, discountCode });
+  if (error) {
+    console.error('[approve-ambassador] DB update failed:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true, discountCode, discountPct, commissionPct, gid: shopifyGid });
 }

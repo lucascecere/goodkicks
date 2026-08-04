@@ -1,0 +1,100 @@
+import 'server-only';
+import type { NextRequest } from 'next/server';
+import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { sendWelcomeEmail } from '@/lib/email/send-welcome';
+import { sendRepWelcomeEmail } from '@/lib/email/send-rep-welcome';
+import type { RealBrand } from '@/lib/admin/brand';
+
+/**
+ * Admin auth for API routes. `middleware.ts` matches `/((?!_next|api|...))`, so
+ * it does NOT cover /api — every admin route must call this itself.
+ */
+export function isAdminAuthed(req: NextRequest): boolean {
+  const cookie = req.cookies.get('gk_admin')?.value;
+  return Boolean(process.env.ADMIN_PASSWORD) && cookie === process.env.ADMIN_PASSWORD;
+}
+
+export type RepRecord = {
+  id: string;
+  name: string;
+  email: string;
+  instagram: string | null;
+  brand: RealBrand;
+  town: string | null;
+  school: string | null;
+  hat_preference: string | null;
+  colorway_preference: string | null;
+  discount_code: string | null;
+  discount_pct: number | null;
+  commission_pct: number | null;
+  tier_pct: number | null;
+  shopify_discount_gid: string | null;
+  hat_delivered: boolean | null;
+  age: number | null;
+};
+
+const REP_COLUMNS =
+  'id, name, email, instagram, brand, town, school, hat_preference, colorway_preference, discount_code, discount_pct, commission_pct, tier_pct, shopify_discount_gid, hat_delivered, age';
+
+export async function loadRep(id: string): Promise<RepRecord | null> {
+  const supabase = createSupabaseServiceClient();
+  const { data, error } = await supabase
+    .from('ambassador_applications')
+    .select(REP_COLUMNS)
+    .eq('id', id)
+    .single();
+
+  if (error || !data) return null;
+
+  return {
+    ...(data as unknown as RepRecord),
+    brand: data.brand === 'townies' ? 'townies' : 'goodkicks',
+  };
+}
+
+/** The label a rep's code is built from: their town (Townies) or handle (GK). */
+export function repCodeLabel(rep: RepRecord): string {
+  return rep.brand === 'townies'
+    ? rep.town ?? rep.name
+    : rep.instagram ?? rep.name;
+}
+
+/**
+ * Send the welcome email in the voice of the rep's brand. Townies reps get a
+ * flat-rate template; Good Kicks ambassadors keep their tier-ladder template.
+ */
+export async function sendWelcomeForRep(
+  rep: RepRecord,
+  {
+    discountCode,
+    discountPct,
+    commissionPct,
+  }: { discountCode: string; discountPct: number; commissionPct: number },
+): Promise<void> {
+  const firstName = rep.name.split(' ')[0];
+  const isMinor = typeof rep.age === 'number' && rep.age < 18;
+
+  if (rep.brand === 'townies') {
+    await sendRepWelcomeEmail({
+      email: rep.email,
+      firstName,
+      town: rep.town ?? '',
+      discountCode,
+      discountPct,
+      commissionPct,
+      isMinor,
+      hatDelivered: Boolean(rep.hat_delivered),
+    });
+    return;
+  }
+
+  await sendWelcomeEmail({
+    firstName,
+    email: rep.email,
+    discountCode,
+    colorway: rep.colorway_preference ?? 'your choice',
+    commissionPct,
+    discountPct,
+    isMinor,
+  });
+}

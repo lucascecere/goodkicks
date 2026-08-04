@@ -87,19 +87,19 @@ export default async function AdminDashboardPage() {
   const brand = await getAdminBrand();
   const supabase = createSupabaseServiceClient();
 
-  // Ambassadors are Good Kicks-only for now (schema unchanged this pass), so the
-  // Townies view shows none. Bundles are a Good Kicks product — skip the Shopify
+  // Both brands run a rep program now, so ambassadors are filtered by brand
+  // rather than hidden. Bundles remain a Good Kicks product — skip the Shopify
   // bundle fetch entirely when scoped to Townies.
-  const showAmbassadors = brand !== 'townies';
+  const showAmbassadors = true;
   const showBundles = brand !== 'townies';
 
+  const ambassadorQuery = supabase
+    .from('ambassador_applications')
+    .select('id, name, email, instagram, status, approved, created_at')
+    .order('created_at', { ascending: false });
+
   const [{ data: apps }, contactSubs, orderSummary, bundleTallies] = await Promise.all([
-    brand === 'townies'
-      ? Promise.resolve({ data: [] as Array<{ id: string; name: string; email: string; instagram: string; status: string; approved: boolean; created_at: string }> })
-      : supabase
-          .from('ambassador_applications')
-          .select('id, name, email, instagram, status, approved, created_at')
-          .order('created_at', { ascending: false }),
+    brand === 'all' ? ambassadorQuery : ambassadorQuery.eq('brand', brand),
     fetchContactSubmissions(supabase, brand),
     getOrderSummary(brand),
     showBundles ? getBundleTally() : Promise.resolve([]),
