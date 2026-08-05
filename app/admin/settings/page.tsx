@@ -80,12 +80,17 @@ function StatusRow({ check }: { check: Check }) {
 export default async function SettingsPage() {
   const [discountCheck, orderCheck] = await Promise.all([checkDiscountScope(), checkOrderScope()]);
 
+  const towniesFrom = process.env.TOWNIES_FROM_EMAIL ?? 'info@goodkicks.co';
+  const towniesOwnDomain = towniesFrom.endsWith('@townies.shop');
+
   const emailCheck: Check = {
     label: 'Email sending',
-    ok: Boolean(process.env.RESEND_API_KEY),
-    detail: process.env.RESEND_API_KEY
-      ? `Resend configured. Townies mail sends as "${process.env.TOWNIES_FROM_EMAIL ?? 'info@goodkicks.co'}" — verify townies.shop in Resend and set TOWNIES_FROM_EMAIL to send from a Townies address.`
-      : 'RESEND_API_KEY is not set — no application confirmations or welcome emails will go out.',
+    ok: Boolean(process.env.RESEND_API_KEY) && towniesOwnDomain,
+    detail: !process.env.RESEND_API_KEY
+      ? 'RESEND_API_KEY is not set — no application confirmations or welcome emails will go out.'
+      : towniesOwnDomain
+        ? `Resend configured. Townies mail sends from ${towniesFrom}, Good Kicks from info@goodkicks.co. Both domains are verified on the same Resend account, which is what lets one API key serve both.`
+        : `Resend configured, but Townies mail still sends from ${towniesFrom}. Verify townies.shop in Resend and set TOWNIES_FROM_EMAIL to send from a Townies address.`,
   };
 
   return (
