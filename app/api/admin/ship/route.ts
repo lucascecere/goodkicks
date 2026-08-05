@@ -1,3 +1,4 @@
+import { sendEmail } from '@/lib/email/resend-client';
 import { NextRequest } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { Resend } from 'resend';
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (process.env.RESEND_API_KEY) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
+      await sendEmail({
         from: 'Good Kicks <info@goodkicks.co>',
         to: order.customer_email,
         subject: "Your Good Kicks is on the way! 🏐",

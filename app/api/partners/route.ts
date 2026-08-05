@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
-import { resend } from '@/lib/email/resend-client';
+import { sendEmail } from '@/lib/email/resend-client';
 import { sendApplicationConfirmation } from '@/lib/email/send-application-confirmation';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       const heading = isTownies ? 'New Town Rep Application' : 'New Ambassador Application';
       const sourcePath = isTownies ? 'townies.shop/ambassadors' : 'goodkicks.co/ambassadors';
 
-      await resend.emails.send({
+      await sendEmail({
         from: isTownies ? TOWNIES_FROM : GK_FROM,
         to: notifyEmail,
         replyTo: email,

@@ -8,7 +8,7 @@
 // The body itself lives in ./rep-welcome-template (pure, client-importable) so
 // the admin preview renders the exact text that gets sent.
 
-import { resend } from './resend-client';
+import { sendEmail } from './resend-client';
 import {
   renderRepWelcome,
   repWelcomeSubject,
@@ -29,8 +29,8 @@ function safeEmail(email: string) {
 export async function sendRepWelcomeEmail({
   email,
   ...fields
-}: RepWelcomeFields & { email: string }) {
-  await resend.emails.send({
+}: RepWelcomeFields & { email: string }): Promise<string> {
+  return sendEmail({
     from: TOWNIES_FROM,
     to: safeEmail(email),
     replyTo: FROM_EMAIL,

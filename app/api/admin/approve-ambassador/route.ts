@@ -82,11 +82,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'a discount code is required' }, { status: 400 });
   }
 
+  let welcomeEmailId: string;
   try {
-    await sendWelcomeForRep(rep, { discountCode, discountPct, commissionPct });
+    welcomeEmailId = await sendWelcomeForRep(rep, { discountCode, discountPct, commissionPct });
   } catch (err) {
     console.error('[approve-ambassador] Welcome email error:', err);
-    return NextResponse.json({ error: 'failed to send welcome email' }, { status: 500 });
+    // The Shopify code may already exist — say so, and report the real reason
+    // rather than a generic failure, so it can actually be acted on.
+    const detail = err instanceof Error ? err.message : 'unknown error';
+    return NextResponse.json(
+      { error: `Discount code is ready, but the welcome email failed: ${detail}` },
+      { status: 502 },
+    );
   }
 
   const supabase = createSupabaseServiceClient();
@@ -100,6 +107,7 @@ export async function POST(req: NextRequest) {
       commission_pct: commissionPct,
       shopify_discount_gid: shopifyGid,
       welcome_email_sent_at: new Date().toISOString(),
+      welcome_email_id: welcomeEmailId,
     })
     .eq('id', applicationId);
 
@@ -108,5 +116,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, discountCode, discountPct, commissionPct, gid: shopifyGid });
+  return NextResponse.json({ ok: true, discountCode, discountPct, commissionPct, gid: shopifyGid, welcomeEmailId });
 }

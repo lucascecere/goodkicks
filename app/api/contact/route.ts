@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
-import { resend } from '@/lib/email/resend-client';
+import { sendEmail } from '@/lib/email/resend-client';
 
 // brand-scopes every submission so Townies + Good Kicks data don't collide.
 const brand = z.enum(['townies', 'goodkicks']).default('townies');
@@ -131,7 +131,7 @@ export async function POST(request: Request) {
 
     if (process.env.RESEND_API_KEY) {
       try {
-        await resend.emails.send({
+        await sendEmail({
           from: 'Townies <info@goodkicks.co>',
           to: process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co',
           replyTo: data.email,

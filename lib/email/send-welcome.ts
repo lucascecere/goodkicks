@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { resend } from './resend-client';
+import { sendEmail } from './resend-client';
 
 const TEMPLATE_MINOR = `hey {{first_name}}, welcome to the Good Kicks team. ✌️
 
@@ -123,7 +123,7 @@ export async function sendWelcomeEmail({
   /** What the customer saves. */
   discountPct: number;
   isMinor?: boolean;
-}) {
+}): Promise<string> {
   const template = isMinor ? TEMPLATE_MINOR : TEMPLATE;
   const text = template
     .replace(/\{\{first_name\}\}/g, firstName)
@@ -136,7 +136,7 @@ export async function sendWelcomeEmail({
   const pamphletPath = path.join(process.cwd(), 'public', 'brand', 'ambassador-pamphlet.pdf');
   const pamphletContent = fs.readFileSync(pamphletPath);
 
-  await resend.emails.send({
+  return sendEmail({
     from: 'Good Kicks <info@goodkicks.co>',
     to: safeEmail(email),
     replyTo: 'info@goodkicks.co',

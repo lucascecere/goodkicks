@@ -1,3 +1,4 @@
+import { sendEmail } from '@/lib/email/resend-client';
 import { NextRequest } from 'next/server';
 import { stripe } from '@/lib/stripe/client';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       const name = session.customer_details.name ?? 'friend';
       const total = formatCents(session.amount_total ?? 0);
-      await resend.emails.send({
+      await sendEmail({
         from: 'Good Kicks <info@goodkicks.co>',
         to: session.customer_details.email,
         subject: 'Your Good Kicks order is confirmed!',

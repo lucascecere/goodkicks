@@ -73,12 +73,12 @@ export async function sendWelcomeForRep(
     discountPct,
     commissionPct,
   }: { discountCode: string; discountPct: number; commissionPct: number },
-): Promise<void> {
+): Promise<string> {
   const firstName = greetingName(rep.name);
   const isMinor = typeof rep.age === 'number' && rep.age < 18;
 
   if (rep.brand === 'townies') {
-    await sendRepWelcomeEmail({
+    return sendRepWelcomeEmail({
       email: rep.email,
       firstName,
       town: rep.town ?? '',
@@ -88,10 +88,9 @@ export async function sendWelcomeForRep(
       isMinor,
       hatDelivered: Boolean(rep.hat_delivered),
     });
-    return;
   }
 
-  await sendWelcomeEmail({
+  return sendWelcomeEmail({
     firstName,
     email: rep.email,
     discountCode,

@@ -1,4 +1,4 @@
-import { resend } from './resend-client';
+import { sendEmail } from './resend-client';
 import { TOWNIES_FROM } from './send-rep-welcome';
 import type { RealBrand } from '@/lib/admin/brand';
 
@@ -39,7 +39,7 @@ export async function sendApplicationConfirmation({
     firstName,
   );
 
-  await resend.emails.send({
+  await sendEmail({
     from: isTownies ? TOWNIES_FROM : 'Good Kicks <info@goodkicks.co>',
     to: safeEmail(email),
     replyTo: 'info@goodkicks.co',

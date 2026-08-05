@@ -26,22 +26,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'rep needs an email and a discount code first' }, { status: 400 });
   }
 
+  let welcomeEmailId: string;
   try {
-    await sendWelcomeForRep(rep, {
+    welcomeEmailId = await sendWelcomeForRep(rep, {
       discountCode,
       discountPct: rep.discount_pct ?? 15,
       commissionPct: rep.commission_pct ?? rep.tier_pct ?? 10,
     });
   } catch (err) {
     console.error('[send-welcome] Error:', err);
-    return NextResponse.json({ error: 'failed to send email' }, { status: 500 });
+    const detail = err instanceof Error ? err.message : 'unknown error';
+    return NextResponse.json({ error: detail }, { status: 502 });
   }
 
   const supabase = createSupabaseServiceClient();
   await supabase
     .from('ambassador_applications')
-    .update({ welcome_email_sent_at: new Date().toISOString() })
+    .update({ welcome_email_sent_at: new Date().toISOString(), welcome_email_id: welcomeEmailId })
     .eq('id', applicationId);
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, welcomeEmailId });
 }
