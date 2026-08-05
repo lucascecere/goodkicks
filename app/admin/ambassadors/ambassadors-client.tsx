@@ -7,7 +7,8 @@ import { RepTabs } from './rep-tabs';
 import { AddRepForm, type NewRep } from './add-rep-form';
 import type { AdminBrand, RealBrand } from '@/lib/admin/brand';
 import type { DiscountReadiness } from '@/lib/shopify/discount-readiness';
-import { codeSuggestions } from '@/lib/reps/naming';
+import { codeSuggestions, greetingName } from '@/lib/reps/naming';
+import { renderRepWelcome, repWelcomeSubject } from '@/lib/email/rep-welcome-template';
 import { parseTowns } from '@/lib/reps/towns';
 
 type Ambassador = {
@@ -31,11 +32,19 @@ type Ambassador = {
   tier_pct: number | null;
   shopify_discount_gid: string | null;
   hat_delivered: boolean | null;
+  // Under 18 gets the store-credit wording instead of cash commission, so the
+  // preview needs it to match what actually sends.
+  age: number | null;
   created_at: string | null;
   welcome_email_sent_at: string | null;
 };
 
 type FilterTab = 'all' | 'pending' | 'approved' | 'rejected';
+
+// Display-only: what the preview header shows as the sender. The actual send
+// uses TOWNIES_FROM_EMAIL server-side, defaulting to the same address.
+const TOWNIES_FROM_HINT =
+  process.env.NEXT_PUBLIC_TOWNIES_FROM_EMAIL || 'info@goodkicks.co';
 
 // Program ceiling — a rep never earns or discounts more than this.
 const MAX_PCT = 20;
@@ -160,6 +169,7 @@ function RightPanel({
 
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -460,6 +470,39 @@ function RightPanel({
               >
                 approve with this code anyway
               </button>
+            </div>
+          )}
+          {/* Read the email BEFORE it goes out — approving sends it, so a
+              preview that only appears afterwards is too late to be useful. */}
+          {isTownies && (
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowPreview((v) => !v)}
+                className="text-xs text-brand-rust hover:underline"
+              >
+                {showPreview ? 'hide the email they’ll get ↑' : 'read the email they’ll get ↓'}
+              </button>
+              {showPreview && (
+                <div className="mt-2 bg-brand-rule/20 rounded-lg p-3 border border-brand-rule">
+                  <p className="text-[10px] text-brand-muted uppercase tracking-wide mb-2 leading-relaxed">
+                    From: Townies &lt;{TOWNIES_FROM_HINT}&gt;<br />
+                    To: {app.email}<br />
+                    Subject: {repWelcomeSubject(greetingName(app.name))}
+                  </p>
+                  <pre className="text-[11px] text-brand-ink whitespace-pre-wrap font-mono leading-relaxed max-h-72 overflow-y-auto">
+                    {renderRepWelcome({
+                      firstName: greetingName(app.name),
+                      town: app.town ?? '',
+                      discountCode: approveCode || suggested,
+                      discountPct,
+                      commissionPct,
+                      isMinor: typeof app.age === 'number' && app.age < 18,
+                      hatDelivered: Boolean(app.hat_delivered),
+                    })}
+                  </pre>
+                </div>
+              )}
             </div>
           )}
           {approveErr && <p className="text-xs text-red-500">{approveErr}</p>}
