@@ -155,8 +155,18 @@ export function AddRepForm({
 
       {isTownies ? (
         <div>
-          <label className={labelCls}>Town * — becomes their code</label>
-          <input required value={form.town} onChange={(e) => set('town', e.target.value)} placeholder="Milton" className={inputCls} />
+          <label className={labelCls}>Town(s) *</label>
+          <input
+            required
+            value={form.town}
+            onChange={(e) => set('town', e.target.value)}
+            placeholder="Milton, Weymouth"
+            className={inputCls}
+          />
+          <p className="text-[11px] text-brand-muted mt-1">
+            Separate with commas if they cover more than one — a page run by two people counts as
+            one rep. Their code comes from their handle, not their town.
+          </p>
         </div>
       ) : (
         <div>

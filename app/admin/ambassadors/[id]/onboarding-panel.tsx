@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { renderRepWelcome, repWelcomeSubject } from '@/lib/email/rep-welcome-template';
 import type { RealBrand } from '@/lib/admin/brand';
+import { greetingName, slugifyCode } from '@/lib/reps/naming';
 
 interface App {
   id: string;
@@ -28,8 +29,7 @@ interface App {
 const MAX_PCT = 20;
 
 function suggestCode(app: App, discountPct: number): string {
-  const label = app.brand === 'townies' ? app.town ?? app.name : app.instagram ?? app.name;
-  const slug = label.replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const slug = slugifyCode(app.instagram || app.name);
   return slug ? `${slug}${discountPct}` : '';
 }
 
@@ -170,7 +170,7 @@ export function OnboardingPanel({ app }: { app: App }) {
   }
 
   if (isApproved) {
-    const firstName = app.name.split(' ')[0];
+    const firstName = greetingName(app.name);
     const isMinor = typeof app.age === 'number' && app.age < 18;
     const emailText = isTownies
       ? renderRepWelcome({

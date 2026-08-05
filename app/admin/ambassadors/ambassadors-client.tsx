@@ -7,6 +7,8 @@ import { RepTabs } from './rep-tabs';
 import { AddRepForm, type NewRep } from './add-rep-form';
 import type { AdminBrand, RealBrand } from '@/lib/admin/brand';
 import type { DiscountReadiness } from '@/lib/shopify/discount-readiness';
+import { codeSuggestions } from '@/lib/reps/naming';
+import { parseTowns } from '@/lib/reps/towns';
 
 type Ambassador = {
   id: string;
@@ -44,14 +46,13 @@ function repBrand(app: Ambassador): RealBrand {
   return app.brand === 'townies' ? 'townies' : 'goodkicks';
 }
 
-/** The label a rep's code is built from: their town (Townies) or handle (GK). */
-function codeLabel(app: Ambassador): string {
-  return repBrand(app) === 'townies' ? app.town ?? app.name : app.instagram ?? app.name;
-}
-
-function suggestCode(app: Ambassador, discountPct: number): string {
-  const slug = (codeLabel(app) ?? '').replace(/^@/, '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  return slug ? `${slug}${discountPct}` : '';
+function repSuggestions(app: Ambassador, discountPct: number) {
+  return codeSuggestions({
+    instagram: app.instagram,
+    name: app.name,
+    towns: parseTowns(app.town),
+    discountPct,
+  });
 }
 
 function fmtDate(iso: string) {
@@ -143,8 +144,9 @@ function RightPanel({
   const [editCode, setEditCode] = useState(app.discount_code ?? '');
 
   // Until the admin types their own code, keep the suggestion in step with the
-  // discount they've chosen (Milton at 15% off → MILTON15).
-  const suggested = suggestCode(app, discountPct);
+  // discount they've chosen (@southshoreguys at 15% off → SOUTHSHOREGUYS15).
+  const suggestions = repSuggestions(app, discountPct);
+  const suggested = suggestions[0]?.code ?? '';
   useEffect(() => {
     if (!codeTouched) setApproveCode(suggested);
   }, [suggested, codeTouched]);
@@ -372,11 +374,31 @@ function RightPanel({
             <input
               value={approveCode}
               onChange={(e) => { setCodeTouched(true); setApproveCode(e.target.value.toUpperCase()); }}
-              placeholder={suggested || 'e.g. MILTON15'}
+              placeholder={suggested || 'e.g. SOUTHSHOREGUYS15'}
               className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
             />
-            <p className="text-[11px] text-brand-muted mt-1">
-              Created in Shopify scoped to the {isTownies ? 'Townies' : 'Good Kicks'} collection only.
+            {suggestions.length > 1 && (
+              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                {suggestions.map((s) => (
+                  <button
+                    key={s.code}
+                    type="button"
+                    onClick={() => { setCodeTouched(true); setApproveCode(s.code); }}
+                    className={`font-mono text-[10px] px-2 py-1 rounded border transition-colors ${
+                      approveCode === s.code
+                        ? 'bg-brand-ink text-white border-brand-ink'
+                        : 'border-brand-rule text-brand-muted hover:border-brand-ink hover:text-brand-ink'
+                    }`}
+                  >
+                    {s.code}
+                    <span className="opacity-50"> · {s.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            <p className="text-[11px] text-brand-muted mt-1.5">
+              Built from their handle, not their town — type anything you like. Created in Shopify
+              scoped to the {isTownies ? 'Townies' : 'Good Kicks'} collection only.
             </p>
           </div>
           {isTownies && (

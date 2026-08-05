@@ -5,6 +5,7 @@
 // what happened with the Good Kicks template).
 
 import { SITE_URL } from '@/lib/seo/site';
+import { parseTowns, formatTownList, hatPhrase } from '@/lib/reps/towns';
 
 const TEMPLATE = `hey {{first_name}} — you're officially a Townies Town Rep.
 
@@ -100,17 +101,29 @@ export type RepWelcomeFields = {
 };
 
 // Reps signed up face-to-face already have their hat in hand, so promising one
-// "on its way" reads as a mistake and invites a "where is it?" reply.
-function hatLine(town: string, hatDelivered: boolean): string {
-  const place = town || 'your town';
-  return hatDelivered
-    ? `you've already got your ${place} hat — that one's on us. wear it, post it, that's the whole point.`
-    : `your ${place} hat is on its way, free. that's yours to keep and to post in.`;
+// "on its way" reads as a mistake and invites a "where is it?" reply. A rep
+// covering more than one town gets plural wording — naming one of their towns
+// would be wrong, and listing all of them reads like a form letter.
+function hatLine(towns: string[], hatDelivered: boolean): string {
+  const hat = hatPhrase(towns);
+  const plural = towns.length > 1;
+  if (hatDelivered) {
+    return plural
+      ? `you've already got ${hat} — those are on us. wear them, post them, that's the whole point.`
+      : `you've already got ${hat} — that one's on us. wear it, post it, that's the whole point.`;
+  }
+  return plural
+    ? `${hat} are on their way, free. those are yours to keep and to post in.`
+    : `${hat} is on its way, free. that's yours to keep and to post in.`;
 }
 
-function postLine(hatDelivered: boolean): string {
-  return hatDelivered
-    ? '2. get the hat on camera this week, tag @townies.shop'
+function postLine(towns: string[], hatDelivered: boolean): string {
+  const plural = towns.length > 1;
+  if (hatDelivered) {
+    return `2. get ${plural ? 'the hats' : 'the hat'} on camera this week, tag @townies.shop`;
+  }
+  return plural
+    ? '2. post the hats when they land, tag @townies.shop'
     : '2. post the hat when it lands, tag @townies.shop';
 }
 
@@ -128,11 +141,12 @@ export function renderRepWelcome({
   hatDelivered = false,
 }: RepWelcomeFields): string {
   const template = isMinor ? TEMPLATE_MINOR : TEMPLATE;
+  const towns = parseTowns(town);
   return template
-    .replace(/\{\{hat_line\}\}/g, hatLine(town, hatDelivered))
-    .replace(/\{\{post_line\}\}/g, postLine(hatDelivered))
+    .replace(/\{\{hat_line\}\}/g, hatLine(towns, hatDelivered))
+    .replace(/\{\{post_line\}\}/g, postLine(towns, hatDelivered))
     .replace(/\{\{first_name\}\}/g, firstName)
-    .replace(/\{\{town\}\}/g, town || 'your town')
+    .replace(/\{\{town\}\}/g, formatTownList(towns) || 'your town')
     .replace(/\{\{discount_code\}\}/g, discountCode)
     .replace(/\{\{discount_pct\}\}/g, String(discountPct))
     .replace(/\{\{commission_pct\}\}/g, String(commissionPct))

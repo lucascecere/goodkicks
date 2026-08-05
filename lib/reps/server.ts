@@ -4,6 +4,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { sendWelcomeEmail } from '@/lib/email/send-welcome';
 import { sendRepWelcomeEmail } from '@/lib/email/send-rep-welcome';
 import type { RealBrand } from '@/lib/admin/brand';
+import { greetingName } from './naming';
 
 /**
  * Admin auth for API routes. `middleware.ts` matches `/((?!_next|api|...))`, so
@@ -52,11 +53,13 @@ export async function loadRep(id: string): Promise<RepRecord | null> {
   };
 }
 
-/** The label a rep's code is built from: their town (Townies) or handle (GK). */
+/**
+ * What a rep's code is built from. Their identity, not their location: a code
+ * is about who they are, and a page run by two people covering two towns has no
+ * single town to name.
+ */
 export function repCodeLabel(rep: RepRecord): string {
-  return rep.brand === 'townies'
-    ? rep.town ?? rep.name
-    : rep.instagram ?? rep.name;
+  return rep.instagram || rep.name;
 }
 
 /**
@@ -71,7 +74,7 @@ export async function sendWelcomeForRep(
     commissionPct,
   }: { discountCode: string; discountPct: number; commissionPct: number },
 ): Promise<void> {
-  const firstName = rep.name.split(' ')[0];
+  const firstName = greetingName(rep.name);
   const isMinor = typeof rep.age === 'number' && rep.age < 18;
 
   if (rep.brand === 'townies') {
