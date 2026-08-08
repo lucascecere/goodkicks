@@ -219,7 +219,7 @@ export const townSpotlightTemplate = defineTemplate<Props>({
         </div>
 
         <div style={{ display: 'flex', marginTop: 36 }}>
-          <BrandFooter />
+          <BrandFooter mark={ctx.brandMark} />
         </div>
       </div>
     </div>

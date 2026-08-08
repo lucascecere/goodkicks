@@ -14,6 +14,9 @@ import { loadStudioFonts } from './fonts';
 import { makeImgResolver, resolveImages } from './images';
 import type { AnyTemplate } from './types';
 
+/** Cream variant: the navy original is invisible on the dark fields. */
+export const BRAND_MARK = '/brand/logos/script-word-cream.png';
+
 /**
  * Render to PNG bytes.
  *
@@ -44,10 +47,11 @@ export async function renderTemplateToResponse(
   // a blank graphic instead of a graphic with a fallback chip.
   const [fonts, images] = await Promise.all([
     loadStudioFonts(origin),
-    resolveImages(props, origin, template.imageRefs?.(props) ?? []),
+    resolveImages(props, origin, [...(template.imageRefs?.(props) ?? []), BRAND_MARK]),
   ]);
 
-  const element = template.render(props, { origin, img: makeImgResolver(images) });
+  const img = makeImgResolver(images);
+  const element = template.render(props, { origin, img, brandMark: img(BRAND_MARK) });
 
   return new ImageResponse(element, {
     width: template.canvas.width,

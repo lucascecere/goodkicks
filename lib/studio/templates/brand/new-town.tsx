@@ -178,7 +178,7 @@ export const newTownTemplate = defineTemplate<Props>({
             justifyContent: 'space-between',
           }}
         >
-          <BrandFooter />
+          <BrandFooter mark={ctx.brandMark} />
           {p.cta ? (
             <div
               style={{

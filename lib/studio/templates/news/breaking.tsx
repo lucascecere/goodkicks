@@ -187,7 +187,7 @@ export const breakingTemplate = defineTemplate<Props>({
         ) : null}
 
         <div style={{ display: 'flex', marginTop: 46 }}>
-          <BrandFooter />
+          <BrandFooter mark={ctx.brandMark} />
         </div>
       </div>
     </div>

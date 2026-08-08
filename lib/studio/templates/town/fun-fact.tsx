@@ -163,7 +163,7 @@ export const funFactTemplate = defineTemplate<Props>({
         </div>
 
         <div style={{ display: 'flex', marginTop: 44 }}>
-          <BrandFooter />
+          <BrandFooter mark={ctx.brandMark} />
         </div>
       </div>
     </div>

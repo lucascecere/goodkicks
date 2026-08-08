@@ -208,7 +208,7 @@ export const dropTemplate = defineTemplate<Props>({
         </div>
 
         <div style={{ display: 'flex', marginTop: 40 }}>
-          <BrandFooter />
+          <BrandFooter mark={ctx.brandMark} />
         </div>
       </div>
     </div>

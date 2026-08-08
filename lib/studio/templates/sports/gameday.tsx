@@ -496,7 +496,7 @@ export const gamedayTemplate = defineTemplate<Props>({
           ) : null}
 
           <div style={{ display: 'flex', marginTop: 30 }}>
-            <BrandFooter />
+            <BrandFooter mark={ctx.brandMark} />
           </div>
         </div>
       </div>

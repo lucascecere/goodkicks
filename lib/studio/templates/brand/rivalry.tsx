@@ -87,7 +87,7 @@ const fields: FieldDef[] = [
   { key: 'vsLabel', label: 'Center badge', type: 'text', group: 'Footer' },
   { key: 'prompt', label: 'Prompt', type: 'text', group: 'Footer', help: 'The ask. A rivalry post lives or dies on people replying.' },
   { key: 'promptSub', label: 'Prompt sub-line', type: 'text', group: 'Footer' },
-  { key: 'footnote', label: 'Footnote', type: 'text', group: 'Footer' },
+  { key: 'footnote', label: 'Button label', type: 'text', group: 'Footer' },
   { key: 'cta', label: 'Call to action', type: 'text', group: 'Footer' },
 ];
 
@@ -124,7 +124,7 @@ const mock: Props = {
   vsLabel: 'VS',
   prompt: 'Pick a side.',
   promptSub: 'Drop your town in the comments',
-  footnote: 'Both in stock',
+  footnote: 'In stock',
   cta: 'www.townies.shop',
 };
 
@@ -490,9 +490,30 @@ export const rivalryTemplate = defineTemplate<Props>({
             justifyContent: 'space-between',
           }}
         >
-          <Label size={24} color="#FFFFFF" track={TRACK.wider}>
-            {p.footnote}
-          </Label>
+          <div
+            style={{
+              display: 'flex',
+              paddingLeft: 26,
+              paddingRight: 26,
+              paddingTop: 13,
+              paddingBottom: 13,
+              backgroundColor: BRAND.navy,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                fontFamily: FONT.body,
+                fontWeight: 700,
+                fontSize: 24,
+                letterSpacing: TRACK.wider,
+                textTransform: 'uppercase',
+                color: '#FFFFFF',
+              }}
+            >
+              {p.footnote}
+            </div>
+          </div>
           <div
             style={{
               display: 'flex',
@@ -507,7 +528,7 @@ export const rivalryTemplate = defineTemplate<Props>({
           </div>
         </div>
         <div style={{ display: 'flex', marginTop: 26 }}>
-          <BrandFooter />
+          <BrandFooter mark={ctx.brandMark} />
         </div>
       </div>
     </div>

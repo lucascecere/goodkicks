@@ -363,7 +363,7 @@ export const finalScoreTemplate = defineTemplate<Props>({
             </div>
           ) : null}
           <div style={{ display: 'flex', marginTop: 28 }}>
-            <BrandFooter />
+            <BrandFooter mark={ctx.brandMark} />
           </div>
         </div>
       </div>

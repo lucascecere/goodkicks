@@ -85,6 +85,12 @@ export type RenderContext = {
    * fetched, so templates can fall back instead of exploding the whole render.
    */
   img: (src: string | undefined | null) => string | undefined;
+  /**
+   * The real Townies cursive wordmark, pre-resolved. Lives on the context
+   * rather than in each template's props because every template's footer wants
+   * it and none of them should have to remember to load it.
+   */
+  brandMark?: string;
 };
 
 export type TemplateDef<P = Record<string, unknown>> = {

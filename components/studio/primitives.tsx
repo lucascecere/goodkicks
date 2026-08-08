@@ -281,20 +281,44 @@ export function TeamMark({
  * Brand-level moment per docs/brand-guidelines.md §2 — script is for signature
  * use only, never a headline.
  */
-export function BrandFooter({ color = 'rgba(255,255,255,0.72)', size = 34 }: { color?: string; size?: number }) {
+export function BrandFooter({
+  color = 'rgba(255,255,255,0.72)',
+  size = 34,
+  mark,
+}: {
+  color?: string;
+  size?: number;
+  /** Resolved brand wordmark from RenderContext. */
+  mark?: string;
+}) {
+  // The real cursive lockup, muted to match the rest of the footer. Opacity is
+  // applied here rather than baked in so one cream file serves every template.
+  const markHeight = Math.round(size * 1.15);
+  const markWidth = Math.round(markHeight * (420 / 159));
+
   return (
     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-      <div
-        style={{
-          display: 'flex',
-          fontFamily: FONT.script,
-          fontSize: size,
-          color,
-          paddingBottom: 6,
-        }}
-      >
-        Townies
-      </div>
+      {mark ? (
+        <img
+          src={mark}
+          width={markWidth}
+          height={markHeight}
+          style={{ objectFit: 'contain', opacity: 0.72 }}
+          alt=""
+        />
+      ) : (
+        <div
+          style={{
+            display: 'flex',
+            fontFamily: FONT.script,
+            fontSize: size,
+            color,
+            paddingBottom: 6,
+          }}
+        >
+          Townies
+        </div>
+      )}
       <div
         style={{
           display: 'flex',
