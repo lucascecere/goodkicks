@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { BrandFooter, Label } from '@/components/studio/primitives';
 import { CANVAS, defineTemplate, type FieldDef } from '@/lib/studio/types';
 import { BRAND, FONT, TRACK, fitText } from '@/lib/studio/design';
-import { pawMark } from '@/lib/studio/marks';
+import { pawMark, pinePattern } from '@/lib/studio/marks';
 
 const schema = z.object({
   eyebrow: z.string(),
@@ -41,6 +41,8 @@ const schema = z.object({
 
   showPaw: z.boolean(),
   markOpacity: z.number(),
+  bgColor: z.string(),
+  showPattern: z.boolean(),
   brandAccent: z.string(),
   vsLabel: z.string(),
   prompt: z.string(),
@@ -72,10 +74,15 @@ const fields: FieldDef[] = [
 
   { key: 'showPaw', label: 'Paw watermark (when no logo set)', type: 'toggle', group: 'Look' },
   { key: 'markOpacity', label: 'Watermark opacity %', type: 'number', min: 0, max: 100, step: 5, group: 'Look' },
-  { key: 'brandAccent', label: 'Townies accent', type: 'select', group: 'Look', options: [
+  { key: 'bgColor', label: 'Background', type: 'select', group: 'Look', options: [
     { value: '#2F4F3A', label: 'Forest green (brand)' },
+    { value: '#0D1B2A', label: 'Navy' },
+  ] },
+  { key: 'showPattern', label: 'Pine pattern overlay', type: 'toggle', group: 'Look' },
+  { key: 'brandAccent', label: 'Chip & badge color', type: 'select', group: 'Look', options: [
+    { value: '#0D1B2A', label: 'Navy' },
+    { value: '#2F4F3A', label: 'Forest green' },
     { value: '#F2EFE8', label: 'Cream' },
-    { value: '#FFB81C', label: 'Gold' },
   ] },
   { key: 'vsLabel', label: 'Center badge', type: 'text', group: 'Footer' },
   { key: 'prompt', label: 'Prompt', type: 'text', group: 'Footer', help: 'The ask. A rivalry post lives or dies on people replying.' },
@@ -107,11 +114,13 @@ const mock: Props = {
   rightImage: `${SHOPIFY}/wey-2-front.png?width=900`,
   rightColor: '#581D25',
   rightAccent: '#BF8F37',
-  rightMark: '',
+  rightMark: '/brand/schools/weymouth-wildcats.png',
 
   showPaw: true,
-  markOpacity: 18,
-  brandAccent: BRAND.forest,
+  markOpacity: 24,
+  bgColor: BRAND.forest,
+  showPattern: true,
+  brandAccent: BRAND.navy,
   vsLabel: 'VS',
   prompt: 'Pick a side.',
   promptSub: 'Drop your town in the comments',
@@ -133,7 +142,8 @@ const TOWN_STEPS = [
 ];
 
 const PAW = 150;
-const MARK = 168;
+const MARK_W = 200;
+const MARK_H = STRIP_H - 12;
 
 function Side({
   town,
@@ -202,12 +212,12 @@ function Side({
         {mark ? (
           <img
             src={mark}
-            width={MARK}
-            height={MARK}
+            width={MARK_W}
+            height={MARK_H}
             style={{
               position: 'absolute',
-              left: (CARD_W - MARK) / 2,
-              top: (STRIP_H - 12 - MARK) / 2,
+              left: (CARD_W - MARK_W) / 2,
+              top: 0,
               objectFit: 'contain',
               // Opacity on the element, not baked into the file — this is
               // someone else's artwork and we don't get to edit its alpha.
@@ -281,6 +291,11 @@ export const rivalryTemplate = defineTemplate<Props>({
     // White at low alpha sits correctly over both the red and the maroon,
     // where a fixed tint would go muddy on one of them.
     const paw = p.showPaw ? pawMark('rgba(255,255,255,0.17)') : undefined;
+    // Faint white trees over the green. Alpha is baked into the fill rather
+    // than set with `opacity`, so the whole pattern is one flat image.
+    const pattern = p.showPattern
+      ? pinePattern(CANVAS.portrait.width, CANVAS.portrait.height, 'rgba(255,255,255,0.055)')
+      : undefined;
 
     return (
     <div
@@ -290,10 +305,19 @@ export const rivalryTemplate = defineTemplate<Props>({
         flexDirection: 'column',
         width: CANVAS.portrait.width,
         height: CANVAS.portrait.height,
-        backgroundColor: BRAND.navy,
+        backgroundColor: p.bgColor,
         padding: PAD,
       }}
     >
+      {pattern ? (
+        <img
+          src={pattern}
+          width={CANVAS.portrait.width}
+          height={CANVAS.portrait.height}
+          style={{ position: 'absolute', top: 0, left: 0 }}
+          alt=""
+        />
+      ) : null}
       {/* Header */}
       <div style={{ display: 'flex' }}>
         <div
