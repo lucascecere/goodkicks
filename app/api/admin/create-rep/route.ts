@@ -9,7 +9,7 @@ import { isAdminAuthed } from '@/lib/reps/server';
 //
 // POST { brand, name, email, instagram, town?, school?, hatDelivered?, age?, notes? }
 export async function POST(req: NextRequest) {
-  if (!isAdminAuthed(req)) {
+  if (!(await isAdminAuthed(req))) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

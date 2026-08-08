@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { isAdminSession } from '@/lib/admin/require-admin';
 
-function isAuthed(req: NextRequest) {
-  const cookie = req.cookies.get('gk_admin')?.value;
-  return cookie === process.env.ADMIN_PASSWORD;
-}
 
 export async function POST(req: NextRequest) {
-  if (!isAuthed(req)) {
+  if (!(await isAdminSession())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  SESSION_COOKIE,
+  SESSION_MAX_AGE_SECONDS,
+  createSessionToken,
+} from '@/lib/admin/session';
 
-const COOKIE = 'gk_admin';
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
@@ -13,11 +17,13 @@ export async function POST(req: NextRequest) {
   }
 
   const res = NextResponse.json({ ok: true });
-  res.cookies.set(COOKIE, process.env.ADMIN_PASSWORD!, {
+  res.cookies.set(SESSION_COOKIE, await createSessionToken(), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7,
+    // Matches the token's own expiry, so the cookie and the signature
+    // can never disagree about when the session ends.
+    maxAge: SESSION_MAX_AGE_SECONDS,
     path: '/',
   });
   return res;
@@ -25,6 +31,6 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE() {
   const res = NextResponse.json({ ok: true });
-  res.cookies.delete(COOKIE);
+  res.cookies.delete(SESSION_COOKIE);
   return res;
 }

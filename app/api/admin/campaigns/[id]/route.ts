@@ -1,16 +1,12 @@
 import { NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { isAdminSession } from '@/lib/admin/require-admin';
 
-async function checkAuth(): Promise<boolean> {
-  const jar = await cookies();
-  return jar.get('gk_admin')?.value === process.env.ADMIN_PASSWORD;
-}
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Params) {
-  if (!(await checkAuth())) return new Response('Unauthorized', { status: 401 });
+  if (!(await isAdminSession())) return new Response('Unauthorized', { status: 401 });
   const { id } = await params;
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase.from('campaigns').select('*').eq('id', id).single();
@@ -19,7 +15,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 }
 
 export async function PATCH(req: NextRequest, { params }: Params) {
-  if (!(await checkAuth())) return new Response('Unauthorized', { status: 401 });
+  if (!(await isAdminSession())) return new Response('Unauthorized', { status: 401 });
   const { id } = await params;
   const body = await req.json();
   const supabase = createSupabaseServiceClient();
@@ -46,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
-  if (!(await checkAuth())) return new Response('Unauthorized', { status: 401 });
+  if (!(await isAdminSession())) return new Response('Unauthorized', { status: 401 });
   const { id } = await params;
   const supabase = createSupabaseServiceClient();
   const { error } = await supabase.from('campaigns').delete().eq('id', id);

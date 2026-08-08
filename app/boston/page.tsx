@@ -10,7 +10,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: 'Boston — Neighborhood Hats',
   description:
-    'Boston neighborhood town-pride hats from Townies — West Roxbury, Roslindale, and more of the city, corner by corner. Massachusetts apparel, pre-order now.',
+    'Boston neighborhood town-pride hats from Townies — West Roxbury, Roslindale, and more of the city, corner by corner. Massachusetts apparel, in stock and shipping now.',
   alternates: { canonical: '/boston' },
 };
 

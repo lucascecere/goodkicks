@@ -4,15 +4,18 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { sendWelcomeEmail } from '@/lib/email/send-welcome';
 import { sendRepWelcomeEmail } from '@/lib/email/send-rep-welcome';
 import type { RealBrand } from '@/lib/admin/brand';
+import { SESSION_COOKIE, verifySessionToken } from '@/lib/admin/session';
 import { greetingName } from './naming';
 
 /**
  * Admin auth for API routes. `middleware.ts` matches `/((?!_next|api|...))`, so
  * it does NOT cover /api — every admin route must call this itself.
+ *
+ * Async because the cookie is now a signed token verified with Web Crypto,
+ * rather than a plaintext comparison against the password.
  */
-export function isAdminAuthed(req: NextRequest): boolean {
-  const cookie = req.cookies.get('gk_admin')?.value;
-  return Boolean(process.env.ADMIN_PASSWORD) && cookie === process.env.ADMIN_PASSWORD;
+export async function isAdminAuthed(req: NextRequest): Promise<boolean> {
+  return verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
 }
 
 export type RepRecord = {

@@ -1,12 +1,8 @@
 import { NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
 import { Resend } from 'resend';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { isAdminSession } from '@/lib/admin/require-admin';
 
-async function checkAuth(): Promise<boolean> {
-  const jar = await cookies();
-  return jar.get('gk_admin')?.value === process.env.ADMIN_PASSWORD;
-}
 
 function buildText({ headline, bodyText, ctaText, ctaUrl }: {
   headline: string; bodyText: string; ctaText?: string; ctaUrl?: string;
@@ -97,7 +93,7 @@ ${pre}
 type Params = { params: Promise<{ id: string }> };
 
 export async function POST(_req: NextRequest, { params }: Params) {
-  if (!(await checkAuth())) return new Response('Unauthorized', { status: 401 });
+  if (!(await isAdminSession())) return new Response('Unauthorized', { status: 401 });
   const { id } = await params;
 
   const resendKey = process.env.RESEND_API_KEY;

@@ -15,7 +15,7 @@ import {
 // earns. They are separate numbers — the old single `tierPct` meant an 8%
 // commission minted a code giving 8% off.
 export async function POST(req: NextRequest) {
-  if (!isAdminAuthed(req)) {
+  if (!(await isAdminAuthed(req))) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

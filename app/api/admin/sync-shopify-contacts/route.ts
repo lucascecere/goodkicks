@@ -1,59 +1,68 @@
+// Backfill: pull every Shopify order into the contacts list, brand-tagged.
+//
+// The webhook (app/api/webhooks/shopify/orders) handles orders from now on;
+// this covers everything placed before it existed, and doubles as a repair tool
+// if the webhook is ever down. Both write through the same upsertContact, so a
+// contact touched by both routes ends up identical.
+//
+// Safe to run repeatedly — upsert_contact unions sources and brands rather than
+// overwriting them.
+
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
+import { fetchAllOrders, orderBrands, ORDERS_CACHE_TAG } from '@/lib/shopify/orders-source';
+import { isAdminSession } from '@/lib/admin/require-admin';
 
-function isAuthed(req: NextRequest) {
-  const cookie = req.cookies.get('gk_admin')?.value;
-  return cookie === process.env.ADMIN_PASSWORD;
-}
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-type ShopifyOrder = {
-  email?: string;
-  customer?: { first_name?: string; last_name?: string };
-};
-
-async function fetchAllShopifyOrders(): Promise<ShopifyOrder[]> {
-  const token = process.env.SHOPIFY_ADMIN_API_TOKEN;
-  const domain = process.env.SHOPIFY_STORE_DOMAIN;
-  if (!token || !domain) return [];
-
-  const all: ShopifyOrder[] = [];
-  let url: string | null =
-    `https://${domain}/admin/api/2024-10/orders.json?status=any&limit=250&fields=email,customer`;
-
-  while (url) {
-    const response: Response = await fetch(url, {
-      headers: { 'X-Shopify-Access-Token': token },
-      cache: 'no-store',
-    });
-    if (!response.ok) break;
-
-    const json = await response.json() as { orders?: ShopifyOrder[] };
-    all.push(...(json.orders ?? []));
-
-    const link: string = response.headers.get('Link') ?? '';
-    const next: string | null = link.match(/<([^>]+)>;\s*rel="next"/)?.[1] ?? null;
-    url = next;
-  }
-
-  return all;
-}
 
 export async function POST(req: NextRequest) {
-  if (!isAuthed(req)) {
+  if (!(await isAdminSession())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
-  const orders = await fetchAllShopifyOrders();
+  // Orders are cached for 5 minutes for the dashboard's sake. A human pressing
+  // "Sync" expects current data, so drop the cache first. Next 16 requires the
+  // second argument; `expire: 0` means purge now rather than on a schedule.
+  revalidateTag(ORDERS_CACHE_TAG, { expire: 0 });
+
+  // Reuses the shared paginated fetch instead of the bespoke one this route
+  // used to carry. That old fetch requested `fields=email,customer`, which
+  // omitted line_items — so it could never have known the brand.
+  const { orders, truncated } = await fetchAllOrders();
 
   let synced = 0;
+  let skipped = 0;
+  const brandCounts: Record<string, number> = {};
+
   for (const order of orders) {
-    if (!order.email) continue;
-    const name = [order.customer?.first_name, order.customer?.last_name]
-      .filter(Boolean)
-      .join(' ') || undefined;
-    await upsertContact({ email: order.email, name, source: 'order' });
+    if (!order.email) {
+      skipped++;
+      continue;
+    }
+
+    const name =
+      [order.customer?.first_name, order.customer?.last_name].filter(Boolean).join(' ') || undefined;
+
+    // A mixed cart tags the person with both brands — one call each, since the
+    // RPC unions one brand at a time.
+    const brands = orderBrands(order);
+    for (const brand of brands) {
+      await upsertContact({ email: order.email, name, source: 'order', brand });
+      brandCounts[brand] = (brandCounts[brand] ?? 0) + 1;
+    }
     synced++;
   }
 
-  return NextResponse.json({ ok: true, synced });
+  return NextResponse.json({
+    ok: true,
+    synced,
+    skipped,
+    brands: brandCounts,
+    // Surfaced rather than swallowed: fetchAllOrders stops at 20 pages, and a
+    // silently partial backfill would look identical to a complete one.
+    truncated,
+  });
 }

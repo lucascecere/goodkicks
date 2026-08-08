@@ -30,7 +30,7 @@ const ALLOWED = [
 const PERCENT_FIELDS = ['discount_pct', 'commission_pct'] as const;
 
 export async function POST(req: NextRequest) {
-  if (!isAdminAuthed(req)) {
+  if (!(await isAdminAuthed(req))) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

@@ -1,12 +1,8 @@
 import { NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
 import { Resend } from 'resend';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { isAdminSession } from '@/lib/admin/require-admin';
 
-async function checkAuth(): Promise<boolean> {
-  const cookieStore = await cookies();
-  return cookieStore.get('gk_admin')?.value === process.env.ADMIN_PASSWORD;
-}
 
 function buildHtml({
   headline,
@@ -68,7 +64,7 @@ ${preheaderHtml}
 }
 
 export async function POST(req: NextRequest) {
-  if (!(await checkAuth())) return new Response('Unauthorized', { status: 401 });
+  if (!(await isAdminSession())) return new Response('Unauthorized', { status: 401 });
 
   const { subject, preheader, headline, bodyText, ctaText, ctaUrl, sources, emails, customHtml } = await req.json() as {
     subject: string;

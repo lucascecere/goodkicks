@@ -24,6 +24,9 @@ export type ShopifyLineItem = {
 export type ShopifyOrder = {
   id: number;
   name: string;
+  /** Present on most orders; absent for some POS/guest checkouts. */
+  email?: string | null;
+  customer?: { first_name?: string | null; last_name?: string | null } | null;
   total_price: string;
   created_at: string;
   financial_status: string;
@@ -75,6 +78,14 @@ export function brandRevenue(order: ShopifyOrder, brand: RealBrand): number {
   return order.line_items
     .filter((li) => lineBrand(li) === brand)
     .reduce((sum, li) => sum + lineRevenue(li), 0);
+}
+
+/**
+ * Every brand represented in an order — usually one, but a mixed cart returns
+ * both. Used to tag the customer's contact record.
+ */
+export function orderBrands(order: ShopifyOrder): RealBrand[] {
+  return [...new Set(order.line_items.map(lineBrand))];
 }
 
 export type OrdersPage = { orders: ShopifyOrder[]; truncated: boolean };

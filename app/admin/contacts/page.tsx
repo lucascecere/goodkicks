@@ -7,7 +7,7 @@ export default async function AdminContactsPage() {
   const supabase = createSupabaseServiceClient();
   const { data: contacts, error } = await supabase
     .from('contacts')
-    .select('id, email, name, notes, sources, created_at')
+    .select('id, email, name, notes, sources, brands, created_at')
     .order('created_at', { ascending: false });
 
   if (error) {

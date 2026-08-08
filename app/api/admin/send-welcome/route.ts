@@ -6,7 +6,7 @@ import { isAdminAuthed, loadRep, sendWelcomeForRep } from '@/lib/reps/server';
 // Everything is read fresh from the DB so a just-edited email/code is used, not
 // a stale client-side copy.
 export async function POST(req: NextRequest) {
-  if (!isAdminAuthed(req)) {
+  if (!(await isAdminAuthed(req))) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { SESSION_COOKIE, verifySessionToken } from '@/lib/admin/session';
 
 const PUBLIC_FILE = /\.[^/]+$/;
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const host = (req.headers.get('host') ?? '').toLowerCase();
 
-  // 1. Admin auth (unchanged).
+  // 1. Admin auth. The cookie is a signed, self-expiring session token — it no
+  //    longer carries the password itself. Verified with Web Crypto because
+  //    this file runs on the edge runtime, where node:crypto is unavailable.
   if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
-    const token = req.cookies.get('gk_admin')?.value;
-    const secret = process.env.ADMIN_PASSWORD;
-    if (!token || !secret || token !== secret) {
+    const ok = await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
+    if (!ok) {
       return NextResponse.redirect(new URL('/admin/login', req.url));
     }
   }

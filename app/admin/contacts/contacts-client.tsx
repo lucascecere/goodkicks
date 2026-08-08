@@ -9,6 +9,7 @@ export type Contact = {
   name: string | null;
   notes: string | null;
   sources: string[];
+  brands: string[];
   created_at: string;
 };
 
@@ -22,6 +23,16 @@ const SOURCE_BADGE: Record<string, { label: string; cls: string }> = {
 
 const ALL_SOURCES = ['ambassador', 'discount', 'newsletter', 'contact', 'order'];
 
+// Brand tags come from what a person actually ordered (Shopify line-item
+// `_brand`), so they only appear on order-derived contacts. Coloured to match
+// each brand rather than reusing the neutral source-pill grey.
+const BRAND_BADGE: Record<string, { label: string; cls: string }> = {
+  townies: { label: 'Townies', cls: 'bg-[#0D1B2A] text-white' },
+  goodkicks: { label: 'Good Kicks', cls: 'bg-[#C66A3D] text-white' },
+};
+
+const ALL_BRANDS = ['townies', 'goodkicks'];
+
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
@@ -30,6 +41,7 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
   const [contacts, setContacts] = useState<Contact[]>(initialContacts);
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
+  const [brandFilter, setBrandFilter] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editFields, setEditFields] = useState<{ name: string; email: string; notes: string }>({ name: '', email: '', notes: '' });
   const [saving, setSaving] = useState(false);
@@ -39,6 +51,7 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
   const filtered = useMemo(() => {
     return contacts.filter((c) => {
       if (sourceFilter && !c.sources.includes(sourceFilter)) return false;
+      if (brandFilter && !(c.brands ?? []).includes(brandFilter)) return false;
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -49,7 +62,13 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
       }
       return true;
     });
-  }, [contacts, search, sourceFilter]);
+  }, [contacts, search, sourceFilter, brandFilter]);
+
+  const brandCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    contacts.forEach((c) => (c.brands ?? []).forEach((b) => { counts[b] = (counts[b] ?? 0) + 1; }));
+    return counts;
+  }, [contacts]);
 
   const sourceCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -147,6 +166,19 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
             }`}
           >
             {s} ({sourceCounts[s]})
+          </button>
+        ))}
+        {ALL_BRANDS.filter((b) => brandCounts[b]).map((b) => (
+          <button
+            key={b}
+            onClick={() => setBrandFilter(brandFilter === b ? null : b)}
+            className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+              brandFilter === b
+                ? 'bg-white text-brand-ink'
+                : `${BRAND_BADGE[b].cls} opacity-70 hover:opacity-100`
+            }`}
+          >
+            {BRAND_BADGE[b].label} ({brandCounts[b]})
           </button>
         ))}
       </div>
@@ -253,6 +285,14 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
                           const badge = SOURCE_BADGE[s] ?? { label: s, cls: 'bg-gray-100 text-gray-500' };
                           return (
                             <span key={s} className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
+                              {badge.label}
+                            </span>
+                          );
+                        })}
+                        {(contact.brands ?? []).map((b) => {
+                          const badge = BRAND_BADGE[b] ?? { label: b, cls: 'bg-gray-100 text-gray-500' };
+                          return (
+                            <span key={b} className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
                               {badge.label}
                             </span>
                           );
