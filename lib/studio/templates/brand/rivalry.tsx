@@ -18,6 +18,7 @@ import { z } from 'zod';
 import { BrandFooter, Label } from '@/components/studio/primitives';
 import { CANVAS, defineTemplate, type FieldDef } from '@/lib/studio/types';
 import { BRAND, FONT, TRACK, fitText } from '@/lib/studio/design';
+import { pawMark } from '@/lib/studio/marks';
 
 const schema = z.object({
   eyebrow: z.string(),
@@ -36,6 +37,8 @@ const schema = z.object({
   rightColor: z.string(),
   rightAccent: z.string(),
 
+  showPaw: z.boolean(),
+  brandAccent: z.string(),
   vsLabel: z.string(),
   prompt: z.string(),
   promptSub: z.string(),
@@ -62,6 +65,12 @@ const fields: FieldDef[] = [
   { key: 'rightColor', label: 'Right — panel color', type: 'color', group: 'Right side' },
   { key: 'rightAccent', label: 'Right — accent bar', type: 'color', group: 'Right side' },
 
+  { key: 'showPaw', label: 'Paw watermark', type: 'toggle', group: 'Look' },
+  { key: 'brandAccent', label: 'Townies accent', type: 'select', group: 'Look', options: [
+    { value: '#2F4F3A', label: 'Forest green (brand)' },
+    { value: '#F2EFE8', label: 'Cream' },
+    { value: '#FFB81C', label: 'Gold' },
+  ] },
   { key: 'vsLabel', label: 'Center badge', type: 'text', group: 'Footer' },
   { key: 'prompt', label: 'Prompt', type: 'text', group: 'Footer', help: 'The ask. A rivalry post lives or dies on people replying.' },
   { key: 'promptSub', label: 'Prompt sub-line', type: 'text', group: 'Footer' },
@@ -92,6 +101,8 @@ const mock: Props = {
   rightColor: '#581D25',
   rightAccent: '#BF8F37',
 
+  showPaw: true,
+  brandAccent: BRAND.forest,
   vsLabel: 'VS',
   prompt: 'Pick a side.',
   promptSub: 'Drop your town in the comments',
@@ -100,8 +111,8 @@ const mock: Props = {
 };
 
 const CARD_W = 464;
-const PHOTO_H = 440;
-const STRIP_H = 152;
+const PHOTO_H = 408;
+const STRIP_H = 184;
 const CARD_H = PHOTO_H + STRIP_H;
 const BADGE = 108;
 const PAD = 56;
@@ -112,18 +123,22 @@ const TOWN_STEPS = [
   { max: 13, size: 38 },
 ];
 
+const PAW = 150;
+
 function Side({
   town,
   sub,
   image,
   color,
   accent,
+  paw,
 }: {
   town: string;
   sub: string;
   image?: string;
   color: string;
   accent: string;
+  paw?: string;
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: CARD_W }}>
@@ -156,6 +171,7 @@ function Side({
 
       <div
         style={{
+          position: 'relative',
           display: 'flex',
           flexDirection: 'column',
           width: CARD_W,
@@ -163,8 +179,26 @@ function Side({
           backgroundColor: color,
           alignItems: 'center',
           justifyContent: 'center',
+          overflow: 'hidden',
         }}
       >
+        {/* Watermark. Drawn before the type so the type paints over it, and
+            kept faint enough that it reads as texture rather than a logo
+            competing with the town name. */}
+        {paw ? (
+          <img
+            src={paw}
+            width={PAW}
+            height={PAW}
+            style={{
+              position: 'absolute',
+              left: (CARD_W - PAW) / 2,
+              top: (STRIP_H - 12 - PAW) / 2,
+            }}
+            alt=""
+          />
+        ) : null}
+
         <div
           style={{
             display: 'flex',
@@ -213,7 +247,12 @@ export const rivalryTemplate = defineTemplate<Props>({
       .filter(Boolean)
       .join('\n'),
 
-  render: (p, ctx) => (
+  render: (p, ctx) => {
+    // White at low alpha sits correctly over both the red and the maroon,
+    // where a fixed tint would go muddy on one of them.
+    const paw = p.showPaw ? pawMark('rgba(255,255,255,0.17)') : undefined;
+
+    return (
     <div
       style={{
         position: 'relative',
@@ -234,7 +273,9 @@ export const rivalryTemplate = defineTemplate<Props>({
             paddingRight: 20,
             paddingTop: 9,
             paddingBottom: 9,
-            backgroundColor: BRAND.cream,
+            // Townies green, not cream: the chrome should read as the brand
+            // speaking, while red and maroon stay the towns' own voices.
+            backgroundColor: p.brandAccent,
           }}
         >
           <div
@@ -245,7 +286,7 @@ export const rivalryTemplate = defineTemplate<Props>({
               fontSize: 22,
               letterSpacing: TRACK.wider,
               textTransform: 'uppercase',
-              color: BRAND.navy,
+              color: BRAND.cream,
             }}
           >
             {p.eyebrow}
@@ -288,7 +329,7 @@ export const rivalryTemplate = defineTemplate<Props>({
           flexDirection: 'row',
           justifyContent: 'space-between',
           width: CANVAS.portrait.width - PAD * 2,
-          marginTop: 44,
+          marginTop: 46,
         }}
       >
         <Side
@@ -297,6 +338,7 @@ export const rivalryTemplate = defineTemplate<Props>({
           image={ctx.img(p.leftImage)}
           color={p.leftColor}
           accent={p.leftAccent}
+          paw={paw}
         />
         <Side
           town={p.rightTown}
@@ -304,6 +346,7 @@ export const rivalryTemplate = defineTemplate<Props>({
           image={ctx.img(p.rightImage)}
           color={p.rightColor}
           accent={p.rightAccent}
+          paw={paw}
         />
 
         <div
@@ -317,7 +360,7 @@ export const rivalryTemplate = defineTemplate<Props>({
             width: BADGE,
             height: BADGE,
             borderRadius: BADGE / 2,
-            backgroundColor: BRAND.navy,
+            backgroundColor: p.brandAccent,
             border: `4px solid ${BRAND.cream}`,
           }}
         >
@@ -410,5 +453,6 @@ export const rivalryTemplate = defineTemplate<Props>({
         </div>
       </div>
     </div>
-  ),
+    );
+  },
 });
