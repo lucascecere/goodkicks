@@ -30,14 +30,17 @@ const schema = z.object({
   leftImage: z.string(),
   leftColor: z.string(),
   leftAccent: z.string(),
+  leftMark: z.string(),
 
   rightTown: z.string(),
   rightSub: z.string(),
   rightImage: z.string(),
   rightColor: z.string(),
   rightAccent: z.string(),
+  rightMark: z.string(),
 
   showPaw: z.boolean(),
+  markOpacity: z.number(),
   brandAccent: z.string(),
   vsLabel: z.string(),
   prompt: z.string(),
@@ -58,14 +61,17 @@ const fields: FieldDef[] = [
   { key: 'leftImage', label: 'Left — product photo', type: 'image', group: 'Left side', help: 'Shopify CDN URL. Add ?width=900 — the full-size files are 4MB+.' },
   { key: 'leftColor', label: 'Left — panel color', type: 'color', group: 'Left side' },
   { key: 'leftAccent', label: 'Left — accent bar', type: 'color', group: 'Left side' },
+  { key: 'leftMark', label: 'Left — watermark logo', type: 'image', group: 'Left side', help: 'Transparent PNG. Leave blank to use the generic paw.' },
 
   { key: 'rightTown', label: 'Right — town', type: 'text', group: 'Right side' },
   { key: 'rightSub', label: 'Right — mascot', type: 'text', group: 'Right side' },
   { key: 'rightImage', label: 'Right — product photo', type: 'image', group: 'Right side' },
   { key: 'rightColor', label: 'Right — panel color', type: 'color', group: 'Right side' },
   { key: 'rightAccent', label: 'Right — accent bar', type: 'color', group: 'Right side' },
+  { key: 'rightMark', label: 'Right — watermark logo', type: 'image', group: 'Right side', help: 'Transparent PNG. Leave blank to use the generic paw.' },
 
-  { key: 'showPaw', label: 'Paw watermark', type: 'toggle', group: 'Look' },
+  { key: 'showPaw', label: 'Paw watermark (when no logo set)', type: 'toggle', group: 'Look' },
+  { key: 'markOpacity', label: 'Watermark opacity %', type: 'number', min: 0, max: 100, step: 5, group: 'Look' },
   { key: 'brandAccent', label: 'Townies accent', type: 'select', group: 'Look', options: [
     { value: '#2F4F3A', label: 'Forest green (brand)' },
     { value: '#F2EFE8', label: 'Cream' },
@@ -85,29 +91,32 @@ const SHOPIFY = 'https://cdn.shopify.com/s/files/1/0762/1358/4027/files';
  * by eye — so the panels match the thread rather than approximating it.
  */
 const mock: Props = {
-  eyebrow: 'Townie rivalry',
+  eyebrow: 'South Shore',
   headlineTop: 'Same mascot.',
-  headlineBottom: 'Different sides.',
+  headlineBottom: 'Forever rivalry.',
 
   leftTown: 'Milton',
   leftSub: 'Wildcats',
   leftImage: `${SHOPIFY}/mil-2-front.png?width=900`,
   leftColor: '#A82222',
   leftAccent: '#111111',
+  leftMark: '',
 
   rightTown: 'Weymouth',
   rightSub: 'Wildcats',
   rightImage: `${SHOPIFY}/wey-2-front.png?width=900`,
   rightColor: '#581D25',
   rightAccent: '#BF8F37',
+  rightMark: '',
 
   showPaw: true,
+  markOpacity: 18,
   brandAccent: BRAND.forest,
   vsLabel: 'VS',
   prompt: 'Pick a side.',
   promptSub: 'Drop your town in the comments',
   footnote: 'Both in stock',
-  cta: 'townies.shop',
+  cta: 'www.townies.shop',
 };
 
 const CARD_W = 464;
@@ -124,6 +133,7 @@ const TOWN_STEPS = [
 ];
 
 const PAW = 150;
+const MARK = 168;
 
 function Side({
   town,
@@ -132,6 +142,8 @@ function Side({
   color,
   accent,
   paw,
+  mark,
+  markOpacity,
 }: {
   town: string;
   sub: string;
@@ -139,6 +151,8 @@ function Side({
   color: string;
   accent: string;
   paw?: string;
+  mark?: string;
+  markOpacity: number;
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', width: CARD_W }}>
@@ -185,7 +199,23 @@ function Side({
         {/* Watermark. Drawn before the type so the type paints over it, and
             kept faint enough that it reads as texture rather than a logo
             competing with the town name. */}
-        {paw ? (
+        {mark ? (
+          <img
+            src={mark}
+            width={MARK}
+            height={MARK}
+            style={{
+              position: 'absolute',
+              left: (CARD_W - MARK) / 2,
+              top: (STRIP_H - 12 - MARK) / 2,
+              objectFit: 'contain',
+              // Opacity on the element, not baked into the file — this is
+              // someone else's artwork and we don't get to edit its alpha.
+              opacity: markOpacity / 100,
+            }}
+            alt=""
+          />
+        ) : paw ? (
           <img
             src={paw}
             width={PAW}
@@ -339,6 +369,8 @@ export const rivalryTemplate = defineTemplate<Props>({
           color={p.leftColor}
           accent={p.leftAccent}
           paw={paw}
+          mark={ctx.img(p.leftMark)}
+          markOpacity={p.markOpacity}
         />
         <Side
           town={p.rightTown}
@@ -347,6 +379,8 @@ export const rivalryTemplate = defineTemplate<Props>({
           color={p.rightColor}
           accent={p.rightAccent}
           paw={paw}
+          mark={ctx.img(p.rightMark)}
+          markOpacity={p.markOpacity}
         />
 
         <div
