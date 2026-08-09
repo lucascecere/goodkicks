@@ -15,6 +15,7 @@ export function EditorialSplit({
   imageSrc,
   imageAlt,
   imageLabel,
+  imageFit,
   reverse = false,
   tone = 'forest',
 }: {
@@ -25,6 +26,7 @@ export function EditorialSplit({
   imageSrc?: string | null;
   imageAlt: string;
   imageLabel?: string;
+  imageFit?: 'cover' | 'contain';
   reverse?: boolean;
   tone?: 'cream' | 'navy' | 'forest' | 'stone';
 }) {
@@ -37,6 +39,7 @@ export function EditorialSplit({
             alt={imageAlt}
             label={imageLabel}
             tone={tone}
+            fit={imageFit}
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>

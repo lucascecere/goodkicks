@@ -37,6 +37,7 @@ export function BrandImage({
   className,
   tone = 'cream',
   label,
+  fit = 'cover',
 }: {
   src?: string | null;
   alt: string;
@@ -44,6 +45,13 @@ export function BrandImage({
   priority?: boolean;
   className?: string;
   tone?: Tone;
+  /**
+   * An explicit prop rather than a className override: `cn` here is a naive
+   * join, so passing "object-contain" would emit both classes and leave the
+   * winner up to stylesheet order. Product shots on a flat backdrop want
+   * contain; photography wants cover.
+   */
+  fit?: 'cover' | 'contain';
   /** Optional caption shown on the placeholder only (e.g. the town name). */
   label?: string;
 }) {
@@ -55,7 +63,7 @@ export function BrandImage({
         fill
         sizes={sizes ?? '100vw'}
         priority={priority}
-        className={cn('object-cover', className)}
+        className={cn(fit === 'contain' ? 'object-contain' : 'object-cover', className)}
       />
     );
   }

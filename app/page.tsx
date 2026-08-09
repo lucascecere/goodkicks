@@ -83,8 +83,8 @@ export default async function HomePage() {
         headline="South Shore 'til I die."
         body="Milton. Weymouth. Hingham. Braintree. The towns we actually know — off the line first. These are the streets, the packies, the fields, the exits you'd never let anyone talk down. Every drop is one town done right: stitched heavy, worn-in from day one, built to outlast the season. Down here we don't do disposable."
         cta={{ href: '/shop', label: 'shop the towns' }}
-        imageSrc="/brand/lifestyle/split-harbor.jpg"
-        imageAlt="Scituate Harbor, Massachusetts"
+        imageSrc="/brand/lifestyle/hero.jpg"
+        imageAlt="Scituate Light on the South Shore of Massachusetts"
         imageLabel="South Shore"
         reverse
         tone="navy"

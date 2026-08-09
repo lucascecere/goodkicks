@@ -43,10 +43,10 @@ export default function AboutPage() {
         headline="Town first. Always."
         body="No loud logos. No 'Massachusetts' slapped across your chest like you're passing through. Just where you're from, set in clean collegiate type on heavyweight pieces you'll wear 'til they fall apart. The MA mark stays small — the quiet thread tying every town together."
         cta={{ href: '/shop', label: 'see the towns' }}
-        imageSrc="/brand/lifestyle/town-hingham.jpg"
-        imageAlt="Hingham, Massachusetts town center"
+        imageSrc="/brand/product/mil-turn25.jpg"
+        imageAlt="Milton snapback showing the arched wordmark and the 1640 side embroidery"
         imageLabel="Townies"
-        tone="forest"
+        tone="cream"
       />
 
       <EditorialSplit
@@ -54,7 +54,9 @@ export default function AboutPage() {
         headline="Good Kicks taught us how."
         body="Before Townies there was Good Kicks — hand-stitched foot bags built to keep the circle going. Small, scrappy, and it taught us how to make something people actually keep instead of toss. Good Kicks is still kicking, a live line of its own — and Townies is what grew out of it."
         cta={{ href: '/goodkicks', label: 'shop good kicks' }}
-        imageAlt="Good Kicks foot bags"
+        imageSrc="/brand/product/gk-sack-massachusetts.jpg"
+        imageFit="contain"
+        imageAlt="Good Kicks hand-stitched Massachusetts foot bag"
         imageLabel="Good Kicks"
         reverse
         tone="cream"
