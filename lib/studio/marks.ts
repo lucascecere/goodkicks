@@ -38,43 +38,51 @@ export function pawMark(fill: string): string {
 }
 
 /**
- * The brand pine pattern, tiled to fill a canvas.
+ * The brand pine pattern.
  *
- * Path and tile arrangement are lifted verbatim from
- * public/brand/patterns/pine-*.svg so this is the same pattern the site uses,
- * not a lookalike.
+ * A REGULAR staggered grid: uniform tree size, even spacing, alternate rows
+ * offset by half a column. That is what the pine swatch on the brand sheet
+ * actually shows.
  *
- * Generated as ONE canvas-sized SVG with every tree placed explicitly, rather
- * than a 300x300 tile repeated via CSS: Satori cannot use an SVG as a
- * background-image at all, and relying on <pattern> would put the outcome at
- * the mercy of the SVG rasteriser. Explicit <use> elements always render.
+ * Note this deliberately does NOT reproduce
+ * public/brand/patterns/pine-white.svg, which scatters eight trees at scales
+ * from 0.44 to 0.72 in irregular positions. That file disagrees with the brand
+ * sheet — trees collide and the rhythm reads as noise. The sheet wins.
+ *
+ * Generated as one canvas-sized SVG with every tree placed explicitly: Satori
+ * cannot use an SVG as a background-image at all, so CSS tiling is not an
+ * option, and <pattern> support depends on the rasteriser.
  */
-export function pinePattern(width: number, height: number, fill: string): string {
-  const TILE = 300;
-  // x, y, scale — the brand tile's own arrangement.
-  const TREES: [number, number, number][] = [
-    [60, 70, 0.7],
-    [170, 55, 0.52],
-    [255, 95, 0.6],
-    [40, 200, 0.56],
-    [130, 205, 0.72],
-    [235, 215, 0.54],
-    [90, 135, 0.44],
-    [205, 150, 0.48],
-  ];
+export function pinePattern(
+  width: number,
+  height: number,
+  fill: string,
+  /** Tree height in px. Defaults to a density that suits a 1080-tall canvas. */
+  treeHeight?: number
+): string {
+  // The path spans x 8..92 and y 4..138, so its drawn box is 84 x 134.
+  const PATH_W = 84;
+  const PATH_H = 134;
+
+  const treeH = treeHeight ?? Math.max(34, Math.round(height * 0.076));
+  const treeW = (treeH * PATH_W) / PATH_H;
+  const scale = treeH / PATH_H;
+
+  // Gaps chosen so neighbours never touch, in either direction, including
+  // across the half-column offset of the staggered rows.
+  const colStep = treeW * 1.85;
+  const rowStep = treeH * 1.32;
 
   const uses: string[] = [];
-  for (let ty = 0; ty * TILE < height; ty++) {
-    for (let tx = 0; tx * TILE < width; tx++) {
-      for (const [x, y, scale] of TREES) {
-        const px = tx * TILE + x;
-        const py = ty * TILE + y;
-        // The tree's own centre is (50, 70) in path space, so it is pulled back
-        // by that point scaled — exactly what the brand file does.
-        uses.push(
-          `<use href="#pine" transform="translate(${px} ${py}) translate(${-50 * scale} ${-70 * scale}) scale(${scale})"/>`
-        );
-      }
+  let row = 0;
+  for (let y = -rowStep; y < height + rowStep; y += rowStep, row++) {
+    const offset = row % 2 === 0 ? 0 : colStep / 2;
+    for (let x = -colStep + offset; x < width + colStep; x += colStep) {
+      // Path coordinates start at x=8, y=4, so pull those back to sit the
+      // drawn shape exactly on the grid point.
+      uses.push(
+        `<use href="#pine" transform="translate(${(x - 8 * scale).toFixed(1)} ${(y - 4 * scale).toFixed(1)}) scale(${scale.toFixed(4)})"/>`
+      );
     }
   }
 

@@ -116,8 +116,10 @@ function makeCover(
             />
           ) : null}
 
-          {/* The state sits off to one side rather than dead centre so it reads
-              as a mark the composition is built around, not a background fill. */}
+          {/* Centred on the canvas, because the copy above it is centred — an
+              off-centre silhouette behind centred type reads as a mistake. On
+              the wide banners it still sits mid-canvas, between the wordmark
+              and the copy, where it decorates without colliding. */}
           {state ? (
             <img
               src={state}
@@ -128,9 +130,7 @@ function makeCover(
               // on an undefined value, with an error that names no element.
               style={{
                 position: 'absolute',
-                ...(wide
-                  ? { left: Math.round(width * 0.36) }
-                  : { right: Math.round(width * 0.05) }),
+                left: Math.round((width - stateW) / 2),
                 top: Math.round((height - stateH) / 2),
                 objectFit: 'contain',
               }}
