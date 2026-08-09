@@ -13,6 +13,11 @@ import { townSpotlightTemplate } from './templates/town/spotlight';
 import { dropTemplate } from './templates/brand/drop';
 import { newTownTemplate } from './templates/brand/new-town';
 import { rivalryTemplate } from './templates/brand/rivalry';
+import {
+  coverShopifyTemplate,
+  coverLinkedInTemplate,
+  coverLinkedInProfileTemplate,
+} from './templates/brand/cover';
 import { CATEGORY_ORDER, type AnyTemplate, type TemplateCategory } from './types';
 
 // Order within a category is the order the gallery shows them in.
@@ -26,6 +31,9 @@ const ALL: AnyTemplate[] = [
   dropTemplate,
   newTownTemplate,
   rivalryTemplate,
+  coverShopifyTemplate,
+  coverLinkedInTemplate,
+  coverLinkedInProfileTemplate,
 ];
 
 export const TEMPLATES: Record<string, AnyTemplate> = Object.fromEntries(
