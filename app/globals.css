@@ -108,6 +108,20 @@
     overflow-wrap: break-word;
     max-width: 65ch;
   }
+
+  /*
+   * The 65ch cap above makes a <p> narrower than its container, and a block
+   * box with a max-width sits hard against the left edge. In a centred block
+   * that reads as badly-off-centre text even though text-align is correct —
+   * it was throwing hero eyebrows up to 356px left of centre.
+   *
+   * Scoped to explicit .text-center parents so left-aligned body copy still
+   * hugs the left, which is what the cap is for.
+   */
+  .text-center > p {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .prose-content h2 {

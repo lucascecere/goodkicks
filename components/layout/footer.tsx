@@ -143,22 +143,22 @@ export function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10 px-4 sm:px-8 py-5">
-        <div className="max-w-7xl mx-auto flex flex-col items-center gap-2 sm:flex-row sm:justify-between text-xs text-town-cream/40">
-          <p className="flex items-center gap-2">
-            <MaMark className="h-3 w-auto text-town-cream/40" />
-            Massachusetts · © {year} Townies Apparel Co.
-          </p>
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-3 sm:flex-row sm:justify-between text-xs text-town-cream/40">
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+            <p className="flex items-center gap-2">
+              <MaMark className="h-3 w-auto text-town-cream/40" />
+              Massachusetts · © {year} Townies Apparel Co.
+            </p>
+            <a
+              href="https://www.yourwebsitefriend.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center rounded border border-white/15 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.16em] text-town-cream/40 hover:text-white hover:border-white/35 transition-colors"
+            >
+              Managed by Your Website Friend
+            </a>
+          </div>
           <SocialLinks />
-        </div>
-        <div className="max-w-7xl mx-auto flex justify-center sm:justify-end mt-4">
-          <a
-            href="https://www.yourwebsitefriend.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded border border-white/15 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.16em] text-town-cream/40 hover:text-white hover:border-white/35 transition-colors"
-          >
-            Managed by Your Website Friend
-          </a>
         </div>
       </div>
     </footer>
