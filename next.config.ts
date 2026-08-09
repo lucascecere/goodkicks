@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/partners', destination: '/ambassadors', permanent: true },
+      // Contact is split into support / request-a-town / wholesale / ambassadors.
+      { source: '/contact', destination: '/support', permanent: true },
     ];
   },
   images: {

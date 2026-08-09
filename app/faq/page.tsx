@@ -84,7 +84,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
         We&apos;re working our way across the map one town at a time — South Shore first, then
         Boston&apos;s neighborhoods and Southeastern Mass, and outward from there. Tell us which
         town to do next on the{' '}
-        <Link href="/contact" className="underline underline-offset-2 hover:text-town-forest">
+        <Link href="/support" className="underline underline-offset-2 hover:text-town-forest">
           request-a-town form
         </Link>{' '}
         or get on the{' '}
@@ -100,7 +100,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <>
         We do — teams, shops, reunions, whatever. Hit us through the wholesale option on the{' '}
-        <Link href="/contact" className="underline underline-offset-2 hover:text-town-forest">
+        <Link href="/support" className="underline underline-offset-2 hover:text-town-forest">
           contact page
         </Link>{' '}
         and we&apos;ll figure it out.
@@ -151,7 +151,7 @@ export default function FAQPage() {
         </h1>
         <p className="text-town-muted max-w-xl mb-14 leading-relaxed">
           The stuff people ask most. Still stuck?{' '}
-          <Link href="/contact" className="underline underline-offset-2 hover:text-town-forest">
+          <Link href="/support" className="underline underline-offset-2 hover:text-town-forest">
             Holler at us
           </Link>
           .

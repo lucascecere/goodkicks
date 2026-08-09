@@ -33,12 +33,25 @@ const townRequestSchema = z.object({
   message: z.string().optional(),
 });
 
+/**
+ * Wholesale asks for a lot more than the other forms: a stockist enquiry that
+ * arrives without location, volume or timeline needs a round-trip email before
+ * it can even be qualified. Everything beyond the original four fields is
+ * optional so a keen buyer is never blocked by a form.
+ */
 const wholesaleSchema = z.object({
   type: z.literal('wholesale'),
   brand,
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Valid email is required'),
   company: z.string().min(1, 'Company / shop name is required'),
+  phone: z.string().optional(),
+  website: z.string().optional(),
+  businessType: z.string().optional(),
+  location: z.string().optional(),
+  quantity: z.string().optional(),
+  timeline: z.string().optional(),
+  towns: z.string().optional(),
   message: z.string().min(10, 'Message must be at least 10 characters'),
 });
 
@@ -82,12 +95,37 @@ export async function POST(request: Request) {
 
     const data = result.data;
 
+    // The longer wholesale fields have no columns of their own. Rather than
+    // migrate contact_submissions for a low-volume form, the structured detail
+    // is appended to the message so nothing a buyer typed is ever dropped.
+    const wholesaleDetail =
+      data.type === 'wholesale'
+        ? [
+            data.businessType && `Business type: ${data.businessType}`,
+            data.location && `Location: ${data.location}`,
+            data.website && `Website: ${data.website}`,
+            data.phone && `Phone: ${data.phone}`,
+            data.quantity && `Estimated first order: ${data.quantity}`,
+            data.timeline && `Timeline: ${data.timeline}`,
+            data.towns && `Towns of interest: ${data.towns}`,
+          ].filter(Boolean)
+        : [];
+
     const message =
-      'message' in data && data.message
-        ? data.message
+      data.type === 'wholesale'
+        ? [data.message, wholesaleDetail.length ? `\n— Details —` : '', ...wholesaleDetail]
+            .filter(Boolean)
+            .join('\n')
         : data.type === 'town_request'
-          ? `Town request: ${data.town}`
-          : '';
+          ? // ALWAYS lead with the town. contact_submissions has no `town`
+            // column, so insertSubmission strips it on retry — and the old
+            // fallback only embedded it when the message was empty, which
+            // silently lost the town on any request that had a note attached.
+            // The town is the entire point of this form.
+            [`Town: ${data.town}`, data.message].filter(Boolean).join('\n\n')
+          : 'message' in data && data.message
+            ? data.message
+            : '';
     const groupName =
       data.type === 'partnership' ? data.groupName : data.type === 'wholesale' ? data.company : null;
     const town = data.type === 'town_request' ? data.town : null;

@@ -34,7 +34,7 @@ export function ComingSoonRegion({
             Shop what&apos;s live
           </Link>
           <Link
-            href="/contact"
+            href="/request-a-town"
             className="text-sm lowercase tracking-wide text-town-cream/90 underline underline-offset-4 hover:text-white transition-colors"
           >
             request your town

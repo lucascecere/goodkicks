@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils';
 // coming-soon pages until those drops land.
 const navLinks = [
   { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Get in Touch' },
+  { href: '/support', label: 'Support' },
   { href: '/shop', label: 'Shop' },
 ];
 

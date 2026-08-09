@@ -74,7 +74,7 @@ export default function PrivacyPage() {
             <h2 className="font-block uppercase text-xl sm:text-2xl text-town-navy mb-3">Contact</h2>
             <p className="text-town-muted leading-relaxed">
               Questions about privacy or these terms? Reach us on the{' '}
-              <Link href="/contact" className="text-town-forest underline underline-offset-4 hover:text-town-navy transition-colors">
+              <Link href="/support" className="text-town-forest underline underline-offset-4 hover:text-town-navy transition-colors">
                 contact page
               </Link>.
             </p>

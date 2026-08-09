@@ -17,8 +17,9 @@ const shopByLinks = [
 
 const aboutLinks = [
   { href: '/about', label: 'Our Story' },
-  { href: '/contact', label: 'Request Your Town' },
-  { href: '/contact', label: 'Wholesale' },
+  { href: '/request-a-town', label: 'Request Your Town' },
+  { href: '/wholesale', label: 'Wholesale' },
+  { href: '/ambassadors', label: 'Become an Ambassador' },
 ];
 
 const serviceLinks = [
@@ -26,7 +27,7 @@ const serviceLinks = [
   { href: '/size-guide', label: 'Size Guide' },
   { href: '/shipping-returns', label: 'Shipping & Returns' },
   { href: '/faq', label: 'FAQ' },
-  { href: '/contact', label: 'Contact Us' },
+  { href: '/support', label: 'Support' },
 ];
 
 const termsLinks = [
