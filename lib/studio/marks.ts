@@ -38,60 +38,124 @@ export function pawMark(fill: string): string {
 }
 
 /**
+ * The brand pine — redrawn from the pine swatch on the brand sheet.
+ *
+ * The sheet's tree is LINE ART: a cream outline conifer with a central trunk
+ * and angled branch tiers that widen toward the base, drawn with rounded caps
+ * so it reads hand-made. It is NOT the solid zigzag triangle in
+ * public/brand/pine.svg — that file is a different, wrong shape, and anything
+ * built from it is off-brand.
+ *
+ * Returned as raw <path> markup so both the single icon and the pattern share
+ * one definition of the tree.
+ */
+function pineTreePaths(): string {
+  // Six tiers, widening as they descend, each a pair of strokes angled down
+  // and out from the trunk.
+  // Narrower and more steeply angled than a first pass suggested: on the sheet
+  // the boughs fall roughly 30 degrees below horizontal and the widest tier is
+  // under half the tree's height. Flatter, wider branches read as a stack of
+  // bars rather than a conifer.
+  const TIERS: [number, number][] = [
+    [24, 8],
+    [38, 12],
+    [52, 16],
+    [66, 20],
+    [80, 24],
+    [94, 28],
+  ];
+  const DROP = 15;
+
+  const branches = TIERS.map(
+    ([y, halfWidth]) =>
+      `<path d="M50 ${y} L${50 - halfWidth} ${y + DROP}"/><path d="M50 ${y} L${50 + halfWidth} ${y + DROP}"/>`
+  ).join('');
+
+  return `<path d="M50 10 L50 116"/>${branches}`;
+}
+
+/** A single pine, sized to a box, for icon use. */
+export function pineMark(stroke: string, strokeWidth = 5): string {
+  return svgDataUri(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120"
+         fill="none" stroke="${stroke}" stroke-width="${strokeWidth}"
+         stroke-linecap="round" stroke-linejoin="round">
+      ${pineTreePaths()}
+    </svg>
+  `);
+}
+
+/**
+ * Deterministic pseudo-random in [0,1) from a pair of integers.
+ *
+ * Deterministic on purpose: Math.random would reshuffle the forest on every
+ * render, so the live preview and the exported PNG would be different pictures.
+ */
+function jitter(x: number, y: number, salt: number): number {
+  const n = Math.sin(x * 127.1 + y * 311.7 + salt * 74.7) * 43758.5453;
+  return n - Math.floor(n);
+}
+
+/**
  * The brand pine pattern.
  *
- * A REGULAR staggered grid: uniform tree size, even spacing, alternate rows
- * offset by half a column. That is what the pine swatch on the brand sheet
- * actually shows.
+ * Placed on a jittered grid rather than a rigid one: the swatch on the brand
+ * sheet is organic — trees vary in size and sit off the gridlines — but it
+ * never lets two trees collide. A cell grid with bounded jitter gives that
+ * hand-scattered feel while guaranteeing spacing, which the repo's
+ * pine-white.svg (8 trees, scales 0.44–0.72, overlapping) does not.
  *
- * Note this deliberately does NOT reproduce
- * public/brand/patterns/pine-white.svg, which scatters eight trees at scales
- * from 0.44 to 0.72 in irregular positions. That file disagrees with the brand
- * sheet — trees collide and the rhythm reads as noise. The sheet wins.
- *
- * Generated as one canvas-sized SVG with every tree placed explicitly: Satori
- * cannot use an SVG as a background-image at all, so CSS tiling is not an
- * option, and <pattern> support depends on the rasteriser.
+ * Generated as one canvas-sized SVG: Satori cannot use an SVG as a CSS
+ * background, so tiling is not available.
  */
 export function pinePattern(
   width: number,
   height: number,
-  fill: string,
-  /** Tree height in px. Defaults to a density that suits a 1080-tall canvas. */
+  stroke: string,
+  /** Nominal tree height in px. Defaults to a density suiting a 1080 canvas. */
   treeHeight?: number
 ): string {
-  // The path spans x 8..92 and y 4..138, so its drawn box is 84 x 134.
-  const PATH_W = 84;
-  const PATH_H = 134;
+  const baseH = treeHeight ?? Math.max(38, Math.round(height * 0.088));
 
-  const treeH = treeHeight ?? Math.max(34, Math.round(height * 0.076));
-  const treeW = (treeH * PATH_W) / PATH_H;
-  const scale = treeH / PATH_H;
+  // Cell large enough that even the biggest jittered tree clears its neighbour.
+  const cellW = baseH * 0.95;
+  const cellH = baseH * 1.15;
 
-  // Gaps chosen so neighbours never touch, in either direction, including
-  // across the half-column offset of the staggered rows.
-  const colStep = treeW * 1.85;
-  const rowStep = treeH * 1.32;
+  const trees: string[] = [];
+  const cols = Math.ceil(width / cellW) + 2;
+  const rows = Math.ceil(height / cellH) + 2;
 
-  const uses: string[] = [];
-  let row = 0;
-  for (let y = -rowStep; y < height + rowStep; y += rowStep, row++) {
-    const offset = row % 2 === 0 ? 0 : colStep / 2;
-    for (let x = -colStep + offset; x < width + colStep; x += colStep) {
-      // Path coordinates start at x=8, y=4, so pull those back to sit the
-      // drawn shape exactly on the grid point.
-      uses.push(
-        `<use href="#pine" transform="translate(${(x - 8 * scale).toFixed(1)} ${(y - 4 * scale).toFixed(1)}) scale(${scale.toFixed(4)})"/>`
+  for (let row = -1; row < rows; row++) {
+    for (let col = -1; col < cols; col++) {
+      // Sizes run 0.72–1.12 of nominal, matching the sheet's visible variation.
+      const scaleRand = jitter(col, row, 3);
+      const treeH = baseH * (0.72 + scaleRand * 0.4);
+      const treeW = treeH * (100 / 120);
+
+      // Offset odd rows, then jitter within a safe fraction of the cell.
+      const stagger = row % 2 === 0 ? 0 : cellW / 2;
+      const jx = (jitter(col, row, 1) - 0.5) * cellW * 0.36;
+      const jy = (jitter(col, row, 2) - 0.5) * cellH * 0.3;
+
+      const x = col * cellW + stagger + jx;
+      const y = row * cellH + jy;
+
+      trees.push(
+        `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(treeW / 100).toFixed(4)} ${(treeH / 120).toFixed(4)})">${pineTreePaths()}</g>`
       );
     }
   }
 
+  // Stroke width is a constant in the tree's own coordinate space, so it
+  // scales with each tree and stays visually proportional. Deliberately NOT
+  // vector-effect="non-scaling-stroke" — support for that depends on the SVG
+  // rasteriser, and a silently ignored attribute would give every tree a
+  // different line weight.
   return svgDataUri(`
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" fill="${fill}">
-      <defs>
-        <path id="pine" d="M50 4 L70 46 L60 46 L82 84 L70 84 L92 122 L56 122 L56 138 L44 138 L44 122 L8 122 L30 84 L18 84 L40 46 L30 46 Z"/>
-      </defs>
-      ${uses.join('')}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}"
+         fill="none" stroke="${stroke}" stroke-width="5"
+         stroke-linecap="round" stroke-linejoin="round">
+      ${trees.join('')}
     </svg>
   `);
 }
