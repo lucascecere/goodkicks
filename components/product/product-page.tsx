@@ -11,6 +11,7 @@ import { BrandImage } from '@/components/ui/brand-image';
 import { TowniesBlock } from '@/components/brand/wordmark';
 import { TownCard } from '@/components/townies/town-card';
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
+import { ValueBand } from '@/components/townies/value-band';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
 import { ProductMedia, type ProductMediaImage } from '@/components/product/product-media';
 import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
@@ -324,6 +325,10 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
           </div>
         )}
       </div>
+
+      {/* Townies only — the band is written in Townies' voice and marks, and
+          this component also renders Good Kicks product pages. */}
+      {!gk && <ValueBand />}
     </div>
   );
 }

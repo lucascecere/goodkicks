@@ -12,6 +12,22 @@ function priceLabel(p: CollectionProduct): string {
   return amount ? `$${parseFloat(amount).toFixed(2)}` : '';
 }
 
+/**
+ * The second gallery image, or null when there isn't a distinct one.
+ *
+ * Shopify usually repeats the featured image as the first gallery entry, so
+ * "the next picture" is index 1 — but not always, and a couple of products only
+ * have the one shot. Comparing URLs rather than trusting the index means a
+ * single-image product simply doesn't animate instead of sliding to a duplicate
+ * of itself. `images` is optional at runtime: /clearance casts a product from a
+ * different query that may not select it.
+ */
+function alternateImage(p: CollectionProduct) {
+  const featured = p.featuredImage?.url;
+  const gallery = p.images?.edges?.map((e) => e.node) ?? [];
+  return gallery.find((img) => img.url !== featured) ?? null;
+}
+
 export function ProductCard({
   product,
   priority,
@@ -21,19 +37,45 @@ export function ProductCard({
 }) {
   const available = product.variants.edges[0]?.node.availableForSale ?? false;
   const preorder = isPreorder(product.tags);
+  const alt = alternateImage(product);
 
   return (
     <Link href={`/products/${product.handle}`} className="group block">
       <div className="relative aspect-square rounded-sm overflow-hidden bg-white border border-town-rule">
         {product.featuredImage?.url ? (
-          <Image
-            src={product.featuredImage.url}
-            alt={product.featuredImage.altText ?? product.title}
-            fill
-            priority={priority}
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain p-3 transition-transform duration-500 group-hover:scale-105"
-          />
+          <>
+            {/* The alternate shot waits UNDERNEATH at inset-0, not parked off
+                to the right: an off-card pane never intersects the viewport,
+                so next/image would leave it unloaded and the first hover would
+                slide to nothing. Both panes carry bg-white because
+                object-contain leaves transparent margins that would otherwise
+                show one image through the other. */}
+            {alt ? (
+              <div className="absolute inset-0 bg-white translate-x-1/4 transition-transform duration-500 ease-out group-hover:translate-x-0 motion-reduce:transition-none">
+                <Image
+                  src={alt.url}
+                  alt=""
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  className="object-contain p-3"
+                />
+              </div>
+            ) : null}
+            <div
+              className={`absolute inset-0 bg-white transition-transform duration-500 ease-out will-change-transform motion-reduce:transition-none ${
+                alt ? 'group-hover:-translate-x-full' : ''
+              }`}
+            >
+              <Image
+                src={product.featuredImage.url}
+                alt={product.featuredImage.altText ?? product.title}
+                fill
+                priority={priority}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-contain p-3"
+              />
+            </div>
+          </>
         ) : (
           <div className="absolute inset-0 bg-town-rule" />
         )}

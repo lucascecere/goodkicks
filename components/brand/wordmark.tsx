@@ -110,6 +110,38 @@ export function MaMark({ className }: { className?: string }) {
   );
 }
 
+/**
+ * One tier of the conifer: a triangle whose underside is sawtoothed into
+ * drooping branch tips.
+ *
+ * The brand sheet's pine is a LAYERED tree — four overlapping tiers with
+ * scalloped edges and a short trunk — not the stacked chevrons this used to
+ * draw. Generating each tier means the silhouette can be retuned by changing
+ * four numbers instead of rewriting a 15-point path by hand.
+ */
+function conifferTier(apexY: number, halfWidth: number, baseY: number, notch = 10): string {
+  const cx = 50;
+  const h = halfWidth;
+  return [
+    `M ${cx} ${apexY}`,
+    `L ${cx + h} ${baseY}`,
+    `L ${cx + (h * 2) / 3} ${baseY - notch}`,
+    `L ${cx + h / 3} ${baseY}`,
+    `L ${cx} ${baseY - notch}`,
+    `L ${cx - h / 3} ${baseY}`,
+    `L ${cx - (h * 2) / 3} ${baseY - notch}`,
+    `L ${cx - h} ${baseY}`,
+    'Z',
+  ].join(' ');
+}
+
+const PINE_TIERS: Array<[number, number, number]> = [
+  [6, 17, 42],
+  [26, 25, 68],
+  [50, 33, 95],
+  [74, 41, 122],
+];
+
 export function PineMark({ className }: { className?: string }) {
   return (
     <svg
@@ -118,7 +150,79 @@ export function PineMark({ className }: { className?: string }) {
       className={cn('inline-block', className)}
       fill="currentColor"
     >
-      <path d="M50 4 L70 46 L60 46 L82 84 L70 84 L92 122 L56 122 L56 138 L44 138 L44 122 L8 122 L30 84 L18 84 L40 46 L30 46 Z" />
+      {/* Trunk first so the lowest tier overlaps it, as on the sheet. */}
+      <path d="M44 112 L56 112 L56 134 L44 134 Z" />
+      {PINE_TIERS.map(([apexY, hw, baseY]) => (
+        <path key={apexY} d={conifferTier(apexY, hw, baseY)} />
+      ))}
+    </svg>
+  );
+}
+
+/**
+ * Directional signpost — the "one town at a time" mark. Two pairs of arrow
+ * boards on a single post, each board rivetted near the point.
+ */
+export function SignpostMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 100 140"
+      aria-hidden
+      className={cn('inline-block', className)}
+      fill="currentColor"
+    >
+      <path d="M45 6 L55 6 L55 134 L45 134 Z" />
+      {/* Boards. The rivet is knocked OUT with evenodd rather than painted in
+          the page colour, so the mark survives on cream, navy or forest. */}
+      <path
+        fillRule="evenodd"
+        d="M55 30 L88 30 L96 41 L88 52 L55 52 Z M88.2 41 A3.2 3.2 0 0 0 81.8 41 A3.2 3.2 0 0 0 88.2 41 Z"
+      />
+      <path
+        fillRule="evenodd"
+        d="M45 30 L12 30 L4 41 L12 52 L45 52 Z M18.2 41 A3.2 3.2 0 0 0 11.8 41 A3.2 3.2 0 0 0 18.2 41 Z"
+      />
+      <path
+        fillRule="evenodd"
+        d="M55 66 L88 66 L96 77 L88 88 L55 88 Z M88.2 77 A3.2 3.2 0 0 0 81.8 77 A3.2 3.2 0 0 0 88.2 77 Z"
+      />
+      <path
+        fillRule="evenodd"
+        d="M45 66 L12 66 L4 77 L12 88 L45 88 Z M18.2 77 A3.2 3.2 0 0 0 11.8 77 A3.2 3.2 0 0 0 18.2 77 Z"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Anchor — the coastal mark for South Shore / shipping moments.
+ *
+ * Solid, like every other icon on the brand sheet. Drawn as a stroke first,
+ * which left it visibly spindly beside the filled pine and signpost.
+ */
+/** Left arm of the anchor; the right is the same path mirrored about x=50. */
+const ANCHOR_ARM = 'M 50 131 C 27 131 10 111 10 78 L 1 62 L 24 68 C 24 98 35 117 50 117 Z';
+
+export function AnchorMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 100 140"
+      aria-hidden
+      className={cn('inline-block', className)}
+      fill="currentColor"
+    >
+      {/* Ring — the bore is knocked out with evenodd so it works on any ground. */}
+      <path
+        fillRule="evenodd"
+        d="M62 18 A12 12 0 1 0 38 18 A12 12 0 1 0 62 18 Z M55.5 18 A5.5 5.5 0 1 1 44.5 18 A5.5 5.5 0 1 1 55.5 18 Z"
+      />
+      {/* Shank */}
+      <path d="M44 24 L56 24 L56 128 L44 128 Z" />
+      {/* Stock */}
+      <path d="M18 43 L82 43 L78 53 L22 53 Z" />
+      {/* Arms + flukes */}
+      <path d={ANCHOR_ARM} />
+      <path d={ANCHOR_ARM} transform="matrix(-1 0 0 1 100 0)" />
     </svg>
   );
 }

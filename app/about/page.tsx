@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { EditorialSplit } from '@/components/townies/editorial-split';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { BrandPattern } from '@/components/townies/brand-pattern';
@@ -20,21 +21,34 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="bg-town-cream">
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <BrandPattern variant="ma" color="forest" opacity={0.06} size={160} fade="b" />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-8 pt-16 sm:pt-24 pb-6 text-center">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-4">
-          Made by Massholes
-        </p>
-        <h1 className="font-script text-4xl sm:text-6xl lg:text-7xl text-town-navy mb-6">
-          Rep your town.
-        </h1>
-        <p className="text-town-muted leading-relaxed text-lg">
-          We make one thing, and we make it right: apparel that puts your hometown front and
-          center — not a logo, not a state-shape cliché. The town&apos;s the headline. Townies is
-          just the little tag that says it&apos;s built to last.
-        </p>
+      {/* Masthead. Duotone rather than a scrimmed photo, matching the homepage
+          tagline band — the About page used to open with centred text on flat
+          cream, which gave the story no ground to start from. */}
+      <section className="relative isolate overflow-hidden bg-town-navy">
+        <Image
+          src="/brand/lifestyle/town-cohasset.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center grayscale opacity-60 mix-blend-luminosity"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-town-navy/75 via-town-navy/35 to-town-navy/90" />
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-20 sm:py-28 text-center">
+          <p className="text-xs uppercase tracking-[0.22em] text-town-cream/70 font-medium mb-4">
+            Made by Massholes
+          </p>
+          <p className="font-script text-town-cream/90 text-2xl sm:text-3xl leading-none mb-1">
+            Rep your town —
+          </p>
+          <h1 className="font-block uppercase text-5xl sm:text-7xl text-white leading-[0.9] mb-6">
+            The town is the hero.
+          </h1>
+          <p className="text-town-cream/85 leading-relaxed text-lg">
+            We make one thing, and we make it right: apparel that puts your hometown front and
+            center — not a logo, not a state-shape cliché. The town&apos;s the headline. Townies is
+            just the little tag that says it&apos;s built to last.
+          </p>
         </div>
       </section>
 

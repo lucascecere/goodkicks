@@ -34,11 +34,34 @@ export function ShopFilter({
 
   return (
     <div>
-      <div className="flex gap-2 overflow-x-auto pb-3 mb-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-2 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <Tab label="All" active={active === 'all'} onClick={() => pick('all')} />
         {towns.map((t) => (
           <Tab key={t.slug} label={t.name} active={active === t.slug} onClick={() => pick(t.slug)} />
         ))}
+      </div>
+
+      {/* Ruled count line — tells you the filter did something, and gives the
+          tab row a base so it isn't floating over the grid. */}
+      <div className="flex items-baseline justify-between gap-4 border-t border-town-rule mt-3 pt-3 mb-7">
+        <p className="text-[0.68rem] uppercase tracking-[0.2em] text-town-stone">
+          {shown.length} {shown.length === 1 ? 'design' : 'designs'}
+          {active !== 'all' && (
+            <>
+              <span className="mx-2 text-town-rule">·</span>
+              {towns.find((t) => t.slug === active)?.name}
+            </>
+          )}
+        </p>
+        {active !== 'all' && (
+          <button
+            type="button"
+            onClick={() => pick('all')}
+            className="text-[0.68rem] uppercase tracking-[0.2em] text-town-navy hover:text-town-forest underline underline-offset-4 transition-colors"
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       {shown.length === 0 ? (

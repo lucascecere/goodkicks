@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { ProductCard } from '@/components/townies/product-card';
-import { BrandPattern } from '@/components/townies/brand-pattern';
+import { PageMasthead } from '@/components/townies/page-masthead';
 import { breadcrumbSchema } from '@/lib/seo/site';
 
 export const revalidate = 60;
@@ -23,7 +23,7 @@ export default async function SouthShorePage() {
   const items = southShore.length > 0 ? southShore : all;
 
   return (
-    <div className="relative overflow-hidden bg-town-cream min-h-screen">
+    <div className="bg-town-cream">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -35,22 +35,15 @@ export default async function SouthShorePage() {
           ),
         }}
       />
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
+      <PageMasthead
+        eyebrow="The first drop"
+        title="The South Shore."
+        sub={`Where it all kicked off. Hats repping the towns we actually know — Milton, Weymouth, Hingham, Braintree. Grab yours before the run's gone.`}
+        pattern="ma"
+        align="center"
+      />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-10 text-center">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-          The first drop
-        </p>
-        <h1 className="font-block uppercase text-4xl sm:text-6xl lg:text-7xl text-town-navy mb-4">
-          The South Shore.
-        </h1>
-        <p className="text-town-muted max-w-md mx-auto leading-relaxed">
-          Where it all kicked off. Hats repping the towns we actually know — Milton,
-          Weymouth, Hingham, Braintree. Grab yours before the run&apos;s gone.
-        </p>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-24">
         {items.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-town-muted text-sm mb-6">

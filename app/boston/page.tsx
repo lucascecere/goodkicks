@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { ProductCard } from '@/components/townies/product-card';
-import { BrandPattern } from '@/components/townies/brand-pattern';
+import { PageMasthead } from '@/components/townies/page-masthead';
 import { breadcrumbSchema } from '@/lib/seo/site';
 
 export const revalidate = 60;
@@ -19,7 +19,7 @@ export default async function BostonPage() {
   const items = all.filter((p) => p.tags.some((t) => t.toLowerCase() === 'boston'));
 
   return (
-    <div className="relative overflow-hidden bg-town-cream min-h-screen">
+    <div className="bg-town-cream">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -31,23 +31,15 @@ export default async function BostonPage() {
           ),
         }}
       />
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
+      <PageMasthead
+        eyebrow="The city"
+        title="Boston."
+        sub={`Neighborhood pride, done right. West Roxbury and Roslindale are up first — Southie, Dorchester, and the rest of the city are working their way onto the map, corner by corner. Rep yours.`}
+        pattern="speckle"
+        align="center"
+      />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-10 text-center">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-          The city
-        </p>
-        <h1 className="font-block uppercase text-4xl sm:text-6xl lg:text-7xl text-town-navy mb-4">
-          Boston.
-        </h1>
-        <p className="text-town-muted max-w-md mx-auto leading-relaxed">
-          Neighborhood pride, done right. West Roxbury and Roslindale are up first — Southie,
-          Dorchester, and the rest of the city are working their way onto the map, corner by
-          corner. Rep yours.
-        </p>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-24">
         {items.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-town-muted text-sm mb-6">

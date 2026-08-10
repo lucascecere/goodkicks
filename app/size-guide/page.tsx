@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BrandPattern } from '@/components/townies/brand-pattern';
+import { PageMasthead } from '@/components/townies/page-masthead';
 
 export const metadata: Metadata = {
   title: 'Size Guide — Townies',
@@ -11,18 +11,14 @@ export const metadata: Metadata = {
 
 export default function SizeGuidePage() {
   return (
-    <div className="relative overflow-hidden bg-town-cream min-h-screen">
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
-      <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-          Fit &amp; care
-        </p>
-        <h1 className="font-block uppercase text-4xl sm:text-6xl text-town-navy leading-[0.95] mb-4">
-          Size guide.
-        </h1>
-        <p className="text-town-muted max-w-xl mb-12 leading-relaxed">
-          The short version: one size fits most, and it adjusts. Here&apos;s the full picture.
-        </p>
+    <div className="bg-town-cream">
+      <PageMasthead
+        eyebrow="Fit & care"
+        title="Size guide."
+        sub={`The short version: one size fits most, and it adjusts. Here's the full picture.`}
+        pattern="topo"
+      />
+      <div className="max-w-3xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
 
         <div className="space-y-10">
           <section>

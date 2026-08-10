@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { townKey } from '@/lib/townies/towns';
 import { BrandPattern } from '@/components/townies/brand-pattern';
+import { TownTickerLinked } from '@/components/townies/town-ticker';
+import { RequestTownBand } from '@/components/townies/request-town-band';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
 
@@ -42,7 +44,7 @@ export default async function ShopPage({
     .sort((a, b) => a.name.localeCompare(b.name));
 
   return (
-    <div className="relative overflow-hidden bg-town-cream min-h-screen">
+    <div className="relative overflow-hidden bg-town-cream">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -54,22 +56,37 @@ export default async function ShopPage({
           ),
         }}
       />
+      {/* Masthead. A dark band gives the shop a top edge and a place for the
+          catalogue counts; the page used to open with centred text floating on
+          cream, which read as an unfinished page rather than a shop front. */}
+      <section className="relative overflow-hidden bg-town-navy">
+        <BrandPattern variant="topo" color="cream" opacity={0.09} size={260} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 text-center">
+          <p className="text-xs uppercase tracking-[0.22em] text-town-cream/70 font-medium mb-3">
+            The shop
+          </p>
+          <h1 className="font-block uppercase text-5xl sm:text-7xl lg:text-8xl text-white leading-[0.9] mb-5">
+            Every town.
+          </h1>
+          <p className="text-town-cream/80 max-w-md mx-auto leading-relaxed">
+            Every drop, one place. Find yours and rep it. Don&apos;t see your town?
+            It&apos;s coming — or tell us to hurry up.
+          </p>
+          {items.length > 0 && (
+            <p className="mt-7 text-[0.68rem] uppercase tracking-[0.22em] text-town-cream/55">
+              {items.length} {items.length === 1 ? 'design' : 'designs'}
+              <span className="mx-3 text-town-cream/30">·</span>
+              {towns.length} {towns.length === 1 ? 'town' : 'towns'}
+            </p>
+          )}
+        </div>
+      </section>
+
+      <TownTickerLinked towns={towns} />
+
       <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-14 sm:pt-20 pb-8 text-center">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-          The shop
-        </p>
-        <h1 className="font-block uppercase text-4xl sm:text-6xl lg:text-7xl text-town-navy mb-4">
-          Every town.
-        </h1>
-        <p className="text-town-muted max-w-md mx-auto leading-relaxed">
-          Every drop, one place. Find yours and rep it. Don&apos;t see your town?
-          It&apos;s coming — or tell us to hurry up.
-        </p>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pb-24">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {items.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-town-muted text-sm mb-6">
@@ -87,6 +104,8 @@ export default async function ShopPage({
           <ShopFilter items={items} towns={towns} initialTown={town} />
         )}
       </div>
+
+      <RequestTownBand />
     </div>
   );
 }

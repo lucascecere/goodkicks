@@ -161,6 +161,26 @@
   100% { transform: translateX(-50%); }
 }
 
+/*
+ * Horizontal ticker (the town-name band). The track must be its content
+ * duplicated exactly once, since the keyframe travels -50%.
+ *
+ * Declared here rather than inline so hover-pause and the reduced-motion
+ * opt-out are expressible at all — an inline `style` animation beats any
+ * class, including motion-reduce:.
+ */
+.marquee-x {
+  animation: marquee 48s linear infinite;
+}
+.marquee-x:hover {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-x {
+    animation: none;
+  }
+}
+
 @keyframes marquee-vertical {
   0%   { transform: translateY(0); }
   100% { transform: translateY(-50%); }

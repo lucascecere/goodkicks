@@ -31,7 +31,8 @@ export function EditorialSplit({
   tone?: 'cream' | 'navy' | 'forest' | 'stone';
 }) {
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
+    <section className="bg-white border-y border-town-rule">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <div className={cn('relative aspect-[4/5] sm:aspect-[4/3] overflow-hidden rounded-sm', reverse && 'lg:order-2')}>
           <BrandImage
@@ -58,6 +59,7 @@ export function EditorialSplit({
           >
             {cta.label}
           </Link>
+        </div>
         </div>
       </div>
     </section>

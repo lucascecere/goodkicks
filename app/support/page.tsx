@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BrandPattern } from '@/components/townies/brand-pattern';
+import { PageMasthead } from '@/components/townies/page-masthead';
 import { SupportForm } from '@/components/forms/support-form';
 
 export const metadata: Metadata = {
@@ -17,19 +17,15 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="relative overflow-hidden bg-town-cream min-h-screen">
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={160} fade="b" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-          Support
-        </p>
-        <h1 className="font-block uppercase text-5xl sm:text-6xl text-town-navy mb-4">
-          Need a hand?
-        </h1>
-        <p className="text-town-muted leading-relaxed mb-10 max-w-xl">
-          Order gone sideways, sizing question, or something we got wrong — this reaches a person, not a ticket queue.
-        </p>
+    <div className="bg-town-cream">
+      <PageMasthead
+        eyebrow="Support"
+        title="Need a hand?"
+        sub={`Order gone sideways, sizing question, or something we got wrong — this reaches a person, not a ticket queue.`}
+        pattern="speckle"
+      />
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <SupportForm />
 
         <div className="mt-14 pt-8 border-t border-town-rule text-sm text-town-muted">

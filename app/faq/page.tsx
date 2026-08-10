@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BrandPattern } from '@/components/townies/brand-pattern';
+import { PageMasthead } from '@/components/townies/page-masthead';
 
 export const metadata: Metadata = {
   title: 'FAQ — Townies',
@@ -136,26 +136,26 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="relative overflow-hidden bg-town-cream min-h-screen">
+    <div className="bg-town-cream">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
-      <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
-          Questions
-        </p>
-        <h1 className="font-block uppercase text-4xl sm:text-6xl text-town-navy leading-[0.95] mb-4">
-          FAQ.
-        </h1>
-        <p className="text-town-muted max-w-xl mb-14 leading-relaxed">
-          The stuff people ask most. Still stuck?{' '}
-          <Link href="/support" className="underline underline-offset-2 hover:text-town-forest">
-            Holler at us
-          </Link>
-          .
-        </p>
+      <PageMasthead
+        eyebrow="Questions"
+        title="FAQ."
+        pattern="speckle"
+        sub={
+          <>
+            The stuff people ask most. Still stuck?{' '}
+            <Link href="/support" className="underline underline-offset-2 text-white hover:text-town-cream">
+              Holler at us
+            </Link>
+            .
+          </>
+        }
+      />
+      <div className="max-w-3xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <div className="divide-y divide-town-rule border-t border-town-rule">
           {FAQS.map((f) => (
             <div key={f.q} className="py-7">

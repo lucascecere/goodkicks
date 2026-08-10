@@ -13,6 +13,8 @@ export type CollectionProduct = {
   handle: string;
   tags: string[];
   featuredImage: { url: string; altText: string | null } | null;
+  /** First few gallery images — the card hover-swaps to the second one. */
+  images: { edges: Array<{ node: { url: string; altText: string | null } }> };
   variants: {
     edges: Array<{
       node: {
@@ -48,6 +50,7 @@ const COLLECTION_PRODUCTS_QUERY = `
             handle
             tags
             featuredImage { url altText }
+            images(first: 3) { edges { node { url altText } } }
             variants(first: 1) {
               edges {
                 node {
