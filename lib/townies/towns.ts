@@ -46,11 +46,78 @@ function titleCase(slug: string): string {
     .join(' ');
 }
 
-function regionFromTags(tags: string[]): string {
-  // Prefer a known region tag; otherwise default to South Shore (the launch
-  // region) rather than a random tag. Tag products `north-shore` etc. to move them.
-  const known = tags.find((t) => REGION_LABELS[t.toLowerCase()]);
-  return known ? known.toLowerCase() : 'south-shore';
+/**
+ * Real Massachusetts region for each town, by town slug.
+ *
+ * This exists because region used to come from Shopify tags alone, defaulting
+ * to South Shore when a product had none — so every untagged town silently
+ * claimed the South Shore, and Boston neighbourhoods and Southeastern Mass
+ * towns turned up on /south-shore. Geography is a fact about the town, not
+ * about whether someone remembered to tag a product, so it lives in code.
+ *
+ * An explicit region tag in Shopify still wins, so a one-off can be overridden
+ * without a deploy.
+ */
+const TOWN_REGION: Record<string, string> = {
+  // Boston — neighbourhoods, not suburbs.
+  'west-roxbury': 'boston', roslindale: 'boston', dorchester: 'boston',
+  'south-boston': 'boston', southie: 'boston', charlestown: 'boston',
+  'jamaica-plain': 'boston', 'hyde-park': 'boston', mattapan: 'boston',
+  brighton: 'boston', allston: 'boston', 'east-boston': 'boston',
+  roxbury: 'boston', 'north-end': 'boston',
+
+  // South Shore.
+  milton: 'south-shore', quincy: 'south-shore', braintree: 'south-shore',
+  weymouth: 'south-shore', hingham: 'south-shore', cohasset: 'south-shore',
+  scituate: 'south-shore', marshfield: 'south-shore', duxbury: 'south-shore',
+  norwell: 'south-shore', hanover: 'south-shore', rockland: 'south-shore',
+  abington: 'south-shore', whitman: 'south-shore', hanson: 'south-shore',
+  pembroke: 'south-shore', kingston: 'south-shore', plymouth: 'south-shore',
+  hull: 'south-shore', holbrook: 'south-shore', randolph: 'south-shore',
+
+  // Southeastern Mass — Bristol County and the Taunton/Brockton side.
+  norton: 'south-east', mansfield: 'south-east', foxboro: 'south-east',
+  foxborough: 'south-east', attleboro: 'south-east',
+  'north-attleborough': 'south-east', taunton: 'south-east',
+  raynham: 'south-east', easton: 'south-east', brockton: 'south-east',
+  bridgewater: 'south-east', 'east-bridgewater': 'south-east',
+  'west-bridgewater': 'south-east', middleboro: 'south-east',
+  middleborough: 'south-east', lakeville: 'south-east', berkley: 'south-east',
+  dighton: 'south-east', rehoboth: 'south-east', seekonk: 'south-east',
+  swansea: 'south-east', somerset: 'south-east', 'fall-river': 'south-east',
+  'new-bedford': 'south-east', dartmouth: 'south-east', westport: 'south-east',
+  fairhaven: 'south-east', acushnet: 'south-east', freetown: 'south-east',
+
+  // North Shore.
+  salem: 'north-shore', beverly: 'north-shore', marblehead: 'north-shore',
+  swampscott: 'north-shore', lynn: 'north-shore', nahant: 'north-shore',
+  saugus: 'north-shore', peabody: 'north-shore', danvers: 'north-shore',
+  gloucester: 'north-shore', rockport: 'north-shore', essex: 'north-shore',
+  ipswich: 'north-shore', hamilton: 'north-shore', wenham: 'north-shore',
+  topsfield: 'north-shore', newburyport: 'north-shore', amesbury: 'north-shore',
+  salisbury: 'north-shore', rowley: 'north-shore', georgetown: 'north-shore',
+  middleton: 'north-shore', lynnfield: 'north-shore', 'manchester-by-the-sea': 'north-shore',
+
+  // Cape Cod.
+  barnstable: 'cape-cod', hyannis: 'cape-cod', falmouth: 'cape-cod',
+  sandwich: 'cape-cod', bourne: 'cape-cod', mashpee: 'cape-cod',
+  yarmouth: 'cape-cod', dennis: 'cape-cod', brewster: 'cape-cod',
+  harwich: 'cape-cod', chatham: 'cape-cod', orleans: 'cape-cod',
+  eastham: 'cape-cod', wellfleet: 'cape-cod', truro: 'cape-cod',
+  provincetown: 'cape-cod',
+};
+
+/**
+ * Region for a product: explicit Shopify tag first, then the town map.
+ *
+ * Falls back to `other` ("More Towns"), NOT to South Shore. An unrecognised
+ * town showing up under More Towns is a visible prompt to add it here; one
+ * silently filed under South Shore is a bug nobody sees.
+ */
+function regionForProduct(tags: string[], townSlug: string): string {
+  const tagged = tags.find((t) => REGION_LABELS[t.toLowerCase()]);
+  if (tagged) return tagged.toLowerCase();
+  return TOWN_REGION[townSlug] ?? OTHER_REGION;
 }
 
 function regionLabel(region: string): string {
@@ -69,7 +136,7 @@ function formatPrice(amount: string): string {
 
 export function toTownView(product: CollectionProduct): TownView {
   const variant = product.variants.edges[0]?.node ?? null;
-  const region = regionFromTags(product.tags);
+  const region = regionForProduct(product.tags, townKey(product).slug);
   return {
     id: product.id,
     name: product.title,
@@ -133,7 +200,7 @@ export function groupByTown(products: CollectionProduct[]): TownView[] {
   const towns: TownView[] = [];
   for (const [slug, { name, products: ps }] of map) {
     const withImage = ps.find((p) => p.featuredImage?.url) ?? ps[0];
-    const region = regionFromTags(withImage.tags);
+    const region = regionForProduct(withImage.tags, slug);
     towns.push({
       id: `town-${slug}`,
       name,
@@ -214,3 +281,19 @@ export const PLACEHOLDER_TOWNS: TownView[] = (
   available: false,
   isPlaceholder: true,
 }));
+
+/**
+ * Products belonging to a region, using the same resolution as everything else
+ * (tag → town map → other).
+ *
+ * Deliberately returns an EMPTY array when a region has nothing. The region
+ * pages used to fall back to the whole catalogue when their tag filter came up
+ * empty, which is why /south-shore was listing Boston and Southeastern Mass
+ * hats — an empty state is correct; showing the wrong towns is not.
+ */
+export function productsInRegion(
+  products: CollectionProduct[],
+  region: string,
+): CollectionProduct[] {
+  return products.filter((p) => regionForProduct(p.tags, townKey(p).slug) === region);
+}

@@ -84,12 +84,8 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
         We&apos;re working our way across the map one town at a time — South Shore first, then
         Boston&apos;s neighborhoods and Southeastern Mass, and outward from there. Tell us which
         town to do next on the{' '}
-        <Link href="/support" className="underline underline-offset-2 hover:text-town-forest">
+        <Link href="/request-a-town" className="underline underline-offset-2 hover:text-town-forest">
           request-a-town form
-        </Link>{' '}
-        or get on the{' '}
-        <Link href="/#join" className="underline underline-offset-2 hover:text-town-forest">
-          town list
         </Link>
         .
       </>

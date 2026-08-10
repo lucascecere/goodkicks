@@ -45,13 +45,13 @@ export function ProductCard({
         {product.featuredImage?.url ? (
           <>
             {/* The alternate shot waits UNDERNEATH at inset-0, not parked off
-                to the right: an off-card pane never intersects the viewport,
-                so next/image would leave it unloaded and the first hover would
-                slide to nothing. Both panes carry bg-white because
+                the card: an off-card pane never intersects the viewport, so
+                next/image would leave it unloaded and the first hover would
+                reveal nothing. Both panes carry bg-white because
                 object-contain leaves transparent margins that would otherwise
                 show one image through the other. */}
             {alt ? (
-              <div className="absolute inset-0 bg-white translate-x-1/4 transition-transform duration-500 ease-out group-hover:translate-x-0 motion-reduce:transition-none">
+              <div className="absolute inset-0 bg-white">
                 <Image
                   src={alt.url}
                   alt=""
@@ -61,10 +61,10 @@ export function ProductCard({
                 />
               </div>
             ) : null}
+            {/* Straight cut, no transition — the cover pane simply hides and
+                the alternate is already sitting behind it. */}
             <div
-              className={`absolute inset-0 bg-white transition-transform duration-500 ease-out will-change-transform motion-reduce:transition-none ${
-                alt ? 'group-hover:-translate-x-full' : ''
-              }`}
+              className={`absolute inset-0 bg-white ${alt ? 'group-hover:opacity-0' : ''}`}
             >
               <Image
                 src={product.featuredImage.url}

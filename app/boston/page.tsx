@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
+import { productsInRegion } from '@/lib/townies/towns';
 import { ProductCard } from '@/components/townies/product-card';
 import { PageMasthead } from '@/components/townies/page-masthead';
 import { breadcrumbSchema } from '@/lib/seo/site';
@@ -15,8 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BostonPage() {
-  const all = await getTownieProducts();
-  const items = all.filter((p) => p.tags.some((t) => t.toLowerCase() === 'boston'));
+  const items = productsInRegion(await getTownieProducts(), 'boston');
 
   return (
     <div className="bg-town-cream">
@@ -43,14 +43,14 @@ export default async function BostonPage() {
         {items.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-town-muted text-sm mb-6">
-              Boston&apos;s just getting started. Get on the town list and we&apos;ll tell you the
-              moment your neighborhood drops.
+              Boston&apos;s just getting started. Tell us which neighborhood you want and
+              we&apos;ll put it in the queue.
             </p>
             <Link
-              href="/#join"
+              href="/request-a-town"
               className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-navy/90 transition-colors"
             >
-              Join the town list
+              Request your town
             </Link>
           </div>
         ) : (
