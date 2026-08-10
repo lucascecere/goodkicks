@@ -24,7 +24,7 @@ type Fade = 'none' | 'b' | 't' | 'y' | 'l' | 'r' | 'radial';
 
 const DEFAULT_SIZE: Record<PatternVariant, number> = {
   ma: 150,
-  pine: 130,
+  pine: 300,
   topo: 200,
   speckle: 130,
 };

@@ -12,7 +12,7 @@ import { BrandPattern } from './brand-pattern';
 export function RequestTownBand() {
   return (
     <section className="relative overflow-hidden bg-town-forest">
-      <BrandPattern variant="pine" color="cream" opacity={0.09} size={150} />
+      <BrandPattern variant="pine" color="cream" opacity={0.1} size={300} />
       <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
         <p className="text-xs uppercase tracking-[0.22em] text-town-cream/70 mb-4">
           Don’t see your town?
