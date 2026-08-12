@@ -14,6 +14,11 @@ import { dropTemplate } from './templates/brand/drop';
 import { newTownTemplate } from './templates/brand/new-town';
 import { rivalryTemplate } from './templates/brand/rivalry';
 import {
+  partnerSquareTemplate,
+  partnerPortraitTemplate,
+  partnerBannerTemplate,
+} from './templates/brand/partner';
+import {
   coverShopifyTemplate,
   coverLinkedInTemplate,
   coverLinkedInProfileTemplate,
@@ -31,6 +36,9 @@ const ALL: AnyTemplate[] = [
   dropTemplate,
   newTownTemplate,
   rivalryTemplate,
+  partnerSquareTemplate,
+  partnerPortraitTemplate,
+  partnerBannerTemplate,
   coverShopifyTemplate,
   coverLinkedInTemplate,
   coverLinkedInProfileTemplate,
