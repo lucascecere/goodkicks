@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import { RepTabs } from '../rep-tabs';
@@ -40,11 +40,14 @@ export function SalesClient({
   brand,
   truncated,
   shopifyConfigured,
+  partnerPanel,
 }: {
   rows: SalesRow[];
   brand: AdminBrand;
   truncated: boolean;
   shopifyConfigured: boolean;
+  /** Rendered on the server — see partner-panel.tsx. */
+  partnerPanel?: ReactNode;
 }) {
   const [sort, setSort] = useState<SortKey>('revenue');
   const [search, setSearch] = useState('');
@@ -101,6 +104,8 @@ export function SalesClient({
       <div className="px-4 sm:px-6">
         <RepTabs active="sales" />
       </div>
+
+      {partnerPanel}
 
       {!shopifyConfigured && (
         <div className="mx-4 sm:mx-6 mb-4 rounded-xl bg-amber-500/10 border border-amber-500/30 px-4 py-3">

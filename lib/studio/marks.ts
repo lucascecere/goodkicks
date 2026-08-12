@@ -85,25 +85,14 @@ export function pineMark(stroke: string, strokeWidth = 5): string {
   `);
 }
 
-/**
- * Deterministic pseudo-random in [0,1) from a pair of integers.
- *
- * Deterministic on purpose: Math.random would reshuffle the forest on every
- * render, so the live preview and the exported PNG would be different pictures.
- */
-function jitter(x: number, y: number, salt: number): number {
-  const n = Math.sin(x * 127.1 + y * 311.7 + salt * 74.7) * 43758.5453;
-  return n - Math.floor(n);
-}
 
 /**
  * The brand pine pattern.
  *
- * Placed on a jittered grid rather than a rigid one: the swatch on the brand
- * sheet is organic — trees vary in size and sit off the gridlines — but it
- * never lets two trees collide. A cell grid with bounded jitter gives that
- * hand-scattered feel while guaranteeing spacing, which the repo's
- * pine-white.svg (8 trees, scales 0.44–0.72, overlapping) does not.
+ * A STRICT staggered grid: one size, exact spacing, odd rows offset by exactly
+ * half a column. It used to jitter both size and position to mimic the brand
+ * sheet's hand-drawn swatch, and the result read as clustered and random every
+ * time. Evenness is the brief — do not reintroduce variation here.
  *
  * Generated as one canvas-sized SVG: Satori cannot use an SVG as a CSS
  * background, so tiling is not available.
@@ -115,33 +104,31 @@ export function pinePattern(
   /** Nominal tree height in px. Defaults to a density suiting a 1080 canvas. */
   treeHeight?: number
 ): string {
-  const baseH = treeHeight ?? Math.max(38, Math.round(height * 0.088));
+  const treeH = treeHeight ?? Math.max(38, Math.round(height * 0.088));
+  const treeW = treeH * (100 / 120);
 
-  // Cell large enough that even the biggest jittered tree clears its neighbour.
-  const cellW = baseH * 0.95;
-  const cellH = baseH * 1.15;
+  // Even cells, no jitter. This pattern previously varied each tree's size
+  // between 0.72x and 1.12x of nominal and shifted it up to a third of a cell
+  // in each axis, which made trees cluster and collide and read as noise
+  // rather than as a pattern. It is a strict staggered grid now: ONE size,
+  // exact spacing, odd rows offset by exactly half a column.
+  const cellW = treeH * 0.95;
+  const cellH = treeH * 1.15;
 
   const trees: string[] = [];
   const cols = Math.ceil(width / cellW) + 2;
   const rows = Math.ceil(height / cellH) + 2;
+  const scale = (treeW / 100).toFixed(4);
+  const scaleY = (treeH / 120).toFixed(4);
 
   for (let row = -1; row < rows; row++) {
+    const stagger = row % 2 === 0 ? 0 : cellW / 2;
     for (let col = -1; col < cols; col++) {
-      // Sizes run 0.72–1.12 of nominal, matching the sheet's visible variation.
-      const scaleRand = jitter(col, row, 3);
-      const treeH = baseH * (0.72 + scaleRand * 0.4);
-      const treeW = treeH * (100 / 120);
-
-      // Offset odd rows, then jitter within a safe fraction of the cell.
-      const stagger = row % 2 === 0 ? 0 : cellW / 2;
-      const jx = (jitter(col, row, 1) - 0.5) * cellW * 0.36;
-      const jy = (jitter(col, row, 2) - 0.5) * cellH * 0.3;
-
-      const x = col * cellW + stagger + jx;
-      const y = row * cellH + jy;
+      const x = col * cellW + stagger;
+      const y = row * cellH;
 
       trees.push(
-        `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${(treeW / 100).toFixed(4)} ${(treeH / 120).toFixed(4)})">${pineTreePaths()}</g>`
+        `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${scale} ${scaleY})">${pineTreePaths()}</g>`
       );
     }
   }

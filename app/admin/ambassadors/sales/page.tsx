@@ -1,6 +1,7 @@
 import { getAdminBrand } from '@/lib/admin/brand-server';
 import { getAllRepStats } from '@/lib/shopify/get-rep-stats';
 import { SalesClient } from './sales-client';
+import { PartnerPanel } from './partner-panel';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,5 +30,13 @@ export default async function RepSalesPage() {
     process.env.SHOPIFY_ADMIN_API_TOKEN && process.env.SHOPIFY_STORE_DOMAIN,
   );
 
-  return <SalesClient rows={rows} brand={brand} truncated={truncated} shopifyConfigured={shopifyConfigured} />;
+  return (
+    <SalesClient
+      rows={rows}
+      brand={brand}
+      truncated={truncated}
+      shopifyConfigured={shopifyConfigured}
+      partnerPanel={<PartnerPanel brand={brand} />}
+    />
+  );
 }
