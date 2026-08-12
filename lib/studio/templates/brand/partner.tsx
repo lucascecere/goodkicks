@@ -42,7 +42,8 @@ const fields: FieldDef[] = [
     placeholder: '/brand/partners/tl-elite.png',
     help: 'Path in /public or a full URL. Contained, never cropped.' },
   { key: 'eyebrow', label: 'Eyebrow', type: 'text', group: 'Content' },
-  { key: 'headline', label: 'Headline', type: 'text', group: 'Content' },
+  { key: 'headline', label: 'Headline', type: 'text', group: 'Content',
+    help: 'Optional, and usually leave it empty — the logo lockup above already reads as “ours × theirs”, so a matching headline just says it twice.' },
   { key: 'code', label: 'Discount code', type: 'text', group: 'Offer',
     help: 'The hero of the card. Keep it short enough to read on a phone.' },
   { key: 'offer', label: 'Offer line', type: 'text', group: 'Offer',
@@ -60,7 +61,7 @@ const mock: Props = {
   partnerName: 'TL Elite Hockey',
   partnerLogo: '/brand/partners/tl-elite.png',
   eyebrow: 'Official partner',
-  headline: 'TL Elite × Townies',
+  headline: '',
   code: 'TLELITE10',
   offer: '10% off every Townies hat',
   footnote: 'www.townies.shop',
@@ -90,7 +91,7 @@ function makePartner(
 
     caption: (p) =>
       [
-        `${p.headline}.`,
+        p.headline ? `${p.headline}.` : `${p.eyebrow}: ${p.partnerName}.`,
         '',
         `${p.offer} with code ${p.code.toUpperCase()} at ${p.footnote}.`,
       ]
