@@ -58,7 +58,7 @@ const mock: Props = {
   awayScore: '3',
   homeScore: '7',
   statusLabel: 'Final',
-  background: '/brand/lifestyle/split-harbor.jpg',
+  background: '/brand/scene/braintree-21x9.jpg',
   venue: 'MLB · Fenway Park',
   dateLabel: 'Tuesday, August 5',
   statLine: 'Ceddanne Rafaela 3-4, 2 HR, 5 RBI',

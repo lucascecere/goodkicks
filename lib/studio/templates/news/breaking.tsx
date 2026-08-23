@@ -43,7 +43,7 @@ const mock: Props = {
   headline: 'Red Sox acquire All-Star closer ahead of the deadline',
   detail: 'Deal includes two prospects and a player to be named.',
   source: 'MLB Network',
-  background: '/brand/lifestyle/hero.jpg',
+  background: '/brand/scene/clover-hero-16x10.jpg',
   barColor: '#BD3039',
 };
 

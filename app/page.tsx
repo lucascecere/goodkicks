@@ -1,16 +1,13 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Hero } from '@/components/townies/hero';
-import { EditorialSplit } from '@/components/townies/editorial-split';
-import { StoryCarousel } from '@/components/townies/story-carousel';
-import { BrandPattern } from '@/components/townies/brand-pattern';
-import { ProductCard } from '@/components/townies/product-card';
+import { CampaignBand } from '@/components/townies/campaign-band';
+import { FeaturedRail } from '@/components/townies/featured-rail';
 import { TownTicker } from '@/components/townies/town-ticker';
 import { TaglineBand } from '@/components/townies/tagline-band';
 import { ValueBand } from '@/components/townies/value-band';
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
-import { groupByTown, PLACEHOLDER_TOWNS, townKey, type TownView } from '@/lib/townies/towns';
+import { townKey } from '@/lib/townies/towns';
 
 export const revalidate = 60;
 
@@ -27,81 +24,60 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Photograph, thin band, photograph, rail, quiet, close.
+ *
+ * The old page ran hero → ticker → product grid → duotone band → town carousel
+ * → editorial split → value band → CTA, and rendered 9,174px tall at 1440. Most
+ * of that was type: a 128px hero headline and 60px section headings stacked in
+ * full-viewport sections. Now every photographic slot holds a real photograph,
+ * every headline sits on the shared ramp, and the sections that were never
+ * going to have photography (tagline, values, request-a-town) say so with
+ * pattern and type instead of a stock picture standing in for one.
+ */
 export default async function HomePage() {
   const products = await getTownieProducts();
-  const live = groupByTown(products);
-  // Degrade gracefully before the townies collection is populated.
-  const towns: TownView[] = live.length > 0 ? live : PLACEHOLDER_TOWNS;
-
-  // Distinct town names for the ticker, in catalogue order.
   const tickerTowns = [...new Set(products.map((p) => townKey(p).name))];
 
   return (
     <>
       <Hero
-        slides={['/brand/drops/milton.jpg', '/brand/drops/braintree.jpg']}
+        imageSrc="/brand/scene/clover-hero-16x10.jpg"
+        mobileSrc="/brand/scene/clover-hero-1x1.jpg"
+        imageAlt="Milton, Walpole and West Roxbury Townies snapbacks in a bed of clover"
       />
 
       <TownTicker towns={tickerTowns} />
 
-      {products.length > 0 && (
-        <section className="relative bg-town-cream pt-14 sm:pt-20 pb-14 sm:pb-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-8">
-            <div className="flex items-end justify-between gap-4 mb-7 sm:mb-9">
-              <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-2">
-                  The latest drops
-                </p>
-                <h2 className="font-block uppercase text-4xl sm:text-6xl text-town-navy leading-[0.9]">
-                  Shop the hats.
-                </h2>
-              </div>
-              <Link
-                href="/shop"
-                className="hidden sm:inline-flex text-sm lowercase tracking-wide text-town-navy underline underline-offset-4 hover:text-town-forest transition-colors whitespace-nowrap"
-              >
-                see all towns
-              </Link>
-            </div>
-            {/* Eight, not four. One short row read as a teaser of a thin
-                catalogue; two rows read as a shop. */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {products.slice(0, 8).map((p, i) => (
-                <ProductCard key={p.id} product={p} priority={i < 2} />
-              ))}
-            </div>
-            <div className="mt-10 text-center sm:hidden">
-              <Link
-                href="/shop"
-                className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3 rounded-sm text-sm font-semibold uppercase tracking-[0.1em]"
-              >
-                Shop all towns
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+      {/* The two campaign bands are the two real town shoots we own. They
+          alternate their caption side so they don't read as one component
+          rendered twice. */}
+      <CampaignBand
+        src="/brand/scene/milton-21x9.jpg"
+        mobileSrc="/brand/drops/milton.jpg"
+        alt="Two Milton Townies snapbacks on a curb in Milton Village"
+        eyebrow="The first town"
+        title="Milton. 1640."
+        sub="Where this started, and still the one we get asked for most."
+        cta={{ href: '/shop?town=milton', label: 'Shop Milton' }}
+        align="left"
+      />
+
+      <FeaturedRail products={products} />
+
+      <CampaignBand
+        src="/brand/scene/braintree-21x9.jpg"
+        mobileSrc="/brand/drops/braintree.jpg"
+        alt="Braintree Townies snapbacks on a curb outside Braintree Books"
+        eyebrow="Now shipping"
+        title="Braintree."
+        sub="Stitched heavy, worn in from day one."
+        cta={{ href: '/shop?town=braintree', label: 'Shop Braintree' }}
+        align="right"
+        valign="bottom"
+      />
 
       <TaglineBand />
-
-      <section className="relative overflow-hidden bg-town-cream py-14 sm:py-20">
-        <BrandPattern variant="topo" color="navy" opacity={0.07} size={260} fade="y" />
-        <div className="relative">
-          <StoryCarousel towns={towns} includeOrigin />
-        </div>
-      </section>
-
-      <EditorialSplit
-        eyebrow="Where it started"
-        headline="South Shore 'til I die."
-        body="Milton. Weymouth. Hingham. Braintree. The towns we actually know — off the line first. These are the streets, the packies, the fields, the exits you'd never let anyone talk down. Every drop is one town done right: stitched heavy, worn-in from day one, built to outlast the season. Down here we don't do disposable."
-        cta={{ href: '/shop', label: 'shop the towns' }}
-        imageSrc="/brand/lifestyle/hero.jpg"
-        imageAlt="Scituate Light on the South Shore of Massachusetts"
-        imageLabel="South Shore"
-        reverse
-        tone="navy"
-      />
 
       <ValueBand />
 

@@ -156,21 +156,18 @@ export function toTownView(product: CollectionProduct): TownView {
 // town card instead of showing each hat as its own "town". Town identity comes
 // from a `town:<name>` tag if present, else the first word of the product title
 // (our naming convention is "<Town> <style>", e.g. "Milton Classic Snapback").
-// Curated lifestyle photo per town, so a town card never falls back to a
-// white product shot (which reads wrong next to the lifestyle cards).
-// Milton/Braintree use their real hat-drop photos; the rest use town photography
-// until each town has its own drop shot.
+// Curated photo per town, so a town card can lead with the town rather than a
+// product shot on white.
+//
+// Only the two towns we have actually SHOT are listed. This used to carry eight
+// more entries pointing at downloaded town landmarks — a duck pond, a town hall,
+// a scanned postcard — none of which had a hat in them. A card promising a town
+// and delivering municipal stock is worse than one that degrades to the brand
+// placeholder, which is what an unlisted town now does. Add a town here when it
+// has a real drop shot, not before.
 const TOWN_IMAGES: Record<string, string> = {
   milton: '/brand/drops/milton.jpg',
   braintree: '/brand/drops/braintree.jpg',
-  hingham: '/brand/lifestyle/town-hingham.jpg',
-  scituate: '/brand/lifestyle/town-scituate.jpg',
-  marshfield: '/brand/lifestyle/town-marshfield.jpg',
-  weymouth: '/brand/lifestyle/town-weymouth.jpg',
-  hanover: '/brand/lifestyle/town-hanover.jpg',
-  cohasset: '/brand/lifestyle/town-cohasset.jpg',
-  norwell: '/brand/lifestyle/town-norwell.jpg',
-  duxbury: '/brand/lifestyle/town-duxbury.jpg',
 };
 
 export function townKey(p: CollectionProduct): { slug: string; name: string } {
@@ -272,8 +269,11 @@ export const PLACEHOLDER_TOWNS: TownView[] = (
   handle: '',
   region: 'south-shore',
   regionLabel: 'South Shore',
-  // Real South Shore stand-in photography (swap for product/lifestyle later).
-  image: `/brand/lifestyle/${slug}.jpg`,
+  // No image. These pointed at eight downloaded town landmarks, which is the
+  // whole reason stock was on the site at all. BrandImage renders a branded
+  // placeholder card instead — which is what a pre-cutover placeholder should
+  // have been from the start.
+  image: null,
   imageAlt: `${name}, Massachusetts`,
   price: null,
   variantId: null,

@@ -14,10 +14,10 @@ export function RequestTownBand() {
     <section className="relative overflow-hidden bg-town-forest">
       <BrandPattern variant="pine" color="cream" opacity={0.1} size={300} />
       <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-cream/70 mb-4">
+        <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-4">
           Don’t see your town?
         </p>
-        <h2 className="font-block uppercase text-4xl sm:text-6xl leading-[0.92] text-white mb-5">
+        <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-white mb-4">
           Tell us where you’re from.
         </h2>
         <p className="text-town-cream/85 leading-relaxed mb-9">

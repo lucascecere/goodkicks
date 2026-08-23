@@ -2,7 +2,7 @@
 //
 // Two problems, one solution.
 //
-// 1. Satori has no page context, so a relative `/brand/lifestyle/hero.jpg`
+// 1. Satori has no page context, so a relative `/brand/scene/clover-hero-16x10.jpg`
 //    resolves to nothing and renders blank.
 // 2. Satori fetches remote images itself and THROWS if one fails — a flaky
 //    team-logo CDN would take down the entire graphic, not just the logo.

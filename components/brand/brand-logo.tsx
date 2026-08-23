@@ -3,8 +3,11 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * The real Townies logo lockups, extracted from the official brand kit
- * (public/brand/reference/townies-logo-variants-v1.png) as transparent PNGs.
+ * The real Townies logo lockups, extracted as transparent PNGs from the
+ * official brand kit — "Townies Logo Variants V1", which lives in Drive and in
+ * ~/.townies-admin/product-photos/masters-downloads/, NOT in this repo. The
+ * source boards used to ship inside public/ at 2.9MB for no reason: they are a
+ * design reference, never served to a visitor.
  *
  *   script        — "Townies" script wordmark (navy) → light backgrounds
  *   script-cream  — full script lockup recolored cream → dark backgrounds

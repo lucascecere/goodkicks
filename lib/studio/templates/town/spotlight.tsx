@@ -58,7 +58,7 @@ const mock: Props = {
   // NOT town-scituate.jpg — that file is a scanned vintage postcard with
   // printed caption text across the top, which collides with the eyebrow.
   // hero.jpg is Scituate Light, so this stays coherent and stays clean.
-  background: '/brand/lifestyle/hero.jpg',
+  background: '/brand/drops/milton.jpg',
   accent: '#F2EFE8',
 };
 

@@ -46,10 +46,10 @@ export function EditorialSplit({
         </div>
 
         <div className={cn('max-w-md lg:max-w-xl', reverse && 'lg:order-1 lg:ml-auto')}>
-          <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-4">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest mb-3">
             {eyebrow}
           </p>
-          <h2 className="font-block uppercase text-4xl sm:text-5xl leading-[0.92] text-town-navy mb-5">
+          <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy mb-4">
             {headline}
           </h2>
           <p className="text-town-muted leading-relaxed mb-6">{body}</p>

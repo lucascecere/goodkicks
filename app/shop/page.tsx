@@ -62,10 +62,10 @@ export default async function ShopPage({
       <section className="relative overflow-hidden bg-town-navy">
         <BrandPattern variant="topo" color="cream" opacity={0.09} size={260} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 text-center">
-          <p className="text-xs uppercase tracking-[0.22em] text-town-cream/70 font-medium mb-3">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-3">
             The shop
           </p>
-          <h1 className="font-block uppercase text-5xl sm:text-7xl lg:text-8xl text-white leading-[0.9] mb-5">
+          <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em] text-white mb-4">
             Every town.
           </h1>
           <p className="text-town-cream/80 max-w-md mx-auto leading-relaxed">

@@ -46,7 +46,7 @@ export function TownCard({
       <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-6 text-white">
         <TowniesBlock className="text-[0.6rem] text-white/70 mb-1" />
         {/* Town-as-hero: fluid size keyed to card width so long names never clip. */}
-        <h3 className="font-block uppercase leading-[0.9] tracking-[0.01em] text-[clamp(1.05rem,12.5cqi,2.25rem)]">
+        <h3 className="font-block uppercase leading-[0.9] tracking-[0.01em] text-[clamp(0.95rem,9cqi,1.5rem)]">
           {town.name}
         </h3>
         <div className="mt-2 flex items-center justify-between">

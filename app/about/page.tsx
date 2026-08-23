@@ -26,7 +26,7 @@ export default function AboutPage() {
           cream, which gave the story no ground to start from. */}
       <section className="relative isolate overflow-hidden bg-town-navy">
         <Image
-          src="/brand/lifestyle/town-cohasset.jpg"
+          src="/brand/scene/clover-2-1x1.jpg"
           alt=""
           fill
           priority
@@ -35,13 +35,13 @@ export default function AboutPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-town-navy/75 via-town-navy/35 to-town-navy/90" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-20 sm:py-28 text-center">
-          <p className="text-xs uppercase tracking-[0.22em] text-town-cream/70 font-medium mb-4">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-4">
             Made by Massholes
           </p>
           <p className="font-script text-town-cream/90 text-2xl sm:text-3xl leading-none mb-1">
             Rep your town —
           </p>
-          <h1 className="font-block uppercase text-5xl sm:text-7xl text-white leading-[0.9] mb-6">
+          <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em] text-white mb-5">
             The town is the hero.
           </h1>
           <p className="text-town-cream/85 leading-relaxed text-lg">
@@ -81,7 +81,7 @@ export default function AboutPage() {
         <BrandPattern variant="ma" color="forest" opacity={0.05} size={150} fade="radial" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
         <BrandLogo variant="arch" className="w-60 sm:w-72 mx-auto mb-8" />
-        <p className="font-block uppercase text-4xl sm:text-5xl text-town-navy leading-[0.95] mb-6">
+        <p className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy mb-5">
           Small towns. Strong roots.
         </p>
         <p className="text-town-muted leading-relaxed mb-10">

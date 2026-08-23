@@ -17,10 +17,10 @@ export function ComingSoonRegion({
     <section className="relative min-h-[82vh] flex items-center overflow-hidden bg-town-navy text-white">
       <BrandPattern variant="ma" color="cream" opacity={0.08} size={220} fade="radial" />
       <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-24 text-center">
-        <p className="text-xs uppercase tracking-[0.22em] text-town-cream/60 mb-4">
+        <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/60 mb-4">
           Coming soon
         </p>
-        <h1 className="font-block uppercase text-4xl sm:text-6xl lg:text-8xl leading-[0.9] mb-6">
+        <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em] mb-5">
           {region}
         </h1>
         <p className="text-town-cream/70 max-w-md mx-auto mb-9 leading-relaxed">

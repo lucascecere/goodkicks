@@ -31,6 +31,7 @@ const PLACEHOLDER_PATTERN: Record<Tone, { color: PatternColor; opacity: number }
 
 export function BrandImage({
   src,
+  mobileSrc,
   alt,
   sizes,
   priority,
@@ -40,6 +41,15 @@ export function BrandImage({
   fit = 'cover',
 }: {
   src?: string | null;
+  /**
+   * A separately-cropped file for narrow screens — art direction, not just a
+   * smaller file. `next/image` handles resolution on its own but has no way to
+   * say "different crop below sm", and a 21:9 band re-framed for a phone has to
+   * be recomposed, not scaled: the caption's clean ground disappears otherwise.
+   * Both are rendered and one is hidden by breakpoint, so the optimizer still
+   * does its job on each.
+   */
+  mobileSrc?: string | null;
   alt: string;
   sizes?: string;
   priority?: boolean;
@@ -55,7 +65,36 @@ export function BrandImage({
   /** Optional caption shown on the placeholder only (e.g. the town name). */
   label?: string;
 }) {
+  const objectFit = fit === 'contain' ? 'object-contain' : 'object-cover';
+
   if (src) {
+    if (mobileSrc) {
+      return (
+        <>
+          <Image
+            src={mobileSrc}
+            alt={alt}
+            fill
+            sizes={sizes ?? '100vw'}
+            priority={priority}
+            className={cn(objectFit, 'sm:hidden', className)}
+          />
+          <Image
+            src={src}
+            // The alt lives on the visible-at-this-breakpoint copy only; the
+            // hidden twin is decorative to a screen reader, and announcing the
+            // same picture twice is worse than not announcing it.
+            alt=""
+            aria-hidden
+            fill
+            sizes={sizes ?? '100vw'}
+            priority={priority}
+            className={cn(objectFit, 'hidden sm:block', className)}
+          />
+        </>
+      );
+    }
+
     return (
       <Image
         src={src}
@@ -63,7 +102,7 @@ export function BrandImage({
         fill
         sizes={sizes ?? '100vw'}
         priority={priority}
-        className={cn(fit === 'contain' ? 'object-contain' : 'object-cover', className)}
+        className={cn(objectFit, className)}
       />
     );
   }

@@ -3,31 +3,35 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Search, User, ChevronDown } from 'lucide-react';
+import { Menu, X, Search, User } from 'lucide-react';
 import { CartIconButton } from './cart-icon-button';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { cn } from '@/lib/utils';
 
-// Shop is the only nav item with depth — regions are how people actually look
-// for their town, so they hang off Shop rather than competing with it in the
-// top bar. Everything else is a flat link.
-const REGIONS = [
-  { href: '/south-shore', label: 'South Shore', note: 'Live' },
-  { href: '/boston', label: 'Boston', note: 'Live' },
-  { href: '/north-shore', label: 'North Shore', note: 'Coming' },
-  { href: '/south-east', label: 'South East', note: 'Coming' },
-];
-
-const SHOP_LINKS = [
-  { href: '/shop', label: 'All towns' },
-  { href: '/clearance', label: 'Clearance' },
-  { href: '/request-a-town', label: 'Request your town' },
-];
-
+// Every nav item is a flat link, Shop included.
+//
+// Shop used to open a seven-item hover panel — All towns / Clearance / Request
+// your town, then the four regions with Live/Coming pills. It cost a hover and
+// a read to reach the page most visitors came for, and one of its rows,
+// "Clearance", 308-redirects to Good Kicks (middleware.ts), so it sent Townies
+// shoppers to the other brand. Regions are still reachable: they are filter
+// pills on /shop itself and links in the footer, which is where browsing
+// belongs. One click to the shop, nothing to read on the way.
 const navLinks = [
+  { href: '/shop', label: 'Shop' },
   { href: '/about', label: 'About' },
-  { href: '/wholesale', label: 'Wholesale' },
+  // "Wholesale" only reads as "I want to stock you". Most of the volume is
+  // teams, companies and fundraisers buying once, and they don't self-identify
+  // as wholesale buyers — so the label leads with the job, not the trade term.
+  { href: '/wholesale', label: 'Bulk Orders' },
   { href: '/support', label: 'Support' },
+];
+
+// Mobile gets the two extra destinations the desktop bar reaches by other
+// means — the announcement bar carries Request your town, and Good Kicks has
+// never been in the desktop nav.
+const mobileExtraLinks = [
+  { href: '/request-a-town', label: 'Request your town' },
 ];
 
 // Accounts + policies live on Shopify-hosted pages — link out.
@@ -99,53 +103,6 @@ export function Header() {
 
           {/* Center: nav */}
           <nav className="hidden lg:flex items-center gap-8" aria-label="Main navigation">
-            {/* Shop + its dropdown. Opens on hover AND on keyboard focus
-                (group-focus-within), so it needs no state and no JS. */}
-            <div className="relative group">
-              <Link
-                href="/shop"
-                className={cn(navClass, 'inline-flex items-center gap-1 py-2', isActive('/shop') && 'text-town-forest')}
-              >
-                Shop
-                <ChevronDown size={13} className="mt-px transition-transform duration-200 group-hover:rotate-180" />
-              </Link>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0">
-                <div className="w-[19rem] bg-white border border-town-rule rounded-sm shadow-[0_18px_50px_rgba(13,27,42,0.13)] p-2">
-                  {SHOP_LINKS.map((l) => (
-                    <Link
-                      key={l.href}
-                      href={l.href}
-                      className="block px-3 py-2 rounded-sm text-sm text-town-navy hover:bg-town-cream hover:text-town-forest transition-colors"
-                    >
-                      {l.label}
-                    </Link>
-                  ))}
-                  <p className="px-3 pt-3 pb-1.5 mt-1 border-t border-town-rule text-[0.6rem] uppercase tracking-[0.2em] text-town-stone">
-                    By region
-                  </p>
-                  {REGIONS.map((r) => (
-                    <Link
-                      key={r.href}
-                      href={r.href}
-                      className="flex items-center justify-between px-3 py-2 rounded-sm text-sm text-town-navy hover:bg-town-cream hover:text-town-forest transition-colors"
-                    >
-                      {r.label}
-                      <span
-                        className={cn(
-                          'text-[0.55rem] uppercase tracking-[0.14em] px-1.5 py-0.5 rounded-full',
-                          r.note === 'Live'
-                            ? 'bg-town-forest/10 text-town-forest'
-                            : 'bg-town-stone/15 text-town-stone',
-                        )}
-                      >
-                        {r.note}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -184,7 +141,7 @@ export function Header() {
           className="lg:hidden bg-town-cream border-b border-town-rule px-4 pb-5 pt-1 flex flex-col max-h-[calc(100vh-6.5rem)] overflow-y-auto"
           aria-label="Mobile navigation"
         >
-          {SHOP_LINKS.map((link) => (
+          {[...navLinks, ...mobileExtraLinks].map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -193,30 +150,9 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          <p className="pt-4 pb-1 text-[0.6rem] uppercase tracking-[0.2em] text-town-stone">By region</p>
-          {REGIONS.map((r) => (
-            <Link
-              key={r.href}
-              href={r.href}
-              className="py-2.5 text-sm uppercase tracking-[0.15em] text-town-navy hover:text-town-forest transition-colors flex items-center justify-between"
-            >
-              {r.label}
-              <span className="text-[0.55rem] uppercase tracking-[0.14em] text-town-stone">{r.note}</span>
-            </Link>
-          ))}
-          <p className="pt-4 pb-1 text-[0.6rem] uppercase tracking-[0.2em] text-town-stone">More</p>
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="py-2.5 text-sm uppercase tracking-[0.15em] text-town-navy hover:text-town-forest transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
           <Link
             href="/goodkicks"
-            className="py-2.5 text-sm uppercase tracking-[0.15em] text-town-muted hover:text-town-forest transition-colors"
+            className="py-3 text-sm uppercase tracking-[0.15em] text-town-muted hover:text-town-forest transition-colors"
           >
             Good Kicks
           </Link>

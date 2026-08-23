@@ -36,7 +36,7 @@ const mock: Props = {
   town: 'Weymouth',
   fact: 'Settled in 1622, Weymouth is the second-oldest town in Massachusetts — older than Boston, and beaten only by Plymouth.',
   source: '',
-  background: '/brand/lifestyle/town-weymouth.jpg',
+  background: '/brand/drops/braintree.jpg',
   accent: '#F2EFE8',
 };
 

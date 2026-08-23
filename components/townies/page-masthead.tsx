@@ -43,10 +43,10 @@ export function PageMasthead({
           centered && 'text-center',
         )}
       >
-        <p className="text-xs uppercase tracking-[0.22em] text-town-cream/70 font-medium mb-3">
+        <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-3">
           {eyebrow}
         </p>
-        <h1 className="font-block uppercase text-5xl sm:text-7xl text-white leading-[0.9] mb-5">
+        <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em] text-white mb-4">
           {title}
         </h1>
         {sub ? (

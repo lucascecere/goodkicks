@@ -75,7 +75,7 @@ const mock: Props = {
   wordmark: 'GAMEDAY',
   awayTeam: 'mlb-nyy',
   homeTeam: 'mlb-bos',
-  background: '/brand/lifestyle/hero.jpg',
+  background: '/brand/scene/clover-hero-16x10.jpg',
   venue: 'MLB · Fenway Park',
   dateLabel: 'Tuesday, August 5',
   timeLabel: '7:10 PM',

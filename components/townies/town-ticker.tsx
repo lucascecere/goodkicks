@@ -24,7 +24,7 @@ export function TownTicker({ towns }: { towns: string[] }) {
       <div className="marquee-x flex w-max items-center">
         {run.map((town, i) => (
           <span key={`${town}-${i}`} className="flex items-center whitespace-nowrap">
-            <span className="font-block uppercase text-town-cream/90 text-lg sm:text-xl tracking-[0.06em] px-6 sm:px-8">
+            <span className="font-block uppercase text-town-cream/90 text-sm sm:text-base tracking-[0.06em] px-5 sm:px-7">
               {town}
             </span>
             <MaMark className="h-2.5 w-auto text-town-forest shrink-0" />
@@ -52,7 +52,7 @@ export function TownTickerLinked({ towns }: { towns: Array<{ slug: string; name:
           <span key={`${t.slug}-${i}`} className="flex items-center whitespace-nowrap">
             <Link
               href={`/shop?town=${t.slug}`}
-              className="font-block uppercase text-town-cream/90 hover:text-white text-lg tracking-[0.06em] px-6 sm:px-8 transition-colors"
+              className="font-block uppercase text-town-cream/90 hover:text-white text-sm sm:text-base tracking-[0.06em] px-5 sm:px-7 transition-colors"
             >
               {t.name}
             </Link>

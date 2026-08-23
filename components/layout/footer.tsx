@@ -6,19 +6,26 @@ import { MaMark } from '@/components/brand/wordmark';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { SocialLinks } from '@/components/townies/social-links';
 
+// The footer is now the only place the regions are listed — the header's Shop
+// dropdown that used to carry them is gone, so North Shore is here rather than
+// being reachable from nowhere at all.
 const shopByLinks = [
   { href: '/shop', label: 'All Towns' },
   { href: '/south-shore', label: 'South Shore' },
   { href: '/boston', label: 'Boston' },
   { href: '/south-east', label: 'Southeastern Mass' },
+  { href: '/north-shore', label: 'North Shore' },
   { href: '/goodkicks', label: 'Good Kicks' },
 ];
 
 const aboutLinks = [
   { href: '/about', label: 'Our Story' },
   { href: '/request-a-town', label: 'Request Your Town' },
-  { href: '/wholesale', label: 'Wholesale' },
+  { href: '/wholesale', label: 'Bulk Orders' },
   { href: '/ambassadors', label: 'Become an Ambassador' },
+  // /blog had zero internal links anywhere in the app — it existed only in
+  // sitemap.ts, so nothing on the site led to it.
+  { href: '/blog', label: 'The Town Paper' },
 ];
 
 const serviceLinks = [

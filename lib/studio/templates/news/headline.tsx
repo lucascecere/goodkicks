@@ -39,7 +39,7 @@ const mock: Props = {
   dek: 'Construction on the half-mile boardwalk starts next spring.',
   source: 'Patriot Ledger',
   dateLabel: 'August 6',
-  background: '/brand/lifestyle/town-hingham.jpg',
+  background: '/brand/scene/clover-hero-16x10.jpg',
   accent: '#F2EFE8',
 };
 
