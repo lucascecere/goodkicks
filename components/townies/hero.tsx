@@ -17,8 +17,9 @@ import { BrandImage } from '@/components/ui/brand-image';
  * fifths, because that is the only part the caption sits on.
  *
  * The headline is BLOCK, not script. The brand sheet assigns display type to
- * College Block and reserves the script for brand-level signatures — the
- * wordmark and the tagline band. It is spent once per page, and not here.
+ * College Block and reserves the script for brand-level signatures — on the
+ * homepage that now means the wordmark alone, so the script is never in
+ * competition with a headline.
  */
 export function Hero({
   eyebrow = 'Massachusetts · one town at a time',

@@ -3,7 +3,6 @@ import { Hero } from '@/components/townies/hero';
 import { CampaignBand } from '@/components/townies/campaign-band';
 import { FeaturedRail } from '@/components/townies/featured-rail';
 import { TownTicker } from '@/components/townies/town-ticker';
-import { TaglineBand } from '@/components/townies/tagline-band';
 import { ValueBand } from '@/components/townies/value-band';
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
@@ -31,9 +30,15 @@ export const metadata: Metadata = {
  * → editorial split → value band → CTA, and rendered 9,174px tall at 1440. Most
  * of that was type: a 128px hero headline and 60px section headings stacked in
  * full-viewport sections. Now every photographic slot holds a real photograph,
- * every headline sits on the shared ramp, and the sections that were never
- * going to have photography (tagline, values, request-a-town) say so with
- * pattern and type instead of a stock picture standing in for one.
+ * every headline sits on the shared ramp, and the two sections that were never
+ * going to have photography (values, request-a-town) say so with pattern and
+ * type instead of a stock picture standing in for one.
+ *
+ * The script signature now appears on the homepage only in the wordmark itself.
+ * TaglineBand carried it, and once its photograph was pulled it was a tall navy
+ * field holding two lines of type — a pause the page no longer needed between
+ * two campaign bands. The component still exists and still works; it wants a
+ * real photograph behind it before it earns a slot back.
  */
 export default async function HomePage() {
   const products = await getTownieProducts();
@@ -76,8 +81,6 @@ export default async function HomePage() {
         align="right"
         valign="bottom"
       />
-
-      <TaglineBand />
 
       <ValueBand />
 
