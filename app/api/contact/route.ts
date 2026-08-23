@@ -68,9 +68,14 @@ const contactSchema = z.discriminatedUnion('type', [
 ]);
 
 /**
- * Insert resilient to the shared Supabase not yet having the `brand` / `town`
- * columns: if the first insert fails on an unknown column, retry without those
- * fields so submissions are never silently dropped pre-cutover.
+ * Insert resilient to the shared Supabase not having the `town` column.
+ *
+ * This retry used to strip `brand` as well, which is how EVERY submission ever
+ * made ended up on the column default: `town` did not exist, so the first
+ * insert always failed, the retry always fired, and brand always went with it.
+ * `town` was added in docs/migrations/2026-08-23_contact_submissions_town.sql,
+ * so the retry should now never fire at all — but if it somehow does, it drops
+ * `town` alone. Brand is never discarded again.
  */
 async function insertSubmission(
   supabase: ReturnType<typeof createSupabaseServiceClient>,
@@ -78,10 +83,10 @@ async function insertSubmission(
 ) {
   const { error } = await supabase.from('contact_submissions').insert(row);
   if (!error) return;
-  if (/brand|town|column/i.test(error.message)) {
-    const { brand: _b, town: _t, ...rest } = row;
-    void _b;
+  if (/town|column/i.test(error.message)) {
+    const { town: _t, ...rest } = row;
     void _t;
+    console.warn('[contact] retrying without `town` — is the column missing?');
     const retry = await supabase.from('contact_submissions').insert(rest);
     if (retry.error) console.error('[contact] DB insert error:', retry.error.message);
     return;
@@ -148,7 +153,14 @@ export async function POST(request: Request) {
       group_name: groupName,
       ig_handle: data.type === 'partnership' ? data.igHandle : null,
     });
-    await upsertContact({ email: data.email, name: data.name, source: 'contact' });
+    // The submission already knows its brand — carry it onto the contact too,
+    // instead of leaving the person untagged in the one table that segments on it.
+    await upsertContact({
+      email: data.email,
+      name: data.name,
+      source: 'contact',
+      brand: data.brand,
+    });
 
     // Email notification (no-op when RESEND_API_KEY is empty — logged instead)
     const fromName = data.brand === 'goodkicks' ? 'Good Kicks' : 'Townies';

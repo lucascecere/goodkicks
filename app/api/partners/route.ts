@@ -4,6 +4,7 @@ import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { sendEmail } from '@/lib/email/resend-client';
 import { sendApplicationConfirmation } from '@/lib/email/send-application-confirmation';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
+import { parseBrand, requestBrand } from '@/lib/brand/site-brand';
 
 const GK_FROM = 'Good Kicks <info@goodkicks.co>';
 
@@ -28,7 +29,8 @@ export async function POST(req: NextRequest) {
     age,
   } = body ?? {};
 
-  const brand = body?.brand === 'townies' ? 'townies' : 'goodkicks';
+  // Townies is the default now — Good Kicks is the deliberate exception.
+  const brand = parseBrand(body?.brand) ?? requestBrand(req);
   const isTownies = brand === 'townies';
 
   // Townies reps rep a town; Good Kicks ambassadors rep a school.
@@ -54,7 +56,7 @@ export async function POST(req: NextRequest) {
     age: typeof age === 'number' ? age : null,
   });
   if (dbError) console.error('[partners] DB insert error:', dbError.message, dbError.details, dbError.hint);
-  await upsertContact({ email, name, source: 'ambassador' });
+  await upsertContact({ email, name, source: 'ambassador', brand });
 
   if (process.env.RESEND_API_KEY) {
     try {

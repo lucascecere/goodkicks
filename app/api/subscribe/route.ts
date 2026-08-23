@@ -2,15 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { storefrontClient } from '@/lib/shopify/client';
 import { CUSTOMER_CREATE_MUTATION } from '@/lib/shopify/mutations';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
+import { requestBrand } from '@/lib/brand/site-brand';
 
 export async function POST(req: NextRequest) {
-  const { email } = await req.json();
+  const { email, brand } = await req.json();
 
   if (!email || typeof email !== 'string' || !email.includes('@')) {
     return NextResponse.json({ error: 'invalid email' }, { status: 400 });
   }
 
-  await upsertContact({ email, source: 'newsletter' });
+  // The form says which brand rendered it, because Host cannot: the Good Kicks
+  // footer also lives at townies.shop/goodkicks, where this POST arrives with
+  // Host: townies.shop.
+  await upsertContact({ email, source: 'newsletter', brand: requestBrand(req, brand) });
 
   try {
     const { data } = await storefrontClient.request(CUSTOMER_CREATE_MUTATION, {

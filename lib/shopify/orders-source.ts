@@ -43,13 +43,32 @@ export const ORDERS_CACHE_TAG = 'shopify-orders';
 const MAX_PAGES = 20;
 
 /**
- * Brand of a single line item. Carts tag each line with a `_brand` custom
- * attribute (see components/townies/buy-box.tsx). Legacy orders placed before
- * the two-brand cart have no tag → attributed to Good Kicks, the original brand.
+ * The `_brand` cart attribute shipped with the two-brand cart on 2026-07-04.
+ * The date is what makes an untagged line readable: before it, Townies did not
+ * exist, so an untagged line can only be Good Kicks. After it, an untagged line
+ * is something that bypassed the cart — a POS sale, a manual/draft order — in
+ * what is now the Townies store.
  */
-export function lineBrand(item: ShopifyLineItem): RealBrand {
+const TOWNIES_LAUNCH = Date.parse('2026-07-04T00:00:00Z');
+
+/**
+ * Brand of a single line item. Carts tag each line with a `_brand` custom
+ * attribute (see components/townies/buy-box.tsx).
+ *
+ * Pass `orderCreatedAt` wherever you have it. Without it an untagged line falls
+ * back to Good Kicks, which is right for the legacy orders that make up all of
+ * the untagged history but wrong for anything placed since the launch.
+ */
+export function lineBrand(
+  item: ShopifyLineItem,
+  orderCreatedAt?: string | null,
+): RealBrand {
   const tag = item.properties?.find((p) => p.name === '_brand')?.value;
-  return tag === 'townies' ? 'townies' : 'goodkicks';
+  if (tag === 'townies' || tag === 'goodkicks') return tag;
+
+  const placed = orderCreatedAt ? Date.parse(orderCreatedAt) : NaN;
+  if (!Number.isNaN(placed) && placed >= TOWNIES_LAUNCH) return 'townies';
+  return 'goodkicks';
 }
 
 /**
@@ -76,7 +95,7 @@ export function lineRevenue(item: ShopifyLineItem): number {
  */
 export function brandRevenue(order: ShopifyOrder, brand: RealBrand): number {
   return order.line_items
-    .filter((li) => lineBrand(li) === brand)
+    .filter((li) => lineBrand(li, order.created_at) === brand)
     .reduce((sum, li) => sum + lineRevenue(li), 0);
 }
 
@@ -85,7 +104,9 @@ export function brandRevenue(order: ShopifyOrder, brand: RealBrand): number {
  * both. Used to tag the customer's contact record.
  */
 export function orderBrands(order: ShopifyOrder): RealBrand[] {
-  return [...new Set(order.line_items.map(lineBrand))];
+  return [
+    ...new Set((order.line_items ?? []).map((li) => lineBrand(li, order.created_at))),
+  ];
 }
 
 export type OrdersPage = { orders: ShopifyOrder[]; truncated: boolean };
