@@ -102,7 +102,7 @@ export default async function RootLayout({
         />
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-town-forest text-white px-4 py-2 rounded z-[100]"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-accent text-white px-4 py-2 rounded z-[100]"
         >
           Skip to content
         </a>

@@ -13,14 +13,15 @@ export const revalidate = 60;
  * The hero rotation. Each slide is a campaign — its own photograph, its own
  * line, its own link — rather than a backdrop swap behind fixed copy.
  *
- * These are the three distinct scenes Townies owns: the clover shoot and the
- * two town drop shoots. They used to be split across the hero and two campaign
- * bands, which meant Milton and Braintree each appeared twice in the first two
- * screens. Consolidating them here is why the bands are gone — a carousel
- * cannot manufacture variety the photography doesn't have, it can only re-show
- * the same pictures further down the page.
+ * Two slides today: the clover shoot and the Milton drop shoot. These used to be
+ * split across the hero and two campaign bands, which meant the same towns
+ * appeared twice in the first two screens — consolidating them here is why the
+ * bands are gone. A carousel cannot manufacture variety the photography doesn't
+ * have; it can only re-show the same pictures further down the page.
  *
- * Add a slide per shoot as the shot list lands.
+ * Add a slide per shoot as new photography lands. A slide needs a 16:10 crop
+ * for desktop, a squarer `mobileSrc` (a 16:10 frame does not survive a phone),
+ * and the bottom-left kept clear of product — that is where the caption sits.
  */
 const HERO_SLIDES = [
   {
@@ -41,15 +42,18 @@ const HERO_SLIDES = [
     sub: 'Where this started, and still the one we get asked for most.',
     cta: { href: '/shop?town=milton', label: 'Shop Milton' },
   },
-  {
-    imageSrc: '/brand/scene/braintree-hero-16x10.jpg',
-    mobileSrc: '/brand/drops/braintree.jpg',
-    imageAlt: 'Braintree Townies snapbacks on a sidewalk outside Braintree Books',
-    eyebrow: 'Now shipping',
-    headline: 'Braintree.',
-    sub: 'Stitched heavy, worn in from day one.',
-    cta: { href: '/shop?town=braintree', label: 'Shop Braintree' },
-  },
+  // BRAINTREE SLIDE REMOVED — do not restore this one as it was.
+  //
+  // Both Braintree photographs show two caps: the cream 'Classic' and the navy
+  // '02184'. The '02184' is archived and unpublished in Shopify, so the hero was
+  // advertising a hat that 404s, with a CTA to a filtered shop page that no
+  // longer contains it. It cannot be cropped out either — the two caps overlap
+  // at roughly x=700 of 1448, so excluding the navy one leaves about 437px of
+  // height at 16:10, well short of a full-bleed hero.
+  //
+  // Real Classic-only photography is being shot. When it lands, add the slide
+  // back with the new files — a 16:10 crop plus a squarer `mobileSrc`, both with
+  // the bottom-left kept clear for the caption.
 ];
 
 export const metadata: Metadata = {
