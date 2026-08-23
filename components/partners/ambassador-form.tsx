@@ -35,10 +35,16 @@ const GK_ACCOUNT_TYPES = [
   { value: 'general', label: 'general sack community' },
 ];
 
+// College and pro athletes are their own options rather than one "local
+// athlete" bucket, because they are the one answer that overrides the follower
+// bar — they get approved on the strength of the sport, at any audience size.
+// Buried inside a general athlete option that signal arrives unreadable.
 const TOWNIES_ACCOUNT_TYPES = [
   { value: 'town-page', label: 'town / local page' },
   { value: 'creator', label: 'hometown creator' },
-  { value: 'athlete', label: 'local athlete' },
+  { value: 'athlete-college', label: 'college athlete' },
+  { value: 'athlete-pro', label: 'pro / semi-pro athlete' },
+  { value: 'athlete-local', label: 'local / high school athlete' },
   { value: 'other', label: 'something else' },
 ];
 
@@ -179,11 +185,15 @@ export function AmbassadorForm({ brand = 'goodkicks' }: { brand?: RealBrand }) {
         </div>
         <div>
           <label className={labelClass}>follower count (approx)</label>
+          {/* 3,000 is a BOUNDARY, not a number inside a bucket. The old ranges
+              were under-500 / 500–2k / 2k–10k / 10k+, so the bar sat in the
+              middle of the third option and an application could not tell you
+              whether the applicant cleared it. */}
           <select required value={form.followers} onChange={(e) => set('followers', e.target.value)} className={inputClass}>
             <option value="">select range</option>
-            <option value="under-500">under 500</option>
-            <option value="500-2k">500 – 2,000</option>
-            <option value="2k-10k">2,000 – 10,000</option>
+            <option value="under-1k">under 1,000</option>
+            <option value="1k-3k">1,000 – 3,000</option>
+            <option value="3k-10k">3,000 – 10,000</option>
             <option value="10k+">10,000+</option>
           </select>
         </div>
