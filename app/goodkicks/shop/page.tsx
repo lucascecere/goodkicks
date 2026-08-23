@@ -2,13 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getGoodKicksProducts, type CollectionProduct } from '@/lib/shopify/collections';
+import { gkCanonical } from '@/lib/seo/site';
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Shop the Sacks',
   description: 'Premium foot bags, in stock — six colorways. Pick your state and keep the game going.',
-  alternates: { canonical: '/goodkicks/shop' },
+  alternates: { canonical: gkCanonical('shop') },
 };
 
 function priceLabel(p: CollectionProduct): string {

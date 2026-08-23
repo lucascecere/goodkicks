@@ -15,6 +15,7 @@ import { ValueBand } from '@/components/townies/value-band';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
 import { ProductMedia, type ProductMediaImage } from '@/components/product/product-media';
 import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
+import { gkCanonical } from '@/lib/seo/site';
 
 // Shared product-detail body, rendered by BOTH the Townies route
 // (app/products/[handle]) and the Good Kicks route (app/goodkicks/products/[handle]).
@@ -63,7 +64,11 @@ export async function productPageMetadata(handle: string, brand?: Brand): Promis
   const name = displayName(handle, product.title, gk);
   const label = gk ? 'Good Kicks' : 'Townies';
   const imgUrl = product.featuredImage?.url;
-  const canonical = gk ? `/goodkicks/products/${handle}` : `/products/${handle}`;
+  // A Good Kicks product canonicalises to Good Kicks' own domain once that
+  // domain is live; until then to its working /goodkicks path. Both brands'
+  // products are readable at /products/<handle>, so this is the tag that stops
+  // one product ranking as two pages.
+  const canonical = gk ? gkCanonical(`products/${handle}`) : `/products/${handle}`;
   // Prefer the Shopify SEO metafields (global.title_tag / description_tag, exposed
   // as product.seo) when set; fall back to the generic template otherwise.
   const seoTitle = product.seo?.title?.trim() || `${name} — ${label}`;

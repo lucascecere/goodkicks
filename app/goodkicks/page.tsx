@@ -6,12 +6,13 @@ import { BogoSection } from '@/components/home/bogo-section';
 import { AmbassadorPromo } from '@/components/home/ambassador-promo';
 import { InstagramFeed } from '@/components/home/instagram-feed';
 import { FAQ } from '@/components/home/faq';
+import { gkCanonical } from '@/lib/seo/site';
 
 export const metadata: Metadata = {
   title: 'Good Kicks — The Best Foot Bag (Hacky Sack) for Your Circle',
   description:
     'Premium foot bags — what everyone calls hacky sacks — built for dorm circles, campus quads, and every backpack that needs one. Six colorways, in stock.',
-  alternates: { canonical: '/goodkicks' },
+  alternates: { canonical: gkCanonical('') },
 };
 
 export default function GoodKicksHome() {

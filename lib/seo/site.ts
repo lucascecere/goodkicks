@@ -5,6 +5,33 @@
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://townies.shop';
 
+/**
+ * Good Kicks' own origin. Its pages live under /goodkicks on this app and are
+ * served at the apex of goodkicks.co once ENABLE_GK_HOST_REWRITE is on.
+ */
+export const GOODKICKS_URL =
+  process.env.NEXT_PUBLIC_GOODKICKS_URL ?? 'https://goodkicks.co';
+
+/** Whether goodkicks.co is actually serving the /goodkicks subtree yet. */
+export const GK_HOST_LIVE = process.env.ENABLE_GK_HOST_REWRITE === 'true';
+
+/**
+ * Canonical URL for a Good Kicks page, given its path WITHOUT the /goodkicks
+ * prefix (so '/shop', '' for the home page).
+ *
+ * Follows the cutover rather than assuming it: while the rewrite is off,
+ * goodkicks.co does not serve these pages, and canonicalising to a URL that
+ * 404s is worse than canonicalising to the working one. Once the flag is on,
+ * every Good Kicks page points at its own domain instead of declaring itself a
+ * sub-page of townies.shop.
+ */
+export function gkCanonical(path: string): string {
+  const clean = path.replace(/^\/+/, '').replace(/\/$/, '');
+  return GK_HOST_LIVE
+    ? `${GOODKICKS_URL}${clean ? `/${clean}` : ''}`
+    : `${SITE_URL}/goodkicks${clean ? `/${clean}` : ''}`;
+}
+
 export const BUSINESS = {
   name: 'Townies Apparel Co.',
   shortName: 'Townies',

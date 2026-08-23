@@ -16,12 +16,12 @@ const shopLinks = [
 
 const brandLinks = [
   { href: '/goodkicks#ambassadors', label: 'ambassador program' },
-  { href: '/contact', label: 'contact' },
+  { href: '/goodkicks/support', label: 'support' },
 ];
 
 const helpLinks = [
-  { href: '/shipping-returns', label: 'shipping & returns' },
-  { href: '/privacy', label: 'privacy & terms' },
+  { href: '/goodkicks/shipping-returns', label: 'shipping & returns' },
+  { href: '/goodkicks/privacy', label: 'privacy & terms' },
 ];
 
 function SubscribeForm() {

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getTownieProducts, getGoodKicksProducts } from '@/lib/shopify/collections';
 import { towniePosts } from '@/lib/townies/blog-posts';
-import { SITE_URL } from '@/lib/seo/site';
+import { SITE_URL, gkCanonical } from '@/lib/seo/site';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = SITE_URL;
@@ -19,7 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const goodKicksRoutes: MetadataRoute.Sitemap = goodKicks.map((p) => ({
-    url: `${siteUrl}/goodkicks/products/${p.handle}`,
+    url: gkCanonical(`products/${p.handle}`),
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
@@ -39,8 +39,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/boston`,            lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
     { url: `${siteUrl}/south-east`,        lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
     { url: `${siteUrl}/north-shore`,       lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
-    { url: `${siteUrl}/goodkicks`,         lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
-    { url: `${siteUrl}/goodkicks/shop`,    lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
+    // Good Kicks entries follow the cutover: townies.shop/goodkicks/* while the
+    // host rewrite is off, goodkicks.co/* once it is on. Listing a URL the site
+    // does not serve yet is how a sitemap starts reporting 404s in Search Console.
+    { url: gkCanonical(''),                lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
+    { url: gkCanonical('shop'),            lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
+    { url: gkCanonical('about'),           lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.5 },
+    { url: gkCanonical('faq'),             lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
+    { url: gkCanonical('support'),         lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.4 },
+    { url: gkCanonical('shipping-returns'), lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.4 },
     { url: `${siteUrl}/blog`,              lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.7 },
     { url: `${siteUrl}/ambassadors`,       lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${siteUrl}/about`,             lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.6 },

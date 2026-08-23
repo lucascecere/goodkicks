@@ -48,6 +48,19 @@ export async function loadRep(id: string): Promise<RepRecord | null> {
  * is about who they are, and a page run by two people covering two towns has no
  * single town to name.
  */
+/**
+ * What the discount shows as in the Shopify admin. Townies codes are titled by
+ * TOWN (that is how you find "the Milton one" in a list of 40); Good Kicks by
+ * HANDLE, since an ambassador is their account. Written out identically in two
+ * routes before — a drift here means two reps' codes get titled by different
+ * rules depending on which button minted them.
+ */
+export function repDiscountTitle(rep: RepRecord): string {
+  return rep.brand === 'townies'
+    ? `Town Rep — ${rep.town ?? rep.name}`
+    : `Ambassador — ${rep.instagram ?? rep.name}`;
+}
+
 export function repCodeLabel(rep: RepRecord): string {
   return rep.instagram || rep.name;
 }

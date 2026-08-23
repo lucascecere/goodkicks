@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 const navLinks = [
   { href: '/goodkicks/shop', label: 'shop' },
   { href: '/goodkicks#ambassadors', label: 'ambassadors' },
-  { href: '/contact', label: 'contact' },
+  { href: '/goodkicks/support', label: 'support' },
 ];
 
 export function GoodKicksHeader() {

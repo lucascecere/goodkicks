@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { isAdminSession } from '@/lib/admin/require-admin';
+import { repDiscountTitle } from '@/lib/reps/server';
 import { isValidPct, MAX_PCT } from '@/lib/reps/pct';
 import { loadRep, repCodeLabel, sendWelcomeForRep } from '@/lib/reps/server';
 import {
@@ -57,10 +58,7 @@ export async function POST(req: NextRequest) {
         code,
         discountPct,
         brand: rep.brand,
-        title:
-          rep.brand === 'townies'
-            ? `Town Rep — ${rep.town ?? rep.name}`
-            : `Ambassador — ${rep.instagram ?? rep.name}`,
+        title: repDiscountTitle(rep),
       });
       discountCode = created.code;
       shopifyGid = created.gid;
