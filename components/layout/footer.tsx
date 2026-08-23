@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MaMark } from '@/components/brand/wordmark';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { SocialLinks } from '@/components/townies/social-links';
+import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify/account-url';
 
 // The footer is now the only place the regions are listed — the header's Shop
 // dropdown that used to carry them is gone, so North Shore is here rather than
@@ -29,7 +30,7 @@ const aboutLinks = [
 ];
 
 const serviceLinks = [
-  { href: 'https://goodkicks.myshopify.com/account', label: 'Account', external: true },
+  { href: SHOPIFY_ACCOUNT_URL, label: 'Account', external: true },
   { href: '/size-guide', label: 'Size Guide' },
   { href: '/shipping-returns', label: 'Shipping & Returns' },
   { href: '/faq', label: 'FAQ' },

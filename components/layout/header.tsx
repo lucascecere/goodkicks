@@ -7,6 +7,7 @@ import { Menu, X, Search, User } from 'lucide-react';
 import { CartIconButton } from './cart-icon-button';
 import { BrandLogo } from '@/components/brand/brand-logo';
 import { cn } from '@/lib/utils';
+import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify/account-url';
 
 // Every nav item is a flat link, Shop included.
 //
@@ -35,7 +36,7 @@ const mobileExtraLinks = [
 ];
 
 // Accounts + policies live on Shopify-hosted pages — link out.
-const ACCOUNT_URL = 'https://goodkicks.myshopify.com/account';
+const ACCOUNT_URL = SHOPIFY_ACCOUNT_URL;
 
 const navClass =
   'text-xs uppercase tracking-[0.18em] text-town-navy/75 hover:text-town-forest transition-colors';

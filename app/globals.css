@@ -72,8 +72,13 @@
   }
 
   body {
-    background-color: #F5EFE3;
-    color: #1A1A1A;
+    /* Was the Good Kicks cream + ink as literal hex, app-wide, under BOTH
+       brands. Now the Townies tokens, because Townies is the store. Every page
+       paints its own background over this; body shows through only in overscroll.
+       Not var(--color-bg): data-brand is set on a div INSIDE body, so a token
+       here would always resolve to the root (Townies) value anyway. */
+    background-color: var(--color-town-cream);
+    color: var(--color-town-navy);
     font-family: var(--font-inter), system-ui, sans-serif;
     font-size: 1rem;
     line-height: 1.625;
@@ -122,38 +127,6 @@
     margin-left: auto;
     margin-right: auto;
   }
-}
-
-.prose-content h2 {
-  font-family: var(--font-dm-serif);
-  font-size: 1.5rem;
-  color: var(--color-brand-ink);
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-  line-height: 1.2;
-}
-.prose-content p {
-  margin-bottom: 1rem;
-  line-height: 1.75;
-  color: var(--color-brand-muted);
-}
-.prose-content ul {
-  list-style: disc;
-  padding-left: 1.5rem;
-  margin-bottom: 1rem;
-}
-.prose-content li {
-  margin-bottom: 0.5rem;
-  color: var(--color-brand-muted);
-  line-height: 1.6;
-}
-.prose-content strong {
-  color: var(--color-brand-ink);
-  font-weight: 600;
-}
-.prose-content a {
-  color: var(--color-brand-rust);
-  text-decoration: underline;
 }
 
 @keyframes marquee {
