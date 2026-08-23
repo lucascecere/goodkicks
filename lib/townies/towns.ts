@@ -167,7 +167,9 @@ export function toTownView(product: CollectionProduct): TownView {
 // has a real drop shot, not before.
 const TOWN_IMAGES: Record<string, string> = {
   milton: '/brand/drops/milton.jpg',
-  braintree: '/brand/drops/braintree.jpg',
+  // Braintree removed: the only Braintree photograph shows the '02184'
+  // alongside the Classic, and the '02184' is archived. Re-add when there is a
+  // Classic-only shot.
 };
 
 export function townKey(p: CollectionProduct): { slug: string; name: string } {

@@ -141,9 +141,8 @@ export const STOCK_BACKGROUNDS: { value: string; label: string }[] = [
   { value: '/brand/scene/clover-hero-1x1.jpg', label: 'Clover — square' },
   { value: '/brand/scene/clover-2-1x1.jpg', label: 'Clover — group' },
   { value: '/brand/scene/milton-21x9.jpg', label: 'Milton — band' },
-  { value: '/brand/scene/braintree-21x9.jpg', label: 'Braintree — band' },
+  { value: '/brand/scene/milton-hero-16x10.jpg', label: 'Milton — Main St' },
   { value: '/brand/drops/milton.jpg', label: 'Milton drop' },
-  { value: '/brand/drops/braintree.jpg', label: 'Braintree drop' },
   { value: '/brand/product/mil-turn25.jpg', label: 'Milton cap — studio' },
   { value: '/brand/product/wey-turn25.jpg', label: 'Weymouth cap — studio' },
 ];
@@ -153,3 +152,8 @@ export const STOCK_BACKGROUNDS: { value: string; label: string }[] = [
 // path still pointing there would have rendered a blank template background —
 // no error, just an empty picker and five broken template previews. Every entry
 // above is a real Townies photograph.
+//
+// NO BRAINTREE. Both Braintree photographs show two caps, and the navy one is
+// the '02184' — archived and unpublished in Shopify. A social graphic built on
+// either would advertise a hat whose product page 404s. Add Braintree back when
+// Classic-only photography exists.

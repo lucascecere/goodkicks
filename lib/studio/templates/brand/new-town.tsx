@@ -41,7 +41,7 @@ const mock: Props = {
   region: 'South Shore',
   subline: 'Hats available now',
   cta: 'townies.shop',
-  background: '/brand/drops/braintree.jpg',
+  background: '/brand/scene/milton-hero-16x10.jpg',
   accent: '#F2EFE8',
 };
 
