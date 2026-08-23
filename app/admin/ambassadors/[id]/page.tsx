@@ -4,22 +4,9 @@ import Link from 'next/link';
 import { OnboardingPanel } from './onboarding-panel';
 import { AccountDetailsEditor } from './account-details-editor';
 import { fmtDateLong } from '@/lib/admin/format';
+import { ACCOUNT_TYPE_LABELS, FOLLOWER_LABELS } from '@/lib/reps/labels';
 
 export const dynamic = 'force-dynamic';
-
-const followerLabels: Record<string, string> = {
-  'under-500': 'Under 500',
-  '500-2k': '500–2k',
-  '2k-10k': '2k–10k',
-  '10k+': '10k+',
-};
-
-const typeLabels: Record<string, string> = {
-  'high-school': 'High School',
-  'college': 'College',
-  'freestyle': 'Freestyle',
-  'general': 'General',
-};
 
 function DetailRow({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;

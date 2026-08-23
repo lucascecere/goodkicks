@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { accountTypesFor, FOLLOWER_RANGES, repFieldLabels } from '@/lib/reps/labels';
 
 type Props = {
   appId: string;
@@ -21,30 +22,10 @@ type Props = {
   };
 };
 
-const GK_ACCOUNT_TYPES = [
-  { value: 'high-school', label: 'High School' },
-  { value: 'college', label: 'College' },
-  { value: 'freestyle', label: 'Freestyle' },
-  { value: 'general', label: 'General' },
-];
-
-const TOWNIES_ACCOUNT_TYPES = [
-  { value: 'town-page', label: 'Town / local page' },
-  { value: 'creator', label: 'Hometown creator' },
-  { value: 'athlete', label: 'Local athlete' },
-  { value: 'other', label: 'Other' },
-];
-
-const FOLLOWER_RANGES = [
-  { value: 'under-500', label: 'Under 500' },
-  { value: '500-2k', label: '500–2k' },
-  { value: '2k-10k', label: '2k–10k' },
-  { value: '10k+', label: '10k+' },
-];
-
 export function AccountDetailsEditor({ appId, brand, initialData }: Props) {
   const isTownies = brand === 'townies';
-  const accountTypes = isTownies ? TOWNIES_ACCOUNT_TYPES : GK_ACCOUNT_TYPES;
+  const labels = repFieldLabels(brand);
+  const accountTypes = accountTypesFor(brand);
 
   const [fields, setFields] = useState({
     name: initialData.name ?? '',
@@ -105,7 +86,7 @@ export function AccountDetailsEditor({ appId, brand, initialData }: Props) {
           <input className={inputCls} value={fields.instagram} onChange={(e) => set('instagram', e.target.value)} />
         </div>
         <div className="space-y-1">
-          <p className={labelCls}>{isTownies ? 'Town' : 'School / Group'}</p>
+          <p className={labelCls}>{labels.place}</p>
           {isTownies ? (
             <input className={inputCls} value={fields.town} onChange={(e) => set('town', e.target.value)} />
           ) : (
@@ -135,7 +116,7 @@ export function AccountDetailsEditor({ appId, brand, initialData }: Props) {
           <input className={inputCls} type="number" min="13" max="100" value={fields.age} onChange={(e) => set('age', e.target.value)} />
         </div>
         <div className="space-y-1">
-          <p className={labelCls}>{isTownies ? 'Hat Wanted' : 'Colorway Preference'}</p>
+          <p className={labelCls}>{labels.preference}</p>
           {isTownies ? (
             <input className={inputCls} value={fields.hat_preference} onChange={(e) => set('hat_preference', e.target.value)} />
           ) : (

@@ -12,6 +12,7 @@ import { renderRepWelcome, repWelcomeSubject } from '@/lib/email/rep-welcome-tem
 import { parseTowns } from '@/lib/reps/towns';
 import { fmtDate, fmtDateTime } from '@/lib/admin/format';
 import { MAX_PCT, clampPct } from '@/lib/reps/pct';
+import { accountTypeLabel, followerLabel, repFieldLabels } from '@/lib/reps/labels';
 
 type Ambassador = {
   id: string;
@@ -132,6 +133,7 @@ function RightPanel({
 }) {
   const brand = repBrand(app);
   const isTownies = brand === 'townies';
+  const labels = repFieldLabels(brand);
 
   const [discountPct, setDiscountPct] = useState(app.discount_pct ?? DEFAULT_DISCOUNT);
   const [commissionPct, setCommissionPct] = useState(
@@ -307,14 +309,6 @@ function RightPanel({
       setConfirmDelete(false);
     }
   }
-
-  const followerLabels: Record<string, string> = {
-    'under-500': 'Under 500', '500-2k': '500–2k', '2k-10k': '2k–10k', '10k+': '10k+',
-  };
-  const typeLabels: Record<string, string> = {
-    'high-school': 'High School', 'college': 'College', 'freestyle': 'Freestyle', 'general': 'General',
-    'town-page': 'Town / local page', 'creator': 'Hometown creator', 'athlete': 'Local athlete', 'other': 'Other',
-  };
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
@@ -517,11 +511,11 @@ function RightPanel({
       <div className="p-5 space-y-3 border-b border-brand-rule">
         <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Profile</p>
         <div className="grid grid-cols-2 gap-3">
-          <DetailRow label={isTownies ? 'Town' : 'School / Group'} value={isTownies ? app.town : app.school} />
-          <DetailRow label="Account Type" value={typeLabels[app.account_type ?? ''] ?? app.account_type} />
-          <DetailRow label="Followers" value={followerLabels[app.followers ?? ''] ?? app.followers} />
+          <DetailRow label={labels.place} value={isTownies ? app.town : app.school} />
+          <DetailRow label="Account Type" value={accountTypeLabel(app.account_type)} />
+          <DetailRow label="Followers" value={followerLabel(app.followers)} />
           <DetailRow
-            label={isTownies ? 'Hat wanted' : 'Colorway'}
+            label={labels.preference}
             value={isTownies ? app.hat_preference : app.colorway_preference}
           />
         </div>

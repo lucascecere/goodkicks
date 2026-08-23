@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { RealBrand } from '@/lib/admin/brand';
+import { accountTypesFor } from '@/lib/reps/labels';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -26,29 +27,6 @@ const GK_COLORWAYS = [
   { value: 'massachusetts', label: 'massachusetts' },
   { value: 'maine', label: 'maine (mustard + navy + black)' },
   { value: 'no-preference', label: 'no preference / surprise me' },
-];
-
-const GK_ACCOUNT_TYPES = [
-  { value: 'high-school', label: 'high school' },
-  { value: 'college', label: 'college / university' },
-  { value: 'freestyle', label: 'freestyle / tricks' },
-  { value: 'general', label: 'general sack community' },
-];
-
-// College and pro athletes are their own options rather than one "local
-// athlete" bucket, because they are the one answer that overrides the follower
-// bar — they get approved on the strength of the sport, at any audience size.
-// Buried inside a general athlete option that signal arrives unreadable.
-const TOWNIES_ACCOUNT_TYPES = [
-  { value: 'town-page', label: 'town / local page' },
-  // "influencer" is in the label because that is the word this group uses for
-  // itself. Both current creator-type reps described themselves that way, and
-  // "hometown creator" alone reads as something smaller than it is.
-  { value: 'creator', label: 'content creator / influencer' },
-  { value: 'athlete-college', label: 'college athlete' },
-  { value: 'athlete-pro', label: 'pro / semi-pro athlete' },
-  { value: 'athlete-local', label: 'local / high school athlete' },
-  { value: 'other', label: 'something else' },
 ];
 
 export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
@@ -181,7 +159,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
           <label className={labelClass}>account type</label>
           <select required value={form.accountType} onChange={(e) => set('accountType', e.target.value)} className={inputClass}>
             <option value="">select one</option>
-            {(isTownies ? TOWNIES_ACCOUNT_TYPES : GK_ACCOUNT_TYPES).map((t) => (
+            {accountTypesFor(brand).map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
