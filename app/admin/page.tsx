@@ -5,16 +5,9 @@ import { BRAND_LABELS, type AdminBrand, type RealBrand } from '@/lib/admin/brand
 import { getAdminBrand } from '@/lib/admin/brand-server';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import Link from 'next/link';
+import { fmtDateShort, money } from '@/lib/admin/format';
 
 export const dynamic = 'force-dynamic';
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-function fmtMoney(n: number) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(n);
-}
 
 type ContactSub = {
   id: string;
@@ -185,11 +178,11 @@ export default async function AdminDashboardPage() {
           </div>
           <div className="bg-white/8 border border-white/10 rounded-xl p-5">
             <p className="text-xs text-white/40 uppercase tracking-wider mb-2">{brand === 'all' ? 'Total Revenue' : 'Brand Revenue'}</p>
-            <p className="text-4xl font-bold text-white">{fmtMoney(orderSummary.totalRevenue)}</p>
+            <p className="text-4xl font-bold text-white">{money(orderSummary.totalRevenue, { decimals: 0 })}</p>
           </div>
           <div className="bg-white/8 border border-white/10 rounded-xl p-5">
             <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Avg Order Value</p>
-            <p className="text-4xl font-bold text-white">{fmtMoney(orderSummary.avgOrderValue)}</p>
+            <p className="text-4xl font-bold text-white">{money(orderSummary.avgOrderValue, { decimals: 0 })}</p>
           </div>
         </div>
         {brand !== 'all' && (
@@ -286,7 +279,7 @@ export default async function AdminDashboardPage() {
                   </div>
                   <div className="flex items-center gap-2 ml-3 shrink-0">
                     {brand === 'all' && <BrandBadge brand={c.brand} />}
-                    <span className="text-xs text-brand-muted">{fmtDate(c.created_at)}</span>
+                    <span className="text-xs text-brand-muted">{fmtDateShort(c.created_at)}</span>
                   </div>
                 </Link>
               ))}
@@ -324,7 +317,7 @@ export default async function AdminDashboardPage() {
                     </div>
                     <div className="flex items-center gap-3 ml-3 shrink-0">
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>{badge.label}</span>
-                      <span className="text-xs text-brand-muted">{fmtDate(a.created_at)}</span>
+                      <span className="text-xs text-brand-muted">{fmtDateShort(a.created_at)}</span>
                     </div>
                   </Link>
                 );

@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { SyncShopifyButton } from './sync-button';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import { BRAND_LABELS, type AdminBrand, type RealBrand } from '@/lib/admin/brand';
+import { fmtDate } from '@/lib/admin/format';
 
 export type Contact = {
   id: string;
@@ -31,10 +32,6 @@ const ALL_BRANDS: RealBrand[] = ['townies', 'goodkicks'];
 // to a brand hides untagged people entirely, which is how a mis-tag stays
 // invisible — this chip is the way back to them.
 const UNTAGGED = '__untagged__';
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
 
 export function ContactsClient({
   initialContacts,

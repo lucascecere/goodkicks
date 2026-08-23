@@ -2,29 +2,13 @@ import Image from 'next/image';
 import { partnersForBrand } from '@/lib/partners/partners';
 import { getRepStats } from '@/lib/shopify/get-rep-stats';
 import type { AdminBrand } from '@/lib/admin/brand';
+import { money, fmtDate } from '@/lib/admin/format';
 
 // Brand partners, above the rep leaderboard.
 //
 // Same revenue engine as the reps (getRepStats, so the net-of-discount maths is
 // shared and can't drift), but partners are a config list rather than database
 // rows — see lib/partners/partners.ts for why.
-
-function money(n: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(n);
-}
-
-function fmtDate(iso: string | null) {
-  if (!iso) return 'No orders yet';
-  return new Date(iso).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-}
 
 export async function PartnerPanel({ brand }: { brand: AdminBrand }) {
   const partners = partnersForBrand(brand);
@@ -97,7 +81,7 @@ export async function PartnerPanel({ brand }: { brand: AdminBrand }) {
               </div>
 
               <p className="mt-2.5 text-white/35 text-[11px]">
-                Last order: {fmtDate(stats.lastOrderAt)}
+                Last order: {fmtDate(stats.lastOrderAt, 'No orders yet')}
               </p>
             </div>
           </div>

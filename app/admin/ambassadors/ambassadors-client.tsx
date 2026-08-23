@@ -10,6 +10,8 @@ import type { DiscountReadiness } from '@/lib/shopify/discount-readiness';
 import { codeSuggestions, greetingName } from '@/lib/reps/naming';
 import { renderRepWelcome, repWelcomeSubject } from '@/lib/email/rep-welcome-template';
 import { parseTowns } from '@/lib/reps/towns';
+import { fmtDate, fmtDateTime } from '@/lib/admin/format';
+import { MAX_PCT, clampPct } from '@/lib/reps/pct';
 
 type Ambassador = {
   id: string;
@@ -47,7 +49,6 @@ const TOWNIES_FROM_HINT =
   process.env.NEXT_PUBLIC_TOWNIES_FROM_EMAIL || 'info@goodkicks.co';
 
 // Program ceiling — a rep never earns or discounts more than this.
-const MAX_PCT = 20;
 const DEFAULT_DISCOUNT = 15;
 const DEFAULT_COMMISSION = 10;
 
@@ -62,14 +63,6 @@ function repSuggestions(app: Ambassador, discountPct: number) {
     towns: parseTowns(app.town),
     discountPct,
   });
-}
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function fmtDateTime(iso: string) {
-  return new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
 function StatusBadge({ app }: { app: Ambassador }) {
@@ -114,7 +107,7 @@ function PctInput({
           value={value}
           onChange={(e) => {
             const n = Number(e.target.value);
-            onChange(Number.isFinite(n) ? Math.max(0, Math.min(MAX_PCT, Math.round(n))) : 0);
+            onChange(clampPct(n));
           }}
           className="w-full border border-brand-rule rounded-lg px-3 py-2 pr-7 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
         />

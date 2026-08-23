@@ -5,6 +5,11 @@ import { useRouter } from 'next/navigation';
 import { renderRepWelcome, repWelcomeSubject } from '@/lib/email/rep-welcome-template';
 import type { RealBrand } from '@/lib/admin/brand';
 import { greetingName, slugifyCode } from '@/lib/reps/naming';
+import { fmtDateTime } from '@/lib/admin/format';
+import { MAX_PCT, clampPct } from '@/lib/reps/pct';
+
+/** This panel keeps the year — a welcome email sent last season should not read as this week. */
+const fmtDateTimeWithYear = (iso: string) => fmtDateTime(iso, { year: true });
 
 interface App {
   id: string;
@@ -26,18 +31,10 @@ interface App {
   welcome_email_sent_at: string | null;
 }
 
-const MAX_PCT = 20;
 
 function suggestCode(app: App, discountPct: number): string {
   const slug = slugifyCode(app.instagram || app.name);
   return slug ? `${slug}${discountPct}` : '';
-}
-
-function fmtDateTime(iso: string) {
-  return new Date(iso).toLocaleString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-    hour: 'numeric', minute: '2-digit',
-  });
 }
 
 function Step({ n, label, done }: { n: number; label: string; done?: boolean }) {
@@ -75,7 +72,7 @@ function PctField({
           value={value}
           onChange={(e) => {
             const n = Number(e.target.value);
-            onChange(Number.isFinite(n) ? Math.max(0, Math.min(MAX_PCT, Math.round(n))) : 0);
+            onChange(clampPct(n));
           }}
           className="w-full border border-brand-rule rounded-lg px-3 py-2 pr-7 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
         />
@@ -211,7 +208,7 @@ export function OnboardingPanel({ app }: { app: App }) {
               <p className="text-xs text-brand-muted uppercase tracking-wide mb-0.5">Welcome Email</p>
               {app.welcome_email_sent_at ? (
                 <p className="text-sm text-green-700 font-medium">
-                  sent {fmtDateTime(app.welcome_email_sent_at)}
+                  sent {fmtDateTimeWithYear(app.welcome_email_sent_at)}
                 </p>
               ) : (
                 <p className="text-sm text-amber-600 font-medium">no send record found</p>

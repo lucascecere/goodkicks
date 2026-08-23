@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
-import { isAdminAuthed, loadRep, repCodeLabel, sendWelcomeForRep } from '@/lib/reps/server';
+import { isAdminSession } from '@/lib/admin/require-admin';
+import { isValidPct, MAX_PCT } from '@/lib/reps/pct';
+import { loadRep, repCodeLabel, sendWelcomeForRep } from '@/lib/reps/server';
 import {
   createRepDiscountCode,
   slugifyCode,
@@ -15,7 +17,7 @@ import {
 // earns. They are separate numbers — the old single `tierPct` meant an 8%
 // commission minted a code giving 8% off.
 export async function POST(req: NextRequest) {
-  if (!(await isAdminAuthed(req))) {
+  if (!(await isAdminSession())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
@@ -29,8 +31,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'missing applicationId' }, { status: 400 });
   }
   for (const [label, value] of [['discountPct', discountPct], ['commissionPct', commissionPct]] as const) {
-    if (!Number.isInteger(value) || value < 0 || value > 20) {
-      return NextResponse.json({ error: `${label} must be a whole number from 0 to 20` }, { status: 400 });
+    if (!isValidPct(value)) {
+      return NextResponse.json({ error: `${label} must be a whole number from 0 to ${MAX_PCT}` }, { status: 400 });
     }
   }
 

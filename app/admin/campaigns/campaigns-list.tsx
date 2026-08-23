@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import type { RealBrand } from '@/lib/admin/brand';
+import { fmtDate } from '@/lib/admin/format';
 
 interface Campaign {
   id: string;
@@ -19,9 +20,6 @@ interface Campaign {
   created_at: string;
 }
 
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
 function fmtRelative(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const h = Math.floor(diff / 3600000);

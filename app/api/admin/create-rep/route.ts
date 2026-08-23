@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
+import { isAdminSession } from '@/lib/admin/require-admin';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
-import { isAdminAuthed } from '@/lib/reps/server';
+
 import { parseBrand } from '@/lib/brand/site-brand';
 
 // Add a rep who never went through the public form — someone signed up in
@@ -10,7 +11,7 @@ import { parseBrand } from '@/lib/brand/site-brand';
 //
 // POST { brand, name, email, instagram, town?, school?, hatDelivered?, age?, notes? }
 export async function POST(req: NextRequest) {
-  if (!(await isAdminAuthed(req))) {
+  if (!(await isAdminSession())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

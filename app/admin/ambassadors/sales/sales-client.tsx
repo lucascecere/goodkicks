@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import { RepTabs } from '../rep-tabs';
 import type { AdminBrand, RealBrand } from '@/lib/admin/brand';
+import { money, fmtDate } from '@/lib/admin/format';
 
 export type SalesRow = {
   id: string;
@@ -21,19 +22,6 @@ export type SalesRow = {
 };
 
 type SortKey = 'revenue' | 'orders' | 'commission' | 'name' | 'lastOrderAt';
-
-function money(n: number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(n);
-}
-
-function fmtDate(iso: string | null) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
 
 export function SalesClient({
   rows,

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { OnboardingPanel } from './onboarding-panel';
 import { AccountDetailsEditor } from './account-details-editor';
+import { fmtDateLong } from '@/lib/admin/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,12 +20,6 @@ const typeLabels: Record<string, string> = {
   'freestyle': 'Freestyle',
   'general': 'General',
 };
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', {
-    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
-  });
-}
 
 function DetailRow({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
@@ -82,7 +77,7 @@ export default async function AmbassadorDetailPage({ params }: { params: Promise
           <div className="flex flex-col gap-0.5">
             <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Account Details</h2>
             {app.created_at && (
-              <p className="text-xs text-brand-muted">Applied {fmtDate(app.created_at)}</p>
+              <p className="text-xs text-brand-muted">Applied {fmtDateLong(app.created_at)}</p>
             )}
           </div>
           <AccountDetailsEditor

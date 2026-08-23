@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
-import { isAdminAuthed, loadRep, repCodeLabel } from '@/lib/reps/server';
+import { isAdminSession } from '@/lib/admin/require-admin';
+import { isValidPct, MAX_PCT } from '@/lib/reps/pct';
+import { loadRep, repCodeLabel } from '@/lib/reps/server';
 import {
   createRepDiscountCode,
   slugifyCode,
@@ -12,7 +14,7 @@ import {
 // POST { applicationId, code?, discountPct } → creates the code in Shopify,
 // scoped to the rep's brand collection, and persists it.
 export async function POST(req: NextRequest) {
-  if (!(await isAdminAuthed(req))) {
+  if (!(await isAdminSession())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
@@ -23,8 +25,8 @@ export async function POST(req: NextRequest) {
   if (!applicationId) {
     return NextResponse.json({ error: 'missing applicationId' }, { status: 400 });
   }
-  if (!Number.isInteger(discountPct) || discountPct < 1 || discountPct > 20) {
-    return NextResponse.json({ error: 'discountPct must be a whole number from 1 to 20' }, { status: 400 });
+  if (!isValidPct(discountPct, 1)) {
+    return NextResponse.json({ error: 'discountPct must be a whole number from 1 to ${MAX_PCT}' }, { status: 400 });
   }
 
   const rep = await loadRep(applicationId);

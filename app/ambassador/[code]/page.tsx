@@ -3,6 +3,7 @@ import { getRepStats } from '@/lib/shopify/get-rep-stats';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import type { RealBrand } from '@/lib/admin/brand';
+import { fmtDate } from '@/lib/admin/format';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,10 +18,6 @@ function fmt(n: number) {
     currency: 'USD',
     minimumFractionDigits: 2,
   }).format(n);
-}
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 // Per-brand chrome. The page is unauthenticated (knowing the code is the only

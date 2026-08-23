@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
-import { isAdminAuthed, loadRep } from '@/lib/reps/server';
+import { isAdminSession } from '@/lib/admin/require-admin';
+import { isValidPct, MAX_PCT } from '@/lib/reps/pct';
+import { loadRep } from '@/lib/reps/server';
 import { updateRepDiscountCode, ShopifyScopeError } from '@/lib/shopify/create-discount-code';
 
 const ALLOWED = [
@@ -30,7 +32,7 @@ const ALLOWED = [
 const PERCENT_FIELDS = ['discount_pct', 'commission_pct'] as const;
 
 export async function POST(req: NextRequest) {
-  if (!(await isAdminAuthed(req))) {
+  if (!(await isAdminSession())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
@@ -53,8 +55,8 @@ export async function POST(req: NextRequest) {
   for (const key of PERCENT_FIELDS) {
     if (update[key] === null || update[key] === undefined) continue;
     const value = Number(update[key]);
-    if (!Number.isInteger(value) || value < 0 || value > 20) {
-      return NextResponse.json({ error: `${key} must be a whole number from 0 to 20` }, { status: 400 });
+    if (!isValidPct(value)) {
+      return NextResponse.json({ error: `${key} must be a whole number from 0 to ${MAX_PCT}` }, { status: 400 });
     }
     update[key] = value;
   }

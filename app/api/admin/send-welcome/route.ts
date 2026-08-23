@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
-import { isAdminAuthed, loadRep, sendWelcomeForRep } from '@/lib/reps/server';
+import { isAdminSession } from '@/lib/admin/require-admin';
+import { loadRep, sendWelcomeForRep } from '@/lib/reps/server';
 
 // POST { applicationId } — re-sends the welcome email in the rep's brand voice.
 // Everything is read fresh from the DB so a just-edited email/code is used, not
 // a stale client-side copy.
 export async function POST(req: NextRequest) {
-  if (!(await isAdminAuthed(req))) {
+  if (!(await isAdminSession())) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
