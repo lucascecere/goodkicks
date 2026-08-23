@@ -3,7 +3,7 @@ import { Hero } from '@/components/townies/hero';
 import { FeaturedRail } from '@/components/townies/featured-rail';
 import { TownTicker } from '@/components/townies/town-ticker';
 import { ValueBand } from '@/components/townies/value-band';
-import { RequestTownBand } from '@/components/townies/request-town-band';
+import { BulkOrderBand } from '@/components/townies/bulk-order-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { townKey } from '@/lib/townies/towns';
 
@@ -73,8 +73,13 @@ export const metadata: Metadata = {
  * of that was type: a 128px hero headline and 60px section headings stacked in
  * full-viewport sections. Now every photographic slot holds a real photograph,
  * every headline sits on the shared ramp, and the two sections that were never
- * going to have photography (values, request-a-town) say so with pattern and
+ * going to have photography (values, the bulk close) say so with pattern and
  * type instead of a stock picture standing in for one.
+ *
+ * The closing band is bulk orders, not request-a-town. RequestTownBand is still
+ * the right close for /shop, where somebody has just been through the whole
+ * catalogue without finding their town; on the homepage the more valuable
+ * question is the one nobody can answer from the shop — how you buy thirty.
  *
  * The script signature now appears on the homepage only in the wordmark itself.
  * TaglineBand carried it, and once its photograph was pulled it was a tall navy
@@ -99,7 +104,7 @@ export default async function HomePage() {
 
       <ValueBand />
 
-      <RequestTownBand />
+      <BulkOrderBand />
     </>
   );
 }
