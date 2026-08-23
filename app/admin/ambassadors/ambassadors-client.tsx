@@ -13,6 +13,7 @@ import { parseTowns } from '@/lib/reps/towns';
 import { fmtDate, fmtDateTime } from '@/lib/admin/format';
 import { MAX_PCT, clampPct } from '@/lib/reps/pct';
 import { accountTypeLabel, followerLabel, repFieldLabels } from '@/lib/reps/labels';
+import { approveRep, createRepCode } from '@/lib/reps/approve-client';
 
 type Ambassador = {
   id: string;
@@ -177,61 +178,53 @@ function RightPanel({
     setApproveErr('');
     setScopeErr('');
 
-    const res = await fetch('/api/admin/approve-ambassador', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        applicationId: app.id,
-        discountCode: approveCode.trim().toUpperCase(),
-        discountPct,
-        commissionPct,
-        createInShopify,
-      }),
+    const result = await approveRep({
+      applicationId: app.id,
+      discountCode: approveCode,
+      discountPct,
+      commissionPct,
+      createInShopify,
     });
     setApproving(false);
 
-    const json = await res.json().catch(() => ({}));
-    if (res.ok) {
+    if (result.ok) {
       onUpdate(app.id, {
         approved: true,
         status: 'approved',
-        discount_code: json.discountCode ?? approveCode.trim().toUpperCase(),
+        discount_code: result.discountCode ?? approveCode.trim().toUpperCase(),
         discount_pct: discountPct,
         commission_pct: commissionPct,
-        shopify_discount_gid: json.gid ?? app.shopify_discount_gid,
+        shopify_discount_gid: result.gid ?? app.shopify_discount_gid,
       });
       return;
     }
-    if (json.code === 'shopify_scope' || json.code === 'shopify_unconfigured') {
-      setScopeErr(json.error);
-    } else {
-      setApproveErr(json.error ?? 'something went wrong');
-    }
+    if (result.kind === 'scope') setScopeErr(result.message);
+    else setApproveErr(result.message);
   }
 
   async function handleCreateCodeOnly() {
     setApproving(true);
     setApproveErr('');
     setScopeErr('');
-    const res = await fetch('/api/admin/create-discount-code', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ applicationId: app.id, code: approveCode.trim(), discountPct }),
+    const result = await createRepCode({
+      applicationId: app.id,
+      code: approveCode,
+      discountPct,
     });
     setApproving(false);
-    const json = await res.json().catch(() => ({}));
-    if (res.ok) {
-      setApproveCode(json.code);
+
+    if (result.ok) {
+      setApproveCode(result.discountCode ?? approveCode.trim());
       setCodeTouched(true);
       onUpdate(app.id, {
-        discount_code: json.code,
+        discount_code: result.discountCode ?? approveCode.trim(),
         discount_pct: discountPct,
-        shopify_discount_gid: json.gid,
+        shopify_discount_gid: result.gid,
       });
-    } else if (json.code === 'shopify_scope' || json.code === 'shopify_unconfigured') {
-      setScopeErr(json.error);
+    } else if (result.kind === 'scope') {
+      setScopeErr(result.message);
     } else {
-      setApproveErr(json.error ?? 'something went wrong');
+      setApproveErr(result.message);
     }
   }
 

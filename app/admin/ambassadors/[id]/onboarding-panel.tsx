@@ -7,6 +7,7 @@ import type { RealBrand } from '@/lib/admin/brand';
 import { greetingName, slugifyCode } from '@/lib/reps/naming';
 import { fmtDateTime } from '@/lib/admin/format';
 import { MAX_PCT, clampPct } from '@/lib/reps/pct';
+import { approveRep } from '@/lib/reps/approve-client';
 
 /** This panel keeps the year — a welcome email sent last season should not read as this week. */
 const fmtDateTimeWithYear = (iso: string) => fmtDateTime(iso, { year: true });
@@ -114,28 +115,20 @@ export function OnboardingPanel({ app }: { app: App }) {
     setStep('loading');
     setErr('');
     setScopeErr('');
-    const res = await fetch('/api/admin/approve-ambassador', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        applicationId: app.id,
-        discountCode: code.trim().toUpperCase(),
-        discountPct,
-        commissionPct,
-        createInShopify,
-      }),
+    const result = await approveRep({
+      applicationId: app.id,
+      discountCode: code,
+      discountPct,
+      commissionPct,
+      createInShopify,
     });
-    if (res.ok) {
+    if (result.ok) {
       router.refresh();
       return;
     }
-    const json = await res.json().catch(() => ({}));
     setStep('error');
-    if (json.code === 'shopify_scope' || json.code === 'shopify_unconfigured') {
-      setScopeErr(json.error);
-    } else {
-      setErr(json.error ?? 'something went wrong');
-    }
+    if (result.kind === 'scope') setScopeErr(result.message);
+    else setErr(result.message);
   }
 
   async function handleReject() {
