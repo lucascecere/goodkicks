@@ -28,6 +28,11 @@ declare namespace NodeJS {
     // rejects every request rather than trusting unsigned input.
     SHOPIFY_WEBHOOK_SECRET?: string;
 
+    // Serves goodkicks.co from the /goodkicks subtree. Read in middleware.ts as
+    // an exact 'true' compare, so anything else (including unset) leaves the
+    // rewrite off. Stays off until the townies.shop cutover — see M3.
+    ENABLE_GK_HOST_REWRITE?: string;
+
     // Content Studio — all optional. Templates render on mock data with none
     // of these set; the feeds only fill values in automatically.
     THE_ODDS_API_KEY?: string;

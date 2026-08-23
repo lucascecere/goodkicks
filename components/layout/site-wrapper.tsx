@@ -6,6 +6,7 @@ import { Header } from './header';
 import { Footer } from './footer';
 import { CartDrawer } from './cart-drawer';
 import { RotarySpin } from '@/components/townies/rotary-spin';
+import { siteBrand } from '@/lib/brand/site-brand';
 
 export function SiteWrapper({
   children,
@@ -29,11 +30,8 @@ export function SiteWrapper({
   // On goodkicks.co the middleware rewrites "/" → /goodkicks, so the server
   // renders GK but the CLIENT usePathname() sees "/" — which used to flip the
   // Townies header back on after hydration. The server-provided `host` is the
-  // reliable signal there.
-  const h = host.toLowerCase();
-  const isGoodKicksHost = h === 'goodkicks.co' || h === 'www.goodkicks.co';
-  const isGoodKicks =
-    isGoodKicksHost || pathname === '/goodkicks' || pathname.startsWith('/goodkicks/');
+  // reliable signal there, and siteBrand() weighs both.
+  const isGoodKicks = siteBrand(host, pathname) === 'goodkicks';
 
   return (
     <div data-brand={isGoodKicks ? 'goodkicks' : undefined}>

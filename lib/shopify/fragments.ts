@@ -14,29 +14,6 @@ export const MONEY_FRAGMENT = `
   }
 `;
 
-export const PRODUCT_VARIANT_FRAGMENT = `
-  fragment ProductVariantFragment on ProductVariant {
-    id
-    title
-    availableForSale
-    selectedOptions {
-      name
-      value
-    }
-    price {
-      ...MoneyFragment
-    }
-    compareAtPrice {
-      ...MoneyFragment
-    }
-    image {
-      ...ImageFragment
-    }
-  }
-  ${MONEY_FRAGMENT}
-  ${IMAGE_FRAGMENT}
-`;
-
 export const CART_FRAGMENT = `
   fragment CartFragment on Cart {
     id
