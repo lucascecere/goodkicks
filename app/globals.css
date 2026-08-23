@@ -185,3 +185,38 @@
   0%   { transform: translateY(0); }
   100% { transform: translateY(-50%); }
 }
+
+/* ---------------------------------------------------------------------------
+   The Townies rotary (components/townies/rotary-spin.tsx).
+
+   Three motions, all of them small on purpose — the wheel itself is the only
+   thing on that popup that should be moving much.
+   --------------------------------------------------------------------------- */
+
+/* Card arrival: up and settling, not a bounce. */
+@keyframes rotary-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* The signpost ticking off the bollards as they pass under it. */
+@keyframes rotary-tick {
+  from { transform: rotate(-3.5deg); }
+  to   { transform: rotate(3.5deg); }
+}
+
+/* The winning exit lighting up once the wheel has stopped. */
+@keyframes rotary-glow {
+  0%, 100% { opacity: 0.08; }
+  50%      { opacity: 0.22; }
+}
+
+/* Somebody who has asked for less motion gets the result, not the show. The
+   wheel's own spin is already shortened in JS; this covers the decoration. */
+@media (prefers-reduced-motion: reduce) {
+  [class*="rotary-in"],
+  [class*="rotary-tick"],
+  [class*="rotary-glow"] {
+    animation: none !important;
+  }
+}

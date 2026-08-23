@@ -14,6 +14,16 @@ declare namespace NodeJS {
     // password no longer invalidates every session.
     ADMIN_SESSION_SECRET?: string;
 
+    // Signs the rotary spin result so the browser can't pick its own prize.
+    // Falls back to ADMIN_SESSION_SECRET, then ADMIN_PASSWORD; if none of the
+    // three is set, /api/spin returns 503 rather than issuing forgeable tokens.
+    SPIN_SECRET?: string;
+
+    // Townies sender address. Leave UNSET until Resend reports townies.shop
+    // verified — Resend rejects unverified senders, so setting it early makes
+    // every spin code email fail.
+    TOWNIES_FROM_EMAIL?: string;
+
     // Signing secret for the Shopify order webhook. Without it, that route
     // rejects every request rather than trusting unsigned input.
     SHOPIFY_WEBHOOK_SECRET?: string;

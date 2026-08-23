@@ -20,6 +20,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
+import { markSpinCodeRedeemed } from '@/lib/townies/spin-redemption';
 import { lineBrand, type ShopifyLineItem } from '@/lib/shopify/orders-source';
 import type { RealBrand } from '@/lib/admin/brand';
 
@@ -32,6 +33,8 @@ type WebhookOrder = {
   contact_email?: string | null;
   customer?: { first_name?: string | null; last_name?: string | null } | null;
   line_items?: ShopifyLineItem[];
+  /** Present on every order; empty when nothing was applied. */
+  discount_codes?: { code?: string | null }[];
 };
 
 /**
@@ -100,6 +103,14 @@ export async function POST(req: NextRequest) {
     console.error('[shopify-webhook] contact upsert failed', err);
     return new Response('Upsert failed', { status: 500 });
   }
+
+  // Rotary spin attribution. Deliberately after the contact upsert and outside
+  // its try: a failure here must not make Shopify retry an order we already
+  // captured, and "the code was used" is nice to know rather than load-bearing.
+  await markSpinCodeRedeemed(
+    (order.discount_codes ?? []).map((d) => d?.code).filter((c): c is string => Boolean(c)),
+    order.id != null ? String(order.id) : null,
+  );
 
   return Response.json({ ok: true, brands });
 }

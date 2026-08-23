@@ -5,6 +5,7 @@ import { CartProvider } from '@/lib/cart/cart-context';
 import { Header } from './header';
 import { Footer } from './footer';
 import { CartDrawer } from './cart-drawer';
+import { RotarySpin } from '@/components/townies/rotary-spin';
 
 export function SiteWrapper({
   children,
@@ -41,6 +42,9 @@ export function SiteWrapper({
         <main id="main-content">{children}</main>
         {!isGoodKicks && <Footer />}
         <CartDrawer />
+        {/* Townies only — Good Kicks has its own offer story, and mixing the two
+            brands' promotions in one popup is exactly the thing we don't do. */}
+        {!isGoodKicks && <RotarySpin />}
       </CartProvider>
     </div>
   );
