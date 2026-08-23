@@ -1,5 +1,7 @@
 'use client';
 
+import { currentBrand } from '@/components/brand/current-brand';
+
 // Shared form furniture for the inquiry pages.
 //
 // Support, Request a Town and Wholesale used to be three tabs of one component.
@@ -58,13 +60,18 @@ export function Field({
   );
 }
 
-/** Every form posts the same way; brand is always Townies on this site. */
+/**
+ * Every form posts the same way, stamped with whichever brand is on screen.
+ * Was hardcoded to Townies — which was true while these forms only existed on
+ * the Townies site, and stops being true the moment Good Kicks gets its own
+ * /support. currentBrand() reads at submit time, so it costs nothing here.
+ */
 export async function postContact(payload: Record<string, unknown>): Promise<boolean> {
   try {
     const res = await fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...payload, brand: 'townies' }),
+      body: JSON.stringify({ ...payload, brand: currentBrand() }),
     });
     return res.ok;
   } catch {

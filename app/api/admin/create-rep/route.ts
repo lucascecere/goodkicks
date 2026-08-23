@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { isAdminAuthed } from '@/lib/reps/server';
+import { parseBrand } from '@/lib/brand/site-brand';
 
 // Add a rep who never went through the public form — someone signed up in
 // person or over DM. Creates the same row shape the application form produces,
@@ -14,7 +15,8 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => null);
-  const brand = body?.brand === 'townies' ? 'townies' : 'goodkicks';
+  // Admin route — no meaningful Host signal, so Townies is the default.
+  const brand = parseBrand(body?.brand) ?? 'townies';
   const name = String(body?.name ?? '').trim();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const instagramRaw = String(body?.instagram ?? '').trim();
@@ -86,7 +88,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  await upsertContact({ email, name, source: 'ambassador' });
+  await upsertContact({ email, name, source: 'ambassador', brand });
 
   return NextResponse.json({ ok: true, rep: data });
 }

@@ -41,14 +41,17 @@ const GK_ACCOUNT_TYPES = [
 // Buried inside a general athlete option that signal arrives unreadable.
 const TOWNIES_ACCOUNT_TYPES = [
   { value: 'town-page', label: 'town / local page' },
-  { value: 'creator', label: 'hometown creator' },
+  // "influencer" is in the label because that is the word this group uses for
+  // itself. Both current creator-type reps described themselves that way, and
+  // "hometown creator" alone reads as something smaller than it is.
+  { value: 'creator', label: 'content creator / influencer' },
   { value: 'athlete-college', label: 'college athlete' },
   { value: 'athlete-pro', label: 'pro / semi-pro athlete' },
   { value: 'athlete-local', label: 'local / high school athlete' },
   { value: 'other', label: 'something else' },
 ];
 
-export function AmbassadorForm({ brand = 'goodkicks' }: { brand?: RealBrand }) {
+export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
   const isTownies = brand === 'townies';
   const [state, setState] = useState<FormState>('idle');
   const [form, setForm] = useState({

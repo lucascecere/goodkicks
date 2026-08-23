@@ -35,6 +35,8 @@ type WebhookOrder = {
   line_items?: ShopifyLineItem[];
   /** Present on every order; empty when nothing was applied. */
   discount_codes?: { code?: string | null }[];
+  /** Lets lineBrand date-resolve a line that carries no `_brand` attribute. */
+  created_at?: string | null;
 };
 
 /**
@@ -86,12 +88,16 @@ export async function POST(req: NextRequest) {
   const name =
     [order.customer?.first_name, order.customer?.last_name].filter(Boolean).join(' ') || undefined;
 
-  const brands: RealBrand[] = [...new Set((order.line_items ?? []).map(lineBrand))];
+  const brands: RealBrand[] = [
+    ...new Set((order.line_items ?? []).map((li) => lineBrand(li, order.created_at))),
+  ];
 
   try {
     if (brands.length === 0) {
-      // No line items to read a brand from — still capture the person.
-      await upsertContact({ email, name, source: 'order' });
+      // Nothing to read a brand from — a POS or manual order. This is the
+      // Townies store now, so tag it Townies rather than leaving the person
+      // untagged and invisible to every brand-scoped segment.
+      await upsertContact({ email, name, source: 'order', brand: 'townies' });
     } else {
       for (const brand of brands) {
         await upsertContact({ email, name, source: 'order', brand });

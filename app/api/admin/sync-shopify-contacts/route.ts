@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
 
   let synced = 0;
   let skipped = 0;
+  let brandless = 0;
   const brandCounts: Record<string, number> = {};
 
   for (const order of orders) {
@@ -47,9 +48,15 @@ export async function POST(req: NextRequest) {
       [order.customer?.first_name, order.customer?.last_name].filter(Boolean).join(' ') || undefined;
 
     // A mixed cart tags the person with both brands — one call each, since the
-    // RPC unions one brand at a time.
+    // RPC unions one brand at a time. An order with no readable line brand is a
+    // POS/manual sale in what is now the Townies store; it used to write nothing
+    // at all while still counting as synced, which made a partial pass look
+    // complete.
     const brands = orderBrands(order);
-    for (const brand of brands) {
+    const resolved = brands.length > 0 ? brands : (['townies'] as const);
+    if (brands.length === 0) brandless++;
+
+    for (const brand of resolved) {
       await upsertContact({ email: order.email, name, source: 'order', brand });
       brandCounts[brand] = (brandCounts[brand] ?? 0) + 1;
     }
@@ -61,6 +68,8 @@ export async function POST(req: NextRequest) {
     synced,
     skipped,
     brands: brandCounts,
+    // Orders that carried no `_brand` on any line and fell back to Townies.
+    brandless,
     // Surfaced rather than swallowed: fetchAllOrders stops at 20 pages, and a
     // silently partial backfill would look identical to a complete one.
     truncated,

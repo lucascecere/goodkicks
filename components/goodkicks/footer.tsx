@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import { currentBrand } from '@/components/brand/current-brand';
 
 const shopLinks = [
   { href: '/goodkicks/products/the-good-kick-georgia', label: 'georgia' },
@@ -34,8 +35,11 @@ function SubscribeForm() {
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // brand-scoped so Good Kicks + Townies signups stay separate in Supabase
-        body: JSON.stringify({ email, brand: 'goodkicks' }),
+        // Brand-scoped so Good Kicks + Townies signups stay separate in Supabase.
+        // Derived rather than hardcoded: this footer renders on goodkicks.co AND
+        // on townies.shop/goodkicks, and the server can't tell those apart from
+        // Host alone. (Until 2026-08-23 the server ignored this field entirely.)
+        body: JSON.stringify({ email, brand: currentBrand() }),
       });
       setStatus(res.ok ? 'success' : 'error');
     } catch {

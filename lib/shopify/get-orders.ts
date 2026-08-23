@@ -23,9 +23,14 @@ export type OrderSummary = {
 const EMPTY: OrderSummary = { orders: [], totalOrders: 0, totalRevenue: 0, avgOrderValue: 0 };
 
 function orderBrand(order: ShopifyOrder): OrderBrand {
-  const brands = new Set(order.line_items.map(lineBrand));
+  // Pass created_at explicitly — a bare .map(lineBrand) hands it the array
+  // index as the date, which parses to NaN and silently reverts every untagged
+  // line to the legacy Good Kicks fallback.
+  const brands = new Set(
+    (order.line_items ?? []).map((li) => lineBrand(li, order.created_at)),
+  );
   if (brands.size > 1) return 'mixed';
-  return (brands.values().next().value as RealBrand) ?? 'goodkicks';
+  return (brands.values().next().value as RealBrand) ?? 'townies';
 }
 
 /**

@@ -155,6 +155,10 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Hardcoded, and correct: RotarySpin only mounts when the page is NOT Good
+  // Kicks (components/layout/site-wrapper.tsx), and spin_claims/mintSpinCode
+  // above are hardcoded to match. Don't "fix" this to a derived brand — the
+  // prize wedges are Townies-only, so a Good Kicks spin isn't a thing.
   await upsertContact({ email, source: 'discount', brand: 'townies' });
 
   let emailed = false;
