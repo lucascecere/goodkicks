@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo, useRef } from 'react';
+import { chromeFor } from '@/lib/email/campaign-chrome';
+import { BRAND_LABELS, type RealBrand } from '@/lib/admin/brand';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -12,7 +14,7 @@ const SOURCE_LABELS: Record<Source, string> = {
 };
 
 interface SourceCount { source: string; count: number; }
-interface Contact { id: string; name: string | null; email: string; }
+interface Contact { id: string; name: string | null; email: string; brands?: string[]; }
 type RecipientMode = 'all' | 'segment' | 'individual';
 type ContentMode = 'compose' | 'html';
 type Device = 'desktop' | 'mobile';
@@ -27,6 +29,8 @@ export interface InitialCampaign {
   cta_text: string | null;
   cta_url: string | null;
   custom_html: string | null;
+  brand?: RealBrand;
+  audience_brands?: string[];
   content_mode: ContentMode;
   recipient_mode: RecipientMode;
   sources: string[];
@@ -36,38 +40,43 @@ export interface InitialCampaign {
 
 interface Props {
   initialCampaign?: InitialCampaign;
+  /** Seeds the sending brand for a NEW campaign, from the admin switcher. */
+  initialBrand?: RealBrand;
   totalContacts: number;
   sourceCounts: SourceCount[];
   contacts: Contact[];
 }
 
-function buildPreviewHtml(subject: string, headline: string, bodyText: string, ctaText: string, ctaUrl: string, preheader: string) {
+// Reads the SAME chrome map the send route uses, so what you preview is what
+// actually goes out — these were two independent copies of one email before.
+function buildPreviewHtml(subject: string, headline: string, bodyText: string, ctaText: string, ctaUrl: string, preheader: string, brand: RealBrand) {
+  const chrome = chromeFor(brand);
   const paragraphs = bodyText.split(/\n\n+/).map((p) => p.trim().replace(/\n/g, '<br>')).filter(Boolean)
     .map((p) => `<p style="margin:0 0 18px;color:#57534E;line-height:1.75;font-size:16px;font-family:-apple-system,sans-serif">${p}</p>`).join('');
   const cta = ctaText && ctaUrl
-    ? `<div style="margin:32px 0"><a href="${ctaUrl}" style="background:#C0541A;color:#fff;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;display:inline-block;font-family:-apple-system,sans-serif">${ctaText}</a></div>` : '';
+    ? `<div style="margin:32px 0"><a href="${ctaUrl}" style="background:${chrome.accent};color:#fff;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;display:inline-block;font-family:-apple-system,sans-serif">${ctaText}</a></div>` : '';
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body{margin:0;padding:0;background:#F5EFE3}
-  .wrap{background:#F5EFE3;padding:24px 16px}
+  body{margin:0;padding:0;background:${chrome.bg}}
+  .wrap{background:${chrome.bg};padding:24px 16px}
   .email{max-width:580px;margin:0 auto;background:#FFFDF8;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.12)}
   @media(max-width:620px){.wrap{padding:0!important}.email{border-radius:0!important}.hdr{padding:18px 20px!important}.bdy{padding:28px 20px!important}.h1{font-size:22px!important}.cta-a{display:block!important;text-align:center!important}.ftr{padding:20px!important}}
 </style></head><body>
 <div class="wrap"><div class="email">
   ${subject ? `<div style="background:#FAF7F2;border-bottom:1px solid #E5DDD0;padding:12px 28px"><p style="margin:0;font-size:12px;color:#78716C;font-family:-apple-system,sans-serif"><strong style="color:#1C1917">Subject:</strong> ${subject}${preheader ? ` &nbsp;·&nbsp; <em>${preheader}</em>` : ''}</p></div>` : ''}
-  <div class="hdr" style="background:#C0541A;padding:22px 32px"><span style="font-family:Georgia,serif;font-size:24px;color:#fff;font-weight:bold">good kicks.</span></div>
+  <div class="hdr" style="background:${chrome.header};padding:22px 32px"><span style="font-family:Georgia,serif;font-size:24px;color:#fff;font-weight:bold">${chrome.wordmark}</span></div>
   <div class="bdy" style="padding:36px 32px">
     <h1 class="h1" style="font-family:Georgia,serif;font-size:28px;margin:0 0 22px;color:#1C1917;font-weight:normal;line-height:1.25">${headline || '<span style="color:#A8A29E">(headline here)</span>'}</h1>
     ${paragraphs || '<p style="color:#A8A29E;font-size:15px;font-family:-apple-system,sans-serif">(body text here)</p>'}
-    ${cta ? `<div style="margin:32px 0"><a class="cta-a" href="${ctaUrl}" style="background:#C0541A;color:#fff;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;display:inline-block;font-family:-apple-system,sans-serif">${ctaText}</a></div>` : ''}
+    ${cta ? `<div style="margin:32px 0"><a class="cta-a" href="${ctaUrl}" style="background:${chrome.accent};color:#fff;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;display:inline-block;font-family:-apple-system,sans-serif">${ctaText}</a></div>` : ''}
   </div>
   <div class="ftr" style="border-top:1px solid #E5DDD0;padding:22px 32px;background:#FAF7F2">
-    <p style="color:#78716C;font-size:12px;margin:0;line-height:1.8;font-family:-apple-system,sans-serif">Good Kicks &nbsp;&middot;&nbsp; <a href="https://goodkicks.co" style="color:#C0541A;text-decoration:none">goodkicks.co</a><br>You received this because you signed up or placed an order.<br><a href="#" style="color:#78716C">Unsubscribe</a></p>
+    <p style="color:#78716C;font-size:12px;margin:0;line-height:1.8;font-family:-apple-system,sans-serif">${chrome.name} &nbsp;&middot;&nbsp; <a href="${chrome.url}" style="color:${chrome.accent};text-decoration:none">${chrome.site}</a><br>You received this because you signed up or placed an order.<br><a href="#" style="color:#78716C">Unsubscribe</a></p>
   </div>
 </div></div></body></html>`;
 }
 
-export function CampaignEditor({ initialCampaign, totalContacts, sourceCounts, contacts }: Props) {
+export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, sourceCounts, contacts }: Props) {
   const router = useRouter();
   const c = initialCampaign;
 
@@ -85,6 +94,10 @@ export function CampaignEditor({ initialCampaign, totalContacts, sourceCounts, c
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [brand, setBrand] = useState<RealBrand>(c?.brand ?? initialBrand ?? 'townies');
+  const [audienceBrands, setAudienceBrands] = useState<Set<RealBrand>>(
+    new Set((c?.audience_brands ?? []) as RealBrand[]),
+  );
   const [recipientMode, setRecipientMode] = useState<RecipientMode>(c?.recipient_mode ?? 'all');
   const [selectedSources, setSelectedSources] = useState<Set<Source>>(new Set((c?.sources ?? []) as Source[]));
   const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set(c?.emails ?? []));
@@ -139,9 +152,27 @@ export function CampaignEditor({ initialCampaign, totalContacts, sourceCounts, c
       ctaUrl: contentMode === 'compose' && ctaUrl ? ctaUrl : undefined,
       customHtml: contentMode === 'html' ? customHtml : undefined,
       contentMode, recipientMode,
+      brand,
+      audienceBrands: [...audienceBrands],
       sources: recipientMode === 'segment' ? [...selectedSources] : [],
       emails: recipientMode === 'individual' ? [...selectedEmails] : [],
     };
+  }
+
+  // The "All contacts" badge has to respect the audience filter, or it promises
+  // a reach the send will not deliver.
+  const audienceCount = useMemo(() => {
+    if (audienceBrands.size === 0) return totalContacts;
+    return contacts.filter((c) => (c.brands ?? []).some((b) => audienceBrands.has(b as RealBrand))).length;
+  }, [contacts, audienceBrands, totalContacts]);
+
+  function toggleAudienceBrand(b: RealBrand) {
+    setAudienceBrands((prev) => {
+      const next = new Set(prev);
+      if (next.has(b)) next.delete(b);
+      else next.add(b);
+      return next;
+    });
   }
 
   async function saveDraft(): Promise<string | null> {
@@ -210,6 +241,28 @@ export function CampaignEditor({ initialCampaign, totalContacts, sourceCounts, c
         placeholder="Campaign name…"
         className="w-full bg-transparent text-white text-2xl font-semibold placeholder:text-white/20 border-none outline-none focus:ring-0"
       />
+
+      {/* Sending brand — sets the From address and the email's chrome. Separate
+          from the audience filter in Recipients: a Townies-branded email to the
+          Good Kicks list is a normal thing to send now that Good Kicks is a
+          Townies product line. */}
+      <div className="flex items-center gap-3">
+        <span className="text-xs uppercase tracking-widest text-brand-muted font-medium">Send as</span>
+        <div className="inline-flex rounded-lg bg-white/5 p-1">
+          {(['townies', 'goodkicks'] as RealBrand[]).map((b) => (
+            <button
+              key={b}
+              type="button"
+              onClick={() => setBrand(b)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                brand === b ? 'bg-white text-brand-ink' : 'text-white/60 hover:text-white'
+              }`}
+            >
+              {BRAND_LABELS[b]}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Status banners */}
       {sendStatus.type === 'done' && (
@@ -315,7 +368,30 @@ export function CampaignEditor({ initialCampaign, totalContacts, sourceCounts, c
           <div className="bg-white rounded-xl border border-brand-rule p-5 sm:p-6 space-y-3">
             <p className="text-xs uppercase tracking-widest text-brand-muted font-medium">Recipients</p>
 
-            {([['all', 'All contacts', totalContacts], ['segment', 'By segment', null], ['individual', 'Pick contacts', null]] as const).map(([m, label, badge]) => (
+            {/* Audience brand narrows whichever mode is chosen below. Leaving
+                both unchecked means no brand filter at all, which is exactly how
+                every campaign behaved before contacts carried a brand. */}
+            <div className="pb-1">
+              <p className="text-xs text-brand-muted mb-1.5">Limit to brand</p>
+              <div className="flex gap-4">
+                {(['townies', 'goodkicks'] as RealBrand[]).map((b) => (
+                  <label key={b} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={audienceBrands.has(b)}
+                      onChange={() => toggleAudienceBrand(b)}
+                      className="accent-brand-rust"
+                    />
+                    {BRAND_LABELS[b]}
+                  </label>
+                ))}
+              </div>
+              {audienceBrands.size === 0 && (
+                <p className="text-[11px] text-brand-muted mt-1">No filter — every brand.</p>
+              )}
+            </div>
+
+            {([['all', 'All contacts', audienceCount], ['segment', 'By segment', null], ['individual', 'Pick contacts', null]] as const).map(([m, label, badge]) => (
               <div key={m}>
                 <label className="flex items-center gap-3 cursor-pointer py-0.5">
                   <input type="radio" name="recip" checked={recipientMode === m} onChange={() => setRecipientMode(m)} className="accent-brand-rust" />
@@ -438,7 +514,7 @@ export function CampaignEditor({ initialCampaign, totalContacts, sourceCounts, c
                   <div className="rounded-[24px] overflow-hidden">
                     {contentMode === 'html' && customHtml
                       ? <iframe srcDoc={customHtml} className="w-full border-0" style={{ height: '560px' }} title="Mobile preview" sandbox="allow-same-origin" />
-                      : <div dangerouslySetInnerHTML={{ __html: buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader) }} />
+                      : <div dangerouslySetInnerHTML={{ __html: buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand) }} />
                     }
                   </div>
                   <div className="h-4" />
@@ -453,7 +529,7 @@ export function CampaignEditor({ initialCampaign, totalContacts, sourceCounts, c
                       </div>}
                       <iframe srcDoc={customHtml} className="w-full border-0" style={{ height: '600px' }} title="Email preview" sandbox="allow-same-origin" />
                     </div>
-                  : <div dangerouslySetInnerHTML={{ __html: buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader) }} />
+                  : <div dangerouslySetInnerHTML={{ __html: buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand) }} />
               )}
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { isAdminSession } from '@/lib/admin/require-admin';
+import { parseBrand } from '@/lib/brand/site-brand';
 
 
 type Params = { params: Promise<{ id: string }> };
@@ -30,6 +31,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       cta_text: body.ctaText || null,
       cta_url: body.ctaUrl || null,
       custom_html: body.customHtml || null,
+      brand: parseBrand(body.brand) ?? 'townies',
+      audience_brands: (body.audienceBrands ?? []).filter(parseBrand),
       content_mode: body.contentMode,
       recipient_mode: body.recipientMode,
       sources: body.sources || [],

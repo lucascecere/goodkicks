@@ -2,20 +2,23 @@ import { NextRequest } from 'next/server';
 import { Resend } from 'resend';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { isAdminSession } from '@/lib/admin/require-admin';
+import { chromeFor, type CampaignChrome } from '@/lib/email/campaign-chrome';
+import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 
 
-function buildText({ headline, bodyText, ctaText, ctaUrl }: {
-  headline: string; bodyText: string; ctaText?: string; ctaUrl?: string;
+function buildText({ headline, bodyText, ctaText, ctaUrl, chrome }: {
+  headline: string; bodyText: string; ctaText?: string; ctaUrl?: string; chrome: CampaignChrome;
 }): string {
   const lines = [`${headline}\n`, bodyText];
   if (ctaText && ctaUrl) lines.push(`\n${ctaText}: ${ctaUrl}`);
-  lines.push('\n---\nGood Kicks · goodkicks.co\nTo unsubscribe, reply with "unsubscribe" in the subject.');
+  lines.push(`\n---\n${chrome.name} · ${chrome.site}\nTo unsubscribe, reply with "unsubscribe" in the subject.`);
   return lines.join('\n');
 }
 
-export function buildCampaignHtml({ headline, bodyText, ctaText, ctaUrl, preheader }: {
-  headline: string; bodyText: string; ctaText?: string; ctaUrl?: string; preheader?: string;
+export function buildCampaignHtml({ headline, bodyText, ctaText, ctaUrl, preheader, brand }: {
+  headline: string; bodyText: string; ctaText?: string; ctaUrl?: string; preheader?: string; brand?: string;
 }): string {
+  const chrome = chromeFor(brand);
   const paragraphs = bodyText
     .split(/\n\n+/)
     .map((p) => p.trim().replace(/\n/g, '<br>'))
@@ -28,7 +31,7 @@ export function buildCampaignHtml({ headline, bodyText, ctaText, ctaUrl, prehead
     : '';
 
   const pre = preheader
-    ? `<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:#F5EFE3;mso-hide:all">${preheader}&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;</div>`
+    ? `<div style="display:none;max-height:0;overflow:hidden;font-size:1px;line-height:1px;color:${chrome.bg};mso-hide:all">${preheader}&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;&nbsp;&#8203;</div>`
     : '';
 
   return `<!DOCTYPE html>
@@ -37,19 +40,19 @@ export function buildCampaignHtml({ headline, bodyText, ctaText, ctaUrl, prehead
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="x-apple-disable-message-reformatting">
-  <title>Good Kicks</title>
+  <title>${chrome.name}</title>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <style>
-    body, #body { margin: 0; padding: 0; background: #F5EFE3; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-    .wrap { width: 100%; background: #F5EFE3; padding: 24px 16px; box-sizing: border-box; }
+    body, #body { margin: 0; padding: 0; background: ${chrome.bg}; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    .wrap { width: 100%; background: ${chrome.bg}; padding: 24px 16px; box-sizing: border-box; }
     .email { max-width: 600px; margin: 0 auto; background: #FFFDF8; border-radius: 12px; overflow: hidden; }
-    .hdr { background: #C0541A; padding: 22px 32px; }
+    .hdr { background: ${chrome.header}; padding: 22px 32px; }
     .hdr-logo { font-family: Georgia, 'Times New Roman', serif; font-size: 26px; color: #ffffff; font-weight: bold; letter-spacing: -0.5px; text-decoration: none; }
     .bdy { padding: 40px 32px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
     .h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 30px; margin: 0 0 24px 0; color: #1C1917; font-weight: normal; line-height: 1.25; }
     .p { margin: 0 0 18px 0; color: #57534E; line-height: 1.75; font-size: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
     .cta-wrap { margin: 32px 0; }
-    .cta { background: #C0541A; color: #ffffff; padding: 14px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px; display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
+    .cta { background: ${chrome.accent}; color: #ffffff; padding: 14px 32px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px; display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
     .ftr { border-top: 1px solid #E5DDD0; padding: 24px 32px; background: #FAF7F2; }
     .ftr-p { color: #78716C; font-size: 12px; margin: 0; line-height: 1.8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
     @media screen and (max-width: 620px) {
@@ -70,7 +73,7 @@ ${pre}
 <div class="wrap">
   <div class="email">
     <div class="hdr">
-      <span class="hdr-logo">good kicks.</span>
+      <span class="hdr-logo">${chrome.wordmark}</span>
     </div>
     <div class="bdy">
       <h1 class="h1">${headline}</h1>
@@ -79,9 +82,9 @@ ${pre}
     </div>
     <div class="ftr">
       <p class="ftr-p">
-        Good Kicks &nbsp;&middot;&nbsp; <a href="https://goodkicks.co" style="color:#C0541A;text-decoration:none">goodkicks.co</a><br>
+        ${chrome.name} &nbsp;&middot;&nbsp; <a href="${chrome.url}" style="color:${chrome.accent};text-decoration:none">${chrome.site}</a><br>
         You received this because you signed up or placed an order with us.<br>
-        <a href="mailto:info@goodkicks.co?subject=Unsubscribe" style="color:#78716C">Unsubscribe</a>
+        <a href="mailto:${chrome.email}?subject=Unsubscribe" style="color:#78716C">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -104,11 +107,19 @@ export async function POST(_req: NextRequest, { params }: Params) {
     .from('campaigns').select('*').eq('id', id).single();
   if (fetchErr || !campaign) return Response.json({ error: 'Campaign not found' }, { status: 404 });
 
+  const chrome = chromeFor(campaign.brand);
+
   let query = supabase.from('contacts').select('email, name');
   if (campaign.recipient_mode === 'individual' && campaign.emails?.length > 0) {
     query = query.in('email', campaign.emails);
   } else if (campaign.recipient_mode === 'segment' && campaign.sources?.length > 0) {
     query = query.overlaps('sources', campaign.sources);
+  }
+  // Audience brand is a separate axis from the SENDING brand, and additive to
+  // the source filter above. Empty = no brand filter, which is what every
+  // campaign did before this column existed.
+  if (campaign.audience_brands?.length > 0) {
+    query = query.overlaps('brands', campaign.audience_brands);
   }
   const { data: contacts, error: contactsErr } = await query;
   if (contactsErr) return Response.json({ error: contactsErr.message }, { status: 500 });
@@ -120,6 +131,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
     ctaText: campaign.cta_text ?? undefined,
     ctaUrl: campaign.cta_url ?? undefined,
     preheader: campaign.preheader ?? undefined,
+    brand: campaign.brand,
   });
 
   const text = campaign.custom_html ? undefined : buildText({
@@ -127,7 +139,15 @@ export async function POST(_req: NextRequest, { params }: Params) {
     bodyText: campaign.body_text ?? '',
     ctaText: campaign.cta_text ?? undefined,
     ctaUrl: campaign.cta_url ?? undefined,
+    chrome,
   });
+
+  // Townies mail goes out under TOWNIES_FROM, which respects TOWNIES_FROM_EMAIL
+  // and falls back to the Good Kicks address while townies.shop is unverified in
+  // Resend. Hardcoding a townies.shop sender here would make every send fail.
+  const from = campaign.brand === 'goodkicks'
+    ? 'Good Kicks <info@goodkicks.co>'
+    : TOWNIES_FROM;
 
   const resend = new Resend(resendKey);
   const CHUNK = 100;
@@ -138,13 +158,13 @@ export async function POST(_req: NextRequest, { params }: Params) {
     const chunk = contacts.slice(i, i + CHUNK);
     const batchResult = await resend.batch.send(
       chunk.map((c) => ({
-        from: 'Good Kicks <info@goodkicks.co>',
+        from,
         to: c.email,
         subject: campaign.subject,
         html,
         ...(text ? { text } : {}),
         headers: {
-          'List-Unsubscribe': '<mailto:info@goodkicks.co?subject=Unsubscribe>',
+          'List-Unsubscribe': `<mailto:${chrome.email}?subject=Unsubscribe>`,
           'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
         },
       }))

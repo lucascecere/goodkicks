@@ -45,7 +45,7 @@ export default async function EditCampaignPage({ params }: Props) {
   // Draft campaign → show editor
   const { data: rows } = await supabase
     .from('contacts')
-    .select('id, name, email, sources')
+    .select('id, name, email, sources, brands')
     .order('created_at', { ascending: false });
 
   const all = rows ?? [];
@@ -68,6 +68,8 @@ export default async function EditCampaignPage({ params }: Props) {
         cta_text: campaign.cta_text,
         cta_url: campaign.cta_url,
         custom_html: campaign.custom_html,
+        brand: campaign.brand ?? 'townies',
+        audience_brands: campaign.audience_brands ?? [],
         content_mode: campaign.content_mode,
         recipient_mode: campaign.recipient_mode,
         sources: campaign.sources ?? [],
@@ -76,7 +78,7 @@ export default async function EditCampaignPage({ params }: Props) {
       }}
       totalContacts={all.length}
       sourceCounts={Object.entries(countMap).map(([source, count]) => ({ source, count }))}
-      contacts={all.map((c) => ({ id: c.id, name: c.name ?? null, email: c.email }))}
+      contacts={all.map((c) => ({ id: c.id, name: c.name ?? null, email: c.email, brands: c.brands ?? [] }))}
     />
   );
 }

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { isAdminSession } from '@/lib/admin/require-admin';
+import { parseBrand } from '@/lib/brand/site-brand';
 
 
 export async function GET() {
@@ -8,7 +9,7 @@ export async function GET() {
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase
     .from('campaigns')
-    .select('id,name,subject,status,content_mode,recipient_mode,sent_at,sent_count,failed_count,created_at,updated_at')
+    .select('id,name,subject,status,brand,audience_brands,content_mode,recipient_mode,sent_at,sent_count,failed_count,created_at,updated_at')
     .order('updated_at', { ascending: false });
   if (error) return Response.json({ error: error.message }, { status: 500 });
   return Response.json(data);
@@ -31,6 +32,8 @@ export async function POST(req: NextRequest) {
       custom_html: body.customHtml || null,
       content_mode: body.contentMode || 'compose',
       recipient_mode: body.recipientMode || 'all',
+      brand: parseBrand(body.brand) ?? 'townies',
+      audience_brands: (body.audienceBrands ?? []).filter(parseBrand),
       sources: body.sources || [],
       emails: body.emails || [],
       status: 'draft',

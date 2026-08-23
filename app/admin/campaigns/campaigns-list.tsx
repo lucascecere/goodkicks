@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { BrandBadge } from '@/components/admin/brand-badge';
+import type { RealBrand } from '@/lib/admin/brand';
 
 interface Campaign {
   id: string;
   name: string;
   subject: string;
   status: 'draft' | 'sent';
+  brand?: RealBrand | null;
   sent_at: string | null;
   sent_count: number | null;
   failed_count: number | null;
@@ -44,6 +47,7 @@ function CampaignRow({ campaign, onDelete }: { campaign: Campaign; onDelete: (id
     <div className="flex items-center gap-4 px-5 py-4 hover:bg-[#FAF7F2] transition-colors group">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 mb-0.5">
+          <BrandBadge brand={campaign.brand ?? 'townies'} />
           <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 ${
             campaign.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
           }`}>
