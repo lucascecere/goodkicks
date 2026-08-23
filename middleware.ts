@@ -25,7 +25,21 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  // 3. goodkicks.co host → serve the /goodkicks subtree at its own root (option B).
+  // 3. Bulk orders live at /wholesale — the URL keeps its inbound links and
+  //    search history while the page itself now leads with bulk. These are the
+  //    addresses people actually type or guess when they want 40 hats.
+  if (
+    pathname === '/bulk-orders' ||
+    pathname === '/bulk' ||
+    pathname === '/team-orders' ||
+    pathname === '/custom'
+  ) {
+    const url = req.nextUrl.clone();
+    url.pathname = '/wholesale';
+    return NextResponse.redirect(url, 308);
+  }
+
+  // 4. goodkicks.co host → serve the /goodkicks subtree at its own root (option B).
   //    Gated behind ENABLE_GK_HOST_REWRITE because goodkicks.co is still the live
   //    prod domain on `main`; the rewrite only flips on at cutover.
   if (

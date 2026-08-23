@@ -34,17 +34,22 @@ const townRequestSchema = z.object({
 });
 
 /**
- * Wholesale asks for a lot more than the other forms: a stockist enquiry that
- * arrives without location, volume or timeline needs a round-trip email before
- * it can even be qualified. Everything beyond the original four fields is
- * optional so a keen buyer is never blocked by a form.
+ * Bulk + wholesale, one form. It asks for a lot more than the others because an
+ * enquiry that arrives without volume, timeline or which hats needs a
+ * round-trip email before it can even be quoted.
+ *
+ * `company` is OPTIONAL and must stay that way. It was required, which rejected
+ * the single most common bulk buyer — a coach ordering thirty hats for a team,
+ * who has no company to name. The form stopped asking for it; if this schema
+ * had kept requiring it, every one of those submissions would have failed the
+ * 400 path silently.
  */
 const wholesaleSchema = z.object({
   type: z.literal('wholesale'),
   brand,
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Valid email is required'),
-  company: z.string().min(1, 'Company / shop name is required'),
+  company: z.string().optional(),
   phone: z.string().optional(),
   website: z.string().optional(),
   businessType: z.string().optional(),
@@ -101,13 +106,14 @@ export async function POST(request: Request) {
     const wholesaleDetail =
       data.type === 'wholesale'
         ? [
-            data.businessType && `Business type: ${data.businessType}`,
+            data.businessType && `What it's for: ${data.businessType}`,
+            data.company && `Team / company / shop: ${data.company}`,
             data.location && `Location: ${data.location}`,
             data.website && `Website: ${data.website}`,
             data.phone && `Phone: ${data.phone}`,
-            data.quantity && `Estimated first order: ${data.quantity}`,
+            data.quantity && `Estimated quantity: ${data.quantity}`,
             data.timeline && `Timeline: ${data.timeline}`,
-            data.towns && `Towns of interest: ${data.towns}`,
+            data.towns && `Hats requested: ${data.towns}`,
           ].filter(Boolean)
         : [];
 
@@ -150,9 +156,16 @@ export async function POST(request: Request) {
       general: 'Contact form',
       partnership: 'Partnership inquiry',
       town_request: 'Town request',
-      wholesale: 'Wholesale inquiry',
+      wholesale: 'Bulk order',
     };
-    const subject = `[${fromName}] ${subjectLabel[data.type]} — ${data.name}${town ? ` (${town})` : groupName ? ` (${groupName})` : ''}`;
+    // Quantity in the subject line: it is the one field that decides how fast
+    // this gets answered, and it should be readable from the inbox list without
+    // opening anything.
+    const qualifier =
+      data.type === 'wholesale'
+        ? [data.quantity, groupName].filter(Boolean).join(' · ')
+        : town || groupName || '';
+    const subject = `[${fromName}] ${subjectLabel[data.type]} — ${data.name}${qualifier ? ` (${qualifier})` : ''}`;
     const text = [
       `Brand: ${fromName}`,
       `Type: ${data.type}`,

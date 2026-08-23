@@ -3,13 +3,20 @@ import Link from 'next/link';
 import { PageMasthead } from '@/components/townies/page-masthead';
 import { WholesaleForm } from '@/components/forms/wholesale-form';
 
+// URL stays /wholesale — it has the inbound links and the search history — but
+// everything a person actually reads now leads with bulk. /bulk-orders is
+// redirected here in middleware.ts for anyone who guesses the obvious address.
+const TITLE = 'Bulk orders & wholesale — Townies';
+const DESCRIPTION =
+  'Hats for teams, companies, schools, fundraisers and shops. Tell us how many and which towns, and the first reply comes back with a real price and a lead time.';
+
 export const metadata: Metadata = {
-  title: 'Wholesale — Townies',
-  description: 'Stock Townies in your shop. Tell us about the business and we come back with pricing tiers and lead times.',
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: '/wholesale' },
   openGraph: {
-    title: 'Wholesale — Townies',
-    description: 'Stock Townies in your shop. Tell us about the business and we come back with pricing tiers and lead times.',
+    title: TITLE,
+    description: DESCRIPTION,
     url: '/wholesale',
     images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
   },
@@ -19,9 +26,9 @@ export default function Page() {
   return (
     <div className="bg-town-cream">
       <PageMasthead
-        eyebrow="Wholesale"
-        title="Stock your town."
-        sub={`Shops, teams, schools and clubs. Tell us a bit about the business and the first reply comes back with real pricing tiers and lead times — not a brochure.`}
+        eyebrow="Bulk orders & wholesale"
+        title="Kit out the whole town."
+        sub={`Teams, companies, schools, fundraisers and shops. There's no bulk checkout — tell us how many and which hats, and we come back with a real price and a lead time, then run the order over email.`}
         pattern="pine"
       />
 
@@ -29,7 +36,11 @@ export default function Page() {
         <WholesaleForm />
 
         <div className="mt-14 pt-8 border-t border-town-rule text-sm text-town-muted">
-          Not a shop? You might want <Link href="/ambassadors" className="underline underline-offset-4 hover:text-town-navy">the ambassador program</Link> or <Link href="/request-a-town" className="underline underline-offset-4 hover:text-town-navy">a town request</Link> instead.
+          {/* This used to open "Not a shop? You might want the ambassador
+              program instead" — which read as a dismissal to the coach ordering
+              thirty team hats, i.e. exactly the person the page is for. Only
+              genuinely different jobs get pointed elsewhere now. */}
+          Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-town-navy">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-town-navy">Request it here</Link>. Want to rep Townies for a cut? <Link href="/ambassadors" className="underline underline-offset-4 hover:text-town-navy">The Town Rep program</Link>.
         </div>
       </div>
     </div>
