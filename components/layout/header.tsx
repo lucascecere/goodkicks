@@ -59,24 +59,15 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      {/* Announcement bar. Navy against the cream header gives the whole
-          chrome a top edge and carries the two things worth saying before
-          anyone scrolls. */}
-      <div className="bg-town-navy text-town-cream">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-center gap-6">
-          <p className="text-[0.62rem] sm:text-[0.68rem] uppercase tracking-[0.2em] text-center">
-            Free shipping over $75
-            <span className="hidden sm:inline text-town-cream/40 mx-3">·</span>
-            <span className="hidden sm:inline">New towns every month</span>
-          </p>
-          <Link
-            href="/request-a-town"
-            className="hidden lg:inline text-[0.68rem] uppercase tracking-[0.2em] text-town-cream/70 hover:text-white underline underline-offset-4 transition-colors whitespace-nowrap"
-          >
-            Request your town
-          </Link>
-        </div>
-      </div>
+      {/* No announcement bar. It carried "Free shipping over $75 · New towns
+          every month" plus a Request-your-town link, and it was the last piece
+          of chrome above the photography — cutting it puts the hero directly
+          under the wordmark.
+
+          Two things moved with it: the free-shipping message now lives only in
+          ValueBand and on the product page, and /request-a-town lost its
+          desktop nav entry, so the footer link and the closing CTA band on the
+          homepage are now the paths to it. */}
 
       {/* The main bar is SOLID at every scroll position. It used to fade in
           from transparent, which put navy nav text over the dark homepage
@@ -138,7 +129,10 @@ export function Header() {
       {/* Mobile nav */}
       {mobileOpen && (
         <nav
-          className="lg:hidden bg-town-cream border-b border-town-rule px-4 pb-5 pt-1 flex flex-col max-h-[calc(100vh-6.5rem)] overflow-y-auto"
+          // 4rem, not 6.5rem: the drawer opens below the main bar alone now
+          // that the 2.25rem announcement bar above it is gone. Left at the old
+          // value it would stop 2.25rem short of the space it actually has.
+          className="lg:hidden bg-town-cream border-b border-town-rule px-4 pb-5 pt-1 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto"
           aria-label="Mobile navigation"
         >
           {[...navLinks, ...mobileExtraLinks].map((link) => (

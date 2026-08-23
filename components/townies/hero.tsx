@@ -42,7 +42,6 @@ const ADVANCE_MS = 6000;
 
 export function Hero({ slides }: { slides: HeroSlide[] }) {
   const [idx, setIdx] = useState(0);
-  const [paused, setPaused] = useState(false);
   const reducedMotion = useRef(false);
 
   const count = slides.length;
@@ -57,16 +56,16 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
   }, []);
 
   useEffect(() => {
-    // No timer for a single slide, while the pointer is over the hero, or for
-    // anyone who has asked for less motion — an auto-advancing carousel is a
-    // moving distraction they explicitly opted out of. The dots still work.
-    if (!multi || paused || reducedMotion.current) return;
+    // No timer for a single slide, and none for anyone who has asked for less
+    // motion — an auto-advancing carousel is a moving distraction they
+    // explicitly opted out of. The dots remain their way through.
+    if (!multi || reducedMotion.current) return;
     const t = setInterval(() => setIdx((i) => (i + 1) % count), ADVANCE_MS);
     return () => clearInterval(t);
     // `idx` is a dependency so picking a slide by hand RESTARTS the countdown.
     // Without it the interval keeps its original phase and can advance off a
     // just-chosen slide a fraction of a second later.
-  }, [multi, paused, count, idx]);
+  }, [multi, count, idx]);
 
   if (count === 0) return null;
   const active = slides[idx];
@@ -76,12 +75,17 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       className="relative w-full aspect-square sm:aspect-[16/10] overflow-hidden bg-town-navy"
       aria-roledescription={multi ? 'carousel' : undefined}
       aria-label={multi ? 'Featured towns' : undefined}
-      // Hover pauses. Focus does NOT: clicking a dot leaves it focused, so a
-      // focus-based pause never lifts and the carousel stops for good after the
-      // first interaction. Picking a slide restarts the countdown instead —
-      // see the `idx` dependency on the timer.
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      // NOTHING pauses this on pointer. The hero is 16:10 and sits at the top
+      // of the page, so on a laptop it occupies most of the viewport and a
+      // resting cursor lands on it — a hover pause meant the carousel simply
+      // never advanced for most desktop visitors, which is how it was shipped
+      // and immediately reported as "not moving by itself".
+      //
+      // Pausing on focus is worse still: clicking a dot leaves it focused, so
+      // the rotation stops permanently after one interaction.
+      //
+      // The motion concern is handled where it belongs — prefers-reduced-motion
+      // suppresses the timer entirely and leaves the dots as the way through.
     >
       {slides.map((slide, i) => (
         <div
