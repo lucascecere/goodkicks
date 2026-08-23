@@ -73,13 +73,15 @@ export const metadata: Metadata = {
  * of that was type: a 128px hero headline and 60px section headings stacked in
  * full-viewport sections. Now every photographic slot holds a real photograph,
  * every headline sits on the shared ramp, and the two sections that were never
- * going to have photography (values, the bulk close) say so with pattern and
- * type instead of a stock picture standing in for one.
+ * going to have photography (the bulk push, the value marks) say so with type
+ * and flat colour instead of a stock picture standing in for one.
  *
- * The closing band is bulk orders, not request-a-town. RequestTownBand is still
- * the right close for /shop, where somebody has just been through the whole
- * catalogue without finding their town; on the homepage the more valuable
- * question is the one nobody can answer from the shop — how you buy thirty.
+ * Grounds run white → cream → forest → navy footer, so no two neighbouring
+ * sections share one and nothing needs a pattern overlay to separate it.
+ *
+ * Bulk is the growth bet and gets the push, but RequestTownBand still closes
+ * /shop — somebody there has just been through the whole catalogue without
+ * finding their town, which is a different question from how you buy thirty.
  *
  * The script signature now appears on the homepage only in the wordmark itself.
  * TaglineBand carried it, and once its photograph was pulled it was a tall navy
@@ -102,9 +104,12 @@ export default async function HomePage() {
 
       <FeaturedRail products={products} />
 
-      <ValueBand />
-
       <BulkOrderBand />
+
+      {/* Closes on forest. The four marks were the quietest thing on the page
+          sitting on cream in the middle of it; as the last section, in full
+          colour, they read as the sign-off they were written to be. */}
+      <ValueBand tone="forest" />
     </>
   );
 }

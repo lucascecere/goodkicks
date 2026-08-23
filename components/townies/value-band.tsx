@@ -36,20 +36,41 @@ const ITEMS = [
   },
 ];
 
-export function ValueBand() {
+/**
+ * `tone` exists because this band is shared: the product page wants it quiet on
+ * cream under a buy box, and the homepage closes on it in full forest green.
+ * An explicit prop rather than a className override — `cn` in lib/utils is a
+ * naive join, so a passed background would emit alongside this one and leave
+ * stylesheet order to pick the winner.
+ *
+ * Flat colour, no pattern overlay on either tone.
+ */
+export function ValueBand({ tone = 'cream' }: { tone?: 'cream' | 'forest' }) {
+  const forest = tone === 'forest';
+
   return (
-    <section className="bg-town-cream border-t border-town-rule">
+    <section className={forest ? 'bg-town-forest' : 'bg-town-cream border-t border-town-rule'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 sm:gap-x-10">
           {ITEMS.map(({ Mark, title, body, markClass }) => (
             <div key={title}>
-              <div className="h-14 flex items-end mb-5 text-town-forest">
+              <div className={`h-14 flex items-end mb-5 ${forest ? 'text-town-cream/80' : 'text-town-forest'}`}>
                 <Mark className={markClass} />
               </div>
-              <h3 className="font-block uppercase text-town-navy text-xl sm:text-2xl leading-tight mb-2">
+              <h3
+                className={`font-block font-bold uppercase text-base leading-snug tracking-[0.02em] mb-2 ${
+                  forest ? 'text-white' : 'text-town-navy'
+                }`}
+              >
                 {title}
               </h3>
-              <p className="text-town-muted text-sm leading-relaxed">{body}</p>
+              <p
+                className={`text-[0.8125rem] leading-relaxed ${
+                  forest ? 'text-town-cream/70' : 'text-town-muted'
+                }`}
+              >
+                {body}
+              </p>
             </div>
           ))}
         </div>
