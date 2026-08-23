@@ -1,6 +1,6 @@
 'use client';
 
-// Shared form furniture for the enquiry pages.
+// Shared form furniture for the inquiry pages.
 //
 // Support, Request a Town and Wholesale used to be three tabs of one component.
 // They are separate pages now — each is a different intent with its own

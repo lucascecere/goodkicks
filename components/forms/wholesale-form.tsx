@@ -35,9 +35,9 @@ const QUANTITIES = ['Under 25', '25 – 50', '50 – 100', '100 – 250', '250+'
 const TIMELINES = ['As soon as possible', 'Within a month', '1 – 3 months', 'Just exploring'];
 
 /**
- * Bulk and wholesale enquiries, one form.
+ * Bulk and wholesale inquiries, one form.
  *
- * The long one, on purpose: an enquiry that arrives as "interested in bulk"
+ * The long one, on purpose: an inquiry that arrives as "interested in bulk"
  * costs two or three emails before it can be quoted. Asking for volume,
  * timeline and which hats up front means the first reply can be a real answer.
  *
@@ -53,7 +53,7 @@ export function WholesaleForm() {
     return (
       <Submitted
         title="Thanks — we'll be in touch."
-        body="Bulk enquiries get a real reply within two business days, with a price for the quantity you asked about and a realistic lead time. Everything after that runs over email — there's nothing else to fill in."
+        body="Bulk inquiries get a real reply within two business days, with a price for the quantity you asked about and a realistic lead time. Everything after that runs over email — there's nothing else to fill in."
       />
     );
   }
@@ -70,7 +70,7 @@ export function WholesaleForm() {
           <input className={fieldClass} placeholder="Your name" {...register('name', { required: 'Name is required' })} />
         </Field>
         <Field label="Email" error={errors.email?.message}>
-          <input type="email" className={fieldClass} placeholder="you@shop.com"
+          <input type="email" className={fieldClass} placeholder="you@email.com"
             {...register('email', { required: 'Email is required' })} />
         </Field>
       </div>
@@ -101,7 +101,7 @@ export function WholesaleForm() {
       </Field>
 
       <div className="grid sm:grid-cols-2 gap-5">
-        <Field label="Estimated first order">
+        <Field label="How many?">
           <select className={fieldClass} defaultValue="" {...register('quantity')}>
             <option value="" disabled>Choose one</option>
             {QUANTITIES.map((q) => <option key={q} value={q}>{q}</option>)}
@@ -125,7 +125,7 @@ export function WholesaleForm() {
           {...register('message', { required: 'A short note is required', minLength: { value: 10, message: 'A bit more detail, please.' } })} />
       </Field>
 
-      <SubmitButton submitting={isSubmitting} label="Send enquiry" />
+      <SubmitButton submitting={isSubmitting} label="Send inquiry" />
     </form>
   );
 }

@@ -35,7 +35,7 @@ const townRequestSchema = z.object({
 
 /**
  * Bulk + wholesale, one form. It asks for a lot more than the others because an
- * enquiry that arrives without volume, timeline or which hats needs a
+ * inquiry that arrives without volume, timeline or which hats needs a
  * round-trip email before it can even be quoted.
  *
  * `company` is OPTIONAL and must stay that way. It was required, which rejected

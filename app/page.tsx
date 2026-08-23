@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Hero } from '@/components/townies/hero';
-import { CampaignBand } from '@/components/townies/campaign-band';
 import { FeaturedRail } from '@/components/townies/featured-rail';
 import { TownTicker } from '@/components/townies/town-ticker';
 import { ValueBand } from '@/components/townies/value-band';
@@ -9,6 +8,49 @@ import { getTownieProducts } from '@/lib/shopify/collections';
 import { townKey } from '@/lib/townies/towns';
 
 export const revalidate = 60;
+
+/**
+ * The hero rotation. Each slide is a campaign — its own photograph, its own
+ * line, its own link — rather than a backdrop swap behind fixed copy.
+ *
+ * These are the three distinct scenes Townies owns: the clover shoot and the
+ * two town drop shoots. They used to be split across the hero and two campaign
+ * bands, which meant Milton and Braintree each appeared twice in the first two
+ * screens. Consolidating them here is why the bands are gone — a carousel
+ * cannot manufacture variety the photography doesn't have, it can only re-show
+ * the same pictures further down the page.
+ *
+ * Add a slide per shoot as the shot list lands.
+ */
+const HERO_SLIDES = [
+  {
+    imageSrc: '/brand/scene/clover-hero-16x10.jpg',
+    mobileSrc: '/brand/scene/clover-hero-1x1.jpg',
+    imageAlt: 'Milton, Walpole and West Roxbury Townies snapbacks in a bed of clover',
+    eyebrow: 'Massachusetts · one town at a time',
+    headline: 'Rep your town.',
+    sub: 'Hats for people who’d defend their exit off the expressway. Stitched heavy, one town at a time.',
+    cta: { href: '/shop', label: 'Shop all towns' },
+  },
+  {
+    imageSrc: '/brand/scene/milton-hero-16x10.jpg',
+    mobileSrc: '/brand/drops/milton.jpg',
+    imageAlt: 'Two Milton Townies snapbacks on a curb in Milton Village',
+    eyebrow: 'The first town',
+    headline: 'Milton. 1640.',
+    sub: 'Where this started, and still the one we get asked for most.',
+    cta: { href: '/shop?town=milton', label: 'Shop Milton' },
+  },
+  {
+    imageSrc: '/brand/scene/braintree-hero-16x10.jpg',
+    mobileSrc: '/brand/drops/braintree.jpg',
+    imageAlt: 'Braintree Townies snapbacks on a sidewalk outside Braintree Books',
+    eyebrow: 'Now shipping',
+    headline: 'Braintree.',
+    sub: 'Stitched heavy, worn in from day one.',
+    cta: { href: '/shop?town=braintree', label: 'Shop Braintree' },
+  },
+];
 
 export const metadata: Metadata = {
   title: 'Townies — Rep Your Town. Massachusetts Town-Pride Apparel',
@@ -36,9 +78,12 @@ export const metadata: Metadata = {
  *
  * The script signature now appears on the homepage only in the wordmark itself.
  * TaglineBand carried it, and once its photograph was pulled it was a tall navy
- * field holding two lines of type — a pause the page no longer needed between
- * two campaign bands. The component still exists and still works; it wants a
- * real photograph behind it before it earns a slot back.
+ * field holding two lines of type. The component still exists and still works;
+ * it wants a real photograph behind it before it earns a slot back.
+ *
+ * CampaignBand is likewise still in the tree and unused here — the three scenes
+ * it showed now rotate through the hero instead. It is the right component for
+ * a region or collection page, which is where it goes next.
  */
 export default async function HomePage() {
   const products = await getTownieProducts();
@@ -46,41 +91,11 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero
-        imageSrc="/brand/scene/clover-hero-16x10.jpg"
-        mobileSrc="/brand/scene/clover-hero-1x1.jpg"
-        imageAlt="Milton, Walpole and West Roxbury Townies snapbacks in a bed of clover"
-      />
+      <Hero slides={HERO_SLIDES} />
 
       <TownTicker towns={tickerTowns} />
 
-      {/* The two campaign bands are the two real town shoots we own. They
-          alternate their caption side so they don't read as one component
-          rendered twice. */}
-      <CampaignBand
-        src="/brand/scene/milton-21x9.jpg"
-        mobileSrc="/brand/drops/milton.jpg"
-        alt="Two Milton Townies snapbacks on a curb in Milton Village"
-        eyebrow="The first town"
-        title="Milton. 1640."
-        sub="Where this started, and still the one we get asked for most."
-        cta={{ href: '/shop?town=milton', label: 'Shop Milton' }}
-        align="left"
-      />
-
       <FeaturedRail products={products} />
-
-      <CampaignBand
-        src="/brand/scene/braintree-21x9.jpg"
-        mobileSrc="/brand/drops/braintree.jpg"
-        alt="Braintree Townies snapbacks on a curb outside Braintree Books"
-        eyebrow="Now shipping"
-        title="Braintree."
-        sub="Stitched heavy, worn in from day one."
-        cta={{ href: '/shop?town=braintree', label: 'Shop Braintree' }}
-        align="right"
-        valign="bottom"
-      />
 
       <ValueBand />
 
