@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { SyncShopifyButton } from './sync-button';
+import { BrandBadge } from '@/components/admin/brand-badge';
+import { BRAND_LABELS, type AdminBrand, type RealBrand } from '@/lib/admin/brand';
 
 export type Contact = {
   id: string;
@@ -23,27 +25,37 @@ const SOURCE_BADGE: Record<string, { label: string; cls: string }> = {
 
 const ALL_SOURCES = ['ambassador', 'discount', 'newsletter', 'contact', 'order'];
 
-// Brand tags come from what a person actually ordered (Shopify line-item
-// `_brand`), so they only appear on order-derived contacts. Coloured to match
-// each brand rather than reusing the neutral source-pill grey.
-const BRAND_BADGE: Record<string, { label: string; cls: string }> = {
-  townies: { label: 'Townies', cls: 'bg-[#0D1B2A] text-white' },
-  goodkicks: { label: 'Good Kicks', cls: 'bg-[#C66A3D] text-white' },
-};
+const ALL_BRANDS: RealBrand[] = ['townies', 'goodkicks'];
 
-const ALL_BRANDS = ['townies', 'goodkicks'];
+// Sentinel for the one thing the global BrandSwitcher cannot express. Scoping
+// to a brand hides untagged people entirely, which is how a mis-tag stays
+// invisible — this chip is the way back to them.
+const UNTAGGED = '__untagged__';
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-export function ContactsClient({ initialContacts }: { initialContacts: Contact[] }) {
+export function ContactsClient({
+  initialContacts,
+  brand,
+}: {
+  initialContacts: Contact[];
+  brand: AdminBrand;
+}) {
   const [contacts, setContacts] = useState<Contact[]>(initialContacts);
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
-  const [brandFilter, setBrandFilter] = useState<string | null>(null);
+  // Only the untagged chip lives here now — brand scoping is the global
+  // switcher's job, and having both was why the switcher appeared to do nothing.
+  const [showUntagged, setShowUntagged] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editFields, setEditFields] = useState<{ name: string; email: string; notes: string }>({ name: '', email: '', notes: '' });
+  const [editFields, setEditFields] = useState<{
+    name: string;
+    email: string;
+    notes: string;
+    brands: RealBrand[];
+  }>({ name: '', email: '', notes: '', brands: [] });
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -51,7 +63,7 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
   const filtered = useMemo(() => {
     return contacts.filter((c) => {
       if (sourceFilter && !c.sources.includes(sourceFilter)) return false;
-      if (brandFilter && !(c.brands ?? []).includes(brandFilter)) return false;
+      if (showUntagged && (c.brands ?? []).length > 0) return false;
       if (search) {
         const q = search.toLowerCase();
         return (
@@ -62,13 +74,12 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
       }
       return true;
     });
-  }, [contacts, search, sourceFilter, brandFilter]);
+  }, [contacts, search, sourceFilter, showUntagged]);
 
-  const brandCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    contacts.forEach((c) => (c.brands ?? []).forEach((b) => { counts[b] = (counts[b] ?? 0) + 1; }));
-    return counts;
-  }, [contacts]);
+  const untaggedCount = useMemo(
+    () => contacts.filter((c) => (c.brands ?? []).length === 0).length,
+    [contacts],
+  );
 
   const sourceCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -78,7 +89,19 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
 
   function startEdit(c: Contact) {
     setEditingId(c.id);
-    setEditFields({ name: c.name ?? '', email: c.email, notes: c.notes ?? '' });
+    setEditFields({
+      name: c.name ?? '',
+      email: c.email,
+      notes: c.notes ?? '',
+      brands: (c.brands ?? []).filter((b): b is RealBrand => b === 'townies' || b === 'goodkicks'),
+    });
+  }
+
+  function toggleEditBrand(b: RealBrand) {
+    setEditFields((f) => ({
+      ...f,
+      brands: f.brands.includes(b) ? f.brands.filter((x) => x !== b) : [...f.brands, b],
+    }));
   }
 
   function cancelEdit() {
@@ -95,13 +118,20 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
           name: editFields.name.trim() || null,
           email: editFields.email.trim(),
           notes: editFields.notes.trim() || null,
+          brands: editFields.brands,
         }),
       });
       if (res.ok) {
         setContacts((prev) =>
           prev.map((c) =>
             c.id === id
-              ? { ...c, name: editFields.name.trim() || null, email: editFields.email.trim(), notes: editFields.notes.trim() || null }
+              ? {
+                  ...c,
+                  name: editFields.name.trim() || null,
+                  email: editFields.email.trim(),
+                  notes: editFields.notes.trim() || null,
+                  brands: editFields.brands,
+                }
               : c
           )
         );
@@ -168,19 +198,22 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
             {s} ({sourceCounts[s]})
           </button>
         ))}
-        {ALL_BRANDS.filter((b) => brandCounts[b]).map((b) => (
+        {/* Brand scoping is the global BrandSwitcher's job. The one thing it
+            cannot show is people with NO brand — and scoping to a brand hides
+            them completely, so a mis-tag would never surface. Hence this chip,
+            which is only meaningful while viewing All Brands. */}
+        {brand === 'all' && untaggedCount > 0 && (
           <button
-            key={b}
-            onClick={() => setBrandFilter(brandFilter === b ? null : b)}
+            onClick={() => setShowUntagged((v) => !v)}
             className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
-              brandFilter === b
+              showUntagged
                 ? 'bg-white text-brand-ink'
-                : `${BRAND_BADGE[b].cls} opacity-70 hover:opacity-100`
+                : 'bg-amber-500/20 text-amber-200 hover:bg-amber-500/30'
             }`}
           >
-            {BRAND_BADGE[b].label} ({brandCounts[b]})
+            untagged ({untaggedCount})
           </button>
-        ))}
+        )}
       </div>
 
       {/* List */}
@@ -232,6 +265,27 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
                         className="w-full text-sm bg-[#FAF8F3] border border-brand-rule rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-ink resize-none"
                         placeholder="Internal notes…"
                       />
+                    </div>
+                    <div>
+                      <label className="text-xs text-brand-muted mb-1 block">Brands</label>
+                      <div className="flex gap-4">
+                        {ALL_BRANDS.map((b) => (
+                          <label key={b} className="flex items-center gap-2 text-sm cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={editFields.brands.includes(b)}
+                              onChange={() => toggleEditBrand(b)}
+                              className="accent-brand-ink"
+                            />
+                            {BRAND_LABELS[b]}
+                          </label>
+                        ))}
+                      </div>
+                      {/* The capture paths can only ever ADD a brand — this is
+                          the only place a wrong one comes off. */}
+                      <p className="text-[11px] text-brand-muted mt-1">
+                        Unchecking both clears the tag.
+                      </p>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -289,14 +343,9 @@ export function ContactsClient({ initialContacts }: { initialContacts: Contact[]
                             </span>
                           );
                         })}
-                        {(contact.brands ?? []).map((b) => {
-                          const badge = BRAND_BADGE[b] ?? { label: b, cls: 'bg-gray-100 text-gray-500' };
-                          return (
-                            <span key={b} className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
-                              {badge.label}
-                            </span>
-                          );
-                        })}
+                        {(contact.brands ?? []).map((b) => (
+                          <BrandBadge key={b} brand={b as RealBrand} />
+                        ))}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
