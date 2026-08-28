@@ -18,6 +18,7 @@ import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 import { gkCanonical } from '@/lib/seo/site';
 import {
   HAT_SACK_HANDLE,
+  HAT_SACK_LIVE,
   HAT_SACK_PATH,
   HAT_SACK_PRICE_FALLBACK_CENTS,
   formatUsd,
@@ -104,7 +105,10 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
   // The bundle is a real Shopify product, so its handle resolves here — but it
   // is unsellable through the standard buy box (the town has to be chosen, and
   // that choice decides which variant the line lands on). Send it to its picker.
-  if (handle === HAT_SACK_HANDLE) redirect(HAT_SACK_PATH);
+  if (handle === HAT_SACK_HANDLE) {
+    if (!HAT_SACK_LIVE) notFound();
+    redirect(HAT_SACK_PATH);
+  }
 
   const shopifyProduct = await getProductByHandle(handle);
   if (!shopifyProduct) notFound();
@@ -178,7 +182,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
   }));
 
   // Cross-sell within the same brand.
-  const hatSack = gk ? null : await getHatSackOffer();
+  const hatSack = gk || !HAT_SACK_LIVE ? null : await getHatSackOffer();
   const townCross = gk ? [] : (await getTownieProducts()).filter((p) => p.handle !== handle).slice(0, 4).map(toTownView);
   const gkCross = gk ? (await getGoodKicksProducts()).filter((p) => p.handle !== handle).slice(0, 4) : [];
 
@@ -298,7 +302,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                     controls in one buy box is how people buy the wrong one.
                     Suppressed on towns the bundle excludes — offering it there
                     sends people to a picker their town isn't in. */}
-                {isBundleEligible(shopifyProduct.tags) && (
+                {hatSack && isBundleEligible(shopifyProduct.tags) && (
                 <Link
                   href={HAT_SACK_PATH}
                   className="mt-5 flex items-center justify-between gap-4 rounded-sm border border-rule bg-surface px-4 py-3 transition-colors hover:border-accent"

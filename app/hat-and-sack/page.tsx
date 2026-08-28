@@ -1,16 +1,25 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { HatSackPicker, type HatSackVariants } from '@/components/townies/hat-sack-picker';
-import { HAT_SACK_PATH, SACK_POOL, eligibleHats, formatUsd } from '@/lib/townies/hat-sack';
+import {
+  HAT_SACK_LIVE,
+  HAT_SACK_PATH,
+  SACK_POOL,
+  eligibleHats,
+  formatUsd,
+} from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
+  if (!HAT_SACK_LIVE) return { title: 'Not Found', robots: { index: false, follow: false } };
+
   const { priceCents } = await getHatSackOffer();
   const price = formatUsd(priceCents);
   return {
@@ -27,6 +36,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HatAndSackPage() {
+  // The promo is dark until fulfilment is solved. 404 rather than an empty
+  // page: a reachable-but-unbuyable offer is worse than no offer.
+  if (!HAT_SACK_LIVE) notFound();
+
   const [products, offer] = await Promise.all([getTownieProducts(), getHatSackOffer()]);
 
   const hats = eligibleHats(products);

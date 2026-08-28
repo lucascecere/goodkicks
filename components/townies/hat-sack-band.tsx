@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { BrandPattern } from '@/components/townies/brand-pattern';
-import { HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
+import { HAT_SACK_LIVE, HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 
 /**
@@ -20,6 +20,8 @@ import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
  * bundle is Weymouth-only — the caption and CTA both say the town is the choice.
  */
 export async function HatSackBand() {
+  if (!HAT_SACK_LIVE) return null;
+
   const { priceCents } = await getHatSackOffer();
 
   return (

@@ -15,6 +15,20 @@
 import type { CollectionProduct } from '@/lib/shopify/collections';
 import { isPreorder } from '@/lib/townies/preorder';
 
+/**
+ * Master switch for the whole promotion. OFF as of 2026-08-28 — the offer is
+ * built and proven end to end, but fulfilment isn't solved yet, so it must not
+ * be purchasable.
+ *
+ * Off means: no homepage band, no /shop link, no PDP upsell, and /hat-and-sack
+ * 404s. The Shopify product is separately set to DRAFT and unpublished from
+ * every channel, so the variants can't be bought even by posting a variant id
+ * straight at /api/checkout. BOTH have to be reversed to relaunch — flip this
+ * to true and redeploy, then set the product ACTIVE and publish it to the
+ * "Townies Shop" channel only.
+ */
+export const HAT_SACK_LIVE = false;
+
 export const HAT_SACK_HANDLE = 'hat-and-sack';
 export const HAT_SACK_PATH = '/hat-and-sack';
 

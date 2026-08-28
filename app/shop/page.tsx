@@ -7,7 +7,7 @@ import { TownTickerLinked } from '@/components/townies/town-ticker';
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
-import { HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
+import { HAT_SACK_LIVE, HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 
 export const revalidate = 60;
@@ -31,7 +31,10 @@ export default async function ShopPage({
   searchParams: Promise<{ town?: string }>;
 }) {
   const { town } = await searchParams;
-  const [products, hatSack] = await Promise.all([getTownieProducts(), getHatSackOffer()]);
+  const [products, hatSack] = await Promise.all([
+    getTownieProducts(),
+    HAT_SACK_LIVE ? getHatSackOffer() : null,
+  ]);
 
   const items: ShopItem[] = products.map((p) => {
     const { slug, name } = townKey(p);
@@ -83,12 +86,14 @@ export default async function ShopPage({
           )}
           {/* The bundle applies to every hat below, so it belongs in the
               masthead rather than as a card competing inside the grid. */}
+          {hatSack && (
           <Link
             href={HAT_SACK_PATH}
             className="mt-6 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-town-cream/85 hover:text-white transition-colors"
           >
             Hat &amp; Sack — a town hat + a Good Kicks foot bag, {formatUsd(hatSack.priceCents)}
           </Link>
+          )}
         </div>
       </section>
 
