@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getProductByHandle, getAllProducts } from '@/lib/shopify/service';
 import { getTownieProducts, getGoodKicksProducts, type CollectionProduct } from '@/lib/shopify/collections';
 import { breadcrumbSchema } from '@/lib/seo/site';
@@ -16,6 +16,14 @@ import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-
 import { ProductMedia, type ProductMediaImage } from '@/components/product/product-media';
 import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 import { gkCanonical } from '@/lib/seo/site';
+import {
+  HAT_SACK_HANDLE,
+  HAT_SACK_PATH,
+  HAT_SACK_PRICE_FALLBACK_CENTS,
+  formatUsd,
+  isBundleEligible,
+} from '@/lib/townies/hat-sack';
+import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 
 // Shared product-detail body, rendered by BOTH the Townies route
 // (app/products/[handle]) and the Good Kicks route (app/goodkicks/products/[handle]).
@@ -93,6 +101,11 @@ export async function productPageMetadata(handle: string, brand?: Brand): Promis
 }
 
 export async function ProductPageBody({ handle, brand }: { handle: string; brand?: Brand }) {
+  // The bundle is a real Shopify product, so its handle resolves here — but it
+  // is unsellable through the standard buy box (the town has to be chosen, and
+  // that choice decides which variant the line lands on). Send it to its picker.
+  if (handle === HAT_SACK_HANDLE) redirect(HAT_SACK_PATH);
+
   const shopifyProduct = await getProductByHandle(handle);
   if (!shopifyProduct) notFound();
 
@@ -165,6 +178,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
   }));
 
   // Cross-sell within the same brand.
+  const hatSack = gk ? null : await getHatSackOffer();
   const townCross = gk ? [] : (await getTownieProducts()).filter((p) => p.handle !== handle).slice(0, 4).map(toTownView);
   const gkCross = gk ? (await getGoodKicksProducts()).filter((p) => p.handle !== handle).slice(0, 4) : [];
 
@@ -269,15 +283,38 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               shipNote={PREORDER_SHIP_NOTE}
             />
             {!gk && (
-              <p className="mt-4 text-xs text-muted">
-                One size fits most, adjustable snapback —{' '}
+              <>
+                <p className="mt-4 text-xs text-muted">
+                  One size fits most, adjustable snapback —{' '}
+                  <Link
+                    href="/size-guide"
+                    className="underline underline-offset-2 hover:text-text transition-colors"
+                  >
+                    size guide
+                  </Link>
+                </p>
+                {/* Bundle upsell. A link, not a second buy button: the bundle is
+                    a different line item at a different price, and two add-to-cart
+                    controls in one buy box is how people buy the wrong one.
+                    Suppressed on towns the bundle excludes — offering it there
+                    sends people to a picker their town isn't in. */}
+                {isBundleEligible(shopifyProduct.tags) && (
                 <Link
-                  href="/size-guide"
-                  className="underline underline-offset-2 hover:text-text transition-colors"
+                  href={HAT_SACK_PATH}
+                  className="mt-5 flex items-center justify-between gap-4 rounded-sm border border-rule bg-surface px-4 py-3 transition-colors hover:border-accent"
                 >
-                  size guide
+                  <span className="text-[0.8125rem] leading-snug text-text">
+                    <span className="font-semibold">
+                      Make it {formatUsd(hatSack?.priceCents ?? HAT_SACK_PRICE_FALLBACK_CENTS)}
+                    </span>
+                    <span className="text-muted"> — add a random Good Kicks foot bag</span>
+                  </span>
+                  <span aria-hidden className="text-muted text-sm">
+                    &rarr;
+                  </span>
                 </Link>
-              </p>
+                )}
+              </>
             )}
           </div>
         </div>

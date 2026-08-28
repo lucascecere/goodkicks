@@ -4,6 +4,7 @@ import { FeaturedRail } from '@/components/townies/featured-rail';
 import { TownTicker } from '@/components/townies/town-ticker';
 import { ValueBand } from '@/components/townies/value-band';
 import { BulkOrderBand } from '@/components/townies/bulk-order-band';
+import { HatSackBand } from '@/components/townies/hat-sack-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { townKey } from '@/lib/townies/towns';
 
@@ -107,6 +108,11 @@ export default async function HomePage() {
       <TownTicker towns={tickerTowns} />
 
       <FeaturedRail products={products} />
+
+      {/* The promo sits directly under the rail: somebody who has just scrolled
+          the hats is one decision away from adding a foot bag to one. Navy also
+          breaks up white rail → cream bulk band. */}
+      <HatSackBand />
 
       <BulkOrderBand />
 
