@@ -108,7 +108,7 @@ export default async function RootLayout({
         </a>
         <SiteWrapper host={host}>{children}</SiteWrapper>
         <Analytics />
-        <GoogleAnalytics />
+        <GoogleAnalytics host={host} />
       </body>
     </html>
   );

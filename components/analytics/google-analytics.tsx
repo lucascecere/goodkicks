@@ -2,38 +2,45 @@
 
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
+import { siteBrand } from '@/lib/brand/site-brand';
 
-// Townies Google Analytics (GA4).
+// Google Analytics (GA4), one property per brand.
 //
-// Brand-scoped: this tag ONLY loads on Townies pages. The Good Kicks subtree
-// (/goodkicks/*, which is also what goodkicks.co serves via the middleware
-// host-rewrite) and /admin never load it, so Good Kicks + admin traffic stay
-// out of the Townies property. The brand check mirrors components/layout/
-// site-wrapper.tsx (usePathname is the single source of truth for brand, and
-// resolves correctly on goodkicks.co too). Good Kicks gets its own GA property
-// later; complements the existing Vercel Analytics in app/layout.tsx.
-const GA_ID = 'G-8F3ZCCGXC2';
+// Townies and Good Kicks share this app but NOT their numbers, so each brand
+// reports into its own property and /admin reports into neither.
+//
+// Brand comes from siteBrand(host, pathname) — the same helper the chrome uses
+// — and NOT from usePathname() alone. On goodkicks.co the middleware rewrites
+// "/" → /goodkicks, so the server renders Good Kicks while the client pathname
+// still reads "/": a pathname-only check calls that Townies. That is exactly
+// what happened here, and every goodkicks.co visitor was logged into the
+// Townies property from 2026-07-04 until this was fixed. The server-provided
+// `host` is the reliable signal, so the root layout passes it down.
+const GA_IDS = {
+  townies: 'G-8F3ZCCGXC2',
+  goodkicks: 'G-7M4VXBHXB7',
+} as const;
 
-export function GoogleAnalytics() {
+export function GoogleAnalytics({ host = '' }: { host?: string }) {
   const pathname = usePathname();
 
-  const isGoodKicks =
-    pathname === '/goodkicks' || pathname.startsWith('/goodkicks/');
-  const isAdmin = pathname.startsWith('/admin');
-  if (isGoodKicks || isAdmin) return null;
+  // Admin is internal traffic — it belongs in neither brand's property.
+  if (pathname.startsWith('/admin')) return null;
+
+  const gaId = GA_IDS[siteBrand(host, pathname)];
 
   return (
     <>
       <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
         strategy="afterInteractive"
       />
-      <Script id="ga-townies" strategy="afterInteractive">
+      <Script id={`ga-${gaId}`} strategy="afterInteractive">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${GA_ID}');
+          gtag('config', '${gaId}');
         `}
       </Script>
     </>
