@@ -19,13 +19,15 @@ const TOWN_HATS = [
   'Norton',
 ];
 
+// The live Good Kicks catalogue (Sept 2026). Georgia / Nevada / Colorado were
+// retired and kept turning up here as a starter-sack choice.
 const GK_COLORWAYS = [
-  { value: 'georgia', label: 'georgia (rust + cream + dark brown)' },
-  { value: 'nevada', label: 'nevada (sage + mustard + cream)' },
-  { value: 'colorado', label: 'colorado (cream + rust + sage)' },
-  { value: 'new-york', label: 'new york (burgundy + mustard + black)' },
-  { value: 'massachusetts', label: 'massachusetts' },
-  { value: 'maine', label: 'maine (mustard + navy + black)' },
+  { value: 'montana', label: 'montana (blue + white)' },
+  { value: 'massachusetts', label: 'massachusetts (blue + yellow)' },
+  { value: 'maine', label: 'maine (blue + red)' },
+  { value: 'new-york', label: 'new york (black + red)' },
+  { value: 'new-mexico', label: 'new mexico (tan + green)' },
+  { value: 'tennessee', label: 'tennessee (orange + gray)' },
   { value: 'no-preference', label: 'no preference / surprise me' },
 ];
 
@@ -157,7 +159,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label className={labelClass}>account type</label>
-          <select required value={form.accountType} onChange={(e) => set('accountType', e.target.value)} className={inputClass}>
+          <select aria-label="Account type" required value={form.accountType} onChange={(e) => set('accountType', e.target.value)} className={inputClass}>
             <option value="">select one</option>
             {accountTypesFor(brand).map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
@@ -170,7 +172,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
               were under-500 / 500–2k / 2k–10k / 10k+, so the bar sat in the
               middle of the third option and an application could not tell you
               whether the applicant cleared it. */}
-          <select required value={form.followers} onChange={(e) => set('followers', e.target.value)} className={inputClass}>
+          <select aria-label="Follower count" required value={form.followers} onChange={(e) => set('followers', e.target.value)} className={inputClass}>
             <option value="">select range</option>
             <option value="under-1k">under 1,000</option>
             <option value="1k-3k">1,000 – 3,000</option>
@@ -213,7 +215,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
           <input type="text" placeholder="state" value={form.state} onChange={(e) => set('state', e.target.value)} className={inputClass} />
           <input type="text" placeholder="zip" value={form.zip} onChange={(e) => set('zip', e.target.value)} className={inputClass} />
         </div>
-        <select value={form.country} onChange={(e) => set('country', e.target.value)} className={inputClass}>
+        <select aria-label="Country" value={form.country} onChange={(e) => set('country', e.target.value)} className={inputClass}>
           <option value="US">United States</option>
           <option value="CA">Canada</option>
           <option value="GB">United Kingdom</option>
@@ -225,7 +227,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
       {isTownies ? (
         <div>
           <label className={labelClass}>which hat do you want?</label>
-          <select required value={form.hatPreference} onChange={(e) => set('hatPreference', e.target.value)} className={inputClass}>
+          <select aria-label="Which hat do you want" required value={form.hatPreference} onChange={(e) => set('hatPreference', e.target.value)} className={inputClass}>
             <option value="" disabled>select one</option>
             {TOWN_HATS.map((t) => (
               <option key={t} value={t}>{t}</option>
@@ -239,7 +241,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
       ) : (
         <div>
           <label className={labelClass}>which colorway do you want?</label>
-          <select required value={form.colorwayPreference} onChange={(e) => set('colorwayPreference', e.target.value)} className={inputClass}>
+          <select aria-label="Which colorway do you want" required value={form.colorwayPreference} onChange={(e) => set('colorwayPreference', e.target.value)} className={inputClass}>
             <option value="" disabled>select one</option>
             {GK_COLORWAYS.map((c) => (
               <option key={c.value} value={c.value}>{c.label}</option>

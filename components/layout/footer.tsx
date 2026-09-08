@@ -2,86 +2,71 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { MaMark } from '@/components/brand/wordmark';
-import { BrandLogo } from '@/components/brand/brand-logo';
 import { SocialLinks } from '@/components/townies/social-links';
-import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify/account-url';
+import { currentBrand } from '@/components/brand/current-brand';
+import type { BrandConfig } from '@/lib/brand/brands';
 
-// The footer is now the only place the regions are listed — the header's Shop
-// dropdown that used to carry them is gone, so North Shore is here rather than
-// being reachable from nowhere at all.
-const shopByLinks = [
-  { href: '/shop', label: 'All Towns' },
-  { href: '/south-shore', label: 'South Shore' },
-  { href: '/boston', label: 'Boston' },
-  { href: '/south-east', label: 'Southeastern Mass' },
-  { href: '/north-shore', label: 'North Shore' },
-  { href: '/goodkicks', label: 'Good Kicks' },
-];
+// The one footer, for both brands. Columns, logo, socials and the copyright
+// line come from the brand config; the ground is `ink`, which is navy for
+// Townies and near-black for Good Kicks.
 
-const aboutLinks = [
-  { href: '/about', label: 'Our Story' },
-  { href: '/request-a-town', label: 'Request Your Town' },
-  { href: '/wholesale', label: 'Bulk Orders' },
-  { href: '/ambassadors', label: 'Become an Ambassador' },
-  // /blog had zero internal links anywhere in the app — it existed only in
-  // sitemap.ts, so nothing on the site led to it.
-  { href: '/blog', label: 'The Town Paper' },
-];
-
-const serviceLinks = [
-  { href: SHOPIFY_ACCOUNT_URL, label: 'Account', external: true },
-  { href: '/size-guide', label: 'Size Guide' },
-  { href: '/shipping-returns', label: 'Shipping & Returns' },
-  { href: '/faq', label: 'FAQ' },
-  { href: '/support', label: 'Support' },
-];
-
-const termsLinks = [
-  { href: '/privacy', label: 'Privacy & Terms' },
-];
-
-export function Footer() {
+export function Footer({ brand }: { brand: BrandConfig }) {
   const year = new Date().getFullYear();
+  const logo = brand.logo.dark;
 
   return (
-    <footer className="bg-town-navy text-white">
-      {/* Columns */}
+    <footer className="bg-ink text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
-            <BrandLogo variant="script-cream" href="/" className="w-24 h-auto" alt="Townies Apparel Co." />
-            <p className="text-town-cream/50 text-sm leading-relaxed max-w-xs">
-              Town-pride apparel for real Massholes.
-            </p>
+            <Link href={brand.base || '/'} aria-label={brand.legalName} className="inline-flex">
+              {/* Plain <img> for the SVG mark: next/image refuses first-party
+                  SVGs without dangerouslyAllowSVG, and that flag is off. */}
+              {logo.src.endsWith('.svg') ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logo.src} alt={logo.alt} width={logo.w} height={logo.h} className="w-24 h-auto" />
+              ) : (
+                <Image src={logo.src} alt={logo.alt} width={logo.w} height={logo.h} className="w-24 h-auto" />
+              )}
+            </Link>
+            <p className="text-ink-contrast/60 text-sm leading-relaxed max-w-xs">{brand.blurb}</p>
           </div>
 
-          <FooterCol title="Shop By" links={shopByLinks} />
-          <FooterCol title="About" links={aboutLinks} />
-          <FooterCol title="Customer Service" links={serviceLinks} />
-          <FooterCol title="Terms" links={termsLinks} />
+          {brand.footer.columns.map((col) => (
+            <FooterCol key={col.title} title={col.title} links={col.links} />
+          ))}
         </div>
+
+        {brand.footer.subscribe && (
+          <div className="mt-12 pt-8 border-t border-white/10 grid gap-4 md:grid-cols-2 md:items-center">
+            <div>
+              <p className="text-white text-sm font-medium uppercase tracking-[0.15em]">Offers &amp; discounts</p>
+              <p className="text-ink-contrast/60 text-xs mt-1">Subscribe for drops and a welcome discount code.</p>
+            </div>
+            <SubscribeForm />
+          </div>
+        )}
       </div>
 
       {/* Bottom bar */}
       <div className="border-t border-white/10 px-4 sm:px-8 py-5">
-        <div className="max-w-7xl mx-auto flex flex-col items-center gap-3 sm:flex-row sm:justify-between text-xs text-town-cream/40">
-          {/* Left: the brand's own line, with the social icons beside it —
-              they belong to Townies, so they sit with the Townies copyright.
-              The agency credit is pushed to the far right, where a build
-              credit belongs and where it stops competing with the socials. */}
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-3 sm:flex-row sm:justify-between text-xs text-ink-contrast/60">
+          {/* The brand's own line with its socials beside it; the agency credit
+              is pushed to the far right, where a build credit belongs. */}
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-5">
             <p className="flex items-center gap-2">
-              <MaMark className="h-3 w-auto text-town-cream/40" />
-              Massachusetts · © {year} Townies Apparel Co.
+              {brand.id === 'townies' && <MaMark className="h-3 w-auto text-ink-contrast/60" />}
+              {brand.id === 'townies' ? 'Massachusetts · ' : ''}© {year} {brand.legalName}
             </p>
-            <SocialLinks />
+            <SocialLinks socials={brand.footer.socials} />
           </div>
           <a
             href="https://www.yourwebsitefriend.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center rounded border border-white/15 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.16em] text-town-cream/40 hover:text-white hover:border-white/35 transition-colors"
+            className="inline-flex items-center rounded border border-white/15 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.16em] text-ink-contrast/60 hover:text-white hover:border-white/35 transition-colors"
           >
             Managed by Your Website Friend
           </a>
@@ -100,18 +85,21 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h3 className="text-town-cream/40 text-[11px] uppercase tracking-[0.15em] mb-4 font-medium">
+      {/* An h2, not an h3: on a form page the footer is the first heading
+          after the H1, and an h3 there is the heading-order failure every
+          accessibility scan of the site reported. */}
+      <h2 className="text-ink-contrast/60 text-[11px] uppercase tracking-[0.15em] mb-4 font-medium">
         {title}
-      </h3>
+      </h2>
       <ul className="space-y-3 text-sm">
         {links.map((l) => (
           <li key={l.label}>
             {l.external ? (
-              <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-town-cream/70 hover:text-white transition-colors">
+              <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-ink-contrast/75 hover:text-white transition-colors">
                 {l.label}
               </a>
             ) : (
-              <Link href={l.href} className="text-town-cream/70 hover:text-white transition-colors">
+              <Link href={l.href} className="text-ink-contrast/75 hover:text-white transition-colors">
                 {l.label}
               </Link>
             )}
@@ -119,5 +107,57 @@ function FooterCol({
         ))}
       </ul>
     </div>
+  );
+}
+
+function SubscribeForm() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Brand-scoped so Good Kicks + Townies signups stay separate. Derived
+        // at submit time: this footer renders on goodkicks.co AND on
+        // townies.shop/goodkicks, and the server can't tell those apart from
+        // Host alone.
+        body: JSON.stringify({ email, brand: currentBrand() }),
+      });
+      setStatus(res.ok ? 'success' : 'error');
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  if (status === 'success') {
+    return <p className="text-ink-contrast/70 text-sm">You&apos;re in. Check your inbox for a welcome discount.</p>;
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md md:ml-auto">
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="you@email.com"
+        aria-label="Email address"
+        className="flex-1 bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded-sm px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/60"
+      />
+      <button
+        type="submit"
+        disabled={status === 'loading'}
+        className="bg-accent text-accent-contrast px-5 py-2.5 rounded-sm text-[0.6875rem] font-semibold uppercase tracking-[0.14em] hover:opacity-90 transition-opacity whitespace-nowrap disabled:opacity-60"
+      >
+        {status === 'loading' ? 'Sending…' : 'Get the discount'}
+      </button>
+      {status === 'error' && (
+        <p className="text-red-400 text-xs mt-1 w-full">Something went wrong — try again.</p>
+      )}
+    </form>
   );
 }

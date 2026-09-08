@@ -7,14 +7,14 @@ import Image from 'next/image';
 import { X } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
-import { BrandLogo } from '@/components/brand/brand-logo';
+import type { BrandConfig } from '@/lib/brand/brands';
 import { PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 
 function formatCents(cents: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(cents / 100);
 }
 
-export function CartDrawer() {
+export function CartDrawer({ brand }: { brand: BrandConfig }) {
   const { items, cartOpen, closeCart, subtotalCents, removeItem, updateQuantity } = useCart();
   const hasPreorder = items.some((i) =>
     i.customAttributes?.some((a) => a.value.toLowerCase().includes('pre-order')),
@@ -83,9 +83,11 @@ export function CartDrawer() {
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-3">
-                  <BrandLogo variant="script" className="h-10 w-auto opacity-90" />
+                  <Image src={brand.logo.light.src} width={brand.logo.light.w} height={brand.logo.light.h} alt={brand.logo.light.alt} className="h-12 w-auto opacity-90" />
                   <p className="text-muted text-sm">Your bag is empty.</p>
-                  <Link href="/shop" onClick={closeCart} className="text-accent hover:underline text-sm">find your town →</Link>
+                  <Link href={brand.shopPath} onClick={closeCart} className="text-accent hover:underline text-sm">
+                    {brand.id === 'townies' ? 'find your town →' : 'shop the sacks →'}
+                  </Link>
                 </div>
               ) : (
                 <ul className="space-y-4">

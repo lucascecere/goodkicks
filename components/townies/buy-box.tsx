@@ -22,6 +22,7 @@ export function BuyBox({
   flavor = 'townies',
   preorder = false,
   shipNote,
+  stockNote,
 }: {
   variants: BuyVariant[];
   productTitle: string;
@@ -29,6 +30,8 @@ export function BuyBox({
   flavor?: 'townies' | 'goodkicks';
   preorder?: boolean;
   shipNote?: string;
+  /** "In stock · only 4 left · ships now" — from real inventory, or undefined. */
+  stockNote?: string | null;
 }) {
   const { addItem, openCart } = useCart();
   const [selectedId, setSelectedId] = useState(
@@ -38,13 +41,10 @@ export function BuyBox({
   const selected = variants.find((v) => v.id === selectedId) ?? variants[0];
   if (!selected) return null;
 
-  const accent =
-    flavor === 'goodkicks'
-      ? 'bg-brand-rust hover:bg-brand-rust/90 focus-visible:ring-brand-rust'
-      : 'bg-town-forest hover:bg-town-forest/90 focus-visible:ring-town-forest';
-
-  const ring =
-    flavor === 'goodkicks' ? 'border-brand-rust text-brand-ink' : 'border-town-navy text-town-navy';
+  // Colour comes from the semantic tokens under whichever [data-brand] scope
+  // this renders in; `flavor` only tags the cart line with its origin.
+  const accent = 'bg-accent hover:bg-accent/90 focus-visible:ring-accent';
+  const ring = 'border-text text-text';
 
   const price = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -109,7 +109,7 @@ export function BuyBox({
           onClick={handleAdd}
           disabled={!selected.available}
           className={cn(
-            'w-full text-white py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-50 disabled:cursor-not-allowed',
+            'w-full text-accent-contrast py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-50 disabled:cursor-not-allowed',
             accent,
           )}
         >
@@ -118,6 +118,11 @@ export function BuyBox({
         {preorder && selected.available && shipNote && (
           <p className="text-center text-xs uppercase tracking-[0.14em] text-muted">
             Pre-order · {shipNote}
+          </p>
+        )}
+        {!preorder && selected.available && stockNote && (
+          <p className="text-center text-xs uppercase tracking-[0.14em] text-muted">
+            {stockNote}
           </p>
         )}
       </div>

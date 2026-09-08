@@ -38,9 +38,17 @@ export type HeroSlide = {
   cta: { href: string; label: string };
 };
 
+
 const ADVANCE_MS = 6000;
 
-export function Hero({ slides }: { slides: HeroSlide[] }) {
+export function Hero({
+  slides,
+  mark = true,
+}: {
+  slides: HeroSlide[];
+  /** The small MA silhouette beside the eyebrow — Townies only. */
+  mark?: boolean;
+}) {
   const [idx, setIdx] = useState(0);
   const reducedMotion = useRef(false);
 
@@ -72,7 +80,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
 
   return (
     <section
-      className="relative w-full aspect-square sm:aspect-[16/10] overflow-hidden bg-town-navy"
+      className="relative w-full aspect-square sm:aspect-[16/10] overflow-hidden bg-ink"
       aria-roledescription={multi ? 'carousel' : undefined}
       aria-label={multi ? 'Featured towns' : undefined}
       // NOTHING pauses this on pointer. The hero is 16:10 and sits at the top
@@ -112,28 +120,28 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
       {/* Two scrims, both anchored to the bottom-left corner where the caption
           sits. A bottom band handles the horizon, and a corner-weighted radial
           keeps the copy legible over a bright frame without washing the caps. */}
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-town-navy/85 via-town-navy/40 to-transparent" />
-      <div className="absolute inset-0 bg-[radial-gradient(120%_95%_at_0%_100%,rgba(13,27,42,0.8)_0%,rgba(13,27,42,0.35)_38%,transparent_66%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/85 via-ink/40 to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(120%_95%_at_0%_100%,color-mix(in_srgb,var(--color-ink)_80%,transparent)_0%,color-mix(in_srgb,var(--color-ink)_35%,transparent)_38%,transparent_66%)]" />
 
       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 lg:p-14 text-white">
         {/* Keyed on the index so the copy re-runs its fade on every change,
             rather than swapping mid-cross-fade with the old line still up. */}
         <div key={idx} className="max-w-md animate-[hero-copy_.7s_ease-out_both]">
           {active.eyebrow && (
-            <p className="flex items-center gap-2.5 text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/80 mb-3">
-              <MaMark className="h-2 w-auto shrink-0 opacity-70" />
+            <p className="flex items-center gap-2.5 text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/80 mb-3">
+              {mark && <MaMark className="h-2 w-auto shrink-0 opacity-70" />}
               {active.eyebrow}
             </p>
           )}
-          <h1 className="font-block font-bold uppercase text-[1.75rem] sm:text-[2rem] lg:text-[2.5rem] leading-[0.98] tracking-[0.005em]">
+          <h1 className="heading text-[1.75rem] sm:text-[2rem] lg:text-[2.5rem] leading-[0.98]">
             {active.headline}
           </h1>
           {active.sub && (
-            <p className="text-[0.8125rem] leading-relaxed text-town-cream/80 mt-2.5">{active.sub}</p>
+            <p className="text-[0.8125rem] leading-relaxed text-ink-contrast/80 mt-2.5">{active.sub}</p>
           )}
           <Link
             href={active.cta.href}
-            className="mt-6 inline-flex items-center rounded-none bg-town-cream px-6 py-2.5 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-town-navy transition-colors hover:bg-white"
+            className="mt-6 inline-flex items-center rounded-none bg-ink-contrast px-6 py-2.5 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-text transition-colors hover:bg-white"
           >
             {active.cta.label}
           </Link>
@@ -155,7 +163,7 @@ export function Hero({ slides }: { slides: HeroSlide[] }) {
                 <span
                   className={cn(
                     'block h-[3px] w-8 transition-colors',
-                    i === idx ? 'bg-town-cream' : 'bg-town-cream/30 group-hover:bg-town-cream/60',
+                    i === idx ? 'bg-ink-contrast' : 'bg-ink-contrast/30 group-hover:bg-ink-contrast/60',
                   )}
                 />
               </button>

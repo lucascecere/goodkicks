@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import { notFound, redirect } from 'next/navigation';
 import { getProductByHandle, getAllProducts } from '@/lib/shopify/service';
 import { getTownieProducts, getGoodKicksProducts, type CollectionProduct } from '@/lib/shopify/collections';
@@ -10,11 +9,14 @@ import { imageForVariant } from '@/lib/shopify/variant-colors';
 import { BrandImage } from '@/components/ui/brand-image';
 import { TowniesBlock } from '@/components/brand/wordmark';
 import { TownCard } from '@/components/townies/town-card';
+import { ProductCard } from '@/components/townies/product-card';
+import { gkDisplayName, gkLine } from '@/lib/goodkicks/names';
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
 import { ValueBand } from '@/components/townies/value-band';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
 import { ProductMedia, type ProductMediaImage } from '@/components/product/product-media';
 import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
+import { getVariantStock, stockNote } from '@/lib/shopify/stock';
 import { gkCanonical } from '@/lib/seo/site';
 import {
   HAT_SACK_HANDLE,
@@ -50,8 +52,7 @@ function detectGoodKicks(handle: string, title: string): boolean {
 }
 
 function displayName(handle: string, title: string, gk: boolean): string {
-  if (gk) return title.replace(/^The Good Kick\s*[—–-]\s*/i, '').replace(/^The\s+/i, '');
-  return title;
+  return gk ? gkDisplayName(title) : title;
 }
 
 /** true if this product should render as Good Kicks. */
@@ -59,11 +60,6 @@ function resolveGk(handle: string, title: string, brand?: Brand): boolean {
   if (brand === 'goodkicks') return true;
   if (brand === 'townies') return false;
   return detectGoodKicks(handle, title);
-}
-
-function priceLabel(p: CollectionProduct): string {
-  const amount = p.variants.edges[0]?.node.price.amount;
-  return amount ? `$${parseFloat(amount).toFixed(2)}` : '';
 }
 
 export async function productPageMetadata(handle: string, brand?: Brand): Promise<Metadata> {
@@ -159,7 +155,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             <p className="text-xs uppercase tracking-widest text-muted font-medium mb-2">
               Build your own bundle
             </p>
-            <h1 className="font-heading text-4xl sm:text-5xl text-text">the 3-pack.</h1>
+            <h1 className="heading text-4xl sm:text-5xl text-text">the 3-pack.</h1>
           </div>
           <BundlePicker
             bundleVariantId={firstVariant.id}
@@ -180,6 +176,11 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
     priceInCents: Math.round(parseFloat(e.node.price.amount) * 100),
     available: e.node.availableForSale,
   }));
+
+  // Real on-hand count for the first variant (Townies only; GK ships from a
+  // separate stock we don't surface). Unknown → nothing is shown.
+  const stock = gk ? {} : await getVariantStock([firstVariant.id]);
+  const stockLine = gk ? null : stockNote(stock[firstVariant.id]?.quantity);
 
   // Cross-sell within the same brand.
   const hatSack = gk || !HAT_SACK_LIVE ? null : await getHatSackOffer();
@@ -255,23 +256,23 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
           <div className="lg:pt-6">
             {gk ? (
               <span className="block font-heading uppercase tracking-[0.15em] text-accent text-[0.65rem] mb-1">
-                Good Kicks
+                {gkLine(shopifyProduct.title)}
               </span>
             ) : (
               <TowniesBlock className="block text-[0.65rem] mb-1" />
             )}
-            <h1 className="font-heading uppercase leading-[0.9] tracking-[0.01em] text-text text-3xl sm:text-5xl lg:text-7xl mb-3 break-words">
+            <h1 className="heading leading-[0.9] text-text text-3xl sm:text-5xl lg:text-6xl mb-3 break-words">
               {name}
             </h1>
-            {gk ? (
-              <p className="text-muted leading-relaxed mb-8 max-w-md">
-                A hand-stitched Good Kicks foot bag — properly weighted, built to take a beating, made to keep the circle going. Pick your colorway.
-              </p>
-            ) : shopifyProduct.descriptionHtml ? (
+            {shopifyProduct.descriptionHtml ? (
               <div
                 className="text-muted leading-relaxed mb-8 max-w-md space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:mt-1 [&_p]:leading-relaxed [&_strong]:text-text [&_strong]:font-semibold"
                 dangerouslySetInnerHTML={{ __html: shopifyProduct.descriptionHtml }}
               />
+            ) : gk ? (
+              <p className="text-muted leading-relaxed mb-8 max-w-md">
+                A hand-stitched Good Kicks foot bag — properly weighted, built to take a beating, made to keep the circle going. Pick your colorway.
+              </p>
             ) : (
               <p className="text-muted leading-relaxed mb-8 max-w-md">
                 Rep your town before anyone has to ask where you’re from. Wear it ’til it’s got a story.
@@ -285,6 +286,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               flavor={gk ? 'goodkicks' : 'townies'}
               preorder={preorder}
               shipNote={PREORDER_SHIP_NOTE}
+              stockNote={stockLine}
             />
             {!gk && (
               <>
@@ -327,7 +329,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
         {townCross.length > 0 && (
           <div className="mt-20 sm:mt-28">
             <div className="flex items-center gap-4 mb-6">
-              <h2 className="font-heading uppercase text-2xl sm:text-3xl text-text whitespace-nowrap">More towns</h2>
+              <h2 className="heading text-2xl sm:text-3xl text-text whitespace-nowrap">More towns</h2>
               <div className="h-px flex-1 bg-rule" />
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
@@ -342,38 +344,20 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
         {gkCross.length > 0 && (
           <div className="mt-20 sm:mt-28">
             <div className="flex items-center gap-4 mb-6">
-              <h2 className="font-heading text-2xl sm:text-3xl text-text whitespace-nowrap">more colorways</h2>
+              <h2 className="heading text-2xl sm:text-3xl text-text whitespace-nowrap">more colorways</h2>
               <div className="h-px flex-1 bg-rule" />
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {gkCross.map((p) => (
-                <Link key={p.id} href={`${productBase}/${p.handle}`} className="group block">
-                  <div className="relative aspect-square rounded-lg overflow-hidden bg-surface border border-rule">
-                    {p.featuredImage?.url ? (
-                      <Image
-                        src={p.featuredImage.url}
-                        alt={p.featuredImage.altText ?? p.title}
-                        fill
-                        sizes="(max-width: 640px) 50vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-rule" />
-                    )}
-                  </div>
-                  <div className="pt-3">
-                    <p className="font-medium text-text text-sm group-hover:text-accent transition-colors">{p.title}</p>
-                    <p className="text-muted text-sm mt-0.5">{priceLabel(p)}</p>
-                  </div>
-                </Link>
+                <ProductCard key={p.id} product={p} productBase={productBase} title={gkDisplayName(p.title)} fit="cover" />
               ))}
             </div>
           </div>
         )}
       </div>
 
-      {/* Townies only — the band is written in Townies' voice and marks, and
-          this component also renders Good Kicks product pages. */}
+      {/* Townies only — the band is written in Townies' voice and marks. The
+          Good Kicks page carries its own version on /goodkicks. */}
       {!gk && <ValueBand />}
     </div>
   );

@@ -31,12 +31,26 @@ export function FeaturedRail({
   title = 'Every town we’ve done.',
   link = { href: '/shop', label: 'See all' },
   showPrice = false,
+  productBase = '/products',
+  names,
+  fit = 'contain',
 }: {
   products: CollectionProduct[];
   eyebrow?: string;
   title?: string;
   link?: { href: string; label: string };
   showPrice?: boolean;
+  /** Where a card links — '/products' for Townies, '/goodkicks/products' for GK. */
+  productBase?: string;
+  /**
+   * Display name per handle. Plain data, not a function — this is a client
+   * component and the server page cannot hand it a callback. When given, the
+   * card title and the "Shop …" link both use it; otherwise the Townies rule
+   * applies (product title, link to the town).
+   */
+  names?: Record<string, string>;
+  /** 'cover' for full-frame photography (Good Kicks); Townies hats stay contained. */
+  fit?: 'contain' | 'cover';
 }) {
   const rail = useRef<HTMLDivElement>(null);
 
@@ -53,7 +67,7 @@ export function FeaturedRail({
     // which is the bordered-grid look this section exists to get away from. On
     // white the tile edge vanishes and the hats float on the page. Swap the
     // ground to cream the day the catalogue is reshot on a warm backdrop.
-    <section className="bg-white border-y border-town-rule py-12 sm:py-16">
+    <section className="bg-white border-y border-rule py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         <div className="flex items-end justify-between gap-4">
           <div className="flex-1">
@@ -66,7 +80,7 @@ export function FeaturedRail({
                 type="button"
                 onClick={() => scroll(dir)}
                 aria-label={dir === -1 ? 'Scroll left' : 'Scroll right'}
-                className="grid h-8 w-8 place-items-center rounded-full border border-town-rule text-town-navy transition-colors hover:bg-town-navy hover:text-town-cream"
+                className="grid h-8 w-8 place-items-center rounded-full border border-rule text-text transition-colors hover:bg-ink hover:text-ink-contrast"
               >
                 {dir === -1 ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
               </button>
@@ -80,11 +94,12 @@ export function FeaturedRail({
         className="flex gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory scroll-px-4 sm:scroll-px-8 px-4 sm:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {products.map((p, i) => {
-          const town = townKey(p).name;
           const price = p.variants.edges[0]?.node.price;
+          const name = names?.[p.handle] ?? p.title;
+          const label = `Shop ${names ? name : townKey(p).name}`;
           return (
             <article key={p.id} className="w-[62vw] sm:w-[280px] lg:w-[300px] shrink-0 snap-start">
-              <Link href={`/products/${p.handle}`} className="group block">
+              <Link href={`${productBase}/${p.handle}`} className="group block">
                 <div className="relative aspect-[4/5] overflow-hidden bg-white">
                   {p.featuredImage?.url ? (
                     <Image
@@ -93,20 +108,20 @@ export function FeaturedRail({
                       fill
                       sizes="(min-width: 1024px) 300px, 62vw"
                       priority={i < 2}
-                      className="object-contain p-6 transition-transform duration-500 group-hover:scale-[1.03]"
+                      className={`${fit === 'cover' ? 'object-cover' : 'object-contain p-6'} transition-transform duration-500 group-hover:scale-[1.03]`}
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-town-rule" />
+                    <div className="absolute inset-0 bg-rule" />
                   )}
                 </div>
-                <p className="mt-3 text-sm text-town-navy">{p.title}</p>
+                <p className="mt-3 text-sm text-text">{name}</p>
                 {showPrice && price && (
-                  <p className="mt-0.5 text-sm text-town-muted">
+                  <p className="mt-0.5 text-sm text-muted">
                     ${Number(price.amount).toFixed(2).replace(/\.00$/, '')}
                   </p>
                 )}
-                <span className="mt-1.5 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-town-navy group-hover:text-town-forest transition-colors">
-                  Shop {town}
+                <span className="mt-1.5 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-text group-hover:text-accent transition-colors">
+                  {label}
                 </span>
               </Link>
             </article>

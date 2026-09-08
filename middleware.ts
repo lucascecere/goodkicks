@@ -39,7 +39,22 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  // 4. goodkicks.co host → serve the /goodkicks subtree at its own root (option B).
+  // 4. Good Kicks is one page now. Its old About and FAQ pages fold into it —
+  //    the story never had a section of its own and the FAQ is a section with
+  //    an anchor. Both spellings: the /goodkicks path on townies.shop, and the
+  //    bare path on goodkicks.co (which the host rewrite below would otherwise
+  //    turn into /goodkicks/about and 404).
+  const gkHost = host === 'goodkicks.co' || host === 'www.goodkicks.co';
+  const gkPath = pathname.startsWith('/goodkicks/') ? pathname.slice('/goodkicks'.length) : gkHost ? pathname : null;
+  if (gkPath === '/about' || gkPath === '/faq') {
+    const url = req.nextUrl.clone();
+    url.pathname = gkHost ? '/' : '/goodkicks';
+    url.search = '';
+    url.hash = gkPath === '/faq' ? 'faq' : '';
+    return NextResponse.redirect(url, 308);
+  }
+
+  // 5. goodkicks.co host → serve the /goodkicks subtree at its own root (option B).
   //    Gated behind ENABLE_GK_HOST_REWRITE because goodkicks.co is still the live
   //    prod domain on `main`; the rewrite only flips on at cutover.
   if (

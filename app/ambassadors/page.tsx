@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { AmbassadorForm } from '@/components/partners/ambassador-form';
 
 export const metadata: Metadata = {
@@ -64,14 +65,16 @@ export default function TownRepPage() {
               followers save, you earn.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            {['#0D1B2A', '#2F4F3A', '#F2EFE8', '#7A1E1E', '#4B2E83', '#111111'].map((color, i) => (
-              <div
-                key={i}
-                className="aspect-square rounded-sm shadow-sm ring-1 ring-town-rule"
-                style={{ background: color }}
-              />
-            ))}
+          {/* A real photograph of the product a rep gets, not the six colour
+              swatches that stood in here since the page was built. */}
+          <div className="relative aspect-square overflow-hidden rounded-sm">
+            <Image
+              src="/brand/scene/clover-2-1x1.jpg"
+              alt="Milton, Walpole and West Roxbury Townies snapbacks in a bed of clover"
+              fill
+              sizes="(max-width: 768px) 100vw, 40vw"
+              className="object-cover"
+            />
           </div>
         </div>
       </section>
@@ -160,7 +163,7 @@ export default function TownRepPage() {
               { step: '04', title: 'Post. Earn. Repeat.', body: 'Share your code, watch the orders come in, and get paid monthly. We track everything on our end.' },
             ].map((item, i, arr) => (
               <div key={item.step} className={`flex gap-6 sm:gap-8 py-8 ${i < arr.length - 1 ? 'border-b border-town-rule' : ''}`}>
-                <span className="font-block text-4xl text-town-navy/25 flex-shrink-0 w-14">{item.step}</span>
+                <span className="font-block text-4xl text-town-navy/50 flex-shrink-0 w-14">{item.step}</span>
                 <div className="space-y-1">
                   <h3 className="font-block uppercase text-xl sm:text-2xl text-town-navy">{item.title}</h3>
                   <p className="text-town-muted leading-relaxed">{item.body}</p>

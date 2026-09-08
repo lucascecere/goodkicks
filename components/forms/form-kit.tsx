@@ -60,7 +60,7 @@ export function Field({
     <div>
       <label className={labelClass}>{label}</label>
       {children}
-      {hint && !error ? <p className="text-muted/70 text-xs mt-1">{hint}</p> : null}
+      {hint && !error ? <p className="text-muted text-xs mt-1">{hint}</p> : null}
       {error ? <p className={errClass}>{error}</p> : null}
     </div>
   );

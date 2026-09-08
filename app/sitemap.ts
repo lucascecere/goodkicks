@@ -44,8 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // does not serve yet is how a sitemap starts reporting 404s in Search Console.
     { url: gkCanonical(''),                lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
     { url: gkCanonical('shop'),            lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
-    { url: gkCanonical('about'),           lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.5 },
-    { url: gkCanonical('faq'),             lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: gkCanonical('support'),         lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.4 },
     { url: gkCanonical('shipping-returns'), lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.4 },
     { url: `${siteUrl}/blog`,              lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.7 },

@@ -1,4 +1,12 @@
+import type { ComponentType } from 'react';
 import { MaMark, PineMark, SignpostMark, AnchorMark } from '@/components/brand/wordmark';
+
+export type ValueItem = {
+  Mark: ComponentType<{ className?: string }>;
+  title: string;
+  body: string;
+  markClass?: string;
+};
 
 /**
  * Four-up promise band, drawn with the brand-sheet icon set.
@@ -7,7 +15,7 @@ import { MaMark, PineMark, SignpostMark, AnchorMark } from '@/components/brand/w
  * to run to empty cream. Marks rather than photos on purpose — this is the one
  * band that shouldn't be waiting on a photoshoot.
  */
-const ITEMS = [
+const TOWNIES_ITEMS: ValueItem[] = [
   {
     Mark: MaMark,
     title: 'Massachusetts first',
@@ -45,28 +53,35 @@ const ITEMS = [
  *
  * Flat colour, no pattern overlay on either tone.
  */
-export function ValueBand({ tone = 'cream' }: { tone?: 'cream' | 'forest' }) {
+export function ValueBand({
+  tone = 'cream',
+  items = TOWNIES_ITEMS,
+}: {
+  /** 'forest' = the brand's full-colour band (forest for Townies, slate for GK). */
+  tone?: 'cream' | 'forest';
+  items?: ValueItem[];
+}) {
   const forest = tone === 'forest';
 
   return (
-    <section className={forest ? 'bg-town-forest' : 'bg-town-cream border-t border-town-rule'}>
+    <section className={forest ? 'bg-band' : 'bg-bg border-t border-rule'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 sm:gap-x-10">
-          {ITEMS.map(({ Mark, title, body, markClass }) => (
+          {items.map(({ Mark, title, body, markClass = 'h-14 w-auto' }) => (
             <div key={title}>
-              <div className={`h-14 flex items-end mb-5 ${forest ? 'text-town-cream/80' : 'text-town-forest'}`}>
+              <div className={`h-14 flex items-end mb-5 ${forest ? 'text-white/85' : 'text-accent'}`}>
                 <Mark className={markClass} />
               </div>
               <h3
-                className={`font-block font-bold uppercase text-base leading-snug tracking-[0.02em] mb-2 ${
-                  forest ? 'text-white' : 'text-town-navy'
+                className={`heading text-base leading-snug mb-2 ${
+                  forest ? 'text-white' : 'text-text'
                 }`}
               >
                 {title}
               </h3>
               <p
                 className={`text-[0.8125rem] leading-relaxed ${
-                  forest ? 'text-town-cream/70' : 'text-town-muted'
+                  forest ? 'text-white/90' : 'text-muted'
                 }`}
               >
                 {body}

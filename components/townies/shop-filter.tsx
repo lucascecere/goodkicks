@@ -43,12 +43,12 @@ export function ShopFilter({
 
       {/* Ruled count line — tells you the filter did something, and gives the
           tab row a base so it isn't floating over the grid. */}
-      <div className="flex items-baseline justify-between gap-4 border-t border-town-rule mt-3 pt-3 mb-7">
-        <p className="text-[0.68rem] uppercase tracking-[0.2em] text-town-stone">
+      <div className="flex items-baseline justify-between gap-4 border-t border-rule mt-3 pt-3 mb-7">
+        <p className="text-[0.68rem] uppercase tracking-[0.2em] text-muted">
           {shown.length} {shown.length === 1 ? 'design' : 'designs'}
           {active !== 'all' && (
             <>
-              <span className="mx-2 text-town-rule">·</span>
+              <span className="mx-2 text-rule">·</span>
               {towns.find((t) => t.slug === active)?.name}
             </>
           )}
@@ -57,7 +57,7 @@ export function ShopFilter({
           <button
             type="button"
             onClick={() => pick('all')}
-            className="text-[0.68rem] uppercase tracking-[0.2em] text-town-navy hover:text-town-forest underline underline-offset-4 transition-colors"
+            className="text-[0.68rem] uppercase tracking-[0.2em] text-text hover:text-accent underline underline-offset-4 transition-colors"
           >
             Clear
           </button>
@@ -65,7 +65,7 @@ export function ShopFilter({
       </div>
 
       {shown.length === 0 ? (
-        <p className="text-center text-town-muted text-sm py-16">
+        <p className="text-center text-muted text-sm py-16">
           Nothing here yet — check back soon.
         </p>
       ) : (
@@ -95,8 +95,8 @@ function Tab({
       className={cn(
         'whitespace-nowrap rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition-colors',
         active
-          ? 'bg-town-navy text-town-cream border-town-navy'
-          : 'bg-transparent text-town-navy/60 border-town-rule hover:text-town-navy hover:border-town-navy/40',
+          ? 'bg-ink text-ink-contrast border-text'
+          : 'bg-transparent text-text/60 border-rule hover:text-text hover:border-text/40',
       )}
     >
       {label}

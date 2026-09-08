@@ -32,30 +32,70 @@
   --font-block: var(--font-rokkitt), "Rockwell", "Arial Black", serif;
   --font-script: var(--font-yellowtail), "Brush Script MT", cursive;
 
-  /* Semantic (brand-scoped) tokens — defaults = Townies. Shared chrome (cart
-     drawer, shared ui primitives) uses these so it recolors per active brand.
+  /* Semantic (brand-scoped) tokens — defaults = Townies.
+     EVERY shared component (chrome, hero, rails, bands, cards, forms) is written
+     against these, never against town-* or brand-* literals, so one component
+     renders both storefronts and the brand is nothing but the token set:
+       bg / surface / text / muted / stone / rule  — the light page
+       ink / ink-contrast                          — dark grounds (footer, mastheads, ticker)
+       accent / accent-contrast                    — CTAs, eyebrows, links
+       band                                        — the one full-colour section per page
      Overridden to Good Kicks under [data-brand="goodkicks"] below. */
   --color-bg: var(--color-town-cream);
   --color-surface: var(--color-town-white);
   --color-text: var(--color-town-navy);
   --color-muted: var(--color-town-muted);
+  --color-stone: var(--color-town-stone);
   --color-accent: var(--color-town-forest);
   --color-accent-contrast: var(--color-town-white);
   --color-rule: var(--color-town-rule);
+  --color-ink: var(--color-town-navy);
+  --color-ink-contrast: var(--color-town-cream);
+  --color-band: var(--color-town-forest);
   --font-heading: var(--font-block);
 }
 
+/* Heading treatment is a brand decision, not a component one. Townies sets
+   display type in bold collegiate caps; Good Kicks sets it in a regular-weight
+   serif, lower case. The `heading` utility below reads these, so a shared
+   component asks for "a heading" and each brand answers in its own voice. */
+:root {
+  --heading-weight: 700;
+  --heading-case: uppercase;
+  --heading-tracking: 0.015em;
+}
+
 /* Good Kicks theme scope — redefines the semantic tokens for the /goodkicks
-   subtree (and the shared CartDrawer when a GK route is active). */
+   subtree and for goodkicks.co (SiteWrapper sets data-brand from host + path,
+   so the shared chrome and the shared CartDrawer recolour with it). */
 [data-brand="goodkicks"] {
   --color-bg: var(--color-brand-cream);
   --color-surface: #FFFFFF;
   --color-text: var(--color-brand-ink);
   --color-muted: var(--color-brand-muted);
-  --color-accent: var(--color-brand-rust);
+  --color-stone: #8A8A86;
+  /* Two steps deeper than the brand rust (#C66A3D): white on the swatch itself
+     is 3.8:1 and fails AA on every button, and the swatch as small text on
+     cream fails too. The rust survives in the logo; the working accent is the
+     shade that passes both ways (5.4:1 on white, 4.7:1 on cream). */
+  --color-accent: #A8522A;
   --color-accent-contrast: #FFFFFF;
   --color-rule: var(--color-brand-rule);
+  --color-ink: var(--color-brand-ink);
+  --color-ink-contrast: var(--color-brand-cream);
+  --color-band: var(--color-brand-blue);
   --font-heading: var(--font-display);
+  --heading-weight: 400;
+  --heading-case: none;
+  --heading-tracking: -0.01em;
+}
+
+/* "A heading, in this brand's voice." Pair with a size and a leading. */
+@utility heading {
+  font-family: var(--font-heading);
+  font-weight: var(--heading-weight);
+  text-transform: var(--heading-case);
+  letter-spacing: var(--heading-tracking);
 }
 
 @layer base {

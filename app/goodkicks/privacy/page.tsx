@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { PageMasthead } from '@/components/townies/page-masthead';
 import { PrivacyContent, PRIVACY_UPDATED } from '@/components/legal/privacy-content';
 import { gkCanonical } from '@/lib/seo/site';
 
@@ -11,18 +12,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="bg-brand-cream min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 sm:px-8 pt-16 sm:pt-24 pb-6">
-        <p className="text-xs uppercase tracking-widest text-brand-rust font-medium mb-3">
-          The fine print
-        </p>
-        <h1 className="font-display text-4xl sm:text-6xl text-brand-ink mb-3">
-          privacy &amp; terms.
-        </h1>
-        <p className="text-brand-muted">Last updated {PRIVACY_UPDATED}</p>
-      </div>
-
-      <div className="max-w-3xl mx-auto px-6 sm:px-8 pb-20 sm:pb-28">
+    <div className="bg-bg">
+      <PageMasthead eyebrow="The fine print" title="privacy & terms." sub={`Last updated ${PRIVACY_UPDATED}`} pattern="none" />
+      <div className="max-w-3xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <PrivacyContent supportHref="/goodkicks/support" />
       </div>
     </div>

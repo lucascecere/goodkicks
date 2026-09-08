@@ -26,18 +26,18 @@ export function SectionHeader({
     <div className="flex items-end justify-between gap-4 mb-6 sm:mb-8">
       <div>
         {eyebrow && (
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest mb-2">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-2">
             {eyebrow}
           </p>
         )}
-        <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy">
+        <h2 className="heading text-2xl sm:text-3xl leading-none text-text">
           {title}
         </h2>
       </div>
       {link && (
         <Link
           href={link.href}
-          className="hidden sm:inline-block shrink-0 text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-town-navy hover:text-town-forest transition-colors"
+          className="hidden sm:inline-block shrink-0 text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-text hover:text-accent transition-colors"
         >
           {link.label}
         </Link>

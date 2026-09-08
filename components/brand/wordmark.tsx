@@ -43,7 +43,7 @@ export function TowniesBlock({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        'font-block uppercase tracking-[0.15em] text-town-stone',
+        'font-block uppercase tracking-[0.15em] text-town-muted',
         className,
       )}
     >

@@ -15,10 +15,10 @@ import { BrandPattern, type PatternColor } from '@/components/townies/brand-patt
 type Tone = 'cream' | 'navy' | 'forest' | 'stone';
 
 const TONE: Record<Tone, string> = {
-  cream: 'bg-town-cream text-town-stone',
-  navy: 'bg-town-navy text-town-cream/40',
-  forest: 'bg-town-forest text-town-cream/40',
-  stone: 'bg-town-stone text-town-cream/60',
+  cream: 'bg-ink-contrast text-muted',
+  navy: 'bg-ink text-ink-contrast/40',
+  forest: 'bg-accent text-ink-contrast/40',
+  stone: 'bg-stone text-ink-contrast/60',
 };
 
 // MA pattern color + opacity that reads well on each tone.
@@ -120,7 +120,7 @@ export function BrandImage({
       <BrandPattern variant="ma" color={pat.color} opacity={pat.opacity} size={130} fade="radial" />
       <MaMark className="relative h-9 w-auto opacity-50" />
       {label && (
-        <span className="relative font-block uppercase tracking-[0.12em] text-sm opacity-70">
+        <span className="relative heading tracking-[0.12em] text-sm opacity-70">
           {label}
         </span>
       )}
