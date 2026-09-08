@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Hero } from '@/components/townies/hero';
 import { FeaturedRail } from '@/components/townies/featured-rail';
 import { TownTicker } from '@/components/townies/town-ticker';
-import { ValueBand } from '@/components/townies/value-band';
 import { BulkOrderBand } from '@/components/townies/bulk-order-band';
 import { HatSackBand } from '@/components/townies/hat-sack-band';
 import { StyleBand } from '@/components/townies/style-band';
@@ -126,10 +125,9 @@ export default async function HomePage() {
 
       <BulkOrderBand />
 
-      {/* Closes on forest. The four marks were the quietest thing on the page
-          sitting on cream in the middle of it; as the last section, in full
-          colour, they read as the sign-off they were written to be. */}
-      <ValueBand tone="forest" />
+{/* The four-mark value band used to close the page here. It still runs on
+          every product page, which is where a buyer actually weighs those
+          promises; on the homepage it was one more band after the bulk push. */}
     </>
   );
 }
