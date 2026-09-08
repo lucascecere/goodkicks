@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { PageMasthead } from '@/components/townies/page-masthead';
 import { TownRequestForm } from '@/components/forms/town-request-form';
@@ -26,7 +27,9 @@ export default function Page() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
-        <TownRequestForm />
+        <Suspense fallback={null}>
+          <TownRequestForm />
+        </Suspense>
 
         <div className="mt-14 pt-8 border-t border-town-rule text-sm text-town-muted">
           Already have a shop and want to stock us? Head to <Link href="/wholesale" className="underline underline-offset-4 hover:text-town-navy">wholesale</Link>. Anything else, <Link href="/support" className="underline underline-offset-4 hover:text-town-navy">support</Link> is here.

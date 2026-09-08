@@ -10,6 +10,7 @@ import { BrandImage } from '@/components/ui/brand-image';
 import { TowniesBlock } from '@/components/brand/wordmark';
 import { TownCard } from '@/components/townies/town-card';
 import { ProductCard } from '@/components/townies/product-card';
+import { TrustRow } from '@/components/townies/trust-row';
 import { gkDisplayName, gkDescriptionHtml, gkLine } from '@/lib/goodkicks/names';
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
 import { ValueBand } from '@/components/townies/value-band';
@@ -291,6 +292,17 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               shipNote={PREORDER_SHIP_NOTE}
               stockNote={stockLine}
             />
+            {gk ? (
+              <TrustRow
+                items={['Free shipping, always', '30-day returns', 'Ships from Massachusetts']}
+                href="/goodkicks/shipping-returns"
+              />
+            ) : (
+              <TrustRow
+                items={['Free shipping over $75', '30-day returns', 'Ships from the South Shore']}
+                href="/shipping-returns"
+              />
+            )}
             {!gk && (
               <>
                 <p className="mt-4 text-xs text-muted">

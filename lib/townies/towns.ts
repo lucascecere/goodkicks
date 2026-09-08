@@ -37,6 +37,27 @@ const REGION_LABELS: Record<string, string> = {
 };
 
 const REGION_ORDER = Object.keys(REGION_LABELS);
+
+/** Regions that have a landing page of their own; everything else filters /shop. */
+export const REGION_PATHS: Record<string, string> = {
+  'south-shore': '/south-shore',
+  boston: '/boston',
+  'south-east': '/south-east',
+  'north-shore': '/north-shore',
+};
+
+export function regionHref(region: string): string {
+  return REGION_PATHS[region] ?? `/shop?region=${region}`;
+}
+
+/** 'lifestyle' | 'everyday' from the product title, per the naming convention. */
+export type HatStyle = 'lifestyle' | 'everyday';
+export function hatStyle(title: string): HatStyle | null {
+  const t = title.toLowerCase();
+  if (t.includes('everyday')) return 'everyday';
+  if (t.includes('lifestyle') || t.includes('classic')) return 'lifestyle';
+  return null;
+}
 const OTHER_REGION = 'other';
 
 function titleCase(slug: string): string {
@@ -120,13 +141,13 @@ const TOWN_REGION: Record<string, string> = {
  * town showing up under More Towns is a visible prompt to add it here; one
  * silently filed under South Shore is a bug nobody sees.
  */
-function regionForProduct(tags: string[], townSlug: string): string {
+export function regionForProduct(tags: string[], townSlug: string): string {
   const tagged = tags.find((t) => REGION_LABELS[t.toLowerCase()]);
   if (tagged) return tagged.toLowerCase();
   return TOWN_REGION[townSlug] ?? OTHER_REGION;
 }
 
-function regionLabel(region: string): string {
+export function regionLabel(region: string): string {
   return REGION_LABELS[region] ?? (region === OTHER_REGION ? 'More Towns' : titleCase(region));
 }
 

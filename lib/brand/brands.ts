@@ -45,9 +45,13 @@ export type BrandConfig = {
   footer: {
     columns: Array<{ title: string; links: NavLink[] }>;
     socials: Array<{ label: 'Instagram' | 'Facebook' | 'TikTok'; href: string }>;
-    /** Good Kicks' welcome-discount box; Townies runs the rotary popup instead. */
-    subscribe: boolean;
+    /** The newsletter box at the foot of the footer. */
+    subscribe: { title: string; body: string } | null;
   };
+  /** Header search opens the town finder (Townies) rather than linking to the shop. */
+  finder: boolean;
+  /** Free-shipping threshold for the cart progress bar; null when shipping is always free. */
+  freeShippingCents: number | null;
   /** Show the "A Townies Brand" strip above the header. */
   parentBanner: boolean;
   /** Whether the MA / pine / topo / speckle tiles may be used on this brand. */
@@ -130,8 +134,13 @@ export const TOWNIES: BrandConfig = {
       { label: 'Instagram', href: 'https://instagram.com/townies.shop' },
       { label: 'TikTok', href: 'https://tiktok.com/@townies.shop' },
     ],
-    subscribe: false,
+    subscribe: {
+      title: 'New towns, first',
+      body: 'Hear about the next drop before the group chat does.',
+    },
   },
+  finder: true,
+  freeShippingCents: 7500,
   parentBanner: false,
   patterns: true,
 };
@@ -189,8 +198,13 @@ export const GOODKICKS: BrandConfig = {
       { title: 'Terms', links: [{ href: '/goodkicks/privacy', label: 'Privacy & Terms' }] },
     ],
     socials: [{ label: 'Instagram', href: 'https://instagram.com/goodkicksco' }],
-    subscribe: true,
+    subscribe: {
+      title: 'Offers & discounts',
+      body: 'Subscribe for new colorways and offers.',
+    },
   },
+  finder: false,
+  freeShippingCents: null,
   parentBanner: true,
   patterns: false,
 };

@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
-import { townKey } from '@/lib/townies/towns';
+import { hatStyle, regionForProduct, regionLabel, townKey } from '@/lib/townies/towns';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 import { TownTickerLinked } from '@/components/townies/town-ticker';
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { breadcrumbSchema } from '@/lib/seo/site';
-import { ShopFilter, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
+import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
 import { HAT_SACK_LIVE, HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ town?: string }>;
+  searchParams: Promise<{ town?: string; region?: string; style?: string }>;
 }) {
-  const { town } = await searchParams;
+  const { town, region, style } = await searchParams;
   const [products, hatSack] = await Promise.all([
     getTownieProducts(),
     HAT_SACK_LIVE ? getHatSackOffer() : null,
@@ -38,15 +38,17 @@ export default async function ShopPage({
 
   const items: ShopItem[] = products.map((p) => {
     const { slug, name } = townKey(p);
-    return { product: p, slug, name };
+    return { product: p, slug, name, region: regionForProduct(p.tags, slug), style: hatStyle(p.title) };
   });
 
-  // Distinct towns → tabs, alphabetical.
-  const townMap = new Map<string, string>();
-  for (const i of items) townMap.set(i.slug, i.name);
-  const towns: TownTab[] = [...townMap.entries()]
-    .map(([slug, name]) => ({ slug, name }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  // Distinct towns → tabs, alphabetical, each carrying its region so the town
+  // row can narrow to the region row's pick.
+  const townMap = new Map<string, TownTab>();
+  for (const i of items) townMap.set(i.slug, { slug: i.slug, name: i.name, region: i.region });
+  const towns: TownTab[] = [...townMap.values()].sort((a, b) => a.name.localeCompare(b.name));
+  const regionMap = new Map<string, RegionTab>();
+  for (const t of towns) regionMap.set(t.region, { slug: t.region, label: regionLabel(t.region) });
+  const regions: RegionTab[] = [...regionMap.values()].sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <div className="relative overflow-hidden bg-town-cream">
@@ -116,7 +118,14 @@ export default async function ShopPage({
             </Link>
           </div>
         ) : (
-          <ShopFilter items={items} towns={towns} initialTown={town} />
+          <ShopFilter
+            items={items}
+            towns={towns}
+            regions={regions}
+            initialTown={town}
+            initialRegion={region}
+            initialStyle={style}
+          />
         )}
       </div>
 

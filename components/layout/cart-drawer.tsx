@@ -10,6 +10,33 @@ import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import type { BrandConfig } from '@/lib/brand/brands';
 import { PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 
+/**
+ * "You're $12 from free shipping" — the single most reliable nudge a cart
+ * drawer can carry, and the threshold is already promised on the value band
+ * and the product page. Reads the brand's threshold so Good Kicks, which
+ * ships free outright, never shows it.
+ */
+function FreeShippingBar({ subtotalCents, thresholdCents }: { subtotalCents: number; thresholdCents: number }) {
+  const remaining = Math.max(0, thresholdCents - subtotalCents);
+  const pct = Math.min(100, Math.round((subtotalCents / thresholdCents) * 100));
+  return (
+    <div className="space-y-1.5" aria-live="polite">
+      <p className="text-xs text-muted">
+        {remaining === 0 ? (
+          <span className="font-semibold text-text">Free shipping unlocked.</span>
+        ) : (
+          <>
+            You&apos;re <span className="font-semibold text-text">{formatCents(remaining)}</span> from free shipping.
+          </>
+        )}
+      </p>
+      <div className="h-1.5 w-full rounded-full bg-rule overflow-hidden">
+        <div className="h-full bg-accent transition-[width] duration-500" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
 function formatCents(cents: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(cents / 100);
 }
@@ -151,6 +178,9 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                     <span className="font-semibold text-text uppercase tracking-wide">Pre-order in bag.</span>{' '}
                     Your whole order ships together once the pre-order is ready — {PREORDER_SHIP_NOTE.toLowerCase()}.
                   </p>
+                )}
+                {brand.freeShippingCents !== null && (
+                  <FreeShippingBar subtotalCents={subtotalCents} thresholdCents={brand.freeShippingCents} />
                 )}
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted">Subtotal</span>

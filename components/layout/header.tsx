@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Search, User } from 'lucide-react';
 import { CartIconButton } from './cart-icon-button';
+import { TownFinder } from '@/components/townies/town-finder';
 import { cn } from '@/lib/utils';
 import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify/account-url';
 import type { BrandConfig } from '@/lib/brand/brands';
@@ -92,13 +93,17 @@ export function Header({ brand }: { brand: BrandConfig }) {
 
           {/* Right: utility icons */}
           <div className="flex items-center gap-1 sm:gap-2">
-            <Link
-              href={brand.shopPath}
-              aria-label="Search the shop"
-              className="p-2 text-text hover:text-accent transition-colors"
-            >
-              <Search size={19} />
-            </Link>
+            {brand.finder ? (
+              <TownFinder />
+            ) : (
+              <Link
+                href={brand.shopPath}
+                aria-label="Search the shop"
+                className="p-2 text-text hover:text-accent transition-colors"
+              >
+                <Search size={19} />
+              </Link>
+            )}
             <a
               href={SHOPIFY_ACCOUNT_URL}
               aria-label="Account"

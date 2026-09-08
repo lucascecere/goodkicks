@@ -5,6 +5,8 @@ import { TownTicker } from '@/components/townies/town-ticker';
 import { ValueBand } from '@/components/townies/value-band';
 import { BulkOrderBand } from '@/components/townies/bulk-order-band';
 import { HatSackBand } from '@/components/townies/hat-sack-band';
+import { StyleBand } from '@/components/townies/style-band';
+import { RegionBand } from '@/components/townies/region-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { townKey } from '@/lib/townies/towns';
 
@@ -113,6 +115,14 @@ export default async function HomePage() {
           the hats is one decision away from adding a foot bag to one. Navy also
           breaks up white rail → cream bulk band. */}
       <HatSackBand />
+
+      {/* The two builds, then the map. A visitor who has just scrolled the rail
+          has two questions — which hat is which, and is my town here — and
+          these answer them in that order before the bulk push asks for
+          anything. Cream → navy → cream keeps neighbouring grounds apart. */}
+      <StyleBand products={products} />
+
+      <RegionBand products={products} />
 
       <BulkOrderBand />
 

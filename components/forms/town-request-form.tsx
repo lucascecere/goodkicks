@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Field, SubmitButton, Submitted, fieldClass, postContact } from './form-kit';
 
@@ -9,7 +10,12 @@ type Values = { name: string; email: string; town: string; message?: string };
 /** Request a town. Deliberately the shortest form on the site. */
 export function TownRequestForm() {
   const [done, setDone] = useState(false);
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Values>();
+  // The town finder lands here with the name already typed (?town=), so the
+  // person who just searched for it does not type it twice.
+  const prefill = useSearchParams().get('town') ?? '';
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<Values>({
+    defaultValues: { town: prefill },
+  });
 
   if (done) {
     return (

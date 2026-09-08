@@ -42,8 +42,8 @@ export function Footer({ brand }: { brand: BrandConfig }) {
         {brand.footer.subscribe && (
           <div className="mt-12 pt-8 border-t border-white/10 grid gap-4 md:grid-cols-2 md:items-center">
             <div>
-              <p className="text-white text-sm font-medium uppercase tracking-[0.15em]">Offers &amp; discounts</p>
-              <p className="text-ink-contrast/60 text-xs mt-1">Subscribe for drops and a welcome discount code.</p>
+              <p className="text-white text-sm font-medium uppercase tracking-[0.15em]">{brand.footer.subscribe.title}</p>
+              <p className="text-ink-contrast/60 text-xs mt-1">{brand.footer.subscribe.body}</p>
             </div>
             <SubscribeForm />
           </div>
@@ -134,7 +134,7 @@ function SubscribeForm() {
   }
 
   if (status === 'success') {
-    return <p className="text-ink-contrast/70 text-sm">You&apos;re in. Check your inbox for a welcome discount.</p>;
+    return <p className="text-ink-contrast/70 text-sm">You&apos;re in.</p>;
   }
 
   return (
@@ -153,7 +153,7 @@ function SubscribeForm() {
         disabled={status === 'loading'}
         className="bg-accent text-accent-contrast px-5 py-2.5 rounded-sm text-[0.6875rem] font-semibold uppercase tracking-[0.14em] hover:opacity-90 transition-opacity whitespace-nowrap disabled:opacity-60"
       >
-        {status === 'loading' ? 'Sending…' : 'Get the discount'}
+        {status === 'loading' ? 'Sending…' : 'Sign up'}
       </button>
       {status === 'error' && (
         <p className="text-red-400 text-xs mt-1 w-full">Something went wrong — try again.</p>
