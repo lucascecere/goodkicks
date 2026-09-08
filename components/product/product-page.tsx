@@ -10,7 +10,7 @@ import { BrandImage } from '@/components/ui/brand-image';
 import { TowniesBlock } from '@/components/brand/wordmark';
 import { TownCard } from '@/components/townies/town-card';
 import { ProductCard } from '@/components/townies/product-card';
-import { gkDisplayName, gkLine } from '@/lib/goodkicks/names';
+import { gkDisplayName, gkDescriptionHtml, gkLine } from '@/lib/goodkicks/names';
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
 import { ValueBand } from '@/components/townies/value-band';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
@@ -177,10 +177,13 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
     available: e.node.availableForSale,
   }));
 
-  // Real on-hand count for the first variant (Townies only; GK ships from a
-  // separate stock we don't surface). Unknown → nothing is shown.
+  // Real on-hand count for the first variant. Good Kicks is in stock as a
+  // rule and ships from the shelf, so it says so whenever the variant is
+  // buyable rather than waiting on a tracked count. Unknown → nothing shown.
   const stock = gk ? {} : await getVariantStock([firstVariant.id]);
-  const stockLine = gk ? null : stockNote(stock[firstVariant.id]?.quantity);
+  const stockLine = gk
+    ? firstVariant.availableForSale ? 'In stock · ships in 1–3 business days' : null
+    : stockNote(stock[firstVariant.id]?.quantity);
 
   // Cross-sell within the same brand.
   const hatSack = gk || !HAT_SACK_LIVE ? null : await getHatSackOffer();
@@ -267,7 +270,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             {shopifyProduct.descriptionHtml ? (
               <div
                 className="text-muted leading-relaxed mb-8 max-w-md space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:mt-1 [&_p]:leading-relaxed [&_strong]:text-text [&_strong]:font-semibold"
-                dangerouslySetInnerHTML={{ __html: shopifyProduct.descriptionHtml }}
+                dangerouslySetInnerHTML={{ __html: gk ? gkDescriptionHtml(shopifyProduct.descriptionHtml) : shopifyProduct.descriptionHtml }}
               />
             ) : gk ? (
               <p className="text-muted leading-relaxed mb-8 max-w-md">

@@ -124,10 +124,10 @@ export const TOWNIES: BrandConfig = {
       { title: 'Terms', links: [{ href: '/privacy', label: 'Privacy & Terms' }] },
     ],
     // @townies.shop is the handle printed on every Content Studio graphic, so
-    // it is the one the footer points at. Facebook is unconfirmed.
+    // it is the one the footer points at. No Facebook: Meta blocks the page
+    // from being created, so there is nothing to link.
     socials: [
       { label: 'Instagram', href: 'https://instagram.com/townies.shop' },
-      { label: 'Facebook', href: 'https://facebook.com/townies.shop' },
       { label: 'TikTok', href: 'https://tiktok.com/@townies.shop' },
     ],
     subscribe: false,
