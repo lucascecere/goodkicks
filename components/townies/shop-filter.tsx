@@ -146,39 +146,12 @@ export function ShopFilter({
         ))}
       </div>
 
-      {/* Ruled control line — count, style toggle, sort. */}
+      {/* Ruled control line — sort on the left, the style toggle on the right.
+          No result count: it restated the grid below it. */}
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-rule mt-3 pt-3 mb-7">
-        <p className="text-[0.68rem] uppercase tracking-[0.2em] text-muted">
-          {shown.length} {shown.length === 1 ? 'design' : 'designs'}
-          {activeLabel && (
-            <>
-              <span className="mx-2 text-rule">·</span>
-              {activeLabel}
-            </>
-          )}
-          {filtered && (
-            <>
-              <span className="mx-2 text-rule">·</span>
-              <button
-                type="button"
-                onClick={clear}
-                className="uppercase tracking-[0.2em] text-text hover:text-accent underline underline-offset-4 transition-colors"
-              >
-                Clear
-              </button>
-            </>
-          )}
-        </p>
-
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1" role="group" aria-label="Hat style">
-            <Toggle label="All" active={style === 'all'} onClick={() => pickStyle('all')} />
-            {STYLES.map((s) => (
-              <Toggle key={s.key} label={s.label} active={style === s.key} onClick={() => pickStyle(s.key)} />
-            ))}
-          </div>
           <label className="flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.2em] text-muted">
-            <span className="sr-only sm:not-sr-only">Sort</span>
+            <span>Sort</span>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
@@ -192,6 +165,22 @@ export function ShopFilter({
               ))}
             </select>
           </label>
+          {filtered && (
+            <button
+              type="button"
+              onClick={clear}
+              className="text-[0.68rem] uppercase tracking-[0.2em] text-text hover:text-accent underline underline-offset-4 transition-colors"
+            >
+              Clear{activeLabel ? ` · ${activeLabel}` : ''}
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1" role="group" aria-label="Hat style">
+          <Toggle label="All" active={style === 'all'} onClick={() => pickStyle('all')} />
+          {STYLES.map((s) => (
+            <Toggle key={s.key} label={s.label} active={style === s.key} onClick={() => pickStyle(s.key)} />
+          ))}
         </div>
       </div>
 
