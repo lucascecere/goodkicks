@@ -56,6 +56,11 @@ export type BrandConfig = {
 
 const ACCOUNT = 'https://shopify.com/76213584027/account';
 
+// Cross-brand links out of Good Kicks are ABSOLUTE. On goodkicks.co the
+// middleware rewrites every relative path into the /goodkicks subtree, so a
+// footer link to '/about' there lands on Good Kicks' home, not Townies' story.
+const TOWNIES_URL = process.env.NEXT_PUBLIC_TOWNIES_URL ?? 'https://townies.shop';
+
 export const TOWNIES: BrandConfig = {
   id: 'townies',
   name: 'Townies',
@@ -154,7 +159,7 @@ export const GOODKICKS: BrandConfig = {
     { href: '/goodkicks/support', label: 'Support' },
   ],
   mobileExtra: [],
-  crossBrand: { href: '/', label: 'Townies' },
+  crossBrand: { href: TOWNIES_URL, label: 'Townies' },
   footer: {
     columns: [
       {
@@ -162,7 +167,7 @@ export const GOODKICKS: BrandConfig = {
         links: [
           { href: '/goodkicks/shop', label: 'All Sacks' },
           { href: '/goodkicks#the-good-kick', label: 'The Good Kick' },
-          { href: '/', label: 'Townies Hats' },
+          { href: `${TOWNIES_URL}/shop`, label: 'Townies Hats' },
         ],
       },
       {
@@ -170,7 +175,7 @@ export const GOODKICKS: BrandConfig = {
         links: [
           { href: '/goodkicks#ambassadors', label: 'Ambassador Program' },
           { href: '/goodkicks#faq', label: 'FAQ' },
-          { href: '/about', label: 'Our Story' },
+          { href: `${TOWNIES_URL}/about`, label: 'Our Story' },
         ],
       },
       {
