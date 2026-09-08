@@ -74,6 +74,12 @@ const TOWN_REGION: Record<string, string> = {
   abington: 'south-shore', whitman: 'south-shore', hanson: 'south-shore',
   pembroke: 'south-shore', kingston: 'south-shore', plymouth: 'south-shore',
   hull: 'south-shore', holbrook: 'south-shore', randolph: 'south-shore',
+  // Norfolk County inland of the coast — Walpole and Norwood are live and were
+  // falling through to "More Towns". Grouped with the South Shore, which is
+  // where the drop that produced them was marketed.
+  walpole: 'south-shore', norwood: 'south-shore', canton: 'south-shore',
+  stoughton: 'south-shore', sharon: 'south-shore', dedham: 'south-shore',
+  westwood: 'south-shore', avon: 'south-shore',
 
   // Southeastern Mass — Bristol County and the Taunton/Brockton side.
   norton: 'south-east', mansfield: 'south-east', foxboro: 'south-east',
@@ -155,7 +161,7 @@ export function toTownView(product: CollectionProduct): TownView {
 // A TOWN can have several products (e.g. two Milton hats). Group them into one
 // town card instead of showing each hat as its own "town". Town identity comes
 // from a `town:<name>` tag if present, else the first word of the product title
-// (our naming convention is "<Town> <style>", e.g. "Milton Classic Snapback").
+// (our naming convention is "<Town> <style>", e.g. "Milton Lifestyle Hat").
 // Curated photo per town, so a town card can lead with the town rather than a
 // product shot on white.
 //

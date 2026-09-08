@@ -13,6 +13,7 @@ import { townSpotlightTemplate } from './templates/town/spotlight';
 import { dropTemplate } from './templates/brand/drop';
 import { newTownTemplate } from './templates/brand/new-town';
 import { rivalryTemplate } from './templates/brand/rivalry';
+import { recruitTemplate } from './templates/brand/recruit';
 import {
   partnerSquareTemplate,
   partnerPortraitTemplate,
@@ -36,6 +37,7 @@ const ALL: AnyTemplate[] = [
   dropTemplate,
   newTownTemplate,
   rivalryTemplate,
+  recruitTemplate,
   partnerSquareTemplate,
   partnerPortraitTemplate,
   partnerBannerTemplate,

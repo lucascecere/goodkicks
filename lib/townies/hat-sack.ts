@@ -104,9 +104,9 @@ export function hatSackSavingCents(
  * coming off pre-order, or a new town launching, joins the bundle with no tag
  * and no deploy. Only the exceptions need touching.
  *
- * Excluded as of 2026-08-28: the two $24.99 zip hats (Milton '02186', Hingham
- * '02043'), where $24.99 + a $9.99 bag is $34.98 and the "bundle" would cost a
- * penny more than the parts; and Sandwich 'Classic'. Remove the tag in Shopify
+ * Excluded as of 2026-08-28: the two $24.99 Everyday Hats (Milton 02186, Hingham
+ * 02043), where $24.99 + a $9.99 bag is $34.98 and the "bundle" would cost a
+ * penny more than the parts; and the Sandwich Lifestyle Hat. Remove the tag in Shopify
  * admin to put a town back in.
  */
 export const BUNDLE_EXCLUDE_TAG = 'no-bundle';

@@ -7,6 +7,8 @@
 // every read degrades to [] so the build/runtime never depends on a collection
 // existing yet.
 
+import { getVariantStock } from './stock';
+
 export type CollectionProduct = {
   id: string;
   title: string;
@@ -24,6 +26,8 @@ export type CollectionProduct = {
       };
     }>;
   };
+  /** On-hand units for the first variant (Admin read), or null when unknown. */
+  stock?: number | null;
 };
 
 // `||` (not `??`) so an empty env value falls back to the default too. The
@@ -98,7 +102,15 @@ export async function getProductsByCollection(
     }
     const edges = json?.data?.collection?.products?.edges;
     if (!Array.isArray(edges)) return [];
-    return edges.map((e: { node: CollectionProduct }) => e.node);
+    const products: CollectionProduct[] = edges.map((e: { node: CollectionProduct }) => e.node);
+    // Best-effort real counts so the shop can say "in stock" from data, not a tag.
+    const stock = await getVariantStock(
+      products.map((p) => p.variants.edges[0]?.node.id).filter((id): id is string => Boolean(id)),
+    );
+    return products.map((p) => {
+      const vid = p.variants.edges[0]?.node.id;
+      return { ...p, stock: vid ? (stock[vid]?.quantity ?? null) : null };
+    });
   } catch (err) {
     console.error('[collections] threw:', err);
     return [];

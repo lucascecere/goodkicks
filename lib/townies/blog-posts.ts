@@ -70,7 +70,7 @@ export const towniePosts: TowniePost[] = [
 <h2>Do one thing right</h2>
 <p>A hat is the most honest piece of apparel you can make. It sits on your head, front and center, every day. There's nowhere to hide a bad blank, sloppy embroidery, or a design that only half-works. If the hat's good, people wear it into the ground. If it's not, it lives in a drawer. We'd rather ship one thing we're proud of than ten things we're not.</p>
 <h2>The blank matters</h2>
-<p>Our Classic two-tones sit on a soft brushed-cotton-twill workhorse blank — slightly structured, pre-curved brim, broken-in from day one. The ZIP hats run a low-profile unstructured build. We pick the blank for the design, not the other way around. That's the kind of detail that disappears the second you try to do everything at once.</p>
+<p>Our Lifestyle Hats sit on a soft brushed-cotton-twill workhorse blank — slightly structured, pre-curved brim, broken-in from day one. The Everyday Hats run a low-profile unstructured build. We pick the blank for the design, not the other way around. That's the kind of detail that disappears the second you try to do everything at once.</p>
 <h2>What's coming</h2>
 <p>More towns, first and always — that's the whole map to fill. Beyond that, we'll add pieces when we can do them as well as the hats, and not a minute sooner. When the tees come, they'll be worth the wait. Until then: just hats, done right.</p>
 <p>Rep your town. We'll handle the rest of the closet later.</p>

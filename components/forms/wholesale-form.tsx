@@ -116,7 +116,7 @@ export function WholesaleForm() {
       </div>
 
       <Field label="Which hats?" hint="Towns, styles, or both — and tell us if you want something we don't make yet.">
-        <input className={fieldClass} placeholder="Milton 'Classic', Weymouth, or a custom town" {...register('towns')} />
+        <input className={fieldClass} placeholder="Milton Lifestyle, Weymouth, or a custom town" {...register('towns')} />
       </Field>
 
       <Field label="Anything else we should know?" error={errors.message?.message}>

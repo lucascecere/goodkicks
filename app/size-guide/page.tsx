@@ -5,7 +5,7 @@ import { PageMasthead } from '@/components/townies/page-masthead';
 export const metadata: Metadata = {
   title: 'Size Guide — Townies',
   description:
-    'How Townies hats fit: one size fits most, adjustable snapback, ~55–60cm. Materials and care for the Classic and ZIP snapbacks.',
+    'How Townies hats fit: one size fits most, adjustable snapback, ~55–60cm. Materials and care for the Lifestyle and Everyday hats.',
   alternates: { canonical: '/size-guide' },
 };
 
@@ -58,17 +58,17 @@ export default function SizeGuidePage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="rounded-sm border border-town-rule bg-white/50 p-6">
-                <h3 className="font-block uppercase text-lg text-town-navy mb-2">Classic</h3>
+                <h3 className="font-block uppercase text-lg text-town-navy mb-2">Lifestyle Hat</h3>
                 <p className="text-town-muted text-sm leading-relaxed">
                   Two-tone. Slightly structured 5-panel crown, pre-curved brim, 100% brushed cotton
                   twill — soft and broken-in from day one. Mid-profile.
                 </p>
               </div>
               <div className="rounded-sm border border-town-rule bg-white/50 p-6">
-                <h3 className="font-block uppercase text-lg text-town-navy mb-2">ZIP</h3>
+                <h3 className="font-block uppercase text-lg text-town-navy mb-2">Everyday Hat</h3>
                 <p className="text-town-muted text-sm leading-relaxed">
-                  Solid color. Low-profile unstructured 5-panel crown, pre-curved brim, 100%
-                  polyester — lightweight, sits closer to the head.
+                  Solid color. Low-profile unstructured 5-panel crown, flat brim, 60/40
+                  cotton-poly — soft hand, sits closer to the head.
                 </p>
               </div>
             </div>

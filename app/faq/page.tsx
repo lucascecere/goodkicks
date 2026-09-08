@@ -39,9 +39,9 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: 'What are the hats made of?',
     a: (
       <>
-        Our two-tone Classics run a soft brushed 100% cotton-twill workhorse blank — slightly
-        structured, pre-curved brim, broken-in from day one. The solid-color ZIP hats use a
-        low-profile unstructured polyester blank. Both are adjustable snapbacks, and all the
+        Our two-tone Lifestyle Hats run a soft brushed 100% cotton-twill workhorse blank — slightly
+        structured, pre-curved brim, broken-in from day one. The solid-color Everyday Hats use a
+        low-profile unstructured cotton-poly blank. Both are adjustable snapbacks, and all the
         lettering is raised embroidery — stitched, not printed.
       </>
     ),
