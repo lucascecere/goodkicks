@@ -123,7 +123,7 @@ export default async function HomePage() {
 
       <RegionBand products={products} />
 
-      <BulkOrderBand />
+      <BulkOrderBand imageSrc="/brand/scene/bulk-order.jpg" />
 
 {/* The four-mark value band used to close the page here. It still runs on
           every product page, which is where a buyer actually weighs those
