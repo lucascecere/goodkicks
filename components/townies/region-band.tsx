@@ -11,9 +11,10 @@ import type { CollectionProduct } from '@/lib/shopify/collections';
  * map, as a band: one card per live region carrying its towns, and a last card
  * for the town that isn't here yet, in a single scrolling row.
  *
- * Type-led on purpose. No region has been photographed as a region, and a
- * card promising the South Shore over a stock harbour is the thing the brand
- * guidelines forbid.
+ * Each card opens with the hats that region actually holds (2026-09-22). Still
+ * no place photography: no region has been photographed as a region, and a card
+ * promising the South Shore over a stock harbour is the thing the brand
+ * guidelines forbid. Product shots promise only the product.
  */
 const MAX_TOWNS = 6;
 
@@ -31,6 +32,12 @@ export function RegionBand({ products }: { products: CollectionProduct[] }) {
       count: `${g.towns.length} ${g.towns.length === 1 ? 'town' : 'towns'}`,
       body: more > 0 ? `${shown} · +${more} more` : shown,
       cta: `Shop ${g.label}`,
+      // Up to three real shots from this region. A town with no photo is
+      // skipped rather than padded, so the fan is never a grey box.
+      images: g.towns
+        .filter((t) => t.image)
+        .slice(0, 3)
+        .map((t) => ({ url: t.image as string, alt: t.imageAlt })),
     };
   });
   cards.push({

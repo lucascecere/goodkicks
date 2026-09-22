@@ -5,6 +5,7 @@ import { CartProvider } from '@/lib/cart/cart-context';
 import { Header } from './header';
 import { Footer } from './footer';
 import { ParentBanner } from './parent-banner';
+import { AnnouncementBar } from './announcement-bar';
 import { CartDrawer } from './cart-drawer';
 import { RotarySpin } from '@/components/townies/rotary-spin';
 import { siteBrand } from '@/lib/brand/site-brand';
@@ -39,6 +40,9 @@ export function SiteWrapper({
   return (
     <div data-brand={isGoodKicks ? 'goodkicks' : undefined} className="bg-bg text-text">
       <CartProvider>
+        {/* Above the sticky header on purpose: the promises are worth the first
+            read, not a permanent band eating 32px of every screen after it. */}
+        <AnnouncementBar brand={brand} />
         {brand.parentBanner && <ParentBanner />}
         <Header brand={brand} />
         <main id="main-content">{children}</main>

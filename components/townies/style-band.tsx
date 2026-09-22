@@ -55,7 +55,9 @@ export function StyleBand({ products }: { products: CollectionProduct[] }) {
         <SectionHeader
           eyebrow="Two builds"
           title="Pick your fit."
+          sub="Same towns, two hats. The difference is the crown and the brim."
           link={{ href: '/size-guide', label: 'Size guide' }}
+          align="center"
         />
         <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
           {examples.map(({ key, name, line, specs, product }) => (

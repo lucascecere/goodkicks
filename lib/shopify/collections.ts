@@ -71,13 +71,38 @@ const COLLECTION_PRODUCTS_QUERY = `
   }
 `;
 
+/**
+ * Local-dev catalogue snapshot.
+ *
+ * Vercel returns an EMPTY string for every sensitive env var on this project —
+ * `SHOPIFY_STORE_DOMAIN` included — so `next dev` cannot reach the Storefront
+ * API and every collection read degrades to []. That makes design work on the
+ * shop impossible locally: you end up deploying to look at a rail.
+ *
+ * `.fixtures/collections.json` (gitignored, regenerated from the Admin API) is
+ * read INSTEAD, and only when there is no storefront credential — i.e. never in
+ * production, where the env is populated and this branch is unreachable.
+ */
+function fixtureProducts(handle: string): CollectionProduct[] {
+  if (process.env.NODE_ENV === 'production') return [];
+  try {
+    // Indirect require keeps the JSON out of the production bundle.
+    const { readFileSync } = require('node:fs') as typeof import('node:fs');
+    const path = require('node:path') as typeof import('node:path');
+    const raw = readFileSync(path.join(process.cwd(), '.fixtures/collections.json'), 'utf8');
+    return (JSON.parse(raw) as Record<string, CollectionProduct[]>)[handle] ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export async function getProductsByCollection(
   handle: string,
   first = 100,
 ): Promise<CollectionProduct[]> {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-  if (!domain || !token) return [];
+  if (!domain || !token) return fixtureProducts(handle);
 
   try {
     const res = await fetch(`https://${domain}/api/2026-04/graphql.json`, {

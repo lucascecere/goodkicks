@@ -6,6 +6,8 @@ import { BulkOrderBand } from '@/components/townies/bulk-order-band';
 import { HatSackBand } from '@/components/townies/hat-sack-band';
 import { StyleBand } from '@/components/townies/style-band';
 import { RegionBand } from '@/components/townies/region-band';
+import { ReviewBand } from '@/components/townies/review-band';
+import { UgcBand } from '@/components/townies/ugc-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { townKey } from '@/lib/townies/towns';
 
@@ -34,6 +36,7 @@ const HERO_SLIDES = [
     headline: 'Rep your town.',
     sub: 'Hats for people who’d defend their exit off the expressway. Stitched heavy, one town at a time.',
     cta: { href: '/shop', label: 'Shop all towns' },
+    ctaSecondary: { href: '/shop#regions', label: 'Shop by region' },
   },
   {
     imageSrc: '/brand/scene/milton-hero-16x10.jpg',
@@ -43,6 +46,7 @@ const HERO_SLIDES = [
     headline: 'Milton. 1640.',
     sub: 'Where this started, and still the one we get asked for most.',
     cta: { href: '/shop?town=milton', label: 'Shop Milton' },
+    ctaSecondary: { href: '/shop', label: 'Shop all towns' },
   },
   // BRAINTREE SLIDE REMOVED — do not restore this one as it was.
   //
@@ -104,11 +108,25 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero slides={HERO_SLIDES} />
+      {/* Chips are standing facts about the store, so they belong to the hero
+          rather than to a slide. Free shipping reads the same $75 the cart's
+          progress bar does; "designed in Massachusetts" is the wording the
+          brand uses — never "made in USA", which is not true of the blanks. */}
+      <Hero
+        slides={HERO_SLIDES}
+        chips={['Free shipping over $75', 'Designed in Massachusetts', 'New towns every drop']}
+      />
 
       <TownTicker towns={tickerTowns} />
 
-      <FeaturedRail products={products} />
+      {/* Centred, like every other full-width section on the page. A rail
+          heading pinned to the left edge of a 1440 viewport with its arrows
+          1200px away read as two unrelated controls. */}
+      <FeaturedRail
+        products={products}
+        align="center"
+        sub="Every town we've made so far, newest first. Don't see yours? Ask for it."
+      />
 
       {/* The promo sits directly under the rail: somebody who has just scrolled
           the hats is one decision away from adding a foot bag to one. Navy also
@@ -122,6 +140,15 @@ export default async function HomePage() {
       <StyleBand products={products} />
 
       <RegionBand products={products} />
+
+      {/* Both of these render NOTHING until lib/townies/reviews.ts has real
+          entries — see the rule at the top of that file. They sit here, after
+          the buying decision and before the bulk push, so that the day the
+          first reviews land the page gains a proof section rather than needing
+          a rebuild to make room for one. */}
+      <ReviewBand />
+
+      <UgcBand />
 
       <BulkOrderBand imageSrc="/brand/scene/bulk-order.jpg" />
 

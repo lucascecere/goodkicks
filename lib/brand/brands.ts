@@ -52,6 +52,13 @@ export type BrandConfig = {
   finder: boolean;
   /** Free-shipping threshold for the cart progress bar; null when shipping is always free. */
   freeShippingCents: number | null;
+  /**
+   * The scrolling strip above the header. EVERY LINE MUST BE TRUE — this is the
+   * first promise a visitor reads and the one they hold us to at checkout, so
+   * it carries standing facts only, never an invented code or a countdown.
+   * null or [] hides the bar entirely.
+   */
+  announce: Array<{ text: string; href?: string }> | null;
   /** Show the "A Townies Brand" strip above the header. */
   parentBanner: boolean;
   /** Whether the MA / pine / topo / speckle tiles may be used on this brand. */
@@ -141,6 +148,13 @@ export const TOWNIES: BrandConfig = {
   },
   finder: true,
   freeShippingCents: 7500,
+  // Reads the same 7500 as the cart's progress bar so the threshold can never
+  // drift between the promise at the top of the page and the one in the drawer.
+  announce: [
+    { text: 'Free shipping on orders over $75' },
+    { text: 'Designed in Massachusetts' },
+    { text: 'Don\u2019t see your town? Request it', href: '/request-a-town' },
+  ],
   parentBanner: false,
   patterns: true,
 };
@@ -205,6 +219,13 @@ export const GOODKICKS: BrandConfig = {
   },
   finder: false,
   freeShippingCents: null,
+  // Good Kicks ships free on everything and always from stock (confirmed with
+  // Lucas 2026-09-08). No discount code here: BOGOKICKS is advertised on the GK
+  // page itself, where it can be taken down in one edit if it ends.
+  announce: [
+    { text: 'Free shipping on every order' },
+    { text: 'In stock \u00b7 ships in 1\u20133 business days' },
+  ],
   parentBanner: true,
   patterns: false,
 };

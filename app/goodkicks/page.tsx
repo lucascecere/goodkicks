@@ -92,6 +92,10 @@ export default async function GoodKicksHome() {
         names={Object.fromEntries(products.map((p) => [p.handle, gkDisplayName(p.title)]))}
         showPrice
         fit="cover"
+        // Tags every cart line added from this rail `_brand: goodkicks`, the
+        // same as the GK buy box does. Without it the shared rail defaults to
+        // townies and a foot bag arrives in the cart labelled as a hat.
+        flavor="goodkicks"
       />
 
       <GoodKicksPromoBand shopPath={GOODKICKS.shopPath} />

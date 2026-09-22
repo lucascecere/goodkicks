@@ -71,6 +71,7 @@ export default async function GoodKicksShopPage() {
                 productBase={GOODKICKS.productBase}
                 title={gkDisplayName(p.title)}
                 fit="cover"
+                flavor="goodkicks"
               />
             ))}
           </div>

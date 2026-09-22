@@ -364,7 +364,14 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {gkCross.map((p) => (
-                <ProductCard key={p.id} product={p} productBase={productBase} title={gkDisplayName(p.title)} fit="cover" />
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  productBase={productBase}
+                  title={gkDisplayName(p.title)}
+                  fit="cover"
+                  flavor="goodkicks"
+                />
               ))}
             </div>
           </div>

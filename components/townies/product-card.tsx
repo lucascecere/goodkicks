@@ -3,6 +3,7 @@ import Image from 'next/image';
 import type { CollectionProduct } from '@/lib/shopify/collections';
 import { isPreorder } from '@/lib/townies/preorder';
 import { LOW_STOCK_THRESHOLD } from '@/lib/shopify/stock-copy';
+import { QuickAdd } from './quick-add';
 
 // Product-framed card for the launch drop (hats + designs) — the product name is
 // a normal title, NOT the town-as-hero treatment used by TownCard. Feeds off the
@@ -35,9 +36,15 @@ export function ProductCard({
   productBase = '/products',
   title,
   fit = 'contain',
+  quickAdd = true,
+  flavor = 'townies',
 }: {
   product: CollectionProduct;
   priority?: boolean;
+  /** The add-to-cart button under the card. */
+  quickAdd?: boolean;
+  /** Tags the cart line with its origin brand — must match the page's brand. */
+  flavor?: 'townies' | 'goodkicks';
   /** '/goodkicks/products' on the Good Kicks shop. */
   productBase?: string;
   /** Display title override (GK strips its brand prefix). */
@@ -50,11 +57,14 @@ export function ProductCard({
 }) {
   const img = fit === 'cover' ? 'object-cover' : 'object-contain p-3';
   const available = product.variants.edges[0]?.node.availableForSale ?? false;
-  const preorder = isPreorder(product.tags);
+  // Townies only — see the note in QuickAdd. Good Kicks ships from stock, and
+  // one GK product still carries a stale `preorder` tag in Shopify.
+  const preorder = flavor === 'townies' && isPreorder(product.tags);
   const alt = alternateImage(product);
 
   return (
-    <Link href={`${productBase}/${product.handle}`} className="group block">
+    <div className="group block">
+    <Link href={`${productBase}/${product.handle}`} className="block">
       <div className="relative aspect-square rounded-sm overflow-hidden bg-white border border-rule">
         {product.featuredImage?.url ? (
           <>
@@ -114,5 +124,9 @@ export function ProductCard({
         <p className="text-muted text-sm mt-0.5">{priceLabel(product)}</p>
       </div>
     </Link>
+      {/* OUTSIDE the anchor — a button nested in a link leaves the browser to
+          decide which one a click meant, and the add races the navigation. */}
+      {quickAdd && <QuickAdd product={product} flavor={flavor} title={title} />}
+    </div>
   );
 }
