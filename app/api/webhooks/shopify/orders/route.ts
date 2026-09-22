@@ -9,6 +9,23 @@
 // through the same upsertContact, so running one after the other changes
 // nothing.
 //
+// ─────────────────────────────────────────────────────────────────────────
+//  THIS ROUTE MUST ANSWER FAST AND MUST NOT FAIL.
+//
+//  Shopify removes a webhook subscription "after multiple failures in a
+//  24-hour period", and a response slower than FIVE SECONDS is a failure. A
+//  route that 500s on a database blip is therefore a route that gets itself
+//  unsubscribed — which is exactly what kept happening here, about seven
+//  times, each one ending with someone re-creating the webhook by hand.
+//
+//  So: verify the signature, acknowledge 200, and do every bit of real work
+//  in `after()`, which runs once the response has been sent. Nothing below
+//  the acknowledgement can affect the status code any more.
+//
+//  The only non-200s left are 401 (bad signature — a real security answer)
+//  and 503 (no secret configured at all, i.e. nothing could ever verify).
+// ─────────────────────────────────────────────────────────────────────────
+//
 // SETUP (one-time, in Shopify admin):
 //   Settings → Notifications → Webhooks → Create webhook
 //     Event:   Order creation      Format: JSON
@@ -17,12 +34,13 @@
 //   SHOPIFY_WEBHOOK_SECRET. Without it this route rejects everything, which is
 //   the correct failure mode for an unauthenticated public endpoint.
 
-import { createHmac, timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
+import { after } from 'next/server';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { markSpinCodeRedeemed } from '@/lib/townies/spin-redemption';
 import { lineBrand, type ShopifyLineItem } from '@/lib/shopify/orders-source';
 import type { RealBrand } from '@/lib/admin/brand';
+import { verifyWebhook } from '@/lib/shopify/webhooks';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -39,34 +57,20 @@ type WebhookOrder = {
   created_at?: string | null;
 };
 
-/**
- * Verify Shopify's HMAC over the RAW body.
- *
- * Must be the exact bytes received — re-serialising the parsed JSON changes key
- * order and whitespace, and the signature stops matching. That's why this route
- * reads text() and parses afterwards.
- */
-function verify(rawBody: string, header: string | null, secret: string): boolean {
-  if (!header) return false;
-  const digest = createHmac('sha256', secret).update(rawBody, 'utf8').digest('base64');
-
-  const a = Buffer.from(digest, 'utf8');
-  const b = Buffer.from(header, 'utf8');
-  // timingSafeEqual throws on length mismatch, so guard before comparing —
-  // and compare rather than using === so the check stays constant-time.
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
-}
-
 export async function POST(req: NextRequest) {
-  const secret = process.env.SHOPIFY_WEBHOOK_SECRET;
-  if (!secret) {
-    console.error('[shopify-webhook] SHOPIFY_WEBHOOK_SECRET is not set — rejecting.');
+  // Both secrets are checked (admin-UI subscriptions sign with one, app-owned
+  // API subscriptions with the other), so this works whichever way the
+  // subscription was created.
+  if (!process.env.SHOPIFY_WEBHOOK_SECRET && !process.env.SHOPIFY_CLIENT_SECRET) {
+    console.error('[shopify-webhook] no signing secret configured — rejecting.');
     return new Response('Webhook not configured', { status: 503 });
   }
 
+  // HMAC is over the RAW bytes. Re-serialising the parsed JSON changes key
+  // order and whitespace and the signature stops matching, which is why this
+  // reads text() and parses afterwards.
   const raw = await req.text();
-  if (!verify(raw, req.headers.get('x-shopify-hmac-sha256'), secret)) {
+  if (!verifyWebhook(raw, req.headers.get('x-shopify-hmac-sha256'))) {
     // Do not describe why. An attacker probing the endpoint learns nothing.
     return new Response('Unauthorized', { status: 401 });
   }
@@ -75,48 +79,52 @@ export async function POST(req: NextRequest) {
   try {
     order = JSON.parse(raw) as WebhookOrder;
   } catch {
-    return new Response('Bad payload', { status: 400 });
+    // Malformed and will be malformed on every retry — acknowledge it.
+    return Response.json({ ok: true, skipped: 'unparseable payload' });
   }
 
-  const email = order.email || order.contact_email;
-  if (!email) {
-    // Guest/POS orders without an email aren't a failure — acknowledge so
-    // Shopify doesn't retry forever.
-    return Response.json({ ok: true, skipped: 'no email' });
-  }
+  // Everything from here runs AFTER the 200 has gone back to Shopify, so no
+  // amount of slow database can turn into a delivery timeout. Nothing in here
+  // can change the status code; failures are logged and picked up by the
+  // manual Sync button, which writes through the same upsertContact.
+  after(async () => {
+    const email = order.email || order.contact_email;
+    if (!email) return; // Guest/POS order with no email — nothing to capture.
 
-  const name =
-    [order.customer?.first_name, order.customer?.last_name].filter(Boolean).join(' ') || undefined;
+    const name =
+      [order.customer?.first_name, order.customer?.last_name].filter(Boolean).join(' ') || undefined;
 
-  const brands: RealBrand[] = [
-    ...new Set((order.line_items ?? []).map((li) => lineBrand(li, order.created_at))),
-  ];
+    const brands: RealBrand[] = [
+      ...new Set((order.line_items ?? []).map((li) => lineBrand(li, order.created_at))),
+    ];
 
-  try {
-    if (brands.length === 0) {
-      // Nothing to read a brand from — a POS or manual order. This is the
-      // Townies store now, so tag it Townies rather than leaving the person
-      // untagged and invisible to every brand-scoped segment.
-      await upsertContact({ email, name, source: 'order', brand: 'townies' });
-    } else {
-      for (const brand of brands) {
-        await upsertContact({ email, name, source: 'order', brand });
+    try {
+      if (brands.length === 0) {
+        // Nothing to read a brand from — a POS or manual order. This is the
+        // Townies store now, so tag it Townies rather than leaving the person
+        // untagged and invisible to every brand-scoped segment.
+        await upsertContact({ email, name, source: 'order', brand: 'townies' });
+      } else {
+        for (const brand of brands) {
+          await upsertContact({ email, name, source: 'order', brand });
+        }
       }
+    } catch (err) {
+      console.error('[shopify-webhook] contact upsert failed', err);
     }
-  } catch (err) {
-    // A 500 makes Shopify retry with backoff, which is what we want for a
-    // transient database blip.
-    console.error('[shopify-webhook] contact upsert failed', err);
-    return new Response('Upsert failed', { status: 500 });
-  }
 
-  // Rotary spin attribution. Deliberately after the contact upsert and outside
-  // its try: a failure here must not make Shopify retry an order we already
-  // captured, and "the code was used" is nice to know rather than load-bearing.
-  await markSpinCodeRedeemed(
-    (order.discount_codes ?? []).map((d) => d?.code).filter((c): c is string => Boolean(c)),
-    order.id != null ? String(order.id) : null,
-  );
+    // Rotary spin attribution — nice to know rather than load-bearing. Its own
+    // try because an unhandled throw here used to escape the route entirely and
+    // produce the 500 this whole rewrite exists to avoid.
+    try {
+      await markSpinCodeRedeemed(
+        (order.discount_codes ?? []).map((d) => d?.code).filter((c): c is string => Boolean(c)),
+        order.id != null ? String(order.id) : null,
+      );
+    } catch (err) {
+      console.error('[shopify-webhook] spin attribution failed', err);
+    }
+  });
 
-  return Response.json({ ok: true, brands });
+  return Response.json({ ok: true });
 }

@@ -12,10 +12,18 @@
 // days after the parcel shipped. There is no path in here that mails a back
 // catalogue — `review_requests` rows are written solely by the fulfilment
 // webhook, and every row is marked sent the moment it goes out.
+//
+// It ALSO repairs the Shopify webhook subscriptions on every run. Shopify
+// deletes a subscription after repeated delivery failures and tells nobody in
+// band, which is how these have gone missing roughly seven times. Checking
+// daily means the worst case is under 24 hours of missed deliveries, repaired
+// without anyone opening Shopify. This runs before the sending and regardless
+// of whether sending is enabled — the repair is the more important half.
 
 import type { NextRequest } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { sendReviewRequestEmail } from '@/lib/email/send-review-request';
+import { reconcileWebhooks } from '@/lib/shopify/webhooks';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -42,6 +50,22 @@ export async function GET(req: NextRequest) {
     return new Response('Unauthorized', { status: 401 });
   }
 
+  // Repair first, and never let it stop the send. A Shopify outage must not
+  // also hold up the emails.
+  let webhooks;
+  try {
+    webhooks = await reconcileWebhooks();
+    if (webhooks.created.length > 0) {
+      console.warn('[cron] re-created Shopify webhooks:', webhooks.created.join(', '));
+    }
+    if (webhooks.failed.length > 0) {
+      console.error('[cron] webhook repair failed:', JSON.stringify(webhooks.failed));
+    }
+  } catch (err) {
+    console.error('[cron] webhook repair threw:', err);
+    webhooks = { ok: false, present: [], created: [], failed: [{ topic: '*', error: String(err) }] };
+  }
+
   const dry = req.nextUrl.searchParams.get('dry') === '1'
     || process.env.REVIEW_REQUESTS_ENABLED !== '1';
 
@@ -56,13 +80,16 @@ export async function GET(req: NextRequest) {
 
   if (error) {
     console.error('[review-cron] read failed:', error.message);
-    return new Response('Could not read queue', { status: 500 });
+    // The webhook repair above already happened and is the load-bearing half,
+    // so report it rather than throwing the whole run away.
+    return Response.json({ ok: false, webhooks, error: 'could not read queue' }, { status: 200 });
   }
 
   const due = (data ?? []) as DueRow[];
   if (dry) {
     return Response.json({
       ok: true,
+      webhooks,
       dryRun: true,
       reason:
         process.env.REVIEW_REQUESTS_ENABLED === '1'
@@ -101,5 +128,5 @@ export async function GET(req: NextRequest) {
   }
 
   if (failures.length) console.error('[review-cron] failures:', JSON.stringify(failures));
-  return Response.json({ ok: true, due: due.length, sent, failed: failures.length });
+  return Response.json({ ok: true, webhooks, due: due.length, sent, failed: failures.length });
 }

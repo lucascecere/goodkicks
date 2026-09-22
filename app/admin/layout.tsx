@@ -11,6 +11,7 @@ const navItems = [
   { href: '/admin/campaigns', label: 'Campaigns' },
   { href: '/admin/reviews', label: 'Reviews' },
   { href: '/admin/studio', label: 'Studio' },
+  { href: '/admin/integrations', label: 'Integrations' },
   { href: '/admin/settings', label: 'Settings' },
 ];
 
