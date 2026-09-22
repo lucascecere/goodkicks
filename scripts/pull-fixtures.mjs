@@ -17,13 +17,21 @@
  * `getProductsByCollection` reads that file when, and only when, there is no
  * storefront credential, which is never the case in production.
  *
- * ARCHIVED and DRAFT products are skipped; ACTIVE **and UNLISTED** are kept.
- * UNLISTED is the trap: it hides a product from Shopify's own search and
- * sitemap but the Storefront API still returns it inside a collection, so it
- * IS on the site — the Good Kicks Massachusetts bag is UNLISTED and sits on
- * goodkicks.co/shop right now. Filtering it out of the fixture hides a product
- * locally that customers can see and buy, which is the more dangerous of the
- * two mistakes.
+ * ONLY `status: ACTIVE`, and deliberately NOT `publishedAt`.
+ *
+ * Both halves of that were got wrong once each, so they are worth writing down:
+ *
+ *  - UNLISTED is NOT on the site. It reads like "hidden from search only", but
+ *    the Storefront API leaves UNLISTED products out of collection queries too.
+ *    The Good Kicks Massachusetts bag is UNLISTED and does not appear on
+ *    goodkicks.co/shop; its PDP 404s.
+ *  - `publishedAt` is the ONLINE STORE channel and is null for products that
+ *    are only on the headless "Good Kicks Foot Bags Website" publication —
+ *    which is the channel this site actually reads. Requiring it dropped Good
+ *    Kicks New York, a product that is live.
+ *
+ * Verified 2026-09-22: `status === 'ACTIVE'` alone reproduces both live
+ * catalogues exactly — 13 Townies hats, 8 Good Kicks bags.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import os from 'node:os';
@@ -62,9 +70,7 @@ async function pull(handle) {
   if (json.errors) throw new Error(JSON.stringify(json.errors));
 
   const edges = json.data?.collectionByHandle?.products?.edges ?? [];
-  const live = edges.filter(
-    ({ node: n }) => n.status !== 'ARCHIVED' && n.status !== 'DRAFT' && n.publishedAt,
-  );
+  const live = edges.filter(({ node: n }) => n.status === 'ACTIVE');
 
   return {
     skipped: edges.length - live.length,
@@ -97,7 +103,7 @@ for (const handle of ['townies', 'the-good-kicks-v1']) {
   out[handle] = products;
   console.log(
     `${handle}: ${products.length} live product${products.length === 1 ? '' : 's'}` +
-      (skipped ? ` (${skipped} archived/draft/unpublished skipped)` : ''),
+      (skipped ? ` (${skipped} not ACTIVE, skipped)` : ''),
   );
 }
 
