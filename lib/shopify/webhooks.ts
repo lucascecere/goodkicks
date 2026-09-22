@@ -59,27 +59,49 @@ export const REQUIRED_WEBHOOKS = [
  * app-owned ones take over, and so deleting either later changes nothing.
  */
 export function verifyWebhook(rawBody: string, header: string | null): boolean {
-  if (!header) return false;
+  return verifyWebhookDetailed(rawBody, header).ok;
+}
 
-  const secrets = [process.env.SHOPIFY_WEBHOOK_SECRET, process.env.SHOPIFY_CLIENT_SECRET].filter(
-    (s): s is string => Boolean(s),
-  );
-  if (secrets.length === 0) return false;
+/**
+ * As above, but says WHICH secret matched.
+ *
+ * That detail matters once: app-owned subscriptions are signed with the app's
+ * own secret, and the value in SHOPIFY_CLIENT_SECRET was originally set for a
+ * DIFFERENT OAuth app. Neither value is readable from outside (Vercel returns
+ * an empty string for both), so the only way to find out whether it is the
+ * right key is to watch a real delivery and see which candidate verified it.
+ *
+ * The routes log this on every delivery. If app-owned webhooks are arriving and
+ * `store` is the only thing ever matching, then SHOPIFY_CLIENT_SECRET is wrong
+ * and needs the custom app's API secret key pasting in — until then app-owned
+ * subscriptions would 401, and Shopify would delete them exactly as before.
+ */
+export function verifyWebhookDetailed(
+  rawBody: string,
+  header: string | null,
+): { ok: boolean; matched: 'store' | 'app' | null } {
+  if (!header) return { ok: false, matched: null };
+
+  const candidates: Array<{ label: 'store' | 'app'; secret: string | undefined }> = [
+    { label: 'store', secret: process.env.SHOPIFY_WEBHOOK_SECRET },
+    { label: 'app', secret: process.env.SHOPIFY_CLIENT_SECRET },
+  ];
 
   const provided = Buffer.from(header, 'utf8');
+  let matched: 'store' | 'app' | null = null;
 
   // Every candidate is checked even after a match, so the work done does not
   // depend on WHICH secret matched.
-  let matched = false;
-  for (const secret of secrets) {
+  for (const { label, secret } of candidates) {
+    if (!secret) continue;
     const digest = Buffer.from(
       createHmac('sha256', secret).update(rawBody, 'utf8').digest('base64'),
       'utf8',
     );
     // timingSafeEqual throws on a length mismatch, so guard before comparing.
-    if (digest.length === provided.length && timingSafeEqual(digest, provided)) matched = true;
+    if (digest.length === provided.length && timingSafeEqual(digest, provided)) matched ??= label;
   }
-  return matched;
+  return { ok: matched !== null, matched };
 }
 
 type SubscriptionNode = {

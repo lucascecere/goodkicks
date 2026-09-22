@@ -40,7 +40,7 @@ import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { markSpinCodeRedeemed } from '@/lib/townies/spin-redemption';
 import { lineBrand, type ShopifyLineItem } from '@/lib/shopify/orders-source';
 import type { RealBrand } from '@/lib/admin/brand';
-import { verifyWebhook } from '@/lib/shopify/webhooks';
+import { verifyWebhookDetailed } from '@/lib/shopify/webhooks';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -70,7 +70,11 @@ export async function POST(req: NextRequest) {
   // order and whitespace and the signature stops matching, which is why this
   // reads text() and parses afterwards.
   const raw = await req.text();
-  if (!verifyWebhook(raw, req.headers.get('x-shopify-hmac-sha256'))) {
+  const auth = verifyWebhookDetailed(raw, req.headers.get('x-shopify-hmac-sha256'));
+  // Which secret verified this is the one fact that says whether app-owned
+  // subscriptions can work — see verifyWebhookDetailed.
+  console.log('[shopify-webhook] signature:', auth.ok ? `verified via ${auth.matched} secret` : 'REJECTED');
+  if (!auth.ok) {
     // Do not describe why. An attacker probing the endpoint learns nothing.
     return new Response('Unauthorized', { status: 401 });
   }

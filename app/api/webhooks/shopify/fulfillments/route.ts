@@ -20,7 +20,7 @@ import { after } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { newToken } from '@/lib/reviews/server';
 import { lineBrand, type ShopifyLineItem } from '@/lib/shopify/orders-source';
-import { verifyWebhook } from '@/lib/shopify/webhooks';
+import { verifyWebhookDetailed } from '@/lib/shopify/webhooks';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -48,7 +48,11 @@ export async function POST(req: NextRequest) {
   // HMAC is over the RAW bytes — re-serialising the parsed JSON changes key
   // order and the signature stops matching.
   const raw = await req.text();
-  if (!verifyWebhook(raw, req.headers.get('x-shopify-hmac-sha256'))) {
+  const auth = verifyWebhookDetailed(raw, req.headers.get('x-shopify-hmac-sha256'));
+  // Which secret verified this is the one fact that says whether app-owned
+  // subscriptions can work — see verifyWebhookDetailed.
+  console.log('[fulfillment-webhook] signature:', auth.ok ? `verified via ${auth.matched} secret` : 'REJECTED');
+  if (!auth.ok) {
     return new Response('Unauthorized', { status: 401 });
   }
 
