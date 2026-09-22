@@ -56,10 +56,15 @@ export function ProductCard({
   fit?: 'contain' | 'cover';
 }) {
   const img = fit === 'cover' ? 'object-cover' : 'object-contain p-3';
-  const available = product.variants.edges[0]?.node.availableForSale ?? false;
   // Townies only — see the note in QuickAdd. Good Kicks ships from stock, and
   // one GK product still carries a stale `preorder` tag in Shopify.
   const preorder = flavor === 'townies' && isPreorder(product.tags);
+  // Same trap as QuickAdd: CONTINUE-policy variants report availableForSale
+  // even at qty 0, so only a genuine pre-order may sell at or below zero.
+  const outOfStock =
+    !preorder && typeof product.stock === 'number' && product.stock <= 0;
+  const available =
+    (product.variants.edges[0]?.node.availableForSale ?? false) && !outOfStock;
   const alt = alternateImage(product);
 
   return (

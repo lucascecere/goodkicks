@@ -36,13 +36,23 @@ export function QuickAdd({
 
   const variant = product.variants.edges[0]?.node;
   const multiVariant = product.variants.edges.length > 1;
-  const available = variant?.availableForSale ?? false;
   // Townies only. Good Kicks ships from stock and never pre-orders (confirmed
-  // with Lucas 2026-09-08), but at least one GK product still carries a stale
-  // `preorder` tag in Shopify — the same stale data `gkDescriptionHtml()`
-  // already strips the "Preorder now" sentence for. Honouring the tag here
-  // would put "Pre-order" on a button for a bag that ships tomorrow.
+  // with Lucas 2026-09-08), so a `preorder` tag on a GK product is stale data —
+  // the same stale data `gkDescriptionHtml()` already strips the "Preorder now"
+  // sentence for.
   const preorder = flavor === 'townies' && isPreorder(product.tags);
+
+  // `availableForSale` ALONE IS NOT ENOUGH. Every one of these variants is
+  // `inventoryPolicy: CONTINUE`, which is what lets a Townies pre-order sell
+  // past zero — but it also means Shopify keeps reporting `availableForSale:
+  // true` for a product that is simply out of stock. The Good Kicks
+  // Massachusetts bag sits at qty 0 with CONTINUE and a leftover preorder tag,
+  // and trusting the flag put "Add to cart" on a sold-out bag.
+  //
+  // So: a real pre-order may sell at or below zero. Anything else may not.
+  const stock = product.stock;
+  const outOfStock = !preorder && typeof stock === 'number' && stock <= 0;
+  const available = (variant?.availableForSale ?? false) && !outOfStock;
 
   const base =
     'mt-3 flex w-full items-center justify-center px-4 py-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.16em] transition-colors';

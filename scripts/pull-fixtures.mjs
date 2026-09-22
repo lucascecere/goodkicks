@@ -17,9 +17,13 @@
  * `getProductsByCollection` reads that file when, and only when, there is no
  * storefront credential, which is never the case in production.
  *
- * Only ACTIVE, published products are written, because those are the only ones
- * the Storefront API would return — an archived hat in the fixture would put a
- * product on your local homepage that customers cannot see.
+ * ARCHIVED and DRAFT products are skipped; ACTIVE **and UNLISTED** are kept.
+ * UNLISTED is the trap: it hides a product from Shopify's own search and
+ * sitemap but the Storefront API still returns it inside a collection, so it
+ * IS on the site — the Good Kicks Massachusetts bag is UNLISTED and sits on
+ * goodkicks.co/shop right now. Filtering it out of the fixture hides a product
+ * locally that customers can see and buy, which is the more dangerous of the
+ * two mistakes.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import os from 'node:os';
@@ -58,7 +62,9 @@ async function pull(handle) {
   if (json.errors) throw new Error(JSON.stringify(json.errors));
 
   const edges = json.data?.collectionByHandle?.products?.edges ?? [];
-  const live = edges.filter(({ node: n }) => n.status === 'ACTIVE' && n.publishedAt);
+  const live = edges.filter(
+    ({ node: n }) => n.status !== 'ARCHIVED' && n.status !== 'DRAFT' && n.publishedAt,
+  );
 
   return {
     skipped: edges.length - live.length,
@@ -91,7 +97,7 @@ for (const handle of ['townies', 'the-good-kicks-v1']) {
   out[handle] = products;
   console.log(
     `${handle}: ${products.length} live product${products.length === 1 ? '' : 's'}` +
-      (skipped ? ` (${skipped} archived/unpublished skipped)` : ''),
+      (skipped ? ` (${skipped} archived/draft/unpublished skipped)` : ''),
   );
 }
 
