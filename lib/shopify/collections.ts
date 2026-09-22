@@ -79,9 +79,13 @@ const COLLECTION_PRODUCTS_QUERY = `
  * API and every collection read degrades to []. That makes design work on the
  * shop impossible locally: you end up deploying to look at a rail.
  *
- * `.fixtures/collections.json` (gitignored, regenerated from the Admin API) is
- * read INSTEAD, and only when there is no storefront credential — i.e. never in
- * production, where the env is populated and this branch is unreachable.
+ * `.fixtures/collections.json` (gitignored) is read INSTEAD, and only when
+ * there is no storefront credential — i.e. never in production, where the env
+ * is populated and this branch is unreachable.
+ *
+ * Refresh it with `node scripts/pull-fixtures.mjs`, which pulls the same
+ * collections through the Admin API and keeps only ACTIVE, published products,
+ * so what you see locally is what a customer sees.
  */
 function fixtureProducts(handle: string): CollectionProduct[] {
   if (process.env.NODE_ENV === 'production') return [];
