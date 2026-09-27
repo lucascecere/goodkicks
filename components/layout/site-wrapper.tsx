@@ -20,7 +20,9 @@ export function SiteWrapper({
 }) {
   const pathname = usePathname();
 
-  if (pathname.startsWith('/admin')) {
+  // Stick (the golf line) brings its own full-screen page: no Townies chrome,
+  // no cart, no spin popup.
+  if (pathname.startsWith('/admin') || pathname === '/stick' || pathname.startsWith('/stick/')) {
     return <>{children}</>;
   }
 
