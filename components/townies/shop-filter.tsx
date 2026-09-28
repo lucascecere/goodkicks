@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { ProductCard } from './product-card';
 import type { CollectionProduct } from '@/lib/shopify/collections';
 import type { HatStyle } from '@/lib/townies/towns';
+import { isPreorder } from '@/lib/townies/preorder';
 import { cn } from '@/lib/utils';
 
 /**
@@ -45,6 +46,14 @@ const STYLES: Array<{ key: HatStyle; label: string }> = [
 
 function priceOf(p: CollectionProduct): number {
   return parseFloat(p.variants.edges[0]?.node.price.amount ?? '0') || 0;
+}
+
+// In stock → pre-order → sold out. Same test as ProductCard: availableForSale
+// alone lies here (every variant is CONTINUE), so the real count decides.
+function stockTier(p: CollectionProduct): number {
+  if (isPreorder(p.tags)) return 1;
+  const available = p.variants.edges[0]?.node.availableForSale ?? false;
+  return available && typeof p.stock === 'number' && p.stock > 0 ? 0 : 2;
 }
 
 export function ShopFilter({
@@ -115,7 +124,8 @@ export function ShopFilter({
     if (sort === 'az') list = [...list].sort((a, b) => a.name.localeCompare(b.name) || a.product.title.localeCompare(b.product.title));
     if (sort === 'price-asc') list = [...list].sort((a, b) => priceOf(a.product) - priceOf(b.product));
     if (sort === 'price-desc') list = [...list].sort((a, b) => priceOf(b.product) - priceOf(a.product));
-    return list;
+    // Stable, so the chosen sort still holds within each tier.
+    return [...list].sort((a, b) => stockTier(a.product) - stockTier(b.product));
   }, [items, town, region, style, sort]);
 
   const filtered = region !== 'all' || town !== 'all' || style !== 'all';
