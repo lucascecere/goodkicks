@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { MaMark, PineMark, SignpostMark, AnchorMark } from '@/components/brand/wordmark';
+import { MaStateIcon, PineIcon, SignpostIcon, AnchorIcon } from '@/components/brand/town-icons';
 
 export type ValueItem = {
   Mark: ComponentType<{ className?: string }>;
@@ -9,7 +9,7 @@ export type ValueItem = {
 };
 
 /**
- * Four-up promise band, drawn with the brand-sheet icon set.
+ * Four-up promise band, drawn with the brand kit's icon set (components/brand/town-icons).
  *
  * Sits between the shopping sections and the closing CTA, where the page used
  * to run to empty cream. Marks rather than photos on purpose — this is the one
@@ -17,30 +17,29 @@ export type ValueItem = {
  */
 const TOWNIES_ITEMS: ValueItem[] = [
   {
-    Mark: MaMark,
+    Mark: MaStateIcon,
     title: 'Massachusetts first',
     body: 'Every design starts with a real town — not a state outline with a name dropped on it.',
-    // The MA silhouette is wide and short; the rest are tall. Sized apart so
-    // they sit on one optical line instead of one literal one.
-    markClass: 'h-8 w-auto',
+    // Kit icons are all fitted to the same box, so one size lines them up.
+    markClass: 'h-14 w-14',
   },
   {
-    Mark: SignpostMark,
+    Mark: SignpostIcon,
     title: 'One town at a time',
     body: 'We do a town properly, then move to the next. No 300-SKU dropdown of places we’ve never been.',
-    markClass: 'h-14 w-auto',
+    markClass: 'h-14 w-14',
   },
   {
-    Mark: PineMark,
+    Mark: PineIcon,
     title: 'Stitched heavy',
     body: 'Structured cotton twill, dense embroidery, a brim that holds its shape past one season.',
-    markClass: 'h-14 w-auto',
+    markClass: 'h-14 w-14',
   },
   {
-    Mark: AnchorMark,
+    Mark: AnchorIcon,
     title: 'Shipped from here',
     body: 'Packed and posted on the South Shore. Free shipping over $75, straightforward returns.',
-    markClass: 'h-14 w-auto',
+    markClass: 'h-14 w-14',
   },
 ];
 

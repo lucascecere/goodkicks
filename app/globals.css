@@ -31,6 +31,7 @@
   --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
   --font-block: var(--font-rokkitt), "Rockwell", "Arial Black", serif;
   --font-script: var(--font-yellowtail), "Brush Script MT", cursive;
+  --font-label: var(--font-figtree), var(--font-inter), system-ui, sans-serif;
 
   /* Semantic (brand-scoped) tokens — defaults = Townies.
      EVERY shared component (chrome, hero, rails, bands, cards, forms) is written
@@ -247,3 +248,22 @@
 @media (prefers-reduced-motion: reduce) {
   [class*="hero-copy"] { animation: none !important; }
 }
+
+/* Townies type roles, from the 2026 brand kit. In @layer base so any explicit
+   font utility on an element still wins.
+   - Headings with no font class were falling through to the legacy DM Serif
+     rule above (the footer column titles rendered as a thin serif). In the
+     Townies scope a bare heading is the block face.
+   - Every other uppercase run (eyebrows, nav, buttons, chips, labels) is the
+     label face: Figtree. */
+@layer base {
+  [data-brand="townies"] :is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-block);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  [data-brand="townies"] .uppercase:not(.font-block):not(.heading):not(.font-script):not(.font-display) {
+    font-family: var(--font-label);
+  }
+}
+

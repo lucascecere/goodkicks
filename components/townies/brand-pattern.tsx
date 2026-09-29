@@ -23,11 +23,18 @@ export type PatternColor = 'forest' | 'navy' | 'cream' | 'white';
 type Fade = 'none' | 'b' | 't' | 'y' | 'l' | 'r' | 'radial';
 
 const DEFAULT_SIZE: Record<PatternVariant, number> = {
-  ma: 150,
+  // Kit tiles (2026): MA is a 2x2 checkerboard of state + word, topo is a
+  // 720-unit organic contour field. Sized so marks read at about the old scale.
+  ma: 240,
   pine: 300,
-  topo: 200,
+  topo: 520,
   speckle: 130,
 };
+
+// The kit's MA tile (state + collegiate MA word) carries far more ink per
+// tile than the old silhouette-only one, so the same opacity reads twice as
+// loud. Call sites keep their tuned values; the weight is corrected here.
+const INK_WEIGHT: Record<PatternVariant, number> = { ma: 0.55, pine: 1, topo: 1, speckle: 1 };
 
 const FADE: Record<Fade, string | undefined> = {
   none: undefined,
@@ -65,7 +72,7 @@ export function BrandPattern({
         backgroundImage: `url(/brand/patterns/${variant}-${color}.svg)`,
         backgroundRepeat: 'repeat',
         backgroundSize: `${size ?? DEFAULT_SIZE[variant]}px`,
-        opacity,
+        opacity: opacity * INK_WEIGHT[variant],
         ...(mask
           ? { WebkitMaskImage: mask, maskImage: mask }
           : {}),

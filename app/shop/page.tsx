@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     title: 'Shop — Townies',
     description: 'Massachusetts town-pride apparel. Filter by your town.',
     url: '/shop',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
 };
 
@@ -67,7 +67,7 @@ export default async function ShopPage({
           catalogue counts; the page used to open with centred text floating on
           cream, which read as an unfinished page rather than a shop front. */}
       <section className="relative overflow-hidden bg-town-navy">
-        <BrandPattern variant="topo" color="cream" opacity={0.09} size={260} />
+        <BrandPattern variant="topo" color="cream" opacity={0.09} size={520} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 text-center">
           <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-3">
             The shop
@@ -101,7 +101,7 @@ export default async function ShopPage({
 
       <TownTickerLinked towns={towns} />
 
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {items.length === 0 ? (

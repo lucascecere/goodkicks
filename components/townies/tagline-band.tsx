@@ -44,7 +44,7 @@ export function TaglineBand({
           <div className="absolute inset-0 bg-gradient-to-b from-town-navy/80 via-town-navy/25 to-town-navy/80" />
         </>
       ) : (
-        <BrandPattern variant="topo" color="cream" opacity={0.09} size={260} fade="radial" />
+        <BrandPattern variant="topo" color="cream" opacity={0.09} size={520} fade="radial" />
       )}
 
       <div className="relative flex flex-col items-center justify-center text-center px-6">

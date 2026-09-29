@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `Hat & Sack — ${price} | Townies × Good Kicks`,
       description: `Pick your town. We pick the bag. ${price} for both.`,
       url: HAT_SACK_PATH,
-      images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+      images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
     },
   };
 }
@@ -90,7 +90,7 @@ export default async function HatAndSackPage() {
       {/* Masthead — the same dark top edge /shop uses, so the promo reads as part
           of the shop rather than as a landing page bolted on beside it. */}
       <section className="relative overflow-hidden bg-town-navy">
-        <BrandPattern variant="ma" color="cream" opacity={0.08} size={240} />
+        <BrandPattern variant="ma" color="cream" opacity={0.08} size={360} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 text-center">
           <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-3">
             Townies × Good Kicks
@@ -105,7 +105,7 @@ export default async function HatAndSackPage() {
         </div>
       </section>
 
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {hats.length === 0 ? (

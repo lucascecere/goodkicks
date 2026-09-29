@@ -26,7 +26,7 @@ export async function HatSackBand() {
 
   return (
     <section className="relative overflow-hidden bg-town-navy">
-      <BrandPattern variant="ma" color="cream" opacity={0.07} size={240} />
+      <BrandPattern variant="ma" color="cream" opacity={0.07} size={360} />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">

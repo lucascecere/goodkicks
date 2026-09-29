@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Search, User } from 'lucide-react';
 import { CartIconButton } from './cart-icon-button';
 import { TownFinder } from '@/components/townies/town-finder';
 import { cn } from '@/lib/utils';
+import { LogoImg } from '@/components/brand/brand-logo';
 import { SHOPIFY_ACCOUNT_URL } from '@/lib/shopify/account-url';
 import type { BrandConfig } from '@/lib/brand/brands';
 
@@ -67,14 +67,7 @@ export function Header({ brand }: { brand: BrandConfig }) {
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <Link href={home} aria-label={`${brand.name} — home`} className="inline-flex">
-              <Image
-                src={logo.src}
-                width={logo.w}
-                height={logo.h}
-                alt={logo.alt}
-                priority
-                className={cn('max-w-full', brand.logoClass)}
-              />
+              <LogoImg logo={logo} priority className={brand.logoClass} />
             </Link>
           </div>
 

@@ -51,7 +51,7 @@ export function RegionBand({ products }: { products: CollectionProduct[] }) {
 
   return (
     <section className="relative overflow-hidden bg-town-navy">
-      <BrandPattern variant="topo" color="cream" opacity={0.07} size={260} />
+      <BrandPattern variant="topo" color="cream" opacity={0.07} size={520} />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <RegionRail cards={cards} />
       </div>

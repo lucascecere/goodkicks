@@ -12,13 +12,13 @@ export const metadata: Metadata = {
     title: 'The Town Paper — Townies Blog',
     description: 'Massachusetts town-pride stories, guides, and culture from Townies Apparel Co.',
     url: '/blog',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'The Town Paper — Townies Blog',
     description: 'Massachusetts town-pride stories, guides, and culture.',
-    images: ['/opengraph-image.png'],
+    images: ['/opengraph-image.jpg'],
   },
 };
 
@@ -29,7 +29,7 @@ export default function BlogPage() {
 
   return (
     <div className="relative overflow-hidden bg-town-cream min-h-screen">
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={220} fade="b" />
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
       <div className="relative max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
         <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
           The Town Paper

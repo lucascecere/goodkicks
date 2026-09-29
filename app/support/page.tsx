@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: 'Support — Townies',
     description: 'Questions about an order, sizing, shipping or returns. We answer everything, usually the same day.',
     url: '/support',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
 };
 

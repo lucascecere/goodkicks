@@ -117,7 +117,7 @@ export function BrandImage({
         TONE[tone],
       )}
     >
-      <BrandPattern variant="ma" color={pat.color} opacity={pat.opacity} size={130} fade="radial" />
+      <BrandPattern variant="ma" color={pat.color} opacity={pat.opacity} size={210} fade="radial" />
       <MaMark className="relative h-9 w-auto opacity-50" />
       {label && (
         <span className="relative heading tracking-[0.12em] text-sm opacity-70">

@@ -15,7 +15,7 @@ export function ComingSoonRegion({
 }) {
   return (
     <section className="relative min-h-[82vh] flex items-center overflow-hidden bg-town-navy text-white">
-      <BrandPattern variant="ma" color="cream" opacity={0.08} size={220} fade="radial" />
+      <BrandPattern variant="ma" color="cream" opacity={0.08} size={340} fade="radial" />
       <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-24 text-center">
         <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/60 mb-4">
           Coming soon

@@ -24,13 +24,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'article',
       publishedTime: post.publishedAt,
       tags: post.tags,
-      images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+      images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.description,
-      images: ['/opengraph-image.png'],
+      images: ['/opengraph-image.jpg'],
     },
   };
 }
@@ -61,7 +61,7 @@ export default async function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <BrandPattern variant="ma" color="forest" opacity={0.04} size={220} fade="b" />
+      <BrandPattern variant="ma" color="forest" opacity={0.04} size={340} fade="b" />
       <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
         <Link
           href="/blog"

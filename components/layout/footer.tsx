@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { MaMark } from '@/components/brand/wordmark';
+import { LogoImg } from '@/components/brand/brand-logo';
 import { SocialLinks } from '@/components/townies/social-links';
 import { currentBrand } from '@/components/brand/current-brand';
 import type { BrandConfig } from '@/lib/brand/brands';
@@ -22,14 +22,7 @@ export function Footer({ brand }: { brand: BrandConfig }) {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
             <Link href={brand.base || '/'} aria-label={brand.legalName} className="inline-flex">
-              {/* Plain <img> for the SVG mark: next/image refuses first-party
-                  SVGs without dangerouslyAllowSVG, and that flag is off. */}
-              {logo.src.endsWith('.svg') ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={logo.src} alt={logo.alt} width={logo.w} height={logo.h} className="w-24 h-auto" />
-              ) : (
-                <Image src={logo.src} alt={logo.alt} width={logo.w} height={logo.h} className="w-24 h-auto" />
-              )}
+              <LogoImg logo={logo} className={brand.id === 'townies' ? 'w-44 h-auto' : 'w-24 h-auto'} />
             </Link>
             <p className="text-ink-contrast/60 text-sm leading-relaxed max-w-xs">{brand.blurb}</p>
           </div>

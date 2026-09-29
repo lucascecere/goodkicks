@@ -40,7 +40,7 @@ export function SiteWrapper({
   const isGoodKicks = id === 'goodkicks';
 
   return (
-    <div data-brand={isGoodKicks ? 'goodkicks' : undefined} className="bg-bg text-text">
+    <div data-brand={isGoodKicks ? 'goodkicks' : 'townies'} className="bg-bg text-text">
       <CartProvider>
         {/* Above the sticky header on purpose: the promises are worth the first
             read, not a permanent band eating 32px of every screen after it. */}

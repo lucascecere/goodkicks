@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: 'Request a Town — Townies',
     description: 'Do not see your town? Tell us. Every request is counted, and the towns that shout loudest get made first.',
     url: '/request-a-town',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
 };
 

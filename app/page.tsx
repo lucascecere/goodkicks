@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     title: 'Townies — Rep Your Town.',
     description: 'Massachusetts town-pride apparel. The town is the hero, Townies is the label.',
     url: '/',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
 };
 

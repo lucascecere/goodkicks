@@ -11,13 +11,13 @@ export const metadata: Metadata = {
     title: 'Townies Town Rep Program',
     description: 'Free hat, your own discount code, and commission on every sale you drive.',
     url: '/ambassadors',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Townies Town Rep Program',
     description: 'Free hat, your own discount code, earn commission on every sale.',
-    images: ['/opengraph-image.png'],
+    images: ['/opengraph-image.jpg'],
   },
 };
 

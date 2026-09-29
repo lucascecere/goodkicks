@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { DM_Serif_Display, Inter, Rokkitt, Yellowtail } from 'next/font/google';
+import { DM_Serif_Display, Figtree, Inter, Rokkitt, Yellowtail } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SiteWrapper } from '@/components/layout/site-wrapper';
 import { GoogleAnalytics } from '@/components/analytics/google-analytics';
@@ -45,6 +45,15 @@ const yellowtail = Yellowtail({
   display: 'swap',
 });
 
+// Townies label face (brand kit 2026): eyebrows, nav, buttons, small caps.
+// Figtree bold, tracked, matches the lettering on the Sign.
+const figtree = Figtree({
+  subsets: ['latin'],
+  variable: '--font-figtree',
+  weight: ['500', '600', '700', '800'],
+  display: 'swap',
+});
+
 const siteUrl = SITE_URL;
 
 export const metadata: Metadata = {
@@ -59,11 +68,11 @@ export const metadata: Metadata = {
     siteName: 'Townies',
     type: 'website',
     locale: 'en_US',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/opengraph-image.png'],
+    images: ['/opengraph-image.jpg'],
   },
   icons: {
     icon: [
@@ -91,7 +100,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSerifDisplay.variable} ${inter.variable} ${rokkitt.variable} ${yellowtail.variable}`}
+      className={`${dmSerifDisplay.variable} ${inter.variable} ${rokkitt.variable} ${yellowtail.variable} ${figtree.variable}`}
     >
       <body>
         <script

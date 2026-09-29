@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     title: 'About Townies — Town-Pride Apparel from Massachusetts',
     description: 'The town is the hero, Townies is the label.',
     url: '/about',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
 };
 
@@ -78,9 +78,9 @@ export default function AboutPage() {
 
       {/* Mission */}
       <section className="relative overflow-hidden bg-town-cream">
-        <BrandPattern variant="ma" color="forest" opacity={0.05} size={150} fade="radial" />
+        <BrandPattern variant="ma" color="forest" opacity={0.05} size={240} fade="radial" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
-        <BrandLogo variant="arch" className="w-60 sm:w-72 mx-auto mb-8" />
+        <BrandLogo variant="lockup" className="w-64 sm:w-80 h-auto mx-auto mb-8" />
         <p className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy mb-5">
           Small towns. Strong roots.
         </p>

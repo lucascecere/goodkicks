@@ -82,10 +82,11 @@ export const TOWNIES: BrandConfig = {
   productBase: '/products',
   supportPath: '/support',
   logo: {
-    light: { src: '/brand/logos/script-word.png', w: 420, h: 159, alt: 'Townies' },
-    dark: { src: '/brand/logos/script-cream.png', w: 426, h: 214, alt: 'Townies Apparel Co.' },
+    // Vector files from the brand kit (see components/brand/brand-logo.tsx).
+    light: { src: '/brand/logos/townies-script-navy.svg', w: 1048, h: 523, alt: 'Townies' },
+    dark: { src: '/brand/logos/townies-script-lockup-reversed.svg', w: 1048, h: 524, alt: 'Townies Apparel Co.' },
   },
-  logoClass: 'h-7 sm:h-9 w-auto',
+  logoClass: 'h-10 sm:h-12 w-auto',
   nav: [
     { href: '/shop', label: 'Shop' },
     { href: '/about', label: 'About' },

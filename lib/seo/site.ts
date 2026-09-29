@@ -37,7 +37,7 @@ export const BUSINESS = {
   shortName: 'Townies',
   url: SITE_URL,
   logo: `${SITE_URL}/icon.png`,
-  ogImage: `${SITE_URL}/opengraph-image.png`,
+  ogImage: `${SITE_URL}/opengraph-image.jpg`,
   description:
     'Massachusetts town-pride apparel. The town is the hero — Townies is the label. Starting with the South Shore.',
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'hello@townies.shop',
@@ -47,8 +47,8 @@ export const BUSINESS = {
   foundingYear: '2024',
   areaServed: 'Massachusetts',
   sameAs: [
-    'https://www.instagram.com/townies',
-    'https://www.tiktok.com/@townies',
+    'https://www.instagram.com/townies.shop',
+    'https://www.tiktok.com/@townies.shop',
   ],
 } as const;
 

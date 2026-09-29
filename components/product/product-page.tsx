@@ -93,7 +93,7 @@ export async function productPageMetadata(handle: string, brand?: Brand): Promis
       url: canonical,
       images: imgUrl
         ? [{ url: imgUrl, width: 1000, height: 1000, alt: `${name} — ${label}` }]
-        : [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+        : [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
     },
   };
 }

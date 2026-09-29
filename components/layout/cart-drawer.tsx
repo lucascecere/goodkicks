@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { LogoImg } from '@/components/brand/brand-logo';
 import { X } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
@@ -110,7 +111,7 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
             <div className="flex-1 overflow-y-auto px-6 py-4">
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center gap-3">
-                  <Image src={brand.logo.light.src} width={brand.logo.light.w} height={brand.logo.light.h} alt={brand.logo.light.alt} className="h-12 w-auto opacity-90" />
+                  <LogoImg logo={brand.logo.light} className="h-12 w-auto opacity-90" />
                   <p className="text-muted text-sm">Your bag is empty.</p>
                   <Link href={brand.shopPath} onClick={closeCart} className="text-accent hover:underline text-sm">
                     {brand.id === 'townies' ? 'find your town →' : 'shop the sacks →'}

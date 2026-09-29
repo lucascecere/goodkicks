@@ -25,7 +25,7 @@ export function ClosingBand({
 }) {
   return (
     <section className="relative overflow-hidden bg-band">
-      {pattern !== 'none' && <BrandPattern variant={pattern} color="cream" opacity={0.1} size={300} />}
+      {pattern !== 'none' && <BrandPattern variant={pattern} color="cream" opacity={0.1} size={pattern === 'ma' ? 420 : pattern === 'topo' ? 600 : 300} />}
       <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
         <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-white/90 mb-4">
           {eyebrow}

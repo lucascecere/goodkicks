@@ -37,7 +37,7 @@ export function PageMasthead({
         variant={pattern}
         color="cream"
         opacity={pattern === 'ma' ? 0.045 : 0.08}
-        size={pattern === 'topo' ? 260 : pattern === 'ma' ? 230 : pattern === 'pine' ? 300 : 170}
+        size={pattern === 'topo' ? 520 : pattern === 'ma' ? 360 : pattern === 'pine' ? 300 : 170}
       />
       )}
       <div

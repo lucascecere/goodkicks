@@ -11,13 +11,13 @@ export const metadata: Metadata = {
     title: 'Shipping & Returns — Townies',
     description: 'Town-pride apparel shipped from Massachusetts. Our shipping & returns policy.',
     url: '/shipping-returns',
-    images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }],
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Shipping & Returns — Townies',
     description: 'Town-pride apparel shipped from Massachusetts. Our shipping & returns policy.',
-    images: ['/opengraph-image.png'],
+    images: ['/opengraph-image.jpg'],
   },
 };
 
@@ -25,7 +25,7 @@ export default function ShippingReturnsPage() {
   return (
     <div className="bg-town-cream">
       <div className="relative overflow-hidden">
-        <BrandPattern variant="ma" color="forest" opacity={0.06} size={150} fade="b" />
+        <BrandPattern variant="ma" color="forest" opacity={0.06} size={240} fade="b" />
         <div className="relative max-w-3xl mx-auto px-6 sm:px-8 pt-16 sm:pt-24 pb-6">
           <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-3">
             From Massachusetts, to your door
