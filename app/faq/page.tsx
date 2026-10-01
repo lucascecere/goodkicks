@@ -155,7 +155,7 @@ export default function FAQPage() {
         <div className="divide-y divide-rule border-t border-rule">
           {FAQS.map((f) => (
             <div key={f.q} className="py-7">
-              <h2 className="font-block uppercase text-lg sm:text-xl text-text mb-2 leading-snug">
+              <h2 className="display text-xl sm:text-2xl text-text mb-2">
                 {f.q}
               </h2>
               <p className="text-muted leading-relaxed">{f.a}</p>
