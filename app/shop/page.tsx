@@ -101,7 +101,7 @@ export default async function ShopPage({
 
       <TownTickerLinked towns={towns} />
 
-      <BrandPattern variant="ma" color="cream" opacity={0.035} size={340} fade="b" />
+      <BrandPattern variant="ma" color="forest" opacity={0.03} size={340} fade="b" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {items.length === 0 ? (

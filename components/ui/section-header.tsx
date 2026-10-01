@@ -39,7 +39,7 @@ export function SectionHeader({
   return (
     <div
       className={cn(
-        'gap-4 mb-6 sm:mb-8',
+        'gap-4 mb-8 sm:mb-10',
         centred ? 'flex flex-col items-center text-center' : 'flex items-end justify-between',
       )}
     >
@@ -55,13 +55,13 @@ export function SectionHeader({
         <h2
           className={cn(
             'heading leading-[0.95] text-text',
-            centred ? 'text-3xl sm:text-4xl lg:text-[2.75rem]' : 'text-2xl sm:text-3xl lg:text-[2rem]',
+            centred ? 'text-[2.25rem] sm:text-[2.75rem] lg:text-[3.25rem]' : 'text-[2rem] sm:text-[2.5rem] lg:text-[3rem]',
           )}
         >
           {title}
         </h2>
         {sub && (
-          <p className={cn('text-sm text-muted mt-3', centred && 'mx-auto max-w-xl')}>{sub}</p>
+          <p className={cn('text-[0.9375rem] sm:text-base text-muted mt-3 max-w-xl', centred && 'mx-auto')}>{sub}</p>
         )}
       </div>
       {link && (

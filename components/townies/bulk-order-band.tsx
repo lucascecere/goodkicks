@@ -51,28 +51,28 @@ export function BulkOrderBand({
   }
 
   return (
-    <section className="bg-bg border-t border-rule">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-ink">
-            <Image
-              src={imageSrc}
-              alt={imageAlt}
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
-          </div>
+    <section className="bg-surface border-t border-rule">
+      <div className="grid lg:grid-cols-2">
+        <div className="relative aspect-[4/3] lg:aspect-auto lg:min-h-[600px]">
+          <Image
+            src={imageSrc}
+            alt={imageAlt}
+            fill
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-cover"
+          />
+        </div>
 
-          <div className="lg:max-w-xl">
+        <div className="flex items-center">
+          <div className="w-full max-w-xl px-4 py-14 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-3">
               Bulk orders
             </p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text mb-4">
+            <h2 className="heading text-[2rem] sm:text-[2.5rem] lg:text-[3rem] leading-[0.95] text-text mb-4">
               Buying for everybody?
             </h2>
-            <p className="text-sm leading-relaxed text-muted max-w-md">
-              Teams, companies, schools, fundraisers. Twenty-five hats or two hundred — same twill,
+            <p className="text-base leading-relaxed text-muted max-w-md">
+              Teams, companies, schools, fundraisers. Twenty-five hats or two hundred. Same twill,
               same stitching, better price per hat.
             </p>
 
@@ -81,10 +81,8 @@ export function BulkOrderBand({
                 <li key={s.n} className="grid grid-cols-[2.5rem_1fr] gap-3 items-baseline">
                   <span className="font-block text-[0.625rem] tracking-[0.22em] text-muted">{s.n}</span>
                   <div>
-                    <h3 className="font-block font-bold uppercase text-base leading-snug tracking-[0.02em] text-text">
-                      {s.title}
-                    </h3>
-                    <p className="text-[0.8125rem] leading-relaxed text-muted mt-0.5">{s.body}</p>
+                    <h3 className="heading text-base leading-snug text-text">{s.title}</h3>
+                    <p className="text-[0.875rem] leading-relaxed text-muted mt-0.5">{s.body}</p>
                   </div>
                 </li>
               ))}
@@ -93,7 +91,7 @@ export function BulkOrderBand({
             <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
                 href="/wholesale"
-                className="inline-flex items-center rounded-none bg-accent px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-accent-contrast transition-colors hover:bg-accent/90"
+                className="inline-flex items-center rounded-none bg-accent px-7 py-3.5 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-accent-contrast transition-colors hover:bg-accent/90"
               >
                 Get a bulk price
               </Link>

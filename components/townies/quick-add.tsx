@@ -55,7 +55,7 @@ export function QuickAdd({
   const available = (variant?.availableForSale ?? false) && !outOfStock;
 
   const base =
-    'mt-3 flex w-full items-center justify-center px-4 py-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.16em] transition-colors';
+    'mt-3 flex w-full items-center justify-center h-11 px-4 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] transition-colors';
 
   if (!variant || !available) {
     return (
@@ -68,7 +68,7 @@ export function QuickAdd({
   // A product with choices has to be chosen on its own page.
   if (multiVariant) {
     return (
-      <span className={cn(base, 'border border-text text-text group-hover:bg-text group-hover:text-bg', className)}>
+      <span className={cn(base, 'border border-text/30 text-text hover:bg-text hover:text-bg', className)}>
         Choose options
       </span>
     );
@@ -102,7 +102,7 @@ export function QuickAdd({
     <button
       type="button"
       onClick={handleAdd}
-      className={cn(base, 'bg-text text-bg hover:bg-accent', className)}
+      className={cn(base, 'border border-text/30 text-text hover:bg-text hover:text-bg', className)}
     >
       {added ? 'Added ✓' : preorder ? 'Pre-order' : 'Add to cart'}
     </button>

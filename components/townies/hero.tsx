@@ -188,7 +188,7 @@ export function Hero({
           key={idx}
           className={cn(
             'animate-[hero-copy_.7s_ease-out_both]',
-            centred ? 'max-w-3xl text-center' : 'max-w-md',
+            centred ? 'max-w-3xl text-center' : 'max-w-2xl',
           )}
         >
           {active.eyebrow && (
@@ -204,13 +204,13 @@ export function Hero({
           )}
           {/* Fluid from 34px on a phone to 80px on a desktop. The old fixed
               40px ceiling is what made a 900px photograph read as empty. */}
-          <h1 className="heading text-[clamp(2.125rem,6.2vw,5rem)] leading-[0.94] drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)]">
+          <h1 className="heading text-[clamp(2.5rem,7vw,6rem)] leading-[0.94] drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)]">
             {active.headline}
           </h1>
           {active.sub && (
             <p
               className={cn(
-                'text-[0.9375rem] sm:text-base leading-relaxed text-ink-contrast/85 mt-4',
+                'text-base sm:text-lg leading-relaxed text-ink-contrast/85 mt-4 max-w-lg',
                 centred && 'mx-auto max-w-xl',
               )}
             >

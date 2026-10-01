@@ -75,7 +75,7 @@ export function TownFinder() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Find your town"
-        className="p-2 text-text hover:text-accent transition-colors"
+        className="p-2 text-chrome-contrast/85 hover:text-chrome-contrast transition-colors"
       >
         <Search size={19} />
       </button>

@@ -55,7 +55,11 @@ export function ProductCard({
    */
   fit?: 'contain' | 'cover';
 }) {
-  const img = fit === 'cover' ? 'object-cover' : 'object-contain p-3';
+  // Townies shots are a hat centred on a white sweep with a wide margin, so
+  // the tile crops in on it rather than showing the sweep; Good Kicks shots
+  // are full-frame on wood and fill as they are.
+  const img = fit === 'cover' ? 'object-cover' : 'object-cover scale-[1.08]';
+  const tile = fit === 'cover' ? 'aspect-square' : 'aspect-[4/5]';
   // Townies only — see the note in QuickAdd. Good Kicks ships from stock, and
   // one GK product still carries a stale `preorder` tag in Shopify.
   const preorder = flavor === 'townies' && isPreorder(product.tags);
@@ -70,7 +74,7 @@ export function ProductCard({
   return (
     <div className="group block">
     <Link href={`${productBase}/${product.handle}`} className="block">
-      <div className="relative aspect-square rounded-sm overflow-hidden bg-white border border-rule">
+      <div className={`relative ${tile} rounded-sm overflow-hidden bg-white border border-rule`}>
         {product.featuredImage?.url ? (
           <>
             {/* The alternate shot waits UNDERNEATH at inset-0, not parked off
@@ -122,11 +126,11 @@ export function ProductCard({
           </span>
         ) : null}
       </div>
-      <div className="pt-3">
-        <p className="font-medium text-text text-sm leading-snug group-hover:text-accent transition-colors">
+      <div className="pt-3 flex items-baseline justify-between gap-3">
+        <p className="font-medium text-text text-[0.9375rem] leading-snug">
           {title ?? product.title}
         </p>
-        <p className="text-muted text-sm mt-0.5">{priceLabel(product)}</p>
+        <p className="text-muted text-[0.9375rem] shrink-0">{priceLabel(product)}</p>
       </div>
     </Link>
       {/* OUTSIDE the anchor — a button nested in a link leaves the browser to

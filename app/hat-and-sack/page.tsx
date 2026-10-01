@@ -105,7 +105,7 @@ export default async function HatAndSackPage() {
         </div>
       </section>
 
-      <BrandPattern variant="ma" color="cream" opacity={0.035} size={340} fade="b" />
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {hats.length === 0 ? (

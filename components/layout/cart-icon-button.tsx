@@ -14,11 +14,11 @@ export function CartIconButton() {
     <button
       onClick={openCart}
       aria-label={`Open cart${itemCount > 0 ? `, ${itemCount} items` : ''}`}
-      className="relative p-2 text-text hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg rounded"
+      className="relative p-2 text-chrome-contrast/85 hover:text-chrome-contrast transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chrome-contrast focus-visible:ring-offset-2 focus-visible:ring-offset-chrome rounded"
     >
       <ShoppingBag size={19} />
       {itemCount > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-accent text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+        <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-chrome-contrast text-chrome text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
           {itemCount > 9 ? '9+' : itemCount}
         </span>
       )}

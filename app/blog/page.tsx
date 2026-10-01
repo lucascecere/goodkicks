@@ -29,7 +29,7 @@ export default function BlogPage() {
 
   return (
     <div className="relative overflow-hidden bg-bg min-h-screen">
-      <BrandPattern variant="ma" color="cream" opacity={0.035} size={340} fade="b" />
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
       <div className="relative max-w-4xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
         <p className="text-xs uppercase tracking-[0.22em] text-accent font-medium mb-3">
           The Town Paper

@@ -25,7 +25,7 @@ export default function ShippingReturnsPage() {
   return (
     <div className="bg-bg">
       <div className="relative overflow-hidden">
-        <BrandPattern variant="ma" color="cream" opacity={0.035} size={240} fade="b" />
+        <BrandPattern variant="ma" color="forest" opacity={0.05} size={240} fade="b" />
         <div className="relative max-w-3xl mx-auto px-6 sm:px-8 pt-16 sm:pt-24 pb-6">
           <p className="text-xs uppercase tracking-[0.22em] text-accent font-medium mb-3">
             From Massachusetts, to your door

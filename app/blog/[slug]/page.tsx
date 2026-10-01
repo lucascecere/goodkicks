@@ -61,7 +61,7 @@ export default async function BlogPostPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <BrandPattern variant="ma" color="cream" opacity={0.035} size={340} fade="b" />
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
       <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24">
         <Link
           href="/blog"

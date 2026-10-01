@@ -77,21 +77,21 @@ export default function AboutPage() {
       />
 
       {/* Mission */}
-      <section className="relative overflow-hidden bg-bg">
-        <BrandPattern variant="ma" color="cream" opacity={0.035} size={240} fade="radial" />
+      <section className="relative overflow-hidden bg-ink text-ink-contrast">
+        <BrandPattern variant="ma" color="cream" opacity={0.05} size={240} fade="radial" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
         <BrandLogo variant="script-cream" className="w-64 sm:w-80 h-auto mx-auto mb-8" />
-        <p className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text mb-5">
+        <p className="heading text-[2rem] sm:text-[2.75rem] leading-none text-ink-contrast mb-5">
           Small towns. Strong roots.
         </p>
-        <p className="text-muted leading-relaxed mb-10">
+        <p className="text-ink-contrast/75 text-base leading-relaxed mb-10">
           We&apos;re not trying to be the biggest brand in New England. We&apos;re trying to be the
           one your town actually wears — the hat at the reunion, the one on your head all
           summer, the one that says exactly where you&apos;re from before you open your mouth.
         </p>
         <Link
           href="/shop"
-          className="inline-flex items-center bg-accent text-accent-contrast px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors"
+          className="inline-flex items-center bg-ink-contrast text-ink px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-white transition-colors"
         >
           Find your town
         </Link>

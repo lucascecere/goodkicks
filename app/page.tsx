@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { Hero } from '@/components/townies/hero';
-import { FeaturedRail } from '@/components/townies/featured-rail';
+import { TownsGrid } from '@/components/townies/towns-grid';
 import { TownTicker } from '@/components/townies/town-ticker';
 import { BulkOrderBand } from '@/components/townies/bulk-order-band';
 import { HatSackBand } from '@/components/townies/hat-sack-band';
-import { StyleBand } from '@/components/townies/style-band';
-import { RegionBand } from '@/components/townies/region-band';
+import { BuildsSplit } from '@/components/townies/builds-split';
+import { RegionIndex } from '@/components/townies/region-index';
 import { ReviewBand } from '@/components/townies/review-band';
 import { UgcBand } from '@/components/townies/ugc-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
@@ -114,32 +114,29 @@ export default async function HomePage() {
           brand uses — never "made in USA", which is not true of the blanks. */}
       <Hero
         slides={HERO_SLIDES}
+        align="left"
         chips={['Free shipping over $75', 'Designed in Massachusetts', 'New towns every drop']}
       />
 
       <TownTicker towns={tickerTowns} />
 
-      {/* Centred, like every other full-width section on the page. A rail
-          heading pinned to the left edge of a 1440 viewport with its arrows
-          1200px away read as two unrelated controls. */}
-      <FeaturedRail
-        products={products}
-        align="center"
-        sub="Every town we've made so far, newest first. Don't see yours? Ask for it."
-      />
+      {/* A grid, not a rail. Eight hats at full tile size is the product
+          moment the page was missing; a rail showed five small ones and cut the
+          sixth off at the viewport edge. */}
+      <TownsGrid products={products} townCount={tickerTowns.length} />
 
       {/* The promo sits directly under the rail: somebody who has just scrolled
           the hats is one decision away from adding a foot bag to one. Navy also
           breaks up white rail → cream bulk band. */}
       <HatSackBand />
 
-      {/* The two builds, then the map. A visitor who has just scrolled the rail
-          has two questions — which hat is which, and is my town here — and
-          these answer them in that order before the bulk push asks for
-          anything. Cream → navy → cream keeps neighbouring grounds apart. */}
-      <StyleBand products={products} />
+      {/* The two builds, then the map. A visitor who has just scrolled the grid
+          has two questions, which hat is which and is my town here, and these
+          answer them in that order before the bulk push asks for anything.
+          Natural → navy → natural keeps neighbouring grounds apart. */}
+      <BuildsSplit products={products} />
 
-      <RegionBand products={products} />
+      <RegionIndex products={products} />
 
       {/* Both of these render NOTHING until lib/townies/reviews.ts has real
           entries — see the rule at the top of that file. They sit here, after

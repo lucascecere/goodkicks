@@ -19,7 +19,7 @@ import type { BrandConfig } from '@/lib/brand/brands';
 // cream for Townies and ink-on-cream for Good Kicks with no branching here.
 
 const navClass =
-  'text-xs uppercase tracking-[0.18em] text-text/75 hover:text-accent transition-colors';
+  'text-xs uppercase tracking-[0.18em] text-chrome-contrast/75 hover:text-chrome-contrast transition-colors';
 
 export function Header({ brand }: { brand: BrandConfig }) {
   const [scrolled, setScrolled] = useState(false);
@@ -51,8 +51,8 @@ export function Header({ brand }: { brand: BrandConfig }) {
           paper, invisible in practice. */}
       <div
         className={cn(
-          'bg-bg border-b transition-shadow duration-300',
-          scrolled ? 'border-rule shadow-[0_1px_16px_rgba(0,0,0,0.07)]' : 'border-rule/60',
+          'bg-chrome text-chrome-contrast border-b transition-shadow duration-300',
+          scrolled ? 'border-chrome-contrast/15 shadow-[0_1px_16px_rgba(0,0,0,0.12)]' : 'border-chrome-contrast/10',
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-[4.5rem] flex items-center justify-between gap-4">
@@ -60,7 +60,7 @@ export function Header({ brand }: { brand: BrandConfig }) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setMobileOpen((v) => !v)}
-              className="lg:hidden p-2 -ml-2 text-text hover:text-accent transition-colors"
+              className="lg:hidden p-2 -ml-2 text-chrome-contrast/85 hover:text-chrome-contrast transition-colors"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
             >
@@ -77,7 +77,7 @@ export function Header({ brand }: { brand: BrandConfig }) {
               <Link
                 key={link.href}
                 href={link.href}
-                className={cn(navClass, 'py-2', isActive(link.href) && 'text-accent')}
+                className={cn(navClass, 'py-2', isActive(link.href) && 'text-chrome-contrast')}
               >
                 {link.label}
               </Link>
@@ -92,7 +92,7 @@ export function Header({ brand }: { brand: BrandConfig }) {
               <Link
                 href={brand.shopPath}
                 aria-label="Search the shop"
-                className="p-2 text-text hover:text-accent transition-colors"
+                className="p-2 text-chrome-contrast/85 hover:text-chrome-contrast transition-colors"
               >
                 <Search size={19} />
               </Link>
@@ -100,7 +100,7 @@ export function Header({ brand }: { brand: BrandConfig }) {
             <a
               href={SHOPIFY_ACCOUNT_URL}
               aria-label="Account"
-              className="hidden sm:inline-flex p-2 text-text hover:text-accent transition-colors"
+              className="hidden sm:inline-flex p-2 text-chrome-contrast/85 hover:text-chrome-contrast transition-colors"
             >
               <User size={19} />
             </a>
@@ -112,21 +112,21 @@ export function Header({ brand }: { brand: BrandConfig }) {
       {/* Mobile nav */}
       {mobileOpen && (
         <nav
-          className="lg:hidden bg-bg border-b border-rule px-4 pb-5 pt-1 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto"
+          className="lg:hidden bg-chrome text-chrome-contrast border-b border-chrome-contrast/15 px-4 pb-5 pt-1 flex flex-col max-h-[calc(100vh-4rem)] overflow-y-auto"
           aria-label="Mobile navigation"
         >
           {[...brand.nav, ...brand.mobileExtra].map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="py-3 text-sm uppercase tracking-[0.15em] text-text hover:text-accent transition-colors border-b border-rule/60"
+              className="py-3 text-sm uppercase tracking-[0.15em] text-chrome-contrast/85 hover:text-chrome-contrast transition-colors border-b border-rule/60"
             >
               {link.label}
             </Link>
           ))}
           <Link
             href={brand.crossBrand.href}
-            className="py-3 text-sm uppercase tracking-[0.15em] text-muted hover:text-accent transition-colors"
+            className="py-3 text-sm uppercase tracking-[0.15em] text-chrome-contrast/60 hover:text-chrome-contrast transition-colors"
           >
             {brand.crossBrand.label}
           </Link>

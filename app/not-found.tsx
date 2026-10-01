@@ -5,9 +5,9 @@ import { BrandPattern } from '@/components/townies/brand-pattern';
 export default function NotFound() {
   return (
     <div className="relative overflow-hidden bg-bg min-h-[78vh] flex items-center justify-center px-4">
-      <BrandPattern variant="ma" color="cream" opacity={0.035} size={240} fade="radial" />
+      <BrandPattern variant="ma" color="forest" opacity={0.05} size={240} fade="radial" />
       <div className="relative text-center max-w-md mx-auto py-16">
-        <BrandLogo variant="sign-navy" className="w-44 sm:w-52 mx-auto mb-8" />
+        <BrandLogo variant="sign" className="w-44 sm:w-52 mx-auto mb-8" />
         <p className="text-xs uppercase tracking-[0.22em] text-accent font-medium mb-3">
           Off the map
         </p>

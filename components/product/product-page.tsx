@@ -4,11 +4,10 @@ import { notFound, redirect } from 'next/navigation';
 import { getProductByHandle, getAllProducts } from '@/lib/shopify/service';
 import { getTownieProducts, getGoodKicksProducts, type CollectionProduct } from '@/lib/shopify/collections';
 import { breadcrumbSchema } from '@/lib/seo/site';
-import { toTownView, townHref, townKey } from '@/lib/townies/towns';
+import { townHref, townKey } from '@/lib/townies/towns';
 import { imageForVariant } from '@/lib/shopify/variant-colors';
 import { BrandImage } from '@/components/ui/brand-image';
 import { TowniesBlock } from '@/components/brand/wordmark';
-import { TownCard } from '@/components/townies/town-card';
 import { ProductCard } from '@/components/townies/product-card';
 import { TrustRow } from '@/components/townies/trust-row';
 import { gkDisplayName, gkDescriptionHtml, gkLine } from '@/lib/goodkicks/names';
@@ -192,7 +191,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
 
   // Cross-sell within the same brand.
   const hatSack = gk || !HAT_SACK_LIVE ? null : await getHatSackOffer();
-  const townCross = gk ? [] : (await getTownieProducts()).filter((p) => p.handle !== handle).slice(0, 4).map(toTownView);
+  const townCross = gk ? [] : (await getTownieProducts()).filter((p) => p.handle !== handle).slice(0, 4);
   const gkCross = gk ? (await getGoodKicksProducts()).filter((p) => p.handle !== handle).slice(0, 4) : [];
 
   // Absolute, canonical URLs — Google's merchant-listing parser does not resolve
@@ -379,9 +378,9 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               <h2 className="heading text-2xl sm:text-3xl text-text whitespace-nowrap">More towns</h2>
               <div className="h-px flex-1 bg-rule" />
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-              {townCross.map((town) => (
-                <TownCard key={town.id} town={town} />
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {townCross.map((p) => (
+                <ProductCard key={p.id} product={p} />
               ))}
             </div>
           </div>
