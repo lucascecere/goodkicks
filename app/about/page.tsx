@@ -81,7 +81,7 @@ export default function AboutPage() {
         <BrandPattern variant="ma" color="cream" opacity={0.05} size={240} fade="radial" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
         <BrandLogo variant="script-cream" className="w-64 sm:w-80 h-auto mx-auto mb-8" />
-        <p className="heading text-[2rem] sm:text-[2.75rem] leading-none text-ink-contrast mb-5">
+        <p className="display text-[2.25rem] sm:text-[3rem] text-ink-contrast mb-5">
           Small towns. Strong roots.
         </p>
         <p className="text-ink-contrast/75 text-base leading-relaxed mb-10">
