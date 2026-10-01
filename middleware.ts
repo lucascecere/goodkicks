@@ -7,6 +7,15 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const host = (req.headers.get('host') ?? '').toLowerCase();
 
+  // 0. One host per brand. www.townies.shop served a full 200 copy of the
+  //    site; Search Console treats that as a second site splitting the signals.
+  if (host === 'www.townies.shop') {
+    const url = req.nextUrl.clone();
+    url.host = 'townies.shop';
+    url.port = '';
+    return NextResponse.redirect(url, 308);
+  }
+
   // 1. Admin auth. The cookie is a signed, self-expiring session token — it no
   //    longer carries the password itself. Verified with Web Crypto because
   //    this file runs on the edge runtime, where node:crypto is unavailable.

@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getTowniePostBySlug(slug);
   if (!post) return { title: 'Post Not Found' };
   return {
-    title: `${post.title} — Townies`,
+    title: post.title,
     description: post.description,
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {

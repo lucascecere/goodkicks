@@ -63,12 +63,12 @@ const HERO_SLIDES = [
 ];
 
 export const metadata: Metadata = {
-  title: 'Townies — Rep Your Town. Massachusetts Town-Pride Apparel',
+  title: { absolute: 'Townies Apparel Co. | Massachusetts Town Hats — Rep Your Town' },
   description:
     'Massachusetts town-pride hats for people who rep where they’re from. Stitched heavy, one town at a time — Milton, Weymouth, Hingham, Braintree and more. South Shore first.',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'Townies — Rep Your Town.',
+    title: 'Townies Apparel Co. — Massachusetts Town Hats',
     description: 'Massachusetts town-pride apparel. The town is the hero, Townies is the label.',
     url: '/',
     images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],

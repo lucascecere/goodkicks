@@ -13,12 +13,12 @@ import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Shop — Townies',
+  title: 'Shop Massachusetts Town Hats',
   description:
     'Every town, one place. Massachusetts town-pride apparel — filter by your town. Milton, Weymouth, Hingham, Braintree and more.',
   alternates: { canonical: '/shop' },
   openGraph: {
-    title: 'Shop — Townies',
+    title: 'Shop Massachusetts Town Hats',
     description: 'Massachusetts town-pride apparel. Filter by your town.',
     url: '/shop',
     images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],

@@ -18,7 +18,7 @@ import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-
 import { ProductMedia, type ProductMediaImage } from '@/components/product/product-media';
 import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 import { getVariantStock, stockNote } from '@/lib/shopify/stock';
-import { gkCanonical } from '@/lib/seo/site';
+import { gkCanonical, SITE_URL } from '@/lib/seo/site';
 import {
   HAT_SACK_HANDLE,
   HAT_SACK_LIVE,
@@ -77,7 +77,11 @@ export async function productPageMetadata(handle: string, brand?: Brand): Promis
   const canonical = gk ? gkCanonical(`products/${handle}`) : `/products/${handle}`;
   // Prefer the Shopify SEO metafields (global.title_tag / description_tag, exposed
   // as product.seo) when set; fall back to the generic template otherwise.
-  const seoTitle = product.seo?.title?.trim() || `${name} — ${label}`;
+  // The layout template appends the brand ("| Townies" / "| Good Kicks"), and
+  // several Shopify SEO titles already end in "| Townies" — strip it so the tab
+  // doesn't read "… | Townies | Townies".
+  const seoTitle =
+    product.seo?.title?.trim().replace(/\s*[|—–-]\s*(Townies|Good Kicks)\s*$/i, '') || name;
   const seoDescription =
     product.seo?.description?.trim() ||
     (gk
@@ -191,12 +195,17 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
   const townCross = gk ? [] : (await getTownieProducts()).filter((p) => p.handle !== handle).slice(0, 4).map(toTownView);
   const gkCross = gk ? (await getGoodKicksProducts()).filter((p) => p.handle !== handle).slice(0, 4) : [];
 
+  // Absolute, canonical URLs — Google's merchant-listing parser does not resolve
+  // relative ones, and a GK product's real home is its own domain.
+  const productUrl = gk ? gkCanonical(`products/${handle}`) : `${SITE_URL}/products/${handle}`;
+  const schemaImages = orderedImages.length ? orderedImages.map((i) => i.url) : imgSrc ? [imgSrc] : undefined;
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name,
-    url: `${productBase}/${handle}`,
-    image: imgSrc ?? undefined,
+    url: productUrl,
+    image: schemaImages,
     description: gk
       ? `${name} — a hand-stitched Good Kicks foot bag, properly weighted and built to take a beating.`
       : `${name} — heavyweight Massachusetts town-pride apparel from Townies. Stitched, not printed, and built to last.`,
@@ -205,13 +214,28 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
       '@type': 'Offer',
       price: (variants[0].priceInCents / 100).toFixed(2),
       priceCurrency: 'USD',
-      url: `${productBase}/${handle}`,
+      url: productUrl,
       itemCondition: 'https://schema.org/NewCondition',
+      ...(gk ? {} : { seller: { '@id': `${SITE_URL}/#organization` } }),
       availability: preorder
         ? 'https://schema.org/PreOrder'
         : variants.some((v) => v.available)
           ? 'https://schema.org/InStock'
           : 'https://schema.org/OutOfStock',
+      ...(gk
+        ? {}
+        : {
+            // Mirrors /shipping-returns word for word: 30 days, by mail, the
+            // customer covers return postage. Change both together.
+            hasMerchantReturnPolicy: {
+              '@type': 'MerchantReturnPolicy',
+              applicableCountry: 'US',
+              returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+              merchantReturnDays: 30,
+              returnMethod: 'https://schema.org/ReturnByMail',
+              returnFees: 'https://schema.org/ReturnShippingFees',
+            },
+          }),
     },
   };
 

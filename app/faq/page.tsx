@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { PageMasthead } from '@/components/townies/page-masthead';
 
 export const metadata: Metadata = {
-  title: 'FAQ — Townies',
+  title: 'FAQ: Townies Hats, Sizing & Shipping',
   description:
     'Everything you need to know about Townies hats — fit, pre-orders, materials, shipping, returns, and requesting your town.',
   alternates: { canonical: '/faq' },

@@ -6,7 +6,7 @@ import { BrandLogo } from '@/components/brand/brand-logo';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 
 export const metadata: Metadata = {
-  title: 'About Townies — Town-Pride Apparel from Massachusetts',
+  title: { absolute: 'About Townies Apparel Co. | Town-Pride Hats from Massachusetts' },
   description:
     'The town is the hero, Townies is the label. How a Massachusetts apparel brand — made by Massholes, for Massholes — started on the South Shore and grew out of Good Kicks.',
   alternates: { canonical: '/about' },

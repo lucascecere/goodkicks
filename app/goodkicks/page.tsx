@@ -16,7 +16,7 @@ import { gkCanonical } from '@/lib/seo/site';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Good Kicks — The Best Foot Bag (Hacky Sack) for Your Circle',
+  title: { absolute: 'Good Kicks — The Best Foot Bag (Hacky Sack) for Your Circle' },
   description:
     'Premium foot bags — what everyone calls hacky sacks — built for dorm circles, campus quads, and every backpack that needs one. Pick your colorway, in stock, free shipping.',
   alternates: { canonical: gkCanonical('') },
