@@ -25,12 +25,13 @@ const inter = Inter({
 // Townies "College Block" stand-in (town names + structural headers).
 // Rokkitt (bold slab serif) is the closest free match to the brand kit's bold
 // collegiate-slab logo lettering — heavier than Graduate, matches the logo art.
-// Loaded heavy-only so every `font-block` element renders bold by default.
+// Loaded as the variable font: `heading` sets 700, `display` sets 600, and
+// Turbopack's Google Fonts loader refuses a static 600 cut of this family.
 // Swap to next/font/local "College Block" when a real file lands — token unchanged.
 const rokkitt = Rokkitt({
   subsets: ['latin'],
   variable: '--font-rokkitt',
-  weight: ['600', '700', '800'],
+  weight: 'variable',
   display: 'swap',
 });
 
