@@ -83,8 +83,8 @@ export function HatSackPicker({
       {/* ── Step one: the town ────────────────────────────────────────────── */}
       <div>
         <div className="flex items-baseline gap-3 mb-5">
-          <span className="font-block text-[0.625rem] tracking-[0.22em] text-town-stone">01</span>
-          <h2 className="font-block font-bold uppercase text-lg tracking-[0.02em] text-town-navy">
+          <span className="font-block text-[0.625rem] tracking-[0.22em] text-stone">01</span>
+          <h2 className="font-block font-bold uppercase text-lg tracking-[0.02em] text-text">
             Pick your town
           </h2>
         </div>
@@ -101,10 +101,10 @@ export function HatSackPicker({
                 onClick={() => setPickedHandle(isPicked ? null : hat.handle)}
                 aria-pressed={isPicked}
                 className={cn(
-                  'group text-left rounded-sm border bg-white transition-colors',
+                  'group text-left rounded-sm border bg-surface transition-colors',
                   isPicked
-                    ? 'border-town-forest ring-1 ring-town-forest'
-                    : 'border-town-rule hover:border-town-navy',
+                    ? 'border-accent ring-1 ring-accent'
+                    : 'border-rule hover:border-text',
                 )}
               >
                 <div className="relative aspect-square overflow-hidden rounded-t-sm bg-white">
@@ -117,19 +117,19 @@ export function HatSackPicker({
                       className="object-contain p-2"
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-town-rule" />
+                    <div className="absolute inset-0 bg-rule" />
                   )}
                   {pre && (
-                    <span className="absolute top-2 left-2 bg-town-navy text-town-cream text-[0.55rem] font-semibold uppercase tracking-[0.16em] px-2 py-0.5 rounded-full">
+                    <span className="absolute top-2 left-2 bg-accent text-accent-contrast text-[0.55rem] font-semibold uppercase tracking-[0.16em] px-2 py-0.5 rounded-full">
                       Pre-order
                     </span>
                   )}
                 </div>
-                <div className="px-3 py-2.5 border-t border-town-rule">
-                  <p className="font-block font-bold uppercase text-sm leading-none tracking-[0.02em] text-town-navy">
+                <div className="px-3 py-2.5 border-t border-rule">
+                  <p className="font-block font-bold uppercase text-sm leading-none tracking-[0.02em] text-text">
                     {name}
                   </p>
-                  <p className="text-[0.7rem] text-town-muted mt-1 leading-snug line-clamp-1">
+                  <p className="text-[0.7rem] text-muted mt-1 leading-snug line-clamp-1">
                     {hat.title.replace(name, '').replace(/^\s*/, '')}
                   </p>
                 </div>
@@ -138,7 +138,7 @@ export function HatSackPicker({
           })}
         </div>
 
-        <p className="mt-5 text-[0.75rem] leading-relaxed text-town-muted">
+        <p className="mt-5 text-[0.75rem] leading-relaxed text-muted">
           Not every town is in the bundle yet — more join as they come back in stock.
         </p>
       </div>
@@ -146,18 +146,18 @@ export function HatSackPicker({
       {/* ── Step two: the bag, and the summary ───────────────────────────── */}
       <div className="lg:sticky lg:top-24 lg:self-start">
         <div className="flex items-baseline gap-3 mb-5">
-          <span className="font-block text-[0.625rem] tracking-[0.22em] text-town-stone">02</span>
-          <h2 className="font-block font-bold uppercase text-lg tracking-[0.02em] text-town-navy">
+          <span className="font-block text-[0.625rem] tracking-[0.22em] text-stone">02</span>
+          <h2 className="font-block font-bold uppercase text-lg tracking-[0.02em] text-text">
             We pick the bag
           </h2>
         </div>
 
-        <div className="rounded-sm border border-town-rule bg-white p-5">
+        <div className="rounded-sm border border-rule bg-surface p-5">
           <div className="flex items-center gap-3">
             <div
               className={cn(
                 'relative h-20 w-20 shrink-0 rounded-sm bg-white overflow-hidden',
-                picked ? 'border border-town-rule' : 'border border-dashed border-town-stone/60',
+                picked ? 'border border-rule' : 'border border-dashed border-stone/60',
               )}
             >
               {picked?.featuredImage?.url ? (
@@ -170,21 +170,21 @@ export function HatSackPicker({
                 />
               ) : (
                 <div className="absolute inset-0 grid place-items-center px-1">
-                  <span className="text-[0.55rem] uppercase tracking-[0.12em] text-town-stone text-center leading-tight">
+                  <span className="text-[0.55rem] uppercase tracking-[0.12em] text-stone text-center leading-tight">
                     Your town
                   </span>
                 </div>
               )}
             </div>
 
-            <span className="font-block text-xl text-town-stone" aria-hidden>
+            <span className="font-block text-xl text-stone" aria-hidden>
               +
             </span>
 
             {/* The bag slot never resolves to a specific bag on screen — that
                 would promise the one we happened to render. */}
-            <div className="relative h-20 w-20 shrink-0 rounded-sm border border-town-rule bg-town-navy grid place-items-center">
-              <span className="font-block font-bold text-2xl text-town-cream" aria-hidden>
+            <div className="relative h-20 w-20 shrink-0 rounded-sm border border-rule bg-ink grid place-items-center">
+              <span className="font-block font-bold text-2xl text-ink-contrast" aria-hidden>
                 ?
               </span>
               <span className="sr-only">One random Good Kicks foot bag</span>
@@ -193,23 +193,23 @@ export function HatSackPicker({
 
           <dl className="mt-5 space-y-1.5 text-[0.8125rem]">
             <div className="flex justify-between gap-4">
-              <dt className="text-town-muted">Hat</dt>
-              <dd className="text-right text-town-navy font-medium">
-                {picked ? townKey(picked).name : <span className="text-town-stone">Pick one</span>}
+              <dt className="text-muted">Hat</dt>
+              <dd className="text-right text-text font-medium">
+                {picked ? townKey(picked).name : <span className="text-stone">Pick one</span>}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-town-muted">Foot bag</dt>
-              <dd className="text-right text-town-navy font-medium">Our pick</dd>
+              <dt className="text-muted">Foot bag</dt>
+              <dd className="text-right text-text font-medium">Our pick</dd>
             </div>
           </dl>
 
-          <div className="mt-5 pt-5 border-t border-town-rule">
+          <div className="mt-5 pt-5 border-t border-rule">
             <div className="flex items-baseline justify-between">
-              <span className="font-block font-bold uppercase text-sm tracking-[0.02em] text-town-navy">
+              <span className="font-block font-bold uppercase text-sm tracking-[0.02em] text-text">
                 Total
               </span>
-              <span className="text-2xl font-medium text-town-navy">
+              <span className="text-2xl font-medium text-text">
                 {formatUsd(bundleCents)}
               </span>
             </div>
@@ -217,7 +217,7 @@ export function HatSackPicker({
                 bundle is a penny more than the parts, and printing "save $0"
                 there would be a claim we can't stand behind. */}
             {saving !== null && (
-              <p className="mt-1 text-right text-[0.75rem] text-town-forest">
+              <p className="mt-1 text-right text-[0.75rem] text-accent">
                 Saves {formatUsd(saving)} against buying both
               </p>
             )}
@@ -227,7 +227,7 @@ export function HatSackPicker({
             type="button"
             onClick={handleAdd}
             disabled={!canAdd}
-            className="mt-5 w-full bg-town-forest text-white py-3.5 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm transition-colors hover:bg-town-forest/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-town-forest focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="mt-5 w-full bg-town-forest text-white py-3.5 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm transition-colors hover:bg-accent/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {picked
               ? `${preorder ? 'Pre-order' : 'Add to bag'} — ${formatUsd(bundleCents)}`
@@ -235,20 +235,20 @@ export function HatSackPicker({
           </button>
 
           {picked && preorder && (
-            <p className="mt-3 text-center text-[0.7rem] uppercase tracking-[0.14em] text-town-muted">
+            <p className="mt-3 text-center text-[0.7rem] uppercase tracking-[0.14em] text-muted">
               Pre-order · {PREORDER_SHIP_NOTE}
             </p>
           )}
           {picked && !variantId && (
-            <p className="mt-3 text-center text-[0.75rem] text-town-muted">
+            <p className="mt-3 text-center text-[0.75rem] text-muted">
               This town isn&apos;t available in the bundle right now.
             </p>
           )}
         </div>
 
         {/* Disclosure, not a picker: the five bags in the draw. */}
-        <div className="mt-6 rounded-sm border border-town-rule bg-town-cream/60 p-5">
-          <p className="font-block font-bold uppercase text-[0.7rem] tracking-[0.16em] text-town-navy mb-3">
+        <div className="mt-6 rounded-sm border border-rule bg-surface p-5">
+          <p className="font-block font-bold uppercase text-[0.7rem] tracking-[0.16em] text-text mb-3">
             One of these five
           </p>
           <ul className="grid grid-cols-5 gap-2">
@@ -263,13 +263,13 @@ export function HatSackPicker({
                     className="object-contain"
                   />
                 </div>
-                <p className="mt-1 text-[0.5rem] uppercase tracking-[0.01em] text-town-muted leading-tight">
+                <p className="mt-1 text-[0.5rem] uppercase tracking-[0.01em] text-muted leading-tight">
                   {bag.name}
                 </p>
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-[0.75rem] leading-relaxed text-town-muted">
+          <p className="mt-3 text-[0.75rem] leading-relaxed text-muted">
             Hand-stitched, properly weighted, {formatUsd(sackCents)} on their own. You
             don&apos;t choose which one — that&apos;s the deal.
           </p>

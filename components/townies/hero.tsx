@@ -240,14 +240,14 @@ export function Hero({
           <div className={cn('mt-7 flex flex-wrap gap-3', centred && 'justify-center')}>
             <Link
               href={active.cta.href}
-              className="inline-flex items-center rounded-none bg-ink-contrast px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-text transition-colors hover:bg-white"
+              className="inline-flex items-center rounded-none bg-ink-contrast px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-ink transition-colors hover:bg-white"
             >
               {active.cta.label}
             </Link>
             {active.ctaSecondary && (
               <Link
                 href={active.ctaSecondary.href}
-                className="inline-flex items-center rounded-none border border-white/70 px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-text"
+                className="inline-flex items-center rounded-none border border-white/70 px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-ink"
               >
                 {active.ctaSecondary.label}
               </Link>

@@ -25,15 +25,15 @@ function fmt(n: number) {
 // site layout.
 const THEME = {
   townies: {
-    page: 'bg-town-cream',
-    eyebrow: 'text-town-muted',
-    heading: 'font-block uppercase text-town-navy',
-    sub: 'text-town-muted',
-    card: 'bg-town-navy',
+    page: 'bg-bg',
+    eyebrow: 'text-muted',
+    heading: 'font-block uppercase text-text',
+    sub: 'text-muted',
+    card: 'bg-ink',
     accent: '#2F4F3A',
-    panel: 'bg-white border-town-rule',
-    panelText: 'text-town-navy',
-    divide: 'divide-town-rule',
+    panel: 'bg-surface border-rule',
+    panelText: 'text-text',
+    divide: 'divide-rule',
     label: 'townie',
     contact: 'hello@townies.shop',
     rounded: 'rounded-sm',
@@ -136,7 +136,7 @@ export default async function RepStatsPage({ params }: { params: Promise<{ code:
         {/* Recent orders */}
         {stats.orders.length > 0 && (
           <div className={`${t.panel} border ${t.rounded} overflow-hidden`}>
-            <div className={`px-5 py-4 border-b ${isTownies ? 'border-town-rule' : 'border-brand-rule'}`}>
+            <div className={`px-5 py-4 border-b ${isTownies ? 'border-rule' : 'border-brand-rule'}`}>
               <h2 className={`text-sm font-medium ${t.panelText} uppercase tracking-wide`}>Recent Orders</h2>
             </div>
             <div className={`divide-y ${t.divide}`}>
@@ -151,7 +151,7 @@ export default async function RepStatsPage({ params }: { params: Promise<{ code:
               ))}
             </div>
             {stats.orders.length > 10 && (
-              <p className={`px-5 py-3 text-xs ${t.sub} border-t ${isTownies ? 'border-town-rule' : 'border-brand-rule'}`}>
+              <p className={`px-5 py-3 text-xs ${t.sub} border-t ${isTownies ? 'border-rule' : 'border-brand-rule'}`}>
                 showing your 10 most recent of {stats.orders.length} orders
               </p>
             )}

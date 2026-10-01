@@ -83,7 +83,9 @@ export const TOWNIES: BrandConfig = {
   supportPath: '/support',
   logo: {
     // Vector files from the brand kit (see components/brand/brand-logo.tsx).
-    light: { src: '/brand/logos/townies-script-navy.svg', w: 1048, h: 523, alt: 'Townies' },
+    // The header is navy like the rest of the site, so the cream script is the
+    // primary logo; the navy script is for the rare light ground.
+    light: { src: '/brand/logos/townies-script-natural.svg', w: 1048, h: 523, alt: 'Townies' },
     dark: { src: '/brand/logos/townies-script-lockup-reversed.svg', w: 1048, h: 524, alt: 'Townies Apparel Co.' },
   },
   logoClass: 'h-10 sm:h-12 w-auto',

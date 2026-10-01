@@ -51,7 +51,7 @@ export function CampaignBand({
   const bottom = valign === 'bottom';
 
   return (
-    <section className="relative w-full aspect-[4/3] sm:aspect-[21/9] overflow-hidden bg-town-navy">
+    <section className="relative w-full aspect-[4/3] sm:aspect-[21/9] overflow-hidden bg-ink">
       <BrandImage
         src={src}
         mobileSrc={mobileSrc}
@@ -67,10 +67,10 @@ export function CampaignBand({
         className={cn(
           'absolute inset-0',
           bottom
-            ? 'bg-gradient-to-t from-town-navy/90 via-town-navy/35 to-transparent'
+            ? 'bg-gradient-to-t from-ink/90 via-ink/35 to-transparent'
             : right
-              ? 'bg-gradient-to-l from-town-navy/85 via-town-navy/25 to-transparent'
-              : 'bg-gradient-to-r from-town-navy/85 via-town-navy/25 to-transparent',
+              ? 'bg-gradient-to-l from-ink/85 via-ink/25 to-transparent'
+              : 'bg-gradient-to-r from-ink/85 via-ink/25 to-transparent',
         )}
       />
 
@@ -82,7 +82,7 @@ export function CampaignBand({
         )}
       >
         {eyebrow && (
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/75 mb-2.5">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/75 mb-2.5">
             {eyebrow}
           </p>
         )}
@@ -90,11 +90,11 @@ export function CampaignBand({
           {title}
         </h2>
         {sub && (
-          <p className="text-[0.8125rem] leading-relaxed text-town-cream/80 mt-2.5">{sub}</p>
+          <p className="text-[0.8125rem] leading-relaxed text-ink-contrast/80 mt-2.5">{sub}</p>
         )}
         <Link
           href={cta.href}
-          className="mt-5 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-town-cream hover:text-white transition-colors"
+          className="mt-5 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-ink-contrast hover:text-white transition-colors"
         >
           {cta.label}
         </Link>

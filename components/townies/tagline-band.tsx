@@ -27,7 +27,7 @@ export function TaglineBand({
   block?: string;
 }) {
   return (
-    <section className="relative isolate overflow-hidden bg-town-navy py-16 sm:py-24">
+    <section className="relative isolate overflow-hidden bg-ink py-16 sm:py-24">
       {image ? (
         <>
           {/* Duotone, not a scrimmed photo. `mix-blend-luminosity` keeps the
@@ -41,7 +41,7 @@ export function TaglineBand({
             sizes="100vw"
             className="object-cover object-center grayscale opacity-70 mix-blend-luminosity"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-town-navy/80 via-town-navy/25 to-town-navy/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/25 to-ink/80" />
         </>
       ) : (
         <BrandPattern variant="topo" color="cream" opacity={0.09} size={520} fade="radial" />
@@ -52,7 +52,7 @@ export function TaglineBand({
         <p className="font-script text-white text-2xl sm:text-3xl lg:text-4xl leading-[1.05]">
           {script}
         </p>
-        <p className="mt-5 font-block uppercase text-town-cream/80 text-[0.625rem] tracking-[0.22em] font-medium max-w-2xl">
+        <p className="mt-5 font-block uppercase text-ink-contrast/80 text-[0.625rem] tracking-[0.22em] font-medium max-w-2xl">
           {block}
         </p>
       </div>

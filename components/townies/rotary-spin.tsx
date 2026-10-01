@@ -393,7 +393,7 @@ export function RotarySpin() {
         type="button"
         aria-label="Close"
         onClick={dismiss}
-        className="absolute inset-0 cursor-default bg-town-navy/85 backdrop-blur-[3px]"
+        className="absolute inset-0 cursor-default bg-ink/85 backdrop-blur-[3px]"
       >
         <span
           aria-hidden
@@ -412,13 +412,13 @@ export function RotarySpin() {
         aria-modal="true"
         aria-labelledby="rotary-title"
         tabIndex={-1}
-        className="relative w-full max-w-[25rem] max-h-[92dvh] overflow-y-auto rounded-sm bg-town-cream shadow-[0_36px_90px_-24px_rgba(13,27,42,0.75)] outline-none animate-[rotary-in_.34s_cubic-bezier(0.22,1,0.36,1)]"
+        className="relative w-full max-w-[25rem] max-h-[92dvh] overflow-y-auto rounded-sm bg-bg shadow-[0_36px_90px_-24px_rgba(13,27,42,0.75)] outline-none animate-[rotary-in_.34s_cubic-bezier(0.22,1,0.36,1)]"
       >
         <button
           type="button"
           onClick={dismiss}
           aria-label="Close"
-          className="absolute top-3 right-3 z-10 grid h-8 w-8 place-items-center rounded-sm text-town-cream/70 transition-colors hover:bg-white/10 hover:text-town-cream focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-town-cream"
+          className="absolute top-3 right-3 z-10 grid h-8 w-8 place-items-center rounded-sm text-ink-contrast/70 transition-colors hover:bg-white/10 hover:text-ink-contrast focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <svg viewBox="0 0 14 14" className="h-3.5 w-3.5" aria-hidden>
             <path d="M1 1 L13 13 M13 1 L1 13" stroke="currentColor" strokeWidth="1.8" fill="none" />
@@ -426,7 +426,7 @@ export function RotarySpin() {
         </button>
 
         {/* Masthead — the navy sign board the rotary hangs off */}
-        <header className="relative overflow-hidden bg-town-navy px-6 pt-7 pb-6 text-center">
+        <header className="relative overflow-hidden bg-ink px-6 pt-7 pb-6 text-center">
           <span
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -437,7 +437,7 @@ export function RotarySpin() {
             }}
           />
           <div className="relative">
-            <p className="font-block text-[0.6rem] uppercase tracking-[0.34em] text-town-cream/55">
+            <p className="font-block text-[0.6rem] uppercase tracking-[0.34em] text-ink-contrast/55">
               {step === 'success' ? claim?.prizeExit : step === 'reveal' ? wedge?.exit : 'Townies · Massachusetts'}
             </p>
 
@@ -459,7 +459,7 @@ export function RotarySpin() {
               </h2>
             )}
 
-            <p className="mx-auto mt-3 max-w-[19rem] text-[0.8125rem] leading-relaxed text-town-cream/75">
+            <p className="mx-auto mt-3 max-w-[19rem] text-[0.8125rem] leading-relaxed text-ink-contrast/75">
               {step === 'idle' &&
                 'Every exit wins something. Give it a spin and see where you come out.'}
               {step === 'spinning' && 'Signalling…'}
@@ -651,7 +651,7 @@ export function RotarySpin() {
           </p>
 
           {error && (
-            <p className="mb-3 rounded-sm border border-town-navy/15 bg-white px-3 py-2 text-center text-[0.8125rem] text-town-navy">
+            <p className="mb-3 rounded-sm border border-text/15 bg-surface px-3 py-2 text-center text-[0.8125rem] text-text">
               {error}
             </p>
           )}
@@ -662,14 +662,14 @@ export function RotarySpin() {
                 type="button"
                 onClick={spin}
                 disabled={step === 'spinning'}
-                className="w-full rounded-sm bg-town-forest px-6 py-4 font-block text-sm uppercase tracking-[0.22em] text-white transition-colors hover:bg-town-forest/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-town-forest disabled:opacity-60"
+                className="w-full rounded-sm bg-accent px-6 py-4 font-block text-sm uppercase tracking-[0.22em] text-accent-contrast transition-colors hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
               >
                 {step === 'spinning' ? 'Merging…' : 'Spin the rotary'}
               </button>
               <button
                 type="button"
                 onClick={dismiss}
-                className="mt-3 w-full py-1 text-center text-xs text-town-muted transition-colors hover:text-town-navy"
+                className="mt-3 w-full py-1 text-center text-xs text-muted transition-colors hover:text-text"
               >
                 No thanks — I know where I&rsquo;m going
               </button>
@@ -691,16 +691,16 @@ export function RotarySpin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@email.com"
-                className="w-full rounded-sm border border-town-rule bg-white px-4 py-3.5 text-town-navy placeholder:text-town-stone focus:border-town-forest focus:outline-none focus:ring-2 focus:ring-town-forest/25"
+                className="w-full rounded-sm border border-rule bg-surface px-4 py-3.5 text-text placeholder:text-stone focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25"
               />
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full rounded-sm bg-town-forest px-6 py-4 font-block text-sm uppercase tracking-[0.22em] text-white transition-colors hover:bg-town-forest/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-town-forest disabled:opacity-60"
+                className="w-full rounded-sm bg-accent px-6 py-4 font-block text-sm uppercase tracking-[0.22em] text-accent-contrast transition-colors hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:opacity-60"
               >
                 {sending ? 'Sending…' : 'Send my code'}
               </button>
-              <p className="text-center text-[0.6875rem] leading-relaxed text-town-muted">
+              <p className="text-center text-[0.6875rem] leading-relaxed text-muted">
                 One code, one use, {CODE_VALID_DAYS} days. No spam — the code, and the odd new town.
               </p>
             </form>
@@ -708,14 +708,14 @@ export function RotarySpin() {
 
           {step === 'success' && claim && (
             <div className="space-y-4">
-              <div className="rounded-sm border-2 border-dashed border-town-forest bg-white px-4 py-6 text-center">
-                <p className="font-block text-[0.625rem] uppercase tracking-[0.3em] text-town-stone">
+              <div className="rounded-sm border-2 border-dashed border-accent bg-surface px-4 py-6 text-center">
+                <p className="font-block text-[0.625rem] uppercase tracking-[0.3em] text-stone">
                   Your code
                 </p>
-                <p className="mt-2 font-mono text-2xl font-bold tracking-[0.15em] text-town-navy break-all">
+                <p className="mt-2 font-mono text-2xl font-bold tracking-[0.15em] text-text break-all">
                   {claim.code}
                 </p>
-                <p className="mt-3 text-[0.75rem] text-town-muted">
+                <p className="mt-3 text-[0.75rem] text-muted">
                   {claim.terms} · good through {expiryLabel}
                 </p>
               </div>
@@ -723,7 +723,7 @@ export function RotarySpin() {
               <button
                 type="button"
                 onClick={copyCode}
-                className="w-full rounded-sm border border-town-navy px-6 py-3 font-block text-xs uppercase tracking-[0.2em] text-town-navy transition-colors hover:bg-town-navy hover:text-town-cream"
+                className="w-full rounded-sm border border-text px-6 py-3 font-block text-xs uppercase tracking-[0.2em] text-text transition-colors hover:bg-accent hover:text-accent-contrast"
               >
                 {copied ? 'Copied' : 'Copy code'}
               </button>
@@ -731,7 +731,7 @@ export function RotarySpin() {
               <a
                 href="/shop"
                 onClick={() => snooze('claimed')}
-                className="block w-full rounded-sm bg-town-forest px-6 py-4 text-center font-block text-sm uppercase tracking-[0.22em] text-white transition-colors hover:bg-town-forest/90"
+                className="block w-full rounded-sm bg-accent px-6 py-4 text-center font-block text-sm uppercase tracking-[0.22em] text-accent-contrast transition-colors hover:bg-accent/90"
               >
                 Pick your town
               </a>

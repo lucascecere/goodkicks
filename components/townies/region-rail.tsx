@@ -55,19 +55,19 @@ export function RegionRail({ cards }: { cards: RegionCard[] }) {
     <>
       <div className="flex flex-col items-center gap-4 text-center">
         <div className="max-w-2xl">
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-2">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-2">
             Shop by region
           </p>
           <h2 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-[2.75rem] leading-[0.95] tracking-[0.015em] text-white">
             Where are you from?
           </h2>
-          <p className="mt-3 text-sm text-town-cream/70">
+          <p className="mt-3 text-sm text-ink-contrast/70">
             Filed by coast and county. Every Massachusetts town, eventually.
           </p>
         </div>
         <Link
           href="/shop"
-          className="inline-block shrink-0 text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-town-cream/85 hover:text-white transition-colors"
+          className="inline-block shrink-0 text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-ink-contrast/85 hover:text-white transition-colors"
         >
           Every town
         </Link>
@@ -78,7 +78,7 @@ export function RegionRail({ cards }: { cards: RegionCard[] }) {
             type="button"
             onClick={() => scroll(dir)}
             aria-label={dir === -1 ? 'Scroll left' : 'Scroll right'}
-            className="grid h-8 w-8 place-items-center rounded-full border border-town-cream/30 text-town-cream transition-colors hover:bg-town-cream hover:text-town-navy"
+            className="grid h-8 w-8 place-items-center rounded-full border border-town-cream/30 text-ink-contrast transition-colors hover:bg-bg hover:text-text"
           >
             {dir === -1 ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
           </button>
@@ -101,7 +101,7 @@ export function RegionRail({ cards }: { cards: RegionCard[] }) {
             }`}
           >
             {c.images && c.images.length > 0 && (
-              <div className="relative h-44 overflow-hidden bg-town-cream sm:h-48">
+              <div className="relative h-44 overflow-hidden bg-bg sm:h-48">
                 <Image
                   src={c.images[0].url}
                   alt={c.images[0].alt}
@@ -111,7 +111,7 @@ export function RegionRail({ cards }: { cards: RegionCard[] }) {
                 />
                 {/* A whisper of navy at the foot of the panel so the card's
                     type never starts hard against a bright crop. */}
-                <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-town-navy/25 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-ink/25 to-transparent" />
               </div>
             )}
             <div className={c.dashed ? 'contents' : 'flex flex-1 flex-col p-5 sm:p-6'}>
@@ -120,12 +120,12 @@ export function RegionRail({ cards }: { cards: RegionCard[] }) {
                 {c.title}
               </h3>
               {c.count && (
-                <span className="text-[0.625rem] uppercase tracking-[0.18em] text-town-cream/60">{c.count}</span>
+                <span className="text-[0.625rem] uppercase tracking-[0.18em] text-ink-contrast/60">{c.count}</span>
               )}
             </div>
-            <p className="text-sm leading-relaxed text-town-cream/80">{c.body}</p>
-            <span className="mt-auto pt-5 inline-flex items-center gap-2 text-[0.6875rem] uppercase tracking-[0.18em] text-town-cream/85 group-hover:text-white transition-colors">
-              {!c.dashed && <MaMark className="h-2 w-auto text-town-forest" />}
+            <p className="text-sm leading-relaxed text-ink-contrast/80">{c.body}</p>
+            <span className="mt-auto pt-5 inline-flex items-center gap-2 text-[0.6875rem] uppercase tracking-[0.18em] text-ink-contrast/85 group-hover:text-white transition-colors">
+              {!c.dashed && <MaMark className="h-2 w-auto text-accent" />}
               <span className={c.dashed ? 'underline underline-offset-[6px] decoration-1' : ''}>{c.cta}</span>
             </span>
             </div>

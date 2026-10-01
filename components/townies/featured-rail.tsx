@@ -94,7 +94,7 @@ export function FeaturedRail({
     // which is the bordered-grid look this section exists to get away from. On
     // white the tile edge vanishes and the hats float on the page. Swap the
     // ground to cream the day the catalogue is reshot on a warm backdrop.
-    <section className="bg-white border-y border-rule py-12 sm:py-16">
+    <section className="bg-surface border-y border-rule py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* Centred: the heading stands alone and the two controls share ONE row
             beneath it — arrow, "see all", arrow. Rendering the section link and

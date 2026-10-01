@@ -11,7 +11,7 @@ const TOWNIES_URL = process.env.NEXT_PUBLIC_TOWNIES_URL ?? 'https://townies.shop
 
 export function ParentBanner() {
   return (
-    <aside aria-label="Parent brand" className="bg-town-navy text-town-cream">
+    <aside aria-label="Parent brand" className="bg-ink text-ink-contrast">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center justify-between gap-4">
         <BrandLogo
           variant="script-cream"
@@ -19,7 +19,7 @@ export function ParentBanner() {
           alt="Townies — visit townies.shop"
           className="h-5 w-auto"
         />
-        <span className="text-[11px] uppercase tracking-[0.18em] text-town-cream/70">
+        <span className="text-[11px] uppercase tracking-[0.18em] text-ink-contrast/70">
           A Townies Brand
         </span>
       </div>

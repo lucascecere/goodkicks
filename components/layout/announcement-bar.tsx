@@ -27,7 +27,7 @@ export function AnnouncementBar({ brand }: { brand: BrandConfig }) {
   const filled = items.length >= 6 ? items : Array(Math.ceil(6 / items.length)).fill(items).flat();
 
   return (
-    <div className="bg-accent text-accent-contrast overflow-hidden">
+    <div className="bg-announce text-announce-contrast overflow-hidden">
       <div className="flex w-max marquee-x">
         {/* Duplicated once for the -50% loop. The copy is aria-hidden so a
             screen reader hears the promises once, not twice. */}

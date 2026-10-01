@@ -106,7 +106,7 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
   ];
 
   return (
-    <div className="bg-town-cream">
+    <div className="bg-bg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
@@ -137,12 +137,12 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
           {elsewhere.length > 0 && (
             <TownLinks heading="Every other town" towns={elsewhere} align="center" />
           )}
-          <p className="mt-8 text-sm text-town-muted">
-            <Link href={regionHref(town.region)} className="underline underline-offset-4 hover:text-town-navy">
+          <p className="mt-8 text-sm text-muted">
+            <Link href={regionHref(town.region)} className="underline underline-offset-4 hover:text-text">
               Shop the {town.regionLabel}
             </Link>
             {' · '}
-            <Link href="/shop" className="underline underline-offset-4 hover:text-town-navy">
+            <Link href="/shop" className="underline underline-offset-4 hover:text-text">
               Shop every town
             </Link>
           </p>

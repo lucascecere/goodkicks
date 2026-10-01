@@ -51,7 +51,7 @@ export default async function ShopPage({
   const regions: RegionTab[] = [...regionMap.values()].sort((a, b) => a.label.localeCompare(b.label));
 
   return (
-    <div className="relative overflow-hidden bg-town-cream">
+    <div className="relative overflow-hidden bg-bg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -66,23 +66,23 @@ export default async function ShopPage({
       {/* Masthead. A dark band gives the shop a top edge and a place for the
           catalogue counts; the page used to open with centred text floating on
           cream, which read as an unfinished page rather than a shop front. */}
-      <section className="relative overflow-hidden bg-town-navy">
+      <section className="relative overflow-hidden bg-ink">
         <BrandPattern variant="topo" color="cream" opacity={0.09} size={520} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 text-center">
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-3">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
             The shop
           </p>
           <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em] text-white mb-4">
             Every town.
           </h1>
-          <p className="text-town-cream/80 max-w-md mx-auto leading-relaxed">
+          <p className="text-ink-contrast/80 max-w-md mx-auto leading-relaxed">
             Every drop, one place. Find yours and rep it. Don&apos;t see your town?
             It&apos;s coming — or tell us to hurry up.
           </p>
           {items.length > 0 && (
-            <p className="mt-7 text-[0.68rem] uppercase tracking-[0.22em] text-town-cream/55">
+            <p className="mt-7 text-[0.68rem] uppercase tracking-[0.22em] text-ink-contrast/55">
               {items.length} {items.length === 1 ? 'design' : 'designs'}
-              <span className="mx-3 text-town-cream/30">·</span>
+              <span className="mx-3 text-ink-contrast/30">·</span>
               {towns.length} {towns.length === 1 ? 'town' : 'towns'}
             </p>
           )}
@@ -91,7 +91,7 @@ export default async function ShopPage({
           {hatSack && (
           <Link
             href={HAT_SACK_PATH}
-            className="mt-6 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-town-cream/85 hover:text-white transition-colors"
+            className="mt-6 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-ink-contrast/85 hover:text-white transition-colors"
           >
             Hat &amp; Sack — a town hat + a Good Kicks foot bag, {formatUsd(hatSack.priceCents)}
           </Link>
@@ -101,18 +101,18 @@ export default async function ShopPage({
 
       <TownTickerLinked towns={towns} />
 
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
+      <BrandPattern variant="ma" color="cream" opacity={0.035} size={340} fade="b" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {items.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-town-muted text-sm mb-6">
+            <p className="text-muted text-sm mb-6">
               The first drop lands soon. Tell us which town you want and we&apos;ll
               put it in the queue.
             </p>
             <Link
               href="/request-a-town"
-              className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-navy/90 transition-colors"
+              className="inline-flex items-center bg-accent text-accent-contrast px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors"
             >
               Request your town
             </Link>

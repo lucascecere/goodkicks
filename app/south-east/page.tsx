@@ -22,7 +22,7 @@ export default async function SouthEastPage() {
   const towns = townPages(products).filter((t) => t.region === 'south-east');
 
   return (
-    <div className="bg-town-cream">
+    <div className="bg-bg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -45,13 +45,13 @@ export default async function SouthEastPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-24">
         {items.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-town-muted text-sm mb-6">
+            <p className="text-muted text-sm mb-6">
               More Southeastern Mass towns are coming. Tell us which one you want and
               we&apos;ll put it in the queue.
             </p>
             <Link
               href="/request-a-town"
-              className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-navy/90 transition-colors"
+              className="inline-flex items-center bg-accent text-accent-contrast px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors"
             >
               Request your town
             </Link>

@@ -20,11 +20,11 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="bg-town-cream">
+    <div className="bg-bg">
       {/* Masthead. Duotone rather than a scrimmed photo, matching the homepage
           tagline band — the About page used to open with centred text on flat
           cream, which gave the story no ground to start from. */}
-      <section className="relative isolate overflow-hidden bg-town-navy">
+      <section className="relative isolate overflow-hidden bg-ink">
         <Image
           src="/brand/scene/clover-2-1x1.jpg"
           alt=""
@@ -33,18 +33,18 @@ export default function AboutPage() {
           sizes="100vw"
           className="object-cover object-center grayscale opacity-60 mix-blend-luminosity"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-town-navy/75 via-town-navy/35 to-town-navy/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/75 via-ink/35 to-ink/90" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-8 py-20 sm:py-28 text-center">
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-4">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-4">
             Made by Massholes
           </p>
-          <p className="font-script text-town-cream/90 text-2xl sm:text-3xl leading-none mb-1">
+          <p className="font-script text-ink-contrast/90 text-2xl sm:text-3xl leading-none mb-1">
             Rep your town —
           </p>
           <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em] text-white mb-5">
             The town is the hero.
           </h1>
-          <p className="text-town-cream/85 leading-relaxed text-lg">
+          <p className="text-ink-contrast/85 leading-relaxed text-lg">
             We make one thing, and we make it right: apparel that puts your hometown front and
             center — not a logo, not a state-shape cliché. The town&apos;s the headline. Townies is
             just the little tag that says it&apos;s built to last.
@@ -55,7 +55,7 @@ export default function AboutPage() {
       <EditorialSplit
         eyebrow="The principle"
         headline="Town first. Always."
-        body="No loud logos. No 'Massachusetts' slapped across your chest like you're passing through. Just where you're from, set in clean collegiate type on heavyweight pieces you'll wear 'til they fall apart. The MA mark stays small — the quiet thread tying every town together."
+        body="No loud logos. No 'Massachusetts' slapped across your chest like you're passing through. Just where you're from, set in clean collegiate type on hats you'll wear 'til they fall apart. The MA mark stays small — the quiet thread tying every town together."
         cta={{ href: '/shop', label: 'see the towns' }}
         imageSrc="/brand/product/mil-turn25.jpg"
         imageAlt="Milton snapback showing the arched wordmark and the 1640 side embroidery"
@@ -77,21 +77,21 @@ export default function AboutPage() {
       />
 
       {/* Mission */}
-      <section className="relative overflow-hidden bg-town-cream">
-        <BrandPattern variant="ma" color="forest" opacity={0.05} size={240} fade="radial" />
+      <section className="relative overflow-hidden bg-bg">
+        <BrandPattern variant="ma" color="cream" opacity={0.035} size={240} fade="radial" />
         <div className="relative max-w-2xl mx-auto px-4 sm:px-8 py-16 sm:py-24 text-center">
-        <BrandLogo variant="lockup" className="w-64 sm:w-80 h-auto mx-auto mb-8" />
-        <p className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy mb-5">
+        <BrandLogo variant="script-cream" className="w-64 sm:w-80 h-auto mx-auto mb-8" />
+        <p className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text mb-5">
           Small towns. Strong roots.
         </p>
-        <p className="text-town-muted leading-relaxed mb-10">
+        <p className="text-muted leading-relaxed mb-10">
           We&apos;re not trying to be the biggest brand in New England. We&apos;re trying to be the
           one your town actually wears — the hat at the reunion, the one on your head all
           summer, the one that says exactly where you&apos;re from before you open your mouth.
         </p>
         <Link
           href="/shop"
-          className="inline-flex items-center bg-town-forest text-white px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-forest/90 transition-colors"
+          className="inline-flex items-center bg-accent text-accent-contrast px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors"
         >
           Find your town
         </Link>

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function SizeGuidePage() {
   return (
-    <div className="bg-town-cream">
+    <div className="bg-bg">
       <PageMasthead
         eyebrow="Fit & care"
         title="Size guide."
@@ -22,8 +22,8 @@ export default function SizeGuidePage() {
 
         <div className="space-y-10">
           <section>
-            <h2 className="font-block uppercase text-2xl text-town-navy mb-3">One size fits most</h2>
-            <p className="text-town-muted leading-relaxed">
+            <h2 className="font-block uppercase text-2xl text-text mb-3">One size fits most</h2>
+            <p className="text-muted leading-relaxed">
               Every Townies hat is an <strong>adjustable snapback</strong> with a plastic closure.
               It fits roughly <strong>55–60cm</strong> (about 21.5″–23.5″) of head circumference —
               which covers the large majority of adults. If a standard snapback has fit you before,
@@ -32,14 +32,14 @@ export default function SizeGuidePage() {
           </section>
 
           <section>
-            <h2 className="font-block uppercase text-2xl text-town-navy mb-3">
+            <h2 className="font-block uppercase text-2xl text-text mb-3">
               How to check your fit
             </h2>
-            <p className="text-town-muted leading-relaxed mb-3">
+            <p className="text-muted leading-relaxed mb-3">
               Want to be sure? Run a soft tape measure around your head, just above the ears and
               across the middle of your forehead — where a hat actually sits.
             </p>
-            <ul className="text-town-muted leading-relaxed list-disc pl-5 space-y-1.5">
+            <ul className="text-muted leading-relaxed list-disc pl-5 space-y-1.5">
               <li>
                 <strong>55–60cm:</strong> you&apos;re dead center — the snapback dials right in.
               </li>
@@ -53,20 +53,20 @@ export default function SizeGuidePage() {
           </section>
 
           <section>
-            <h2 className="font-block uppercase text-2xl text-town-navy mb-3">
+            <h2 className="font-block uppercase text-2xl text-text mb-3">
               The two builds
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="rounded-sm border border-town-rule bg-white/50 p-6">
-                <h3 className="font-block uppercase text-lg text-town-navy mb-2">Lifestyle Hat</h3>
-                <p className="text-town-muted text-sm leading-relaxed">
+              <div className="rounded-sm border border-rule bg-white/50 p-6">
+                <h3 className="font-block uppercase text-lg text-text mb-2">Lifestyle Hat</h3>
+                <p className="text-muted text-sm leading-relaxed">
                   Two-tone. Slightly structured 5-panel crown, pre-curved brim, 100% brushed cotton
                   twill — soft and broken-in from day one. Mid-profile.
                 </p>
               </div>
-              <div className="rounded-sm border border-town-rule bg-white/50 p-6">
-                <h3 className="font-block uppercase text-lg text-town-navy mb-2">Everyday Hat</h3>
-                <p className="text-town-muted text-sm leading-relaxed">
+              <div className="rounded-sm border border-rule bg-white/50 p-6">
+                <h3 className="font-block uppercase text-lg text-text mb-2">Everyday Hat</h3>
+                <p className="text-muted text-sm leading-relaxed">
                   Solid color. Low-profile unstructured 5-panel crown, flat brim, 60/40
                   cotton-poly — soft hand, sits closer to the head.
                 </p>
@@ -75,8 +75,8 @@ export default function SizeGuidePage() {
           </section>
 
           <section>
-            <h2 className="font-block uppercase text-2xl text-town-navy mb-3">Care</h2>
-            <p className="text-town-muted leading-relaxed">
+            <h2 className="font-block uppercase text-2xl text-text mb-3">Care</h2>
+            <p className="text-muted leading-relaxed">
               Spot clean with cold water and a little mild soap, then air dry in shape. Skip the
               washing machine and the dryer — heat and a spin cycle are how a good hat loses its
               shape. Treat it right and it&apos;ll wear in, not out.
@@ -87,7 +87,7 @@ export default function SizeGuidePage() {
         <div className="mt-14 text-center">
           <Link
             href="/shop"
-            className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-navy/90 transition-colors"
+            className="inline-flex items-center bg-accent text-accent-contrast px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors"
           >
             Find your town
           </Link>

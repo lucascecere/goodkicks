@@ -25,7 +25,7 @@ export function TowniesScript({
 }) {
   const mark = (
     <span
-      className={cn('font-script leading-none text-town-navy', className)}
+      className={cn('font-script leading-none text-text', className)}
       // sensible default size; callers override via className text-* utilities
       style={{ fontSize: className?.includes('text-') ? undefined : '2rem' }}
     >
@@ -44,7 +44,7 @@ export function TowniesBlock({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        'font-block uppercase tracking-[0.15em] text-town-muted',
+        'font-block uppercase tracking-[0.15em] text-muted',
         className,
       )}
     >
@@ -77,7 +77,7 @@ export function TownName({
       )}
       <As
         className={cn(
-          'font-block uppercase leading-[0.9] tracking-[0.01em] text-town-navy',
+          'font-block uppercase leading-[0.9] tracking-[0.01em] text-text',
           className,
         )}
       >

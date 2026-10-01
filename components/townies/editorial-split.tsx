@@ -31,7 +31,7 @@ export function EditorialSplit({
   tone?: 'cream' | 'navy' | 'forest' | 'stone';
 }) {
   return (
-    <section className="bg-white border-y border-town-rule">
+    <section className="bg-surface border-y border-rule">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
         <div className={cn('relative aspect-[4/5] sm:aspect-[4/3] overflow-hidden rounded-sm', reverse && 'lg:order-2')}>
@@ -46,16 +46,16 @@ export function EditorialSplit({
         </div>
 
         <div className={cn('max-w-md lg:max-w-xl', reverse && 'lg:order-1 lg:ml-auto')}>
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest mb-3">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-3">
             {eyebrow}
           </p>
-          <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy mb-4">
+          <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text mb-4">
             {headline}
           </h2>
-          <p className="text-town-muted leading-relaxed mb-6">{body}</p>
+          <p className="text-muted leading-relaxed mb-6">{body}</p>
           <Link
             href={cta.href}
-            className="text-sm lowercase tracking-wide text-town-navy underline underline-offset-4 hover:text-town-forest transition-colors"
+            className="text-sm lowercase tracking-wide text-text underline underline-offset-4 hover:text-accent transition-colors"
           >
             {cta.label}
           </Link>

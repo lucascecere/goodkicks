@@ -35,7 +35,7 @@ export function ClosingBand({
         <div className="flex flex-wrap items-center justify-center gap-5">
           <Link
             href={cta.href}
-            className="inline-flex items-center bg-ink-contrast text-text px-8 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-white transition-colors"
+            className="inline-flex items-center bg-ink-contrast text-ink px-8 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-white transition-colors"
           >
             {cta.label}
           </Link>

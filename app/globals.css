@@ -18,6 +18,11 @@
   --color-town-white: #FFFFFF;
   --color-town-rule: #E0DCD2;
   --color-town-muted: #5C6168;
+  /* Navy-ground companions to the kit colours. */
+  --color-town-navy-deep: #08121D;
+  --color-town-navy-raised: #142638;
+  --color-town-navy-rule: #26384B;
+  --color-town-mist: #A9B1BA;
 
   /* Typography
      - font-display (DM Serif) is left UNTOUCHED so the 38 existing GK/admin
@@ -42,17 +47,26 @@
        accent / accent-contrast                    — CTAs, eyebrows, links
        band                                        — the one full-colour section per page
      Overridden to Good Kicks under [data-brand="goodkicks"] below. */
-  --color-bg: var(--color-town-cream);
-  --color-surface: var(--color-town-white);
-  --color-text: var(--color-town-navy);
-  --color-muted: var(--color-town-muted);
+  /* Townies is a NAVY brand (2026-10): navy is the page, the cream script
+     logo sits on it, and cream is the one bright thing — text and the primary
+     button. `ink` is a deeper navy for the grounds that need to read as a
+     separate plane on a navy page (mastheads, footer, ticker). Product photos
+     stay on their white sweeps; they read as lit tiles on the navy. */
+  --color-bg: var(--color-town-navy);
+  --color-surface: var(--color-town-navy-raised);
+  --color-text: var(--color-town-cream);
+  --color-muted: var(--color-town-mist);
   --color-stone: var(--color-town-stone);
-  --color-accent: var(--color-town-forest);
-  --color-accent-contrast: var(--color-town-white);
-  --color-rule: var(--color-town-rule);
-  --color-ink: var(--color-town-navy);
+  --color-accent: var(--color-town-cream);
+  --color-accent-contrast: var(--color-town-navy);
+  --color-rule: var(--color-town-navy-rule);
+  --color-ink: var(--color-town-navy-deep);
   --color-ink-contrast: var(--color-town-cream);
   --color-band: var(--color-town-forest);
+  /* The strip above the header: forest, so the cream logo stays the brightest
+     thing at the top of a navy page. */
+  --color-announce: var(--color-town-forest);
+  --color-announce-contrast: var(--color-town-cream);
   --font-heading: var(--font-block);
 }
 
@@ -85,6 +99,8 @@
   --color-ink: var(--color-brand-ink);
   --color-ink-contrast: var(--color-brand-cream);
   --color-band: var(--color-brand-blue);
+  --color-announce: #A8522A;
+  --color-announce-contrast: #FFFFFF;
   --font-heading: var(--font-display);
   --heading-weight: 400;
   --heading-case: none;
@@ -118,8 +134,8 @@
        paints its own background over this; body shows through only in overscroll.
        Not var(--color-bg): data-brand is set on a div INSIDE body, so a token
        here would always resolve to the root (Townies) value anyway. */
-    background-color: var(--color-town-cream);
-    color: var(--color-town-navy);
+    background-color: var(--color-town-navy);
+    color: var(--color-town-cream);
     font-family: var(--font-inter), system-ui, sans-serif;
     font-size: 1rem;
     line-height: 1.625;

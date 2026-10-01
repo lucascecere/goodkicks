@@ -31,10 +31,10 @@ export function StoryCarousel({
     <div className="relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-end justify-between mb-6">
         <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-town-forest font-medium mb-2">
+          <p className="text-xs uppercase tracking-[0.22em] text-accent font-medium mb-2">
             Featured towns
           </p>
-          <h2 className="font-block uppercase text-3xl sm:text-4xl text-town-navy">
+          <h2 className="font-block uppercase text-3xl sm:text-4xl text-text">
             Find your roots.
           </h2>
         </div>
@@ -42,14 +42,14 @@ export function StoryCarousel({
           <button
             onClick={() => scroll(-1)}
             aria-label="Previous"
-            className="p-2 border border-town-rule rounded-full text-town-navy hover:bg-town-navy hover:text-white transition-colors"
+            className="p-2 border border-rule rounded-full text-text hover:bg-accent hover:text-accent-contrast transition-colors"
           >
             <ChevronLeft size={18} />
           </button>
           <button
             onClick={() => scroll(1)}
             aria-label="Next"
-            className="p-2 border border-town-rule rounded-full text-town-navy hover:bg-town-navy hover:text-white transition-colors"
+            className="p-2 border border-rule rounded-full text-text hover:bg-accent hover:text-accent-contrast transition-colors"
           >
             <ChevronRight size={18} />
           </button>

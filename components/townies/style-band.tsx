@@ -50,7 +50,7 @@ export function StyleBand({ products }: { products: CollectionProduct[] }) {
   if (examples.some((e) => !e.product)) return null;
 
   return (
-    <section className="bg-town-cream border-t border-town-rule">
+    <section className="bg-bg border-t border-rule">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <SectionHeader
           eyebrow="Two builds"
@@ -64,7 +64,7 @@ export function StyleBand({ products }: { products: CollectionProduct[] }) {
             <Link
               key={key}
               href={`/shop?style=${key}`}
-              className="group grid grid-cols-[42%_1fr] gap-5 sm:gap-7 items-center rounded-sm bg-white border border-town-rule p-4 sm:p-6 transition-colors hover:border-town-navy/40"
+              className="group grid grid-cols-[42%_1fr] gap-5 sm:gap-7 items-center rounded-sm bg-surface border border-rule p-4 sm:p-6 transition-colors hover:border-text/40"
             >
               <div className="relative aspect-square bg-white">
                 <Image
@@ -76,14 +76,14 @@ export function StyleBand({ products }: { products: CollectionProduct[] }) {
                 />
               </div>
               <div>
-                <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest mb-2">
+                <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-2">
                   {priceLabel(product!) ? `From ${priceLabel(product!)}` : 'Every town'}
                 </p>
-                <h3 className="font-block font-bold uppercase text-xl sm:text-2xl leading-none tracking-[0.015em] text-town-navy mb-1.5">
+                <h3 className="font-block font-bold uppercase text-xl sm:text-2xl leading-none tracking-[0.015em] text-text mb-1.5">
                   {name}
                 </h3>
-                <p className="text-sm text-town-muted mb-4">{line}</p>
-                <ul className="space-y-1 text-[0.8125rem] text-town-navy/80">
+                <p className="text-sm text-muted mb-4">{line}</p>
+                <ul className="space-y-1 text-[0.8125rem] text-text/80">
                   {specs.map((s) => (
                     <li key={s} className="flex items-start gap-2">
                       <span aria-hidden className="mt-[0.45rem] h-1 w-1 rounded-full bg-town-forest shrink-0" />
@@ -91,7 +91,7 @@ export function StyleBand({ products }: { products: CollectionProduct[] }) {
                     </li>
                   ))}
                 </ul>
-                <span className="mt-4 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-town-navy group-hover:text-town-forest transition-colors">
+                <span className="mt-4 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-text group-hover:text-accent transition-colors">
                   Shop {name.replace(' Hat', '')}s
                 </span>
               </div>

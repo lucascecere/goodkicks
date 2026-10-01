@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="bg-town-cream">
+    <div className="bg-bg">
       <PageMasthead
         eyebrow="Not on the list yet"
         title="Request your town."
@@ -31,8 +31,8 @@ export default function Page() {
           <TownRequestForm />
         </Suspense>
 
-        <div className="mt-14 pt-8 border-t border-town-rule text-sm text-town-muted">
-          Already have a shop and want to stock us? Head to <Link href="/wholesale" className="underline underline-offset-4 hover:text-town-navy">wholesale</Link>. Anything else, <Link href="/support" className="underline underline-offset-4 hover:text-town-navy">support</Link> is here.
+        <div className="mt-14 pt-8 border-t border-rule text-sm text-muted">
+          Already have a shop and want to stock us? Head to <Link href="/wholesale" className="underline underline-offset-4 hover:text-text">wholesale</Link>. Anything else, <Link href="/support" className="underline underline-offset-4 hover:text-text">support</Link> is here.
         </div>
       </div>
     </div>

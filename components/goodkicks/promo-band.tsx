@@ -56,7 +56,7 @@ export function GoodKicksPromoBand({ shopPath }: { shopPath: string }) {
             </p>
             <Link
               href={shopPath}
-              className="mt-7 inline-flex items-center rounded-none bg-ink-contrast px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-text transition-colors hover:bg-white"
+              className="mt-7 inline-flex items-center rounded-none bg-ink-contrast px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-ink transition-colors hover:bg-white"
             >
               Shop all colorways
             </Link>

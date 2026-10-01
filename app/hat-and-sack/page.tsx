@@ -73,7 +73,7 @@ export default async function HatAndSackPage() {
   };
 
   return (
-    <div className="relative overflow-hidden bg-town-cream">
+    <div className="relative overflow-hidden bg-bg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -89,33 +89,33 @@ export default async function HatAndSackPage() {
 
       {/* Masthead — the same dark top edge /shop uses, so the promo reads as part
           of the shop rather than as a landing page bolted on beside it. */}
-      <section className="relative overflow-hidden bg-town-navy">
+      <section className="relative overflow-hidden bg-ink">
         <BrandPattern variant="ma" color="cream" opacity={0.08} size={360} />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 text-center">
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-3">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
             Townies × Good Kicks
           </p>
           <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em] text-white mb-4">
             Hat &amp; Sack.
           </h1>
-          <p className="text-town-cream/80 max-w-md mx-auto leading-relaxed">
+          <p className="text-ink-contrast/80 max-w-md mx-auto leading-relaxed">
             {price} for a town hat and a Good Kicks foot bag. You pick
             the town. We pick the bag.
           </p>
         </div>
       </section>
 
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
+      <BrandPattern variant="ma" color="cream" opacity={0.035} size={340} fade="b" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {hats.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-town-muted text-sm mb-6">
+            <p className="text-muted text-sm mb-6">
               The bundle is between drops. Tell us which town you want next.
             </p>
             <Link
               href="/request-a-town"
-              className="inline-flex items-center bg-town-navy text-town-cream px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-town-navy/90 transition-colors"
+              className="inline-flex items-center bg-accent text-accent-contrast px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors"
             >
               Request your town
             </Link>
@@ -133,8 +133,8 @@ export default async function HatAndSackPage() {
         {/* The plain-English terms. A surprise item invites exactly these
             questions, and a promo that makes people go looking for the answer
             loses them on the way. */}
-        <div className="mt-16 sm:mt-24 border-t border-town-rule pt-10">
-          <h2 className="font-block font-bold uppercase text-lg tracking-[0.02em] text-town-navy mb-6">
+        <div className="mt-16 sm:mt-24 border-t border-rule pt-10">
+          <h2 className="font-block font-bold uppercase text-lg tracking-[0.02em] text-text mb-6">
             How it works
           </h2>
           <dl className="grid gap-8 sm:grid-cols-3">
@@ -153,10 +153,10 @@ export default async function HatAndSackPage() {
               },
             ].map((item) => (
               <div key={item.q}>
-                <dt className="font-block font-bold uppercase text-sm leading-snug tracking-[0.02em] text-town-navy mb-1.5">
+                <dt className="font-block font-bold uppercase text-sm leading-snug tracking-[0.02em] text-text mb-1.5">
                   {item.q}
                 </dt>
-                <dd className="text-[0.8125rem] leading-relaxed text-town-muted">{item.a}</dd>
+                <dd className="text-[0.8125rem] leading-relaxed text-muted">{item.a}</dd>
               </div>
             ))}
           </dl>

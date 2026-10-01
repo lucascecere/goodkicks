@@ -81,21 +81,21 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
 
   // Townies uses the semantic/town tokens; Good Kicks keeps its original palette.
   const inputClass = isTownies
-    ? 'w-full border border-town-rule rounded-sm px-4 py-3 text-town-navy placeholder:text-town-muted/50 focus:outline-none focus:ring-2 focus:ring-town-forest/40 bg-white text-sm'
+    ? 'w-full border border-rule rounded-sm px-4 py-3 text-text placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-accent/40 bg-surface text-sm'
     : 'w-full border border-brand-rule rounded-lg px-4 py-3 text-brand-ink placeholder:text-brand-muted/50 focus:outline-none focus:ring-2 focus:ring-brand-rust/40 bg-white text-sm';
   const labelClass = isTownies
-    ? 'block text-sm font-medium text-town-navy mb-1.5'
+    ? 'block text-sm font-medium text-text mb-1.5'
     : 'block text-sm font-medium text-brand-ink mb-1.5';
   const buttonClass = isTownies
-    ? 'w-full bg-town-forest text-white py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm hover:bg-town-forest/90 transition-colors disabled:opacity-60'
+    ? 'w-full bg-town-forest text-white py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm hover:bg-accent/90 transition-colors disabled:opacity-60'
     : 'w-full bg-brand-rust text-white py-4 rounded-lg font-medium text-lg hover:bg-brand-rust/90 transition-colors disabled:opacity-60';
-  const mutedClass = isTownies ? 'text-town-muted' : 'text-brand-muted';
+  const mutedClass = isTownies ? 'text-muted' : 'text-brand-muted';
 
   if (state === 'success') {
     return isTownies ? (
       <div className="text-center space-y-4 py-12">
-        <h3 className="font-block uppercase text-3xl text-town-navy">Application in.</h3>
-        <p className="text-town-muted">
+        <h3 className="font-block uppercase text-3xl text-text">Application in.</h3>
+        <p className="text-muted">
           we read every one of these ourselves. give us a few days and we&apos;ll come back to you
           either way.
         </p>

@@ -25,22 +25,22 @@ export default function TownRepPage() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-town-navy text-town-cream py-20 sm:py-24 px-4 sm:px-8">
+      <section className="bg-ink text-ink-contrast py-20 sm:py-24 px-4 sm:px-8">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/50">
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/50">
             Townies Town Rep Program
           </p>
           <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em]">
             Rep your town.<br />We&apos;ll back you.
           </h1>
-          <p className="text-town-cream/70 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-ink-contrast/70 text-lg max-w-2xl mx-auto leading-relaxed">
             If you&apos;re already the one repping your town the loudest — the local account, the
             hometown-proud creator, the person everyone knows is from there — we want to back you.
             Free hats, your own code, and a cut of every sale you drive.
           </p>
           <a
             href="#apply"
-            className="inline-block bg-town-forest text-white px-8 py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm hover:bg-town-forest/90 transition-colors"
+            className="inline-block bg-accent text-accent-contrast px-8 py-4 rounded-sm font-semibold uppercase tracking-[0.1em] text-sm hover:bg-accent/90 transition-colors"
           >
             Apply now →
           </a>
@@ -48,19 +48,19 @@ export default function TownRepPage() {
       </section>
 
       {/* The deal */}
-      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-town-cream">
+      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-bg">
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-center">
           <div className="space-y-4">
-            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest">The deal</p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy">
+            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">The deal</p>
+            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">
               Free hat. Your own code. Real commission.
             </h2>
-            <p className="text-town-muted leading-relaxed">
+            <p className="text-muted leading-relaxed">
               Townies makes town-pride hats for people who actually rep where they&apos;re from. If
               that&apos;s you — and your people trust what you put on — a Town Rep partnership gets
               you the product free, your own discount code, and a cut of every order you drive.
             </p>
-            <p className="text-town-muted leading-relaxed">
+            <p className="text-muted leading-relaxed">
               No quotas you can&apos;t hit, no corporate nonsense. You promote your town, your
               followers save, you earn.
             </p>
@@ -82,9 +82,9 @@ export default function TownRepPage() {
       {/* What you get */}
       <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE6DB]">
         <div className="max-w-4xl mx-auto text-center space-y-3 mb-12 sm:mb-16">
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest">What you get</p>
-          <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy">The perks.</h2>
-          <p className="text-town-muted max-w-xl mx-auto">We keep it simple. You promote, your followers save, you earn.</p>
+          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">What you get</p>
+          <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">The perks.</h2>
+          <p className="text-muted max-w-xl mx-auto">We keep it simple. You promote, your followers save, you earn.</p>
         </div>
         <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
           {[
@@ -101,21 +101,21 @@ export default function TownRepPage() {
               body: 'Approved reps get their town’s hat shipped free, so you can post with the real thing in hand. Keep it moving and we keep the product coming.',
             },
           ].map((item) => (
-            <div key={item.title} className="bg-town-cream rounded-sm p-8 space-y-3 border border-town-rule">
-              <h3 className="font-block uppercase text-xl text-town-navy">{item.title}</h3>
-              <p className="text-town-muted text-sm leading-relaxed">{item.body}</p>
+            <div key={item.title} className="bg-bg rounded-sm p-8 space-y-3 border border-rule">
+              <h3 className="font-block uppercase text-xl text-text">{item.title}</h3>
+              <p className="text-muted text-sm leading-relaxed">{item.body}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* The numbers */}
-      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-town-cream">
+      <section className="py-16 sm:py-20 px-4 sm:px-8 bg-bg">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 sm:mb-16 space-y-3">
-            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest">The numbers</p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy">No tiers. No games.</h2>
-            <p className="text-town-muted max-w-xl mx-auto">
+            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">The numbers</p>
+            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">No tiers. No games.</h2>
+            <p className="text-muted max-w-xl mx-auto">
               We don&apos;t make you grind through levels to earn a real rate. We agree on your
               numbers when you come on, and that&apos;s what you get from order one.
             </p>
@@ -138,10 +138,10 @@ export default function TownRepPage() {
                 body: 'Venmo or PayPal, with your own live dashboard so you always know what you are owed before we send it.',
               },
             ].map((item) => (
-              <div key={item.label} className="bg-[#EAE6DB] rounded-sm p-8 space-y-2 border border-town-rule">
-                <p className="font-block uppercase text-4xl text-town-navy leading-none">{item.stat}</p>
-                <h3 className="font-semibold text-town-navy text-sm uppercase tracking-wide">{item.label}</h3>
-                <p className="text-town-muted text-sm leading-relaxed">{item.body}</p>
+              <div key={item.label} className="bg-[#EAE6DB] rounded-sm p-8 space-y-2 border border-rule">
+                <p className="font-block uppercase text-4xl text-text leading-none">{item.stat}</p>
+                <h3 className="font-semibold text-text text-sm uppercase tracking-wide">{item.label}</h3>
+                <p className="text-muted text-sm leading-relaxed">{item.body}</p>
               </div>
             ))}
           </div>
@@ -152,8 +152,8 @@ export default function TownRepPage() {
       <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE6DB]">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12 sm:mb-16 space-y-3">
-            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest">The process</p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy">How it works.</h2>
+            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">The process</p>
+            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">How it works.</h2>
           </div>
           <div className="space-y-0">
             {[
@@ -162,11 +162,11 @@ export default function TownRepPage() {
               { step: '03', title: 'Get your code + free hat.', body: 'Once approved, we send your custom code and your town’s hat free, so you can post with the real product in hand.' },
               { step: '04', title: 'Post. Earn. Repeat.', body: 'Share your code, watch the orders come in, and get paid monthly. We track everything on our end.' },
             ].map((item, i, arr) => (
-              <div key={item.step} className={`flex gap-6 sm:gap-8 py-8 ${i < arr.length - 1 ? 'border-b border-town-rule' : ''}`}>
-                <span className="font-block text-4xl text-town-navy/50 flex-shrink-0 w-14">{item.step}</span>
+              <div key={item.step} className={`flex gap-6 sm:gap-8 py-8 ${i < arr.length - 1 ? 'border-b border-rule' : ''}`}>
+                <span className="font-block text-4xl text-text/50 flex-shrink-0 w-14">{item.step}</span>
                 <div className="space-y-1">
-                  <h3 className="font-block uppercase text-xl sm:text-2xl text-town-navy">{item.title}</h3>
-                  <p className="text-town-muted leading-relaxed">{item.body}</p>
+                  <h3 className="font-block uppercase text-xl sm:text-2xl text-text">{item.title}</h3>
+                  <p className="text-muted leading-relaxed">{item.body}</p>
                 </div>
               </div>
             ))}
@@ -175,7 +175,7 @@ export default function TownRepPage() {
       </section>
 
       {/* Who we're looking for */}
-      <section className="py-16 px-4 sm:px-8 bg-town-navy text-town-cream">
+      <section className="py-16 px-4 sm:px-8 bg-ink text-ink-contrast">
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em]">Who we&apos;re looking for.</h2>
           {/* This used to read "doesn't matter if it's 200 followers or 20k …
@@ -183,12 +183,12 @@ export default function TownRepPage() {
               applications are actually judged. It recruited people who were
               then turned down, having been told the bar didn't exist. The real
               bar is stated instead. */}
-          <p className="text-town-cream/70 leading-relaxed max-w-xl mx-auto">
+          <p className="text-ink-contrast/70 leading-relaxed max-w-xl mx-auto">
             We keep this small on purpose, so a code from a Town Rep still means something.
             The bar is <strong className="text-white font-semibold">3,000+ followers</strong> and
             an audience that&apos;s genuinely from here.
           </p>
-          <p className="text-town-cream/70 leading-relaxed max-w-xl mx-auto">
+          <p className="text-ink-contrast/70 leading-relaxed max-w-xl mx-auto">
             One exception, and we mean it:{' '}
             <strong className="text-white font-semibold">college and pro athletes</strong> get
             looked at whatever the follower count. If that&apos;s you, say so on the form.
@@ -200,8 +200,8 @@ export default function TownRepPage() {
               { label: 'Hometown creators', desc: 'Local personalities and creators who lead with where they’re from, with the audience to match.' },
             ].map((item) => (
               <div key={item.label} className="border border-town-cream/20 rounded-sm p-5 space-y-2">
-                <p className="font-semibold text-town-cream text-sm">{item.label}</p>
-                <p className="text-town-cream/50 text-xs leading-relaxed">{item.desc}</p>
+                <p className="font-semibold text-ink-contrast text-sm">{item.label}</p>
+                <p className="text-ink-contrast/50 text-xs leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -209,12 +209,12 @@ export default function TownRepPage() {
       </section>
 
       {/* Application form */}
-      <section id="apply" className="py-16 sm:py-20 px-4 sm:px-8 bg-town-cream">
+      <section id="apply" className="py-16 sm:py-20 px-4 sm:px-8 bg-bg">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12 space-y-3">
-            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-forest">Apply</p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-town-navy">Become a Town Rep.</h2>
-            <p className="text-town-muted">We&apos;ll get back to you within a few days.</p>
+            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">Apply</p>
+            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">Become a Town Rep.</h2>
+            <p className="text-muted">We&apos;ll get back to you within a few days.</p>
           </div>
           <AmbassadorForm brand="townies" />
         </div>

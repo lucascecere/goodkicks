@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <div className="bg-town-cream">
+    <div className="bg-bg">
       <PageMasthead
         eyebrow="Bulk orders & wholesale"
         title="Kit out the whole town."
@@ -35,12 +35,12 @@ export default function Page() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <WholesaleForm />
 
-        <div className="mt-14 pt-8 border-t border-town-rule text-sm text-town-muted">
+        <div className="mt-14 pt-8 border-t border-rule text-sm text-muted">
           {/* This used to open "Not a shop? You might want the ambassador
               program instead" — which read as a dismissal to the coach ordering
               thirty team hats, i.e. exactly the person the page is for. Only
               genuinely different jobs get pointed elsewhere now. */}
-          Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-town-navy">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-town-navy">Request it here</Link>. Want to rep Townies for a cut? <Link href="/ambassadors" className="underline underline-offset-4 hover:text-town-navy">The Town Rep program</Link>.
+          Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-text">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request it here</Link>. Want to rep Townies for a cut? <Link href="/ambassadors" className="underline underline-offset-4 hover:text-text">The Town Rep program</Link>.
         </div>
       </div>
     </div>

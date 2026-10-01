@@ -26,7 +26,7 @@ export function TownCard({
     <Link
       href={href}
       className={cn(
-        '@container group relative block overflow-hidden rounded-sm bg-town-cream aspect-[11/16]',
+        '@container group relative block overflow-hidden rounded-sm bg-bg aspect-[11/16]',
         className,
       )}
     >
@@ -40,7 +40,7 @@ export function TownCard({
       />
 
       {/* legibility scrim */}
-      <div className="absolute inset-0 bg-gradient-to-t from-town-navy/80 via-town-navy/10 to-town-navy/5" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/10 to-ink/5" />
 
       {/* content */}
       <div className="absolute inset-0 flex flex-col justify-end p-5 sm:p-6 text-white">

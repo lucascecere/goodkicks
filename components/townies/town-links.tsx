@@ -14,13 +14,13 @@ export function TownLinks({
   if (towns.length === 0) return null;
   return (
     <div className="mt-8 first:mt-0">
-      <h2 className="heading text-town-navy text-lg sm:text-xl mb-4">{heading}</h2>
+      <h2 className="heading text-text text-lg sm:text-xl mb-4">{heading}</h2>
       <ul className={`flex flex-wrap gap-2 ${align === 'center' ? 'justify-center' : ''}`}>
         {towns.map((t) => (
           <li key={t.slug}>
             <Link
               href={townHref(t.slug)}
-              className="inline-flex items-center rounded-full border border-town-navy/20 bg-white/60 px-4 py-2 text-sm font-semibold text-town-navy hover:border-town-navy hover:bg-white transition-colors"
+              className="inline-flex items-center rounded-full border border-text/20 bg-surface px-4 py-2 text-sm font-semibold text-text hover:border-accent hover:bg-accent hover:text-accent-contrast transition-colors"
             >
               {t.name}
             </Link>

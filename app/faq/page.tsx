@@ -17,7 +17,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
         One size fits most. Every hat is an adjustable snapback with a plastic closure, so it
         dials in from about 55–60cm. If a snapback has ever fit you, this will too. More detail on
         the{' '}
-        <Link href="/size-guide" className="underline underline-offset-2 hover:text-town-forest">
+        <Link href="/size-guide" className="underline underline-offset-2 hover:text-accent">
           size guide
         </Link>
         .
@@ -53,7 +53,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
         We ship across the U.S. Rates and timing are on the{' '}
         <Link
           href="/shipping-returns"
-          className="underline underline-offset-2 hover:text-town-forest"
+          className="underline underline-offset-2 hover:text-accent"
         >
           shipping &amp; returns
         </Link>{' '}
@@ -68,7 +68,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
         Yeah — see the{' '}
         <Link
           href="/shipping-returns"
-          className="underline underline-offset-2 hover:text-town-forest"
+          className="underline underline-offset-2 hover:text-accent"
         >
           shipping &amp; returns
         </Link>{' '}
@@ -84,7 +84,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
         We&apos;re working our way across the map one town at a time — South Shore first, then
         Boston&apos;s neighborhoods and Southeastern Mass, and outward from there. Tell us which
         town to do next on the{' '}
-        <Link href="/request-a-town" className="underline underline-offset-2 hover:text-town-forest">
+        <Link href="/request-a-town" className="underline underline-offset-2 hover:text-accent">
           request-a-town form
         </Link>
         .
@@ -96,7 +96,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <>
         We do — teams, shops, reunions, whatever. Hit us through the wholesale option on the{' '}
-        <Link href="/support" className="underline underline-offset-2 hover:text-town-forest">
+        <Link href="/support" className="underline underline-offset-2 hover:text-accent">
           contact page
         </Link>{' '}
         and we&apos;ll figure it out.
@@ -132,7 +132,7 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="bg-town-cream">
+    <div className="bg-bg">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
@@ -144,7 +144,7 @@ export default function FAQPage() {
         sub={
           <>
             The stuff people ask most. Still stuck?{' '}
-            <Link href="/support" className="underline underline-offset-2 text-white hover:text-town-cream">
+            <Link href="/support" className="underline underline-offset-2 text-white hover:text-ink-contrast">
               Holler at us
             </Link>
             .
@@ -152,13 +152,13 @@ export default function FAQPage() {
         }
       />
       <div className="max-w-3xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
-        <div className="divide-y divide-town-rule border-t border-town-rule">
+        <div className="divide-y divide-rule border-t border-rule">
           {FAQS.map((f) => (
             <div key={f.q} className="py-7">
-              <h2 className="font-block uppercase text-lg sm:text-xl text-town-navy mb-2 leading-snug">
+              <h2 className="font-block uppercase text-lg sm:text-xl text-text mb-2 leading-snug">
                 {f.q}
               </h2>
-              <p className="text-town-muted leading-relaxed">{f.a}</p>
+              <p className="text-muted leading-relaxed">{f.a}</p>
             </div>
           ))}
         </div>

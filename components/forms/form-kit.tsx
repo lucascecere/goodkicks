@@ -18,7 +18,7 @@ import { currentBrand } from '@/components/brand/current-brand';
 import type { ReactNode } from 'react';
 
 export const fieldClass =
-  'w-full bg-white border border-rule rounded-sm px-4 py-2.5 text-sm text-text placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent';
+  'w-full bg-surface border border-rule rounded-sm px-4 py-2.5 text-sm text-text placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent';
 export const labelClass =
   'block text-xs uppercase tracking-[0.15em] text-muted mb-1.5';
 export const errClass = 'text-red-600 text-xs mt-1';

@@ -25,7 +25,7 @@ export async function HatSackBand() {
   const { priceCents } = await getHatSackOffer();
 
   return (
-    <section className="relative overflow-hidden bg-town-navy">
+    <section className="relative overflow-hidden bg-ink">
       <BrandPattern variant="ma" color="cream" opacity={0.07} size={360} />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
@@ -43,7 +43,7 @@ export async function HatSackBand() {
                   className="object-contain"
                 />
               </div>
-              <span className="font-block font-bold text-2xl sm:text-3xl text-town-cream/50" aria-hidden>
+              <span className="font-block font-bold text-2xl sm:text-3xl text-ink-contrast/50" aria-hidden>
                 +
               </span>
               <div className="relative w-[22%] max-w-[150px] aspect-square">
@@ -59,19 +59,19 @@ export async function HatSackBand() {
           </div>
 
           <div className="text-center lg:text-left">
-            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-town-cream/70 mb-3">
+            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
               Townies × Good Kicks
             </p>
             <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl lg:text-4xl leading-none tracking-[0.015em] text-white mb-4">
               Hat &amp; Sack. {formatUsd(priceCents)}.
             </h2>
-            <p className="mx-auto lg:mx-0 max-w-md text-sm leading-relaxed text-town-cream/80">
+            <p className="mx-auto lg:mx-0 max-w-md text-sm leading-relaxed text-ink-contrast/80">
               A town hat, plus a Good Kicks foot bag pulled at random from the v1 run.
               You pick the town. We pick the bag. One box, one price.
             </p>
             <Link
               href={HAT_SACK_PATH}
-              className="mt-7 inline-flex items-center rounded-none bg-town-cream px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-town-navy transition-colors hover:bg-white"
+              className="mt-7 inline-flex items-center rounded-none bg-accent px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-accent-contrast transition-colors hover:bg-white"
             >
               Build your bundle
             </Link>
