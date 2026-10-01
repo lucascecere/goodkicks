@@ -68,7 +68,7 @@ export function BulkOrderBand({
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-3">
               Bulk orders
             </p>
-            <h2 className="heading text-[2rem] sm:text-[2.5rem] lg:text-[3rem] leading-[0.95] text-text mb-4">
+            <h2 className="display text-[2rem] sm:text-[2.5rem] lg:text-[3rem] text-text mb-4">
               Buying for everybody?
             </h2>
             <p className="text-base leading-relaxed text-muted max-w-md">

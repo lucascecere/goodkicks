@@ -30,7 +30,7 @@ export default function TownRepPage() {
           <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/50">
             Townies Town Rep Program
           </p>
-          <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em]">
+          <h1 className="display text-[2.5rem] sm:text-[3.25rem] lg:text-[4rem]">
             Rep your town.<br />We&apos;ll back you.
           </h1>
           <p className="text-ink-contrast/70 text-lg max-w-2xl mx-auto leading-relaxed">
@@ -52,7 +52,7 @@ export default function TownRepPage() {
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-center">
           <div className="space-y-4">
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">The deal</p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">
+            <h2 className="display text-[2rem] sm:text-[2.5rem] text-text">
               Free hat. Your own code. Real commission.
             </h2>
             <p className="text-muted leading-relaxed">
@@ -83,7 +83,7 @@ export default function TownRepPage() {
       <section className="py-16 sm:py-20 px-4 sm:px-8 bg-[#EAE6DB]">
         <div className="max-w-4xl mx-auto text-center space-y-3 mb-12 sm:mb-16">
           <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">What you get</p>
-          <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">The perks.</h2>
+          <h2 className="display text-[2rem] sm:text-[2.5rem] text-text">The perks.</h2>
           <p className="text-muted max-w-xl mx-auto">We keep it simple. You promote, your followers save, you earn.</p>
         </div>
         <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
@@ -114,7 +114,7 @@ export default function TownRepPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 sm:mb-16 space-y-3">
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">The numbers</p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">No tiers. No games.</h2>
+            <h2 className="display text-[2rem] sm:text-[2.5rem] text-text">No tiers. No games.</h2>
             <p className="text-muted max-w-xl mx-auto">
               We don&apos;t make you grind through levels to earn a real rate. We agree on your
               numbers when you come on, and that&apos;s what you get from order one.
@@ -153,7 +153,7 @@ export default function TownRepPage() {
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12 sm:mb-16 space-y-3">
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">The process</p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">How it works.</h2>
+            <h2 className="display text-[2rem] sm:text-[2.5rem] text-text">How it works.</h2>
           </div>
           <div className="space-y-0">
             {[
@@ -177,7 +177,7 @@ export default function TownRepPage() {
       {/* Who we're looking for */}
       <section className="py-16 px-4 sm:px-8 bg-ink text-ink-contrast">
         <div className="max-w-3xl mx-auto text-center space-y-4">
-          <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em]">Who we&apos;re looking for.</h2>
+          <h2 className="display text-[2rem] sm:text-[2.5rem]">Who we&apos;re looking for.</h2>
           {/* This used to read "doesn't matter if it's 200 followers or 20k …
               engagement over follower count", which was the opposite of how
               applications are actually judged. It recruited people who were
@@ -213,7 +213,7 @@ export default function TownRepPage() {
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12 space-y-3">
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">Apply</p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text">Become a Town Rep.</h2>
+            <h2 className="display text-[2rem] sm:text-[2.5rem] text-text">Become a Town Rep.</h2>
             <p className="text-muted">We&apos;ll get back to you within a few days.</p>
           </div>
           <AmbassadorForm brand="townies" />

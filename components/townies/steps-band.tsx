@@ -38,7 +38,7 @@ export function StepsBand({
         <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-4">
           {eyebrow}
         </p>
-        <h2 className="heading text-2xl sm:text-3xl leading-none text-text mb-4">{title}</h2>
+        <h2 className="display text-[2rem] sm:text-[2.5rem] text-text mb-4">{title}</h2>
         <p className="mx-auto max-w-xl text-sm leading-relaxed text-muted">{body}</p>
 
         <ol className="mx-auto mt-10 grid gap-8 sm:grid-cols-3 sm:gap-8 text-left">

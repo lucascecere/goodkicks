@@ -204,7 +204,7 @@ export function Hero({
           )}
           {/* Fluid from 34px on a phone to 80px on a desktop. The old fixed
               40px ceiling is what made a 900px photograph read as empty. */}
-          <h1 className="heading text-[clamp(2.5rem,7vw,6rem)] leading-[0.94] drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)]">
+          <h1 className="display text-[clamp(2.5rem,6.5vw,5.5rem)] drop-shadow-[0_2px_24px_rgba(0,0,0,0.35)]">
             {active.headline}
           </h1>
           {active.sub && (

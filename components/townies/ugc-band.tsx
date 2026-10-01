@@ -43,7 +43,7 @@ export function UgcBand({
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-2">
               {eyebrow}
             </p>
-            <h2 className="heading text-3xl sm:text-4xl lg:text-[2.75rem] leading-[0.95] text-white">
+            <h2 className="display text-[2.25rem] sm:text-[2.75rem] lg:text-[3.25rem] text-white">
               {title}
             </h2>
           </div>

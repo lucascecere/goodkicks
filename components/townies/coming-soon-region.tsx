@@ -20,7 +20,7 @@ export function ComingSoonRegion({
         <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/60 mb-4">
           Coming soon
         </p>
-        <h1 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-5xl leading-[0.95] tracking-[0.01em] mb-5">
+        <h1 className="display text-[2.5rem] sm:text-[3.25rem] lg:text-[4rem] mb-5">
           {region}
         </h1>
         <p className="text-ink-contrast/70 max-w-md mx-auto mb-9 leading-relaxed">

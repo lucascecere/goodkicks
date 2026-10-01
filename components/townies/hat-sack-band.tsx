@@ -62,7 +62,7 @@ export async function HatSackBand() {
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
               Townies × Good Kicks
             </p>
-            <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl lg:text-4xl leading-none tracking-[0.015em] text-white mb-4">
+            <h2 className="display text-[2rem] sm:text-[2.5rem] lg:text-[3rem] text-white mb-4">
               Hat &amp; Sack. {formatUsd(priceCents)}.
             </h2>
             <p className="mx-auto lg:mx-0 max-w-md text-sm leading-relaxed text-ink-contrast/80">

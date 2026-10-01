@@ -49,7 +49,7 @@ export function PageMasthead({
         <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
           {eyebrow}
         </p>
-        <h1 className="heading text-3xl sm:text-4xl lg:text-5xl leading-[0.95] text-white mb-4">
+        <h1 className="display text-[2.5rem] sm:text-[3.25rem] lg:text-[4rem] text-white mb-4">
           {title}
         </h1>
         {sub ? (

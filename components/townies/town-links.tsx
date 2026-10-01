@@ -14,7 +14,7 @@ export function TownLinks({
   if (towns.length === 0) return null;
   return (
     <div className="mt-8 first:mt-0">
-      <h2 className="heading text-text text-lg sm:text-xl mb-4">{heading}</h2>
+      <h2 className="display text-text text-xl sm:text-2xl mb-4">{heading}</h2>
       <ul className={`flex flex-wrap gap-2 ${align === 'center' ? 'justify-center' : ''}`}>
         {towns.map((t) => (
           <li key={t.slug}>

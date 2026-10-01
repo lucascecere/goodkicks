@@ -32,14 +32,13 @@ export function TownsGrid({
     <section className="bg-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <SectionHeader
-          eyebrow="The towns"
-          title="Every town we've done."
-          sub="Newest first. Most towns come in both builds, and every one is stitched, not printed."
+          title="Every town so far."
+          sub="Twelve towns and counting, stitched not printed. Pick yours."
           link={{ href: '/shop', label: allLabel }}
         />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10">
           {shown.map((p, i) => (
-            <ProductCard key={p.id} product={p} priority={i < 4} />
+            <ProductCard key={p.id} product={p} priority={i < 4} quickAdd={false} />
           ))}
         </div>
         {/* The header's link hides on phones, so the grid closes with it. */}

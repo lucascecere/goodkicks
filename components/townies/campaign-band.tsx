@@ -51,7 +51,7 @@ export function CampaignBand({
   const bottom = valign === 'bottom';
 
   return (
-    <section className="relative w-full aspect-[4/3] sm:aspect-[21/9] overflow-hidden bg-ink">
+    <section className="relative w-full aspect-[4/5] sm:aspect-[21/9] overflow-hidden bg-ink">
       <BrandImage
         src={src}
         mobileSrc={mobileSrc}
@@ -76,7 +76,7 @@ export function CampaignBand({
 
       <div
         className={cn(
-          'absolute inset-y-0 flex flex-col max-w-sm p-6 sm:p-10 lg:p-14 text-white',
+          'absolute inset-y-0 flex flex-col max-w-md p-6 sm:p-10 lg:p-14 text-white',
           bottom ? 'justify-end' : 'justify-end sm:justify-center',
           right ? 'right-0 sm:items-end sm:text-right' : 'left-0',
         )}
@@ -86,15 +86,11 @@ export function CampaignBand({
             {eyebrow}
           </p>
         )}
-        <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em]">
-          {title}
-        </h2>
-        {sub && (
-          <p className="text-[0.8125rem] leading-relaxed text-ink-contrast/80 mt-2.5">{sub}</p>
-        )}
+        <h2 className="display text-[2.25rem] sm:text-[2.75rem] lg:text-[3.5rem]">{title}</h2>
+        {sub && <p className="text-base leading-relaxed text-ink-contrast/85 mt-3 max-w-sm">{sub}</p>}
         <Link
           href={cta.href}
-          className="mt-5 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-ink-contrast hover:text-white transition-colors"
+          className="mt-6 inline-flex w-fit items-center rounded-none bg-ink-contrast px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-ink transition-colors hover:bg-white"
         >
           {cta.label}
         </Link>

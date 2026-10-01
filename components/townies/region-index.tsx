@@ -22,7 +22,6 @@ export function RegionIndex({ products }: { products: CollectionProduct[] }) {
     <section className="bg-bg border-t border-rule">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
         <SectionHeader
-          eyebrow="Shop by region"
           title="Where are you from?"
           sub="Filed by coast and county. Every Massachusetts town, eventually."
           link={{ href: '/shop', label: 'Every town' }}
@@ -32,7 +31,7 @@ export function RegionIndex({ products }: { products: CollectionProduct[] }) {
           {groups.map((g) => (
             <li key={g.region}>
               <Link href={regionHref(g.region)} className={row}>
-                <h3 className="heading text-2xl sm:text-3xl lg:text-[2.125rem] leading-none whitespace-nowrap">{g.label}</h3>
+                <h3 className="display text-2xl sm:text-3xl lg:text-[2.125rem] whitespace-nowrap">{g.label}</h3>
                 <span className="justify-self-end sm:order-3 flex items-center gap-3 whitespace-nowrap text-[0.6875rem] uppercase tracking-[0.18em] text-muted transition-colors group-hover:text-text">
                   {g.towns.length} {g.towns.length === 1 ? 'town' : 'towns'}
                   <span aria-hidden className="transition-transform group-hover:translate-x-1">
@@ -47,7 +46,7 @@ export function RegionIndex({ products }: { products: CollectionProduct[] }) {
           ))}
           <li>
             <Link href="/request-a-town" className={row}>
-              <h3 className="heading text-2xl sm:text-3xl lg:text-[2.125rem] leading-none whitespace-nowrap">Your town</h3>
+              <h3 className="display text-2xl sm:text-3xl lg:text-[2.125rem] whitespace-nowrap">Your town</h3>
               <span className="justify-self-end sm:order-3 flex items-center gap-3 whitespace-nowrap text-[0.6875rem] uppercase tracking-[0.18em] text-text underline underline-offset-[6px] decoration-1">
                 Request it
                 <span aria-hidden className="transition-transform group-hover:translate-x-1">

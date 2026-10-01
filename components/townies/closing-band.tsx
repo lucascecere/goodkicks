@@ -30,8 +30,8 @@ export function ClosingBand({
         <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-white/90 mb-4">
           {eyebrow}
         </p>
-        <h2 className="heading text-2xl sm:text-3xl leading-none text-white mb-4">{title}</h2>
-        <p className="text-white/90 leading-relaxed mb-9 mx-auto">{body}</p>
+        <h2 className="display text-[2rem] sm:text-[2.75rem] text-white mb-4">{title}</h2>
+        <p className="text-white/90 text-base leading-relaxed mb-9 mx-auto max-w-xl">{body}</p>
         <div className="flex flex-wrap items-center justify-center gap-5">
           <Link
             href={cta.href}

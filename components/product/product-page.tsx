@@ -159,7 +159,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             <p className="text-xs uppercase tracking-widest text-muted font-medium mb-2">
               Build your own bundle
             </p>
-            <h1 className="heading text-4xl sm:text-5xl text-text">the 3-pack.</h1>
+            <h1 className="display text-4xl sm:text-5xl text-text">the 3-pack.</h1>
           </div>
           <BundlePicker
             bundleVariantId={firstVariant.id}
@@ -288,7 +288,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             ) : (
               <TowniesBlock className="block text-[0.65rem] mb-1" />
             )}
-            <h1 className="heading leading-[0.9] text-text text-3xl sm:text-5xl lg:text-6xl mb-3 break-words">
+            <h1 className="display text-text text-3xl sm:text-[2.75rem] lg:text-[3.25rem] mb-3 break-words">
               {name}
             </h1>
             {!gk && (
@@ -375,7 +375,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
         {townCross.length > 0 && (
           <div className="mt-20 sm:mt-28">
             <div className="flex items-center gap-4 mb-6">
-              <h2 className="heading text-2xl sm:text-3xl text-text whitespace-nowrap">More towns</h2>
+              <h2 className="display text-2xl sm:text-3xl text-text whitespace-nowrap">More towns</h2>
               <div className="h-px flex-1 bg-rule" />
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -390,7 +390,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
         {gkCross.length > 0 && (
           <div className="mt-20 sm:mt-28">
             <div className="flex items-center gap-4 mb-6">
-              <h2 className="heading text-2xl sm:text-3xl text-text whitespace-nowrap">more colorways</h2>
+              <h2 className="display text-2xl sm:text-3xl text-text whitespace-nowrap">more colorways</h2>
               <div className="h-px flex-1 bg-rule" />
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

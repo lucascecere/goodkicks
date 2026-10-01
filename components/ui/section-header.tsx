@@ -54,7 +54,7 @@ export function SectionHeader({
             themselves before the eye reaches the products. */}
         <h2
           className={cn(
-            'heading leading-[0.95] text-text',
+            'display text-text',
             centred ? 'text-[2.25rem] sm:text-[2.75rem] lg:text-[3.25rem]' : 'text-[2rem] sm:text-[2.5rem] lg:text-[3rem]',
           )}
         >

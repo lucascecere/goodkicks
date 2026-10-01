@@ -30,7 +30,7 @@ const inter = Inter({
 const rokkitt = Rokkitt({
   subsets: ['latin'],
   variable: '--font-rokkitt',
-  weight: ['700', '800'],
+  weight: ['600', '700', '800'],
   display: 'swap',
 });
 

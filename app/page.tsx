@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { Hero } from '@/components/townies/hero';
 import { TownsGrid } from '@/components/townies/towns-grid';
 import { TownTicker } from '@/components/townies/town-ticker';
-import { BulkOrderBand } from '@/components/townies/bulk-order-band';
+import { CampaignBand } from '@/components/townies/campaign-band';
+import { ValueBand } from '@/components/townies/value-band';
 import { HatSackBand } from '@/components/townies/hat-sack-band';
-import { BuildsSplit } from '@/components/townies/builds-split';
+import { BuildsTiles } from '@/components/townies/builds-tiles';
 import { RegionIndex } from '@/components/townies/region-index';
 import { ReviewBand } from '@/components/townies/review-band';
 import { UgcBand } from '@/components/townies/ugc-band';
@@ -38,28 +39,11 @@ const HERO_SLIDES = [
     cta: { href: '/shop', label: 'Shop all towns' },
     ctaSecondary: { href: '/shop#regions', label: 'Shop by region' },
   },
-  {
-    imageSrc: '/brand/scene/milton-hero-16x10.jpg',
-    mobileSrc: '/brand/drops/milton.jpg',
-    imageAlt: 'Two Milton Townies snapbacks on a curb in Milton Village',
-    eyebrow: 'The first town',
-    headline: 'Milton. 1640.',
-    sub: 'Where this started, and still the one we get asked for most.',
-    cta: { href: '/towns/milton', label: 'Shop Milton' },
-    ctaSecondary: { href: '/shop', label: 'Shop all towns' },
-  },
-  // BRAINTREE SLIDE REMOVED — do not restore this one as it was.
-  //
-  // Both Braintree photographs show two caps: the cream 'Classic' and the navy
-  // '02184'. The '02184' is archived and unpublished in Shopify, so the hero was
-  // advertising a hat that 404s, with a CTA to a filtered shop page that no
-  // longer contains it. It cannot be cropped out either — the two caps overlap
-  // at roughly x=700 of 1448, so excluding the navy one leaves about 437px of
-  // height at 16:10, well short of a full-bleed hero.
-  //
-  // Real Classic-only photography is being shot. When it lands, add the slide
-  // back with the new files — a 16:10 crop plus a squarer `mobileSrc`, both with
-  // the bottom-left kept clear for the caption.
+  // ONE slide on purpose. The Milton curb shoot used to be slide two; a
+  // carousel hides whichever photograph isn't up, so Milton now has the
+  // campaign band below the grid and every photograph on the page is always
+  // visible. The Braintree slide stays retired: both Braintree frames show
+  // the archived '02184' alongside the Lifestyle and cannot be cropped apart.
 ];
 
 export const metadata: Metadata = {
@@ -108,50 +92,59 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Chips are standing facts about the store, so they belong to the hero
-          rather than to a slide. Free shipping reads the same $75 the cart's
-          progress bar does; "designed in Massachusetts" is the wording the
-          brand uses — never "made in USA", which is not true of the blanks. */}
-      <Hero
-        slides={HERO_SLIDES}
-        align="left"
-        chips={['Free shipping over $75', 'Designed in Massachusetts', 'New towns every drop']}
-      />
+      {/* No proof chips in the hero any more: the announcement strip already
+          carries the same standing facts, and the '47 hero is a photograph, a
+          line and a button. */}
+      <Hero slides={HERO_SLIDES} align="left" />
 
-      <TownTicker towns={tickerTowns} />
+      <TownTicker towns={tickerTowns} tone="light" />
 
-      {/* A grid, not a rail. Eight hats at full tile size is the product
-          moment the page was missing; a rail showed five small ones and cut the
-          sixth off at the viewport edge. */}
+      {/* The product grid, No Rivals density: eight hats, four across, nothing
+          under the tile but the name and the price. Adding to cart is the
+          shop's job. */}
       <TownsGrid products={products} townCount={tickerTowns.length} />
 
-      {/* The promo sits directly under the rail: somebody who has just scrolled
-          the hats is one decision away from adding a foot bag to one. Navy also
-          breaks up white rail → cream bulk band. */}
       <HatSackBand />
 
-      {/* The two builds, then the map. A visitor who has just scrolled the grid
-          has two questions, which hat is which and is my town here, and these
-          answer them in that order before the bulk push asks for anything.
-          Natural → navy → natural keeps neighbouring grounds apart. */}
-      <BuildsSplit products={products} />
+      {/* The '47 spine: full-bleed photograph, caption in one corner, one
+          button. Milton is the first town and the one we're asked for most,
+          and the curb shoot is the strongest frame we own. */}
+      <CampaignBand
+        src="/brand/scene/milton-21x9.jpg"
+        mobileSrc="/brand/drops/milton.jpg"
+        alt="Two Milton Townies snapbacks on a curb in Milton Village"
+        eyebrow="The first town"
+        title="Milton. 1640."
+        sub="Where this started, and still the one we get asked for most."
+        cta={{ href: '/towns/milton', label: 'Shop Milton' }}
+        align="left"
+      />
+
+      <BuildsTiles products={products} />
 
       <RegionIndex products={products} />
 
       {/* Both of these render NOTHING until lib/townies/reviews.ts has real
-          entries — see the rule at the top of that file. They sit here, after
-          the buying decision and before the bulk push, so that the day the
-          first reviews land the page gains a proof section rather than needing
-          a rebuild to make room for one. */}
+          entries. See the rule at the top of that file. */}
       <ReviewBand />
 
       <UgcBand />
 
-      <BulkOrderBand imageSrc="/brand/scene/bulk-order.jpg" />
+      {/* Second photo band, caption in the opposite corner so the two read as
+          two campaigns rather than one repeated block. The Braintree pile is
+          the bulk story in one frame. */}
+      <CampaignBand
+        src="/brand/scene/bulk-order.jpg"
+        alt="A pile of Braintree Townies snapbacks fresh from the embroiderer"
+        eyebrow="Bulk orders"
+        title="Buying for everybody?"
+        sub="Teams, schools, fundraisers. Twenty-five hats or two hundred, better price per hat."
+        cta={{ href: '/wholesale', label: 'Get a bulk price' }}
+        align="right"
+        valign="bottom"
+      />
 
-{/* The four-mark value band used to close the page here. It still runs on
-          every product page, which is where a buyer actually weighs those
-          promises; on the homepage it was one more band after the bulk push. */}
+      <ValueBand />
     </>
   );
 }

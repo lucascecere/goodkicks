@@ -21,7 +21,17 @@ function Sep({ dot }: { dot?: boolean }) {
   );
 }
 
-export function TownTicker({ towns, dot = false }: { towns: string[]; dot?: boolean }) {
+export function TownTicker({
+  towns,
+  dot = false,
+  tone = 'navy',
+}: {
+  towns: string[];
+  dot?: boolean;
+  /** 'light' runs it on the page ground between a photo and a grid. */
+  tone?: 'navy' | 'light';
+}) {
+  const light = tone === 'light';
   if (towns.length === 0) return null;
   // A short list would leave gaps on a wide screen, so repeat it until the
   // track is comfortably longer than any viewport before duplicating.
@@ -30,11 +40,11 @@ export function TownTicker({ towns, dot = false }: { towns: string[]; dot?: bool
   const run = [...padded, ...padded];
 
   return (
-    <div className="relative overflow-hidden bg-ink py-3.5 sm:py-4">
+    <div className={`relative overflow-hidden py-3.5 sm:py-4 ${light ? 'bg-bg border-b border-rule' : 'bg-ink'}`}>
       <div className="marquee-x flex w-max items-center">
         {run.map((town, i) => (
           <span key={`${town}-${i}`} className="flex items-center whitespace-nowrap">
-            <span className="heading text-ink-contrast/90 text-sm sm:text-base tracking-[0.06em] px-5 sm:px-7">
+            <span className={`heading text-sm sm:text-base tracking-[0.06em] px-5 sm:px-7 ${light ? 'text-text/80' : 'text-ink-contrast/90'}`}>
               {town}
             </span>
             <Sep dot={dot} />
@@ -42,8 +52,8 @@ export function TownTicker({ towns, dot = false }: { towns: string[]; dot?: bool
         ))}
       </div>
       {/* Feathered ends so names don't get guillotined at the viewport edge. */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28 bg-gradient-to-r from-ink to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28 bg-gradient-to-l from-ink to-transparent" />
+      <div className={`pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28 bg-gradient-to-r to-transparent ${light ? 'from-bg' : 'from-ink'}`} />
+      <div className={`pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28 bg-gradient-to-l to-transparent ${light ? 'from-bg' : 'from-ink'}`} />
     </div>
   );
 }

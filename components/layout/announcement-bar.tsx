@@ -4,51 +4,42 @@ import type { BrandConfig } from '@/lib/brand/brands';
 /**
  * The thin promo strip above the header.
  *
- * A scrolling track rather than a single centred line: three standing promises
- * fit where one did, and the movement is what makes the top of the page feel
- * tended rather than static.
+ * One still line, centred, the way '47 and No Rivals run theirs. It used to
+ * scroll; a moving strip above a navy header and a full-bleed photograph was
+ * one moving thing too many at the top of the page. Phones see the first
+ * promise only; wider screens see all of them with a middot between.
  *
  * EVERY LINE MUST BE TRUE. This bar is the first claim a visitor reads and the
  * one they will hold us to at checkout, so it carries only facts the store can
- * honour — the free-shipping threshold is read from the SAME brand field that
+ * honour. The free-shipping threshold is read from the SAME brand field that
  * drives the cart's progress bar, so the two can never drift apart. No invented
  * discount codes, no "limited time", no countdown.
- *
- * The track is its content duplicated EXACTLY once: `.marquee-x` travels -50%,
- * so a third copy or a half copy makes the loop visibly jump.
  */
 export function AnnouncementBar({ brand }: { brand: BrandConfig }) {
   const items = brand.announce;
   if (!items || items.length === 0) return null;
 
-  // Repeat the set until the track is long enough to fill a wide viewport
-  // before it wraps — three short phrases on a 1440 screen would otherwise
-  // leave a visible gap chasing them across the bar.
-  const filled = items.length >= 6 ? items : Array(Math.ceil(6 / items.length)).fill(items).flat();
-
   return (
-    <div className="bg-announce text-announce-contrast overflow-hidden">
-      <div className="flex w-max marquee-x">
-        {/* Duplicated once for the -50% loop. The copy is aria-hidden so a
-            screen reader hears the promises once, not twice. */}
-        {[0, 1].map((copy) => (
-          <div key={copy} className="flex shrink-0" aria-hidden={copy === 1}>
-            {filled.map((item, i) => (
-              <span
-                key={`${copy}-${i}`}
-                className="flex items-center gap-8 whitespace-nowrap px-8 py-2 text-[0.625rem] font-semibold uppercase tracking-[0.2em]"
-              >
-                {item.href ? (
-                  <Link href={item.href} className="underline-offset-4 hover:underline">
-                    {item.text}
-                  </Link>
-                ) : (
-                  item.text
-                )}
-                <span className="opacity-50">◆</span>
+    <div className="bg-announce text-announce-contrast">
+      <div className="max-w-7xl mx-auto flex h-8 items-center justify-center gap-5 px-4 text-[0.625rem] font-semibold uppercase tracking-[0.2em]">
+        {items.map((item, i) => (
+          <span
+            key={item.text}
+            className={`items-center gap-5 whitespace-nowrap ${i === 0 ? 'flex' : 'hidden sm:flex'}`}
+          >
+            {i > 0 && (
+              <span aria-hidden className="opacity-40">
+                ·
               </span>
-            ))}
-          </div>
+            )}
+            {item.href ? (
+              <Link href={item.href} className="underline-offset-4 hover:underline">
+                {item.text}
+              </Link>
+            ) : (
+              item.text
+            )}
+          </span>
         ))}
       </div>
     </div>

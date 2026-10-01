@@ -49,7 +49,7 @@ export function EditorialSplit({
           <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-3">
             {eyebrow}
           </p>
-          <h2 className="font-block font-bold uppercase text-2xl sm:text-3xl leading-none tracking-[0.015em] text-text mb-4">
+          <h2 className="display text-[2rem] sm:text-[2.5rem] text-text mb-4">
             {headline}
           </h2>
           <p className="text-muted leading-relaxed mb-6">{body}</p>

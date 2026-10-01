@@ -58,7 +58,7 @@ export function RegionRail({ cards }: { cards: RegionCard[] }) {
           <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-2">
             Shop by region
           </p>
-          <h2 className="font-block font-bold uppercase text-3xl sm:text-4xl lg:text-[2.75rem] leading-[0.95] tracking-[0.015em] text-white">
+          <h2 className="display text-[2.25rem] sm:text-[2.75rem] lg:text-[3.25rem] text-white">
             Where are you from?
           </h2>
           <p className="mt-3 text-sm text-ink-contrast/70">

@@ -106,6 +106,7 @@
   --heading-weight: 400;
   --heading-case: none;
   --heading-tracking: -0.01em;
+  --display-weight: 400;
 }
 
 /* "A heading, in this brand's voice." Pair with a size and a leading. */
@@ -114,6 +115,19 @@
   font-weight: var(--heading-weight);
   text-transform: var(--heading-case);
   letter-spacing: var(--heading-tracking);
+}
+
+/* Display type for headlines: the same slab face as `heading`, but sentence
+   case at a lighter weight. Bold caps on every headline is what made the site
+   shout; the big lines now read like a magazine, and the caps are kept for
+   small labels, buttons and the ticker. Good Kicks' serif is already regular
+   and lower case, so it reads the same weight it always did. */
+.display {
+  font-family: var(--font-heading);
+  font-weight: var(--display-weight, 600);
+  text-transform: none;
+  letter-spacing: -0.012em;
+  line-height: 1.02;
 }
 
 @layer base {

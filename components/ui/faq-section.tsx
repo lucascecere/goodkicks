@@ -34,7 +34,7 @@ export function FaqSection({
         <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-3">
           {eyebrow}
         </p>
-        <h2 className="heading text-2xl sm:text-3xl leading-none text-text mb-8">{title}</h2>
+        <h2 className="display text-[2rem] sm:text-[2.5rem] text-text mb-8">{title}</h2>
         <div className="border-t border-rule">
           {items.map((f) => (
             <details key={f.q} className="group border-b border-rule">

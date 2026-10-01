@@ -58,7 +58,7 @@ export function BuildsSplit({ products }: { products: CollectionProduct[] }) {
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
               Two builds
             </p>
-            <h2 className="heading text-[2.25rem] sm:text-[2.75rem] lg:text-[3.25rem] leading-[0.95]">
+            <h2 className="display text-[2.25rem] sm:text-[2.75rem] lg:text-[3.25rem]">
               Same town. Two hats.
             </h2>
             <p className="mt-4 text-base text-ink-contrast/75 max-w-md">
