@@ -12,7 +12,7 @@ export const revalidate = 60;
 export async function GET() {
   const products = await getTownieProducts();
   const towns = groupByTown(products).map((t) => ({
-    slug: (t.href ?? '').replace('/shop?town=', ''),
+    slug: t.id.replace(/^town-/, ''),
     name: t.name,
     region: t.region,
     regionLabel: t.regionLabel,

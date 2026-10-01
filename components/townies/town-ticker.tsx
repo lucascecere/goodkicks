@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { MaMark } from '@/components/brand/wordmark';
+import { townHref } from '@/lib/townies/towns';
 
 /**
  * Scrolling band of town names under the hero.
@@ -50,7 +51,7 @@ export function TownTicker({ towns, dot = false }: { towns: string[]; dot?: bool
 /** Same band, but every name links to its town — used on the shop page. */
 export function TownTickerLinked({
   towns,
-  hrefFor = (slug) => `/shop?town=${slug}`,
+  hrefFor = townHref,
   dot = false,
 }: {
   towns: Array<{ slug: string; name: string }>;

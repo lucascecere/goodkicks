@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
-import { productsInRegion } from '@/lib/townies/towns';
+import { productsInRegion, townPages } from '@/lib/townies/towns';
+import { TownLinks } from '@/components/townies/town-links';
 import { ProductCard } from '@/components/townies/product-card';
 import { PageMasthead } from '@/components/townies/page-masthead';
 import { breadcrumbSchema } from '@/lib/seo/site';
@@ -16,7 +17,9 @@ export const metadata: Metadata = {
 };
 
 export default async function SouthEastPage() {
-  const items = productsInRegion(await getTownieProducts(), 'south-east');
+  const products = await getTownieProducts();
+  const items = productsInRegion(products, 'south-east');
+  const towns = townPages(products).filter((t) => t.region === 'south-east');
 
   return (
     <div className="bg-town-cream">
@@ -59,6 +62,11 @@ export default async function SouthEastPage() {
               <ProductCard key={p.id} product={p} priority={i < 4} />
             ))}
           </div>
+        )}
+        {towns.length > 0 && (
+          <nav aria-label="Towns" className="mt-16">
+            <TownLinks heading="Shop by town" towns={towns} />
+          </nav>
         )}
       </div>
     </div>

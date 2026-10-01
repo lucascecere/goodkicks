@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import { getProductByHandle, getAllProducts } from '@/lib/shopify/service';
 import { getTownieProducts, getGoodKicksProducts, type CollectionProduct } from '@/lib/shopify/collections';
 import { breadcrumbSchema } from '@/lib/seo/site';
-import { toTownView } from '@/lib/townies/towns';
+import { toTownView, townHref, townKey } from '@/lib/townies/towns';
 import { imageForVariant } from '@/lib/shopify/variant-colors';
 import { BrandImage } from '@/components/ui/brand-image';
 import { TowniesBlock } from '@/components/brand/wordmark';
@@ -208,7 +208,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
     image: schemaImages,
     description: gk
       ? `${name} — a hand-stitched Good Kicks foot bag, properly weighted and built to take a beating.`
-      : `${name} — heavyweight Massachusetts town-pride apparel from Townies. Stitched, not printed, and built to last.`,
+      : `${name} — a Massachusetts town-pride hat from Townies Apparel Co. Stitched, not printed.`,
     brand: { '@type': 'Brand', name: gk ? 'Good Kicks' : 'Townies' },
     offers: {
       '@type': 'Offer',
@@ -247,7 +247,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
       ]
     : [
         { name: 'Home', path: '/' },
-        { name: 'Towns', path: '/shop' },
+        { name: townKey(shopifyProduct).name, path: townHref(townKey(shopifyProduct).slug) },
         { name, path: `/products/${handle}` },
       ];
 
@@ -292,6 +292,14 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             <h1 className="heading leading-[0.9] text-text text-3xl sm:text-5xl lg:text-6xl mb-3 break-words">
               {name}
             </h1>
+            {!gk && (
+              <Link
+                href={townHref(townKey(shopifyProduct).slug)}
+                className="inline-block text-xs font-semibold uppercase tracking-[0.12em] text-muted hover:text-text underline underline-offset-4 mb-5"
+              >
+                All {townKey(shopifyProduct).name}, MA hats
+              </Link>
+            )}
             {shopifyProduct.descriptionHtml ? (
               <div
                 className="text-muted leading-relaxed mb-8 max-w-md space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:mt-1 [&_p]:leading-relaxed [&_strong]:text-text [&_strong]:font-semibold"

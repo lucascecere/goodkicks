@@ -199,7 +199,7 @@ const TOWN_IMAGES: Record<string, string> = {
   // Classic-only shot.
 };
 
-export function townKey(p: CollectionProduct): { slug: string; name: string } {
+export function townKey(p: Pick<CollectionProduct, 'title' | 'tags'>): { slug: string; name: string } {
   const tag = p.tags.find((t) => t.toLowerCase().startsWith('town:'));
   if (tag) {
     const slug = tag
@@ -212,6 +212,35 @@ export function townKey(p: CollectionProduct): { slug: string; name: string } {
   }
   const first = p.title.trim().split(/\s+/)[0]?.replace(/[^A-Za-z0-9]/g, '') ?? 'town';
   return { slug: first.toLowerCase(), name: first };
+}
+
+/** Every town with a live hat has a page of its own at /towns/<slug>. */
+export function townHref(slug: string): string {
+  return `/towns/${slug}`;
+}
+
+export type TownPage = {
+  slug: string;
+  name: string;
+  region: string;
+  regionLabel: string;
+  products: CollectionProduct[];
+};
+
+/** One entry per town, products grouped the same way the town cards are. */
+export function townPages(products: CollectionProduct[]): TownPage[] {
+  const map = new Map<string, TownPage>();
+  for (const p of products) {
+    const { slug, name } = townKey(p);
+    const entry = map.get(slug);
+    if (entry) {
+      entry.products.push(p);
+    } else {
+      const region = regionForProduct(p.tags, slug);
+      map.set(slug, { slug, name, region, regionLabel: regionLabel(region), products: [p] });
+    }
+  }
+  return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function groupByTown(products: CollectionProduct[]): TownView[] {
@@ -231,7 +260,7 @@ export function groupByTown(products: CollectionProduct[]): TownView[] {
       id: `town-${slug}`,
       name,
       handle: '',
-      href: `/shop?town=${slug}`,
+      href: townHref(slug),
       region,
       regionLabel: regionLabel(region),
       image: TOWN_IMAGES[slug] ?? withImage.featuredImage?.url ?? null,

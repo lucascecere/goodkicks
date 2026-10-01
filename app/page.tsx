@@ -45,7 +45,7 @@ const HERO_SLIDES = [
     eyebrow: 'The first town',
     headline: 'Milton. 1640.',
     sub: 'Where this started, and still the one we get asked for most.',
-    cta: { href: '/shop?town=milton', label: 'Shop Milton' },
+    cta: { href: '/towns/milton', label: 'Shop Milton' },
     ctaSecondary: { href: '/shop', label: 'Shop all towns' },
   },
   // BRAINTREE SLIDE REMOVED — do not restore this one as it was.

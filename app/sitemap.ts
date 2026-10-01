@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getTownieProducts, getGoodKicksProducts } from '@/lib/shopify/collections';
 import { towniePosts } from '@/lib/townies/blog-posts';
+import { townHref, townPages } from '@/lib/townies/towns';
 import { SITE_URL, GK_HOST_LIVE, gkCanonical } from '@/lib/seo/site';
 import { isGoodKicksHost } from '@/lib/seo/hosts';
 
@@ -23,6 +24,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
+  }));
+
+  const townPageRoutes: MetadataRoute.Sitemap = townPages(towns).map((t) => ({
+    url: `${siteUrl}${townHref(t.slug)}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.85,
   }));
 
   const goodKicksRoutes: MetadataRoute.Sitemap = goodKicks.map((p) => ({
@@ -68,6 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/size-guide`,        lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.4 },
     { url: `${siteUrl}/shipping-returns`,  lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.4 },
     { url: `${siteUrl}/privacy`,           lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.3 },
+    ...townPageRoutes,
     ...townRoutes,
     ...blogRoutes,
   ];
