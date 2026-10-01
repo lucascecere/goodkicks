@@ -3,7 +3,6 @@ import { Hero } from '@/components/townies/hero';
 import { TownsGrid } from '@/components/townies/towns-grid';
 import { TownTicker } from '@/components/townies/town-ticker';
 import { CampaignBand } from '@/components/townies/campaign-band';
-import { ValueBand } from '@/components/townies/value-band';
 import { HatSackBand } from '@/components/townies/hat-sack-band';
 import { BuildsTiles } from '@/components/townies/builds-tiles';
 import { RegionIndex } from '@/components/townies/region-index';
@@ -143,8 +142,6 @@ export default async function HomePage() {
         align="right"
         valign="bottom"
       />
-
-      <ValueBand />
     </>
   );
 }
