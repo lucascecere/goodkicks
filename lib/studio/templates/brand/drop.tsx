@@ -27,7 +27,7 @@ const fields: FieldDef[] = [
   { key: 'town', label: 'Town', type: 'text', group: 'Drop', help: 'Sits above the product name as the kicker.' },
   { key: 'productName', label: 'Product name', type: 'text', group: 'Drop', placeholder: 'Classic Snapback' },
   { key: 'price', label: 'Price', type: 'text', group: 'Drop', placeholder: '$29.99' },
-  { key: 'detail', label: 'Detail line', type: 'text', group: 'Drop', placeholder: 'Limited run · Ships in 4–6 weeks' },
+  { key: 'detail', label: 'Detail line', type: 'text', group: 'Drop', placeholder: 'Limited run · Ships in 3–4 weeks' },
   { key: 'cta', label: 'Call to action', type: 'text', group: 'Drop', placeholder: 'townies.shop' },
   { key: 'background', label: 'Product photo', type: 'image', group: 'Look', help: 'Use a drop photo, not a lifestyle shot — the product is the subject.' },
   { key: 'accent', label: 'Accent', type: 'select', group: 'Look', options: ACCENT_OPTIONS },
