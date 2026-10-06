@@ -116,6 +116,25 @@ export function fitText(
 }
 
 /**
+ * Where the sports templates' matchup block sits. Center is the default, but a
+ * photo with a face mid-frame needs the block moved off it — the photo decides.
+ */
+export const MATCHUP_POSITIONS = ['top', 'center', 'bottom'] as const;
+export type MatchupPosition = (typeof MATCHUP_POSITIONS)[number];
+
+export const MATCHUP_POSITION_OPTIONS: { value: MatchupPosition; label: string }[] = [
+  { value: 'top', label: 'Top' },
+  { value: 'center', label: 'Center' },
+  { value: 'bottom', label: 'Bottom (sits on the date bar)' },
+];
+
+export const MATCHUP_JUSTIFY: Record<MatchupPosition, 'flex-start' | 'center' | 'flex-end'> = {
+  top: 'flex-start',
+  center: 'center',
+  bottom: 'flex-end',
+};
+
+/**
  * Accent options offered by every non-sports template (sports templates take
  * their accent from the team palette instead).
  *

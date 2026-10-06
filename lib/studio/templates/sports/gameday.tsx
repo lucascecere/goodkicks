@@ -19,7 +19,18 @@ import {
   VerticalWordmark,
 } from '@/components/studio/primitives';
 import { CANVAS, defineTemplate, type FieldDef } from '@/lib/studio/types';
-import { FONT, PAD, STOCK_BACKGROUNDS, TRACK, TYPE, scrim } from '@/lib/studio/design';
+import {
+  FONT,
+  MATCHUP_JUSTIFY,
+  MATCHUP_POSITIONS,
+  MATCHUP_POSITION_OPTIONS,
+  PAD,
+  STOCK_BACKGROUNDS,
+  TRACK,
+  TYPE,
+  scrim,
+  type MatchupPosition,
+} from '@/lib/studio/design';
 import { getTeam, teamOptions, LEAGUE_LABELS } from '@/lib/studio/team-colors';
 
 const schema = z.object({
@@ -27,6 +38,7 @@ const schema = z.object({
   awayTeam: z.string(),
   homeTeam: z.string(),
   background: z.string(),
+  matchupPosition: z.enum(MATCHUP_POSITIONS),
   venue: z.string(),
   dateLabel: z.string(),
   timeLabel: z.string(),
@@ -47,6 +59,7 @@ type Props = z.infer<typeof schema>;
 const fields: FieldDef[] = [
   { key: 'wordmark', label: 'Left rail wordmark', type: 'text', group: 'Layout', help: 'Runs vertically down the left edge.' },
   { key: 'background', label: 'Background photo', type: 'image', group: 'Layout' },
+  { key: 'matchupPosition', label: 'Matchup position', type: 'select', group: 'Layout', options: MATCHUP_POSITION_OPTIONS, help: 'Move the logos off a face in the photo.' },
 
   { key: 'league', label: 'League', type: 'league', group: 'Matchup', help: 'Scopes the team lists, sets the odds line label, and tags the graphic.' },
   { key: 'awayTeam', label: 'Away team', type: 'team', group: 'Matchup' },
@@ -76,6 +89,7 @@ const mock: Props = {
   awayTeam: 'mlb-nyy',
   homeTeam: 'mlb-bos',
   background: '/brand/scene/clover-hero-16x10.jpg',
+  matchupPosition: 'center',
   venue: 'MLB · Fenway Park',
   dateLabel: 'Tuesday, August 5',
   timeLabel: '7:10 PM',
@@ -94,6 +108,14 @@ const mock: Props = {
 const BOTTOM_BAR = 312;
 /** Width of the left rail plus its breathing room. */
 const RAIL_GUTTER = 200;
+
+/** Top of the band scrim behind the matchup, per position and odds on/off.
+ *  The band has to follow the block or the venue label lands on open photo. */
+function matchupScrimTop(position: MatchupPosition, showOdds: boolean): number {
+  if (position === 'top') return showOdds ? 300 : -40;
+  if (position === 'bottom') return 520;
+  return showOdds ? 430 : 285;
+}
 
 function OddsRow({
   label,
@@ -260,13 +282,12 @@ export const gamedayTemplate = defineTemplate<Props>({
         {p.showOdds ? (
           <Scrim image={scrim.top(0.72)} top={0} left={0} width={CANVAS.portrait.width} height={480} />
         ) : null}
-        {/* Behind the matchup block, which floats mid-canvas where the top and
-            bottom scrims don't reach. Tracks the matchup: with the odds module
-            hidden the block recenters upward, and a scrim pinned to the
-            odds-on position would leave the venue label uncovered. */}
+        {/* Behind the matchup block, which can sit where the top and bottom
+            scrims don't reach. Tracks the matchup's position and the odds
+            module, or the venue label is left on open photo. */}
         <Scrim
           image={scrim.band(0.66)}
-          top={p.showOdds ? 430 : 285}
+          top={matchupScrimTop(p.matchupPosition, p.showOdds)}
           left={0}
           width={CANVAS.portrait.width}
           height={580}
@@ -328,15 +349,17 @@ export const gamedayTemplate = defineTemplate<Props>({
             </div>
           ) : null}
 
-          {/* Matchup box — centered in whatever vertical space is left, so the
-              composition rebalances when the odds module is switched off. */}
+          {/* Matchup box — placed (top / center / bottom) within whatever
+              vertical space is left, so it rebalances when the odds module is
+              switched off and can be moved off a face in the photo. */}
           <div
             style={{
               display: 'flex',
               flexDirection: 'column',
               flex: 1,
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: MATCHUP_JUSTIFY[p.matchupPosition],
+              paddingTop: p.matchupPosition === 'top' && p.showOdds ? 36 : 0,
             }}
           >
             {/* League tag — gives each sport a distinct marker on the graphic. */}

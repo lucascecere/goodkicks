@@ -16,7 +16,16 @@ import {
   VerticalWordmark,
 } from '@/components/studio/primitives';
 import { CANVAS, defineTemplate, type FieldDef } from '@/lib/studio/types';
-import { FONT, PAD, TRACK, TYPE, scrim } from '@/lib/studio/design';
+import {
+  FONT,
+  MATCHUP_JUSTIFY,
+  MATCHUP_POSITIONS,
+  MATCHUP_POSITION_OPTIONS,
+  PAD,
+  TRACK,
+  TYPE,
+  scrim,
+} from '@/lib/studio/design';
 import { getTeam, LEAGUE_LABELS } from '@/lib/studio/team-colors';
 
 const schema = z.object({
@@ -28,6 +37,7 @@ const schema = z.object({
   /** "Final", "Final/10", "Final/OT" — leagues disagree, so it's free text. */
   statusLabel: z.string(),
   background: z.string(),
+  matchupPosition: z.enum(MATCHUP_POSITIONS),
   venue: z.string(),
   dateLabel: z.string(),
   statLine: z.string(),
@@ -38,6 +48,7 @@ type Props = z.infer<typeof schema>;
 const fields: FieldDef[] = [
   { key: 'wordmark', label: 'Left rail wordmark', type: 'text', group: 'Layout' },
   { key: 'background', label: 'Background photo', type: 'image', group: 'Layout' },
+  { key: 'matchupPosition', label: 'Score position', type: 'select', group: 'Layout', options: MATCHUP_POSITION_OPTIONS, help: 'Move the score off a face in the photo.' },
 
   { key: 'league', label: 'League', type: 'league', group: 'Result', help: 'Scopes the team lists and tags the graphic.' },
   { key: 'awayTeam', label: 'Away team', type: 'team', group: 'Result' },
@@ -59,6 +70,7 @@ const mock: Props = {
   homeScore: '7',
   statusLabel: 'Final',
   background: '/brand/scene/milton-21x9.jpg',
+  matchupPosition: 'center',
   venue: 'MLB · Fenway Park',
   dateLabel: 'Tuesday, August 5',
   statLine: 'Ceddanne Rafaela 3-4, 2 HR, 5 RBI',
@@ -66,6 +78,10 @@ const mock: Props = {
 
 const BOTTOM_BAR = 300;
 const RAIL_GUTTER = 200;
+
+/** Top of the band scrim, which follows the score block so the venue label
+ *  never lands on open photo. */
+const SCRIM_TOP = { top: -100, center: 230, bottom: 420 } as const;
 
 /** Blank or non-numeric scores shouldn't decide a winner. */
 function winner(away: string, home: string): 'away' | 'home' | null {
@@ -180,7 +196,7 @@ export const finalScoreTemplate = defineTemplate<Props>({
         <Scrim image={scrim.left(0.8)} top={0} left={0} width={400} height={CANVAS.portrait.height} />
         {/* Starts high enough to catch the venue label, which sits above the
             logos and would otherwise land on open photo. */}
-        <Scrim image={scrim.band(0.7)} top={230} left={0} width={CANVAS.portrait.width} height={700} />
+        <Scrim image={scrim.band(0.7)} top={SCRIM_TOP[p.matchupPosition]} left={0} width={CANVAS.portrait.width} height={700} />
         <Scrim image={scrim.bottom(0.95)} bottom={0} left={0} width={CANVAS.portrait.width} height={470} />
 
         <div
@@ -209,7 +225,7 @@ export const finalScoreTemplate = defineTemplate<Props>({
             paddingTop: PAD,
             paddingBottom: BOTTOM_BAR,
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: MATCHUP_JUSTIFY[p.matchupPosition],
           }}
         >
           {/* League tag — gives each sport a distinct marker on the graphic. */}
