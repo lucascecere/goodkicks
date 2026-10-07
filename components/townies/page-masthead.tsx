@@ -28,17 +28,17 @@ export function PageMasthead({
 }) {
   const centered = align === 'center';
   return (
-    <section className="relative overflow-hidden bg-ink">
+    <section className="relative overflow-hidden bg-masthead border-b border-rule">
       {/* The MA silhouette is a big solid shape — at masthead scale it reads
           as blobs, so it runs quieter and larger than the fine-grained
           topo/pine/speckle tiles. */}
       {pattern !== 'none' && (
-      <BrandPattern
+      <div className="masthead-pattern"><BrandPattern
         variant={pattern}
         color="cream"
         opacity={pattern === 'ma' ? 0.045 : 0.08}
         size={pattern === 'topo' ? 520 : pattern === 'ma' ? 360 : pattern === 'pine' ? 300 : 170}
-      />
+      /></div>
       )}
       <div
         className={cn(
@@ -46,14 +46,14 @@ export function PageMasthead({
           centered && 'text-center',
         )}
       >
-        <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
+        <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-masthead-contrast/70 mb-3">
           {eyebrow}
         </p>
-        <h1 className="display text-[2.5rem] sm:text-[3.25rem] lg:text-[4rem] text-white mb-4">
+        <h1 className="display text-[2.5rem] sm:text-[3.25rem] lg:text-[4rem] text-masthead-contrast mb-4">
           {title}
         </h1>
         {sub ? (
-          <p className={cn('text-ink-contrast/80 leading-relaxed max-w-xl', centered && 'mx-auto')}>
+          <p className={cn('text-masthead-contrast/80 leading-relaxed max-w-xl', centered && 'mx-auto')}>
             {sub}
           </p>
         ) : null}
