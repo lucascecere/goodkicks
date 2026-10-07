@@ -4,7 +4,6 @@ import { TownCrests } from '@/components/townies/v2/town-crests';
 import { HatShelf } from '@/components/townies/v2/hat-shelf';
 import { RegionCards } from '@/components/townies/v2/region-cards';
 import { BulkSplit } from '@/components/townies/v2/bulk-split';
-import { JoinBand } from '@/components/townies/v2/join-band';
 import { CampaignBand } from '@/components/townies/campaign-band';
 import { ReviewBand } from '@/components/townies/review-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
@@ -29,7 +28,7 @@ export const metadata: Metadata = {
 /**
  * v2 home (2026-10), modelled on melin.com with Homefield's shop-by-school row:
  * studio hero → town badges → hat grid → one photo band → regions → bulk →
- * reviews (empty until real ones exist) → sign-up → footer.
+ * reviews (empty until real ones exist) → sign-up (site-wide, SiteWrapper) → footer.
  *
  * Every hat is a real Shopify shot on the shared studio ground (see
  * components/townies/v2/studio.ts). The only lifestyle photo on the page is the
@@ -81,7 +80,6 @@ export default async function HomePage() {
 
       <ReviewBand />
 
-      <JoinBand />
     </>
   );
 }

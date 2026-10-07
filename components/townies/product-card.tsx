@@ -58,8 +58,13 @@ export function ProductCard({
   // Townies shots are a hat centred on a white sweep with a wide margin, so
   // the tile crops in on it rather than showing the sweep; Good Kicks shots
   // are full-frame on wood and fill as they are.
-  const img = fit === 'cover' ? 'object-cover' : 'object-cover scale-[1.08]';
-  const tile = fit === 'cover' ? 'aspect-square' : 'aspect-[4/5]';
+  // v2 (2026-10): Townies hats sit on the shared studio ground — the white
+  // sweep is multiplied out so every tile matches the homepage (see
+  // components/townies/v2/studio.ts). Good Kicks (fit='cover') is unchanged.
+  const studio = fit !== 'cover';
+  const img = studio ? 'object-contain p-[6%] mix-blend-multiply' : 'object-cover';
+  const tile = 'aspect-square';
+  const pane = studio ? 'bg-[#F1EEE8]' : 'bg-white';
   // Townies only — see the note in QuickAdd. Good Kicks ships from stock, and
   // one GK product still carries a stale `preorder` tag in Shopify.
   const preorder = flavor === 'townies' && isPreorder(product.tags);
@@ -74,7 +79,7 @@ export function ProductCard({
   return (
     <div className="group block">
     <Link href={`${productBase}/${product.handle}`} className="block">
-      <div className={`relative ${tile} rounded-sm overflow-hidden bg-white border border-rule`}>
+      <div className={`relative ${tile} overflow-hidden ${studio ? pane : 'rounded-sm bg-white border border-rule'}`}>
         {product.featuredImage?.url ? (
           <>
             {/* The alternate shot waits UNDERNEATH at inset-0, not parked off
@@ -84,7 +89,7 @@ export function ProductCard({
                 object-contain leaves transparent margins that would otherwise
                 show one image through the other. */}
             {alt ? (
-              <div className="absolute inset-0 bg-white">
+              <div className={`absolute inset-0 ${pane}`}>
                 <Image
                   src={alt.url}
                   alt=""
@@ -97,7 +102,7 @@ export function ProductCard({
             {/* Straight cut, no transition — the cover pane simply hides and
                 the alternate is already sitting behind it. */}
             <div
-              className={`absolute inset-0 bg-white ${alt ? 'group-hover:opacity-0' : ''}`}
+              className={`absolute inset-0 ${pane} ${alt ? 'group-hover:opacity-0' : ''}`}
             >
               <Image
                 src={product.featuredImage.url}

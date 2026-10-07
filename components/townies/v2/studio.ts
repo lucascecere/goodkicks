@@ -19,8 +19,8 @@ export function price(p: CollectionProduct): string {
 /** "Lifestyle snapback" / "Everyday snapback" — the line under the name. */
 export function styleLine(p: CollectionProduct): string {
   const s = hatStyle(p.title);
-  if (s === 'lifestyle') return 'Lifestyle snapback · two-tone';
-  if (s === 'everyday') return 'Everyday snapback · solid';
+  if (s === 'lifestyle') return 'Lifestyle · two-tone';
+  if (s === 'everyday') return 'Everyday · solid';
   return 'Snapback';
 }
 

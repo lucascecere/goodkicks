@@ -22,7 +22,7 @@ export function TownCrests({ products }: { products: CollectionProduct[] }) {
   return (
     <section id="towns" className="scroll-mt-24 border-b border-rule bg-white">
       <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-8 sm:py-10">
-        <p className="mb-5 text-center font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">
+        <p className="mb-5 w-full text-center font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">
           Shop by town
         </p>
         <ul className="-mx-4 flex gap-5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-x-7 sm:gap-y-6 sm:overflow-visible sm:px-0">

@@ -47,7 +47,9 @@ export function StudioHero({
             )}
           </div>
         </div>
-        <div className="order-1 lg:order-2 relative aspect-[5/4] w-full animate-[hero-hat_1.1s_ease-out_both]">
+        {/* No animation on this wrapper: transform/opacity would isolate it and
+            stop the multiply blend reaching the sweep (white box returns). */}
+        <div className="order-1 lg:order-2 relative aspect-[5/4] w-full">
           {product?.featuredImage?.url && (
             <Image
               src={product.featuredImage.url}

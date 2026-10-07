@@ -23,17 +23,16 @@ export function RegionCards({ products }: { products: CollectionProduct[] }) {
     <section className="bg-white">
       <div className="mx-auto max-w-[1320px] px-4 py-12 sm:px-8 sm:py-16">
         <ShelfHeader title="Shop by region" sub="Sorted by where you’re from. Not there yet? Ask for it." link={{ href: '/request-a-town', label: 'Request a town' }} />
-        <div className="grid gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+        <div className={`grid gap-3 sm:grid-cols-2 sm:gap-5 ${regions.length >= 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
           {regions.map(([region, r]) => (
             <Link key={region} href={regionHref(region)} className={`group relative flex flex-col overflow-hidden ${STUDIO_TILE} p-5 sm:p-6`}>
-              <div className="relative h-36 sm:h-44">
-                {r.imgs.map((src, i) => (
-                  <div
-                    key={src}
-                    className="absolute top-0 h-full w-[62%] transition-transform duration-500 group-hover:-translate-y-1"
-                    style={{ left: `${i * (r.imgs.length > 1 ? 38 / (r.imgs.length - 1) : 19)}%`, zIndex: 3 - i }}
-                  >
-                    <Image src={src} alt="" fill sizes="200px" className={`object-contain ${STUDIO_IMG}`} />
+              {/* Side by side, never overlapping: multiply-blended hats on top of
+                  each other darken through one another. No transform on these
+                  wrappers either, or the blend isolates and the white returns. */}
+              <div className="grid h-32 grid-cols-3 gap-1 sm:h-40">
+                {r.imgs.map((src) => (
+                  <div key={src} className="relative">
+                    <Image src={src} alt="" fill sizes="160px" className={`object-contain ${STUDIO_IMG}`} />
                   </div>
                 ))}
               </div>

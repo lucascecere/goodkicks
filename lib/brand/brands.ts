@@ -144,10 +144,8 @@ export const TOWNIES: BrandConfig = {
       { label: 'Instagram', href: 'https://instagram.com/townies.shop' },
       { label: 'TikTok', href: 'https://tiktok.com/@townies.shop' },
     ],
-    subscribe: {
-      title: 'New towns, first',
-      body: 'Hear about the next drop before the group chat does.',
-    },
+    // The sign-up is the JoinBand above the footer (SiteWrapper), not a footer row.
+    subscribe: null,
   },
   finder: true,
   freeShippingCents: 7500,

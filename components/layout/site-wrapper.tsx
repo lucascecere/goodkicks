@@ -8,6 +8,7 @@ import { ParentBanner } from './parent-banner';
 import { AnnouncementBar } from './announcement-bar';
 import { CartDrawer } from './cart-drawer';
 import { WelcomeSlideIn } from '@/components/townies/v2/welcome-slide-in';
+import { JoinBand } from '@/components/townies/v2/join-band';
 import { siteBrand } from '@/lib/brand/site-brand';
 import { brandConfig } from '@/lib/brand/brands';
 
@@ -48,6 +49,9 @@ export function SiteWrapper({
         {brand.parentBanner && <ParentBanner />}
         <Header brand={brand} />
         <main id="main-content">{children}</main>
+        {/* Townies v2: the sign-up is its own band above the footer (Melin's
+            "Join the family"), so the footer's own form is off for Townies. */}
+        {!isGoodKicks && <JoinBand />}
         <Footer brand={brand} />
         <CartDrawer brand={brand} />
         {/* Townies only — Good Kicks has its own offer story, and mixing the two
