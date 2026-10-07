@@ -12,7 +12,6 @@ import { ProductCard } from '@/components/townies/product-card';
 import { TrustRow } from '@/components/townies/trust-row';
 import { gkDisplayName, gkDescriptionHtml, gkLine } from '@/lib/goodkicks/names';
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
-import { ValueBand } from '@/components/townies/value-band';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
 import { ProductMedia, type ProductMediaImage } from '@/components/product/product-media';
 import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
@@ -288,7 +287,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             ) : (
               <TowniesBlock className="block text-[0.65rem] mb-1" />
             )}
-            <h1 className="display text-text text-3xl sm:text-[2.75rem] lg:text-[3.25rem] mb-3 break-words">
+            <h1 className={`display text-text break-words ${gk ? 'text-3xl sm:text-[2.75rem] lg:text-[3.25rem] mb-3' : 'text-[1.875rem] sm:text-[2.25rem] mb-2'}`}>
               {name}
             </h1>
             {!gk && (
@@ -299,7 +298,9 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                 All {townKey(shopifyProduct).name}, MA hats
               </Link>
             )}
-            {shopifyProduct.descriptionHtml ? (
+            {!gk && shopifyProduct.descriptionHtml ? (
+              <TowniesDescription html={shopifyProduct.descriptionHtml} />
+            ) : shopifyProduct.descriptionHtml ? (
               <div
                 className="text-muted leading-relaxed mb-8 max-w-md space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_ul]:mt-1 [&_p]:leading-relaxed [&_strong]:text-text [&_strong]:font-semibold"
                 dangerouslySetInnerHTML={{ __html: gk ? gkDescriptionHtml(shopifyProduct.descriptionHtml) : shopifyProduct.descriptionHtml }}
@@ -411,7 +412,43 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
 
       {/* Townies only — the band is written in Townies' voice and marks. The
           Good Kicks page carries its own version on /goodkicks. */}
-      {!gk && <ValueBand />}
+    </div>
+  );
+}
+
+
+/**
+ * Townies v2 PDP copy (2026-10): Lucas found the right column too wordy. Show
+ * the first two sentences as a short lead and fold the full Shopify description
+ * (story + spec bullets) into a closed "Details" toggle, Melin-style.
+ */
+function leadFrom(html: string): string {
+  const text = html
+    .replace(/<li[^>]*>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;|&rsquo;/g, '\u2019')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const sentences = text.match(/[^.!?]+[.!?]+/g) ?? [text];
+  return sentences.slice(0, 2).join('').trim();
+}
+
+function TowniesDescription({ html }: { html: string }) {
+  return (
+    <div className="mb-6 max-w-md">
+      <p className="text-[0.9375rem] leading-relaxed text-muted">{leadFrom(html)}</p>
+      <details className="group mt-4 border-y border-rule">
+        <summary className="flex cursor-pointer list-none items-center justify-between py-3 font-label text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-text [&::-webkit-details-marker]:hidden">
+          Details
+          <span aria-hidden className="text-lg leading-none transition-transform group-open:rotate-45">+</span>
+        </summary>
+        <div
+          className="pb-4 text-[0.875rem] text-muted leading-relaxed space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_strong]:text-text [&_strong]:font-semibold"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      </details>
     </div>
   );
 }
