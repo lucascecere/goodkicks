@@ -47,8 +47,8 @@
      is Natural so the hats, which are shot on white, stay the brightest thing.
      Navy is also the primary button. Forest is kept for the announcement strip
      and the one full-colour band per page. */
-  --color-bg: var(--color-town-cream);
-  --color-surface: var(--color-town-white);
+  --color-bg: var(--color-town-white);
+  --color-surface: var(--color-town-cream);
   --color-text: var(--color-town-navy);
   --color-muted: var(--color-town-muted);
   --color-stone: var(--color-town-stone);
@@ -60,12 +60,12 @@
   --color-band: var(--color-town-forest);
   /* The strip above the header: forest, so the cream logo stays the brightest
      thing at the top of a navy page. */
-  --color-announce: var(--color-town-forest);
+  --color-announce: var(--color-town-navy);
   --color-announce-contrast: var(--color-town-cream);
   /* The header's own ground. Townies runs it navy on a light page; Good Kicks
      keeps its cream header. */
-  --color-chrome: var(--color-town-navy);
-  --color-chrome-contrast: var(--color-town-cream);
+  --color-chrome: var(--color-town-white);
+  --color-chrome-contrast: var(--color-town-navy);
   --font-heading: var(--font-block);
 }
 
@@ -298,3 +298,11 @@
   }
 }
 
+
+/* v2 storefront (2026-10, Melin model) */
+@keyframes hero-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes hero-hat { from { opacity: 0; transform: translateY(24px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes slide-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-["] { animation: none !important; }
+}

@@ -31,6 +31,22 @@ function formatExpiry(iso: string): string {
   });
 }
 
+/** The welcome offer is not a spin, so it doesn't talk about the rotary. */
+function emailCopy(wedge: SpinWedge) {
+  if (wedge.id === 'welcome10') {
+    return {
+      headline: 'Welcome to Townies.',
+      sub: 'Here is 10% off your first order.',
+      why: 'You got this because you signed up at townies.shop. You will hear from us when a new town drops.',
+    };
+  }
+  return {
+    headline: 'You took the rotary.',
+    sub: 'Here is the exit you came out of.',
+    why: 'You got this because you spun the rotary at townies.shop. It is the only email that spin sends.',
+  };
+}
+
 export function renderSpinCodeEmail({
   wedge,
   code,
@@ -41,6 +57,7 @@ export function renderSpinCodeEmail({
   expiresAt: string;
 }): string {
   const shopUrl = `${SITE_URL}/shop`;
+  const copy = emailCopy(wedge);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -53,8 +70,8 @@ export function renderSpinCodeEmail({
         <!-- Masthead -->
         <tr><td style="background:${NAVY};padding:34px 32px 30px;text-align:center;">
           <p style="margin:0 0 10px;font-family:Georgia,'Times New Roman',serif;font-size:15px;letter-spacing:5px;text-transform:uppercase;color:${CREAM};opacity:0.6;">Townies</p>
-          <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:32px;line-height:1.15;color:#FFFFFF;">You took the rotary.</p>
-          <p style="margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${CREAM};opacity:0.75;">Here is the exit you came out of.</p>
+          <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:32px;line-height:1.15;color:#FFFFFF;">${copy.headline}</p>
+          <p style="margin:12px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:${CREAM};opacity:0.75;">${copy.sub}</p>
         </td></tr>
 
         <!-- The code -->
@@ -88,7 +105,7 @@ export function renderSpinCodeEmail({
           <p style="margin:0 0 8px;font-family:Georgia,'Times New Roman',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:${NAVY};">Rooted in Massachusetts. Built for every town.</p>
           <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:${STONE};">
             Townies Apparel Co. &middot; <a href="${SITE_URL}" style="color:${FOREST};text-decoration:none;">townies.shop</a><br />
-            You got this because you spun the rotary at townies.shop. It is the only email that spin sends.
+            ${copy.why}
           </p>
         </td></tr>
 
@@ -119,10 +136,10 @@ export async function sendSpinCodeEmail({
   return sendEmail({
     from: `Townies <${FROM_EMAIL}>`,
     to,
-    subject: `${wedge.label} — your Townies code is ${code}`,
+    subject: `${wedge.label}: your Townies code is ${code}`,
     html: renderSpinCodeEmail({ wedge, code, expiresAt }),
     text: [
-      'You took the rotary.',
+      emailCopy(wedge).headline,
       '',
       `${wedge.exit} — ${wedge.label}`,
       `Code: ${code}`,

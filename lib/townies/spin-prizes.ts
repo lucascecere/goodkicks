@@ -189,11 +189,32 @@ export function drawWedgeIndex(): number {
  * has since been removed from the table — hence the warning on `id` above about
  * never recycling one for a different offer.
  */
+/**
+ * The welcome offer from the v2 slide-in (2026-10): a fixed prize, not on the
+ * wheel. It rides the same signed-token + claim path as a spin, so it gets the
+ * same one-code-per-email guarantee and the same Shopify-first minting. It
+ * lives at a token index the wheel can never draw.
+ */
+export const WELCOME_INDEX = 100;
+export const WELCOME: SpinWedge = {
+  id: 'welcome10',
+  exit: 'Welcome',
+  label: '10% OFF',
+  kind: 'percentage',
+  percentOff: 10,
+  weight: 0,
+  codePrefix: 'WELCOME10',
+  terms: '10% off your first order',
+  fill: 'navy',
+};
+
 export function wedgeById(id: string): SpinWedge | null {
+  if (id === WELCOME.id) return WELCOME;
   return WEDGES.find((w) => w.id === id) ?? null;
 }
 
 export function wedgeAt(index: unknown): SpinWedge | null {
+  if (index === WELCOME_INDEX) return WELCOME;
   return typeof index === 'number' && Number.isInteger(index) && index >= 0 && index < WEDGES.length
     ? WEDGES[index]
     : null;
