@@ -104,6 +104,13 @@ const mock: Props = {
   runLineHome: '-1.5',
 };
 
+const MOVABLE = [
+  { id: 'matchup', label: 'Team logos' },
+  { id: 'wordmark', label: 'Side wordmark' },
+  { id: 'odds', label: 'Odds box' },
+  { id: 'bottom', label: 'Bottom bar' },
+];
+
 /** Reserved height for the bottom bar, so the matchup centers in what's left. */
 const BOTTOM_BAR = 312;
 /** Width of the left rail plus its breathing room. */
@@ -234,6 +241,7 @@ export const gamedayTemplate = defineTemplate<Props>({
   imageRefs: (p) => [getTeam(p.awayTeam).logoUrl, getTeam(p.homeTeam).logoUrl],
 
   autofillKind: 'sports',
+  movable: MOVABLE,
 
   caption: (p) => {
     const away = getTeam(p.awayTeam);
@@ -287,12 +295,12 @@ export const gamedayTemplate = defineTemplate<Props>({
             module, or the venue label is left on open photo. */}
         <Scrim
           image={scrim.band(0.66)}
-          top={matchupScrimTop(p.matchupPosition, p.showOdds)}
+          top={matchupScrimTop(p.matchupPosition, p.showOdds) + ctx.offset('matchup').y}
           left={0}
           width={CANVAS.portrait.width}
           height={580}
         />
-        <Scrim image={scrim.bottom(0.95)} bottom={0} left={0} width={CANVAS.portrait.width} height={560} />
+        <Scrim image={scrim.bottom(0.95)} bottom={-ctx.offset('bottom').y} left={0} width={CANVAS.portrait.width} height={560} />
 
         {/* Left rail — vertically centered in the space above the bottom bar. */}
         <div
@@ -304,6 +312,7 @@ export const gamedayTemplate = defineTemplate<Props>({
             top: 0,
             left: PAD,
             height: CANVAS.portrait.height - BOTTOM_BAR,
+            ...ctx.move('wordmark'),
           }}
         >
           <VerticalWordmark text={p.wordmark} color={railColor} accent={accent} size={78} />
@@ -325,7 +334,7 @@ export const gamedayTemplate = defineTemplate<Props>({
         >
           {/* Odds module — optional, top right. */}
           {p.showOdds ? (
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', ...ctx.move('odds') }}>
               <div
                 style={{
                   display: 'flex',
@@ -360,6 +369,7 @@ export const gamedayTemplate = defineTemplate<Props>({
               alignItems: 'center',
               justifyContent: MATCHUP_JUSTIFY[p.matchupPosition],
               paddingTop: p.matchupPosition === 'top' && p.showOdds ? 36 : 0,
+              ...ctx.move('matchup'),
             }}
           >
             {/* League tag — gives each sport a distinct marker on the graphic. */}
@@ -460,6 +470,7 @@ export const gamedayTemplate = defineTemplate<Props>({
             paddingRight: PAD,
             paddingTop: 44,
             paddingBottom: 52,
+            ...ctx.move('bottom'),
           }}
         >
           <div

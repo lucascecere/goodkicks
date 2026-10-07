@@ -91,7 +91,21 @@ export type RenderContext = {
    * it and none of them should have to remember to load it.
    */
   brandMark?: string;
+  /**
+   * Where the user has dragged a movable element, in canvas pixels. `{0, 0}`
+   * when it hasn't been moved. Templates use this to make scrims follow a
+   * moved block; `move` is the usual way to apply it.
+   */
+  offset: (id: string) => Offset;
+  /** Style that shifts a movable element by its dragged offset. Spread it into
+   *  the element's style. Empty when unmoved, so Satori never sees a no-op. */
+  move: (id: string) => { transform?: string };
 };
+
+export type Offset = { x: number; y: number };
+
+/** A block the user can drag around on the preview. `id` keys `props.offsets`. */
+export type MovableDef = { id: string; label: string };
 
 export type TemplateDef<P = Record<string, unknown>> = {
   id: string;
@@ -121,6 +135,11 @@ export type TemplateDef<P = Record<string, unknown>> = {
    * to show the auto-fill panel without importing any provider code.
    */
   autofillKind?: 'sports';
+  /**
+   * Blocks the user can drag on the preview. Offsets live in `props.offsets`,
+   * outside the zod schema, so adding this never touches a template's schema.
+   */
+  movable?: MovableDef[];
   /** Suggested Instagram caption, built from the filled-in values. */
   caption?: (props: P) => string;
   render: (props: P, ctx: RenderContext) => ReactElement;

@@ -19,7 +19,8 @@ import type { PostStatus } from '@/lib/studio/posts';
 import { TemplateForm } from './template-form';
 import { AutofillPanel } from './autofill-panel';
 import { SavePanel, type SaveState } from './save-panel';
-import type { FieldDef } from '@/lib/studio/types';
+import { MovePanel, readOffsets, withOffset } from './move-panel';
+import type { FieldDef, MovableDef } from '@/lib/studio/types';
 
 /**
  * The plain-data slice of a template. The registry itself must never reach a
@@ -34,6 +35,8 @@ export type TemplateMeta = {
   mock: Record<string, unknown>;
   /** Set when the template can be filled from a live feed. */
   autofillKind?: 'sports';
+  /** Blocks the user can drag on the preview. */
+  movable?: MovableDef[];
 };
 
 /** Present when editing something already saved. */
@@ -88,6 +91,35 @@ export function StudioEditor({
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(post?.id ?? null);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Drag-to-move. The drag is measured in screen pixels on the scaled-down
+  // preview and converted to canvas pixels, so a drag lands where it looks.
+  const movable = template.movable ?? [];
+  const [moveId, setMoveId] = useState(movable[0]?.id ?? '');
+  const drag = useRef<{ startX: number; startY: number; base: { x: number; y: number }; scale: number } | null>(null);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!moveId) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    drag.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      base: readOffsets(values)[moveId] ?? { x: 0, y: 0 },
+      scale: template.canvas.width / rect.width,
+    };
+    e.currentTarget.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d) return;
+    const x = d.base.x + (e.clientX - d.startX) * d.scale;
+    const y = d.base.y + (e.clientY - d.startY) * d.scale;
+    setValues((prev) => withOffset(prev, moveId, { x, y }));
+  };
+  const onPointerUp = () => {
+    drag.current = null;
+  };
 
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
@@ -218,15 +250,22 @@ export function StudioEditor({
             </div>
 
             <div
-              className="relative w-full max-w-[320px] mx-auto bg-black/40 rounded-lg overflow-hidden"
+              className={`relative w-full max-w-[320px] mx-auto bg-black/40 rounded-lg overflow-hidden ${
+                movable.length ? 'cursor-move touch-none select-none' : ''
+              }`}
               style={{ aspectRatio: `${width} / ${height}` }}
+              onPointerDown={movable.length ? onPointerDown : undefined}
+              onPointerMove={movable.length ? onPointerMove : undefined}
+              onPointerUp={movable.length ? onPointerUp : undefined}
+              onPointerCancel={movable.length ? onPointerUp : undefined}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 key={renderUrl}
                 src={renderUrl}
                 alt={`${template.name} preview`}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain pointer-events-none"
+                draggable={false}
                 onLoad={() => setLoading(false)}
                 onError={() => {
                   setLoading(false);
@@ -234,6 +273,16 @@ export function StudioEditor({
                 }}
               />
             </div>
+
+            {movable.length ? (
+              <MovePanel
+                movable={movable}
+                selected={moveId}
+                onSelect={setMoveId}
+                values={values}
+                onChange={setValues}
+              />
+            ) : null}
 
             {error ? (
               <div className="mt-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-300 text-xs leading-relaxed break-words">

@@ -77,6 +77,12 @@ const mock: Props = {
 };
 
 const BOTTOM_BAR = 300;
+
+const MOVABLE = [
+  { id: 'matchup', label: 'Logos + score' },
+  { id: 'wordmark', label: 'Side wordmark' },
+  { id: 'bottom', label: 'Bottom bar' },
+];
 const RAIL_GUTTER = 200;
 
 /** Top of the band scrim, which follows the score block so the venue label
@@ -156,6 +162,7 @@ export const finalScoreTemplate = defineTemplate<Props>({
   imageRefs: (p) => [getTeam(p.awayTeam).logoUrl, getTeam(p.homeTeam).logoUrl],
 
   autofillKind: 'sports',
+  movable: MOVABLE,
 
   caption: (p) => {
     const away = getTeam(p.awayTeam);
@@ -196,8 +203,8 @@ export const finalScoreTemplate = defineTemplate<Props>({
         <Scrim image={scrim.left(0.8)} top={0} left={0} width={400} height={CANVAS.portrait.height} />
         {/* Starts high enough to catch the venue label, which sits above the
             logos and would otherwise land on open photo. */}
-        <Scrim image={scrim.band(0.7)} top={SCRIM_TOP[p.matchupPosition]} left={0} width={CANVAS.portrait.width} height={700} />
-        <Scrim image={scrim.bottom(0.95)} bottom={0} left={0} width={CANVAS.portrait.width} height={470} />
+        <Scrim image={scrim.band(0.7)} top={SCRIM_TOP[p.matchupPosition] + ctx.offset('matchup').y} left={0} width={CANVAS.portrait.width} height={700} />
+        <Scrim image={scrim.bottom(0.95)} bottom={-ctx.offset('bottom').y} left={0} width={CANVAS.portrait.width} height={470} />
 
         <div
           style={{
@@ -208,6 +215,7 @@ export const finalScoreTemplate = defineTemplate<Props>({
             top: 0,
             left: PAD,
             height: CANVAS.portrait.height - BOTTOM_BAR,
+            ...ctx.move('wordmark'),
           }}
         >
           <VerticalWordmark text={p.wordmark} color={accent} accent={accent} size={82} />
@@ -226,6 +234,7 @@ export const finalScoreTemplate = defineTemplate<Props>({
             paddingBottom: BOTTOM_BAR,
             alignItems: 'center',
             justifyContent: MATCHUP_JUSTIFY[p.matchupPosition],
+            ...ctx.move('matchup'),
           }}
         >
           {/* League tag — gives each sport a distinct marker on the graphic. */}
@@ -345,6 +354,7 @@ export const finalScoreTemplate = defineTemplate<Props>({
             paddingRight: PAD,
             paddingTop: 44,
             paddingBottom: 52,
+            ...ctx.move('bottom'),
           }}
         >
           <Label size={24} color="#FFFFFF" track={TRACK.wider}>

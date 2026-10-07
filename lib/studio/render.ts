@@ -12,7 +12,7 @@
 import { ImageResponse } from 'next/og';
 import { loadStudioFonts } from './fonts';
 import { makeImgResolver, resolveImages } from './images';
-import type { AnyTemplate } from './types';
+import type { AnyTemplate, Offset } from './types';
 
 /** Cream variant: the navy original is invisible on the dark fields. */
 export const BRAND_MARK = '/brand/logos/script-word-cream.png';
@@ -51,7 +51,13 @@ export async function renderTemplateToResponse(
   ]);
 
   const img = makeImgResolver(images);
-  const element = template.render(props, { origin, img, brandMark: img(BRAND_MARK) });
+  const offsets = (props.offsets ?? {}) as Record<string, Offset | undefined>;
+  const offset = (id: string): Offset => offsets[id] ?? { x: 0, y: 0 };
+  const move = (id: string) => {
+    const { x, y } = offset(id);
+    return x || y ? { transform: `translate(${x}px, ${y}px)` } : {};
+  };
+  const element = template.render(props, { origin, img, brandMark: img(BRAND_MARK), offset, move });
 
   return new ImageResponse(element, {
     width: template.canvas.width,

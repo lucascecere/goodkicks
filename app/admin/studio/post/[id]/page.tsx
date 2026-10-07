@@ -26,6 +26,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
     fields: template.fields,
     mock: template.mock as Record<string, unknown>,
     autofillKind: template.autofillKind,
+    movable: template.movable,
   };
 
   const existing: ExistingPost = {

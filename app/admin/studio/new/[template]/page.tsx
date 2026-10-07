@@ -29,6 +29,7 @@ export default async function NewFromTemplatePage({
     fields: template.fields,
     mock: template.mock as Record<string, unknown>,
     autofillKind: template.autofillKind,
+    movable: template.movable,
   };
 
   return <StudioEditor template={meta} />;

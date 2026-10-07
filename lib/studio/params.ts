@@ -4,7 +4,7 @@
 // form and the renderer parsed params separately they would drift, and the
 // preview would stop being the render. Anything you see is what exports.
 
-import type { TemplateDef } from './types';
+import type { Offset, TemplateDef } from './types';
 
 /**
  * Query strings are all strings. Rather than making every template's schema
@@ -49,7 +49,33 @@ export function coerceToMockTypes(
 export function parseProps<P>(template: TemplateDef<P>, raw: Record<string, unknown>): P {
   const merged = { ...(template.mock as Record<string, unknown>), ...raw };
   const result = template.schema.safeParse(merged);
-  return result.success ? result.data : template.mock;
+  const props = result.success ? result.data : template.mock;
+  // Drag offsets sit outside every template's schema (zod would strip them),
+  // so they're carried across here or a save would silently drop them.
+  const offsets = parseOffsets(raw.offsets, template);
+  return (offsets ? { ...props, offsets } : props) as P;
+}
+
+/** Keep only finite offsets for elements the template declares, clamped to the
+ *  canvas so a bad value can't push a block into another postcode. */
+export function parseOffsets(
+  raw: unknown,
+  template: Pick<TemplateDef, 'movable' | 'canvas'>
+): Record<string, Offset> | undefined {
+  if (!raw || typeof raw !== 'object' || !template.movable?.length) return undefined;
+  const ids = new Set(template.movable.map((m) => m.id));
+  const { width, height } = template.canvas;
+  const clamp = (n: unknown, max: number) =>
+    typeof n === 'number' && Number.isFinite(n) ? Math.round(Math.max(-max, Math.min(max, n))) : 0;
+  const out: Record<string, Offset> = {};
+  for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
+    if (!ids.has(id) || !value || typeof value !== 'object') continue;
+    const v = value as Record<string, unknown>;
+    const x = clamp(v.x, width);
+    const y = clamp(v.y, height);
+    if (x || y) out[id] = { x, y };
+  }
+  return Object.keys(out).length ? out : undefined;
 }
 
 /* ------------------------------------------------- preview transport (data) */
