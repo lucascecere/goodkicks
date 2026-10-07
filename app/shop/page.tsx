@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { hatStyle, regionForProduct, regionLabel, townKey } from '@/lib/townies/towns';
-import { BrandPattern } from '@/components/townies/brand-pattern';
-import { TownTickerLinked } from '@/components/townies/town-ticker';
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
@@ -63,45 +61,29 @@ export default async function ShopPage({
           ),
         }}
       />
-      {/* Masthead. A dark band gives the shop a top edge and a place for the
-          catalogue counts; the page used to open with centred text floating on
-          cream, which read as an unfinished page rather than a shop front. */}
-      <section className="relative overflow-hidden bg-ink">
-        <BrandPattern variant="topo" color="cream" opacity={0.09} size={520} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 text-center">
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
+      {/* v2 (2026-10): a Melin-style collection head, light and left-aligned,
+          straight into the filters. The navy band, ticker and pattern are gone. */}
+      <section className="border-b border-rule bg-[#F1EEE8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
+          <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60 mb-3">
             The shop
           </p>
-          <h1 className="display text-[2.5rem] sm:text-[3.25rem] lg:text-[4rem] text-white mb-4">
-            Every town.
-          </h1>
-          <p className="text-ink-contrast/80 max-w-md mx-auto leading-relaxed">
-            Every drop, one place. Find yours and rep it. Don&apos;t see your town?
-            It&apos;s coming — or tell us to hurry up.
+          <h1 className="display text-[2.5rem] sm:text-[3.25rem] text-text">Every town.</h1>
+          <p className="mt-3 max-w-lg text-text/75 leading-relaxed">
+            {items.length > 0
+              ? `${items.length} ${items.length === 1 ? 'hat' : 'hats'} across ${towns.length} ${towns.length === 1 ? 'town' : 'towns'}. Filter by region, town or style.`
+              : 'The first drop lands soon.'}
           </p>
-          {items.length > 0 && (
-            <p className="mt-7 text-[0.68rem] uppercase tracking-[0.22em] text-ink-contrast/55">
-              {items.length} {items.length === 1 ? 'design' : 'designs'}
-              <span className="mx-3 text-ink-contrast/30">·</span>
-              {towns.length} {towns.length === 1 ? 'town' : 'towns'}
-            </p>
-          )}
-          {/* The bundle applies to every hat below, so it belongs in the
-              masthead rather than as a card competing inside the grid. */}
           {hatSack && (
-          <Link
-            href={HAT_SACK_PATH}
-            className="mt-6 inline-block text-[0.6875rem] uppercase tracking-[0.18em] underline underline-offset-[6px] decoration-1 text-ink-contrast/85 hover:text-white transition-colors"
-          >
-            Hat &amp; Sack — a town hat + a Good Kicks foot bag, {formatUsd(hatSack.priceCents)}
-          </Link>
+            <Link
+              href={HAT_SACK_PATH}
+              className="mt-5 inline-block text-[0.875rem] underline underline-offset-4 text-text/80 hover:text-text"
+            >
+              Hat &amp; Sack: a town hat plus a Good Kicks foot bag, {formatUsd(hatSack.priceCents)}
+            </Link>
           )}
         </div>
       </section>
-
-      <TownTickerLinked towns={towns} />
-
-      <BrandPattern variant="ma" color="forest" opacity={0.03} size={340} fade="b" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {items.length === 0 ? (
