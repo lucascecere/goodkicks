@@ -60,15 +60,19 @@
   --color-band: var(--color-town-forest);
   /* The strip above the header: forest, so the cream logo stays the brightest
      thing at the top of a navy page. */
-  --color-announce: var(--color-town-navy);
-  --color-announce-contrast: var(--color-town-cream);
+  --color-announce: var(--color-town-white);
+  --color-announce-contrast: var(--color-town-navy);
   /* The header's own ground. Townies runs it navy on a light page; Good Kicks
      keeps its cream header. */
-  --color-chrome: var(--color-town-white);
+  --color-chrome: var(--color-town-navy);
   /* v2: interior mastheads are the light studio ground on Townies; GK keeps ink. */
   --color-masthead: #F1EEE8;
   --color-masthead-contrast: var(--color-town-navy);
-  --color-chrome-contrast: var(--color-town-navy);
+  --color-chrome-contrast: var(--color-town-cream);
+  /* Footer ground (v2: white on Townies, ink on Good Kicks). strong = headings. */
+  --color-foot: var(--color-town-white);
+  --color-foot-strong: var(--color-town-navy);
+  --color-foot-contrast: var(--color-town-navy);
   --font-heading: var(--font-block);
 }
 
@@ -105,6 +109,9 @@
   --color-announce-contrast: #FFFFFF;
   --color-chrome: var(--color-brand-cream);
   --color-masthead: var(--color-brand-ink);
+  --color-foot: var(--color-brand-ink);
+  --color-foot-strong: #FFFFFF;
+  --color-foot-contrast: var(--color-brand-cream);
   --color-masthead-contrast: var(--color-brand-cream);
   --color-chrome-contrast: var(--color-brand-ink);
   --font-heading: var(--font-display);

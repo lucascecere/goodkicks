@@ -42,7 +42,7 @@ export function Header({ brand }: { brand: BrandConfig }) {
     return pathname.startsWith(path);
   };
 
-  const logo = brand.logo.light;
+  const logo = brand.logo.header ?? brand.logo.light;
 
   return (
     <header className="sticky top-0 z-50">
