@@ -18,7 +18,9 @@ const dmSerifDisplay = DM_Serif_Display({
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  weight: ['400', '500', '600', '700'],
+  // 'variable', not a list of cuts: multi-weight queries intermittently fail
+  // the Turbopack Google Fonts loader on Vercel ("queries have exactly one entry").
+  weight: 'variable',
   display: 'swap',
 });
 
@@ -51,7 +53,7 @@ const yellowtail = Yellowtail({
 const figtree = Figtree({
   subsets: ['latin'],
   variable: '--font-figtree',
-  weight: ['500', '600', '700', '800'],
+  weight: 'variable',
   display: 'swap',
 });
 
