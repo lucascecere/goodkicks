@@ -422,23 +422,44 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
  * the first two sentences as a short lead and fold the full Shopify description
  * (story + spec bullets) into a closed "Details" toggle, Melin-style.
  */
-function leadFrom(html: string): string {
-  const text = html
+function toText(html: string): string {
+  return html
     .replace(/<li[^>]*>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;/g, ' ')
+    .replace(/&quot;/g, '"')
     .replace(/&amp;/g, '&')
     .replace(/&#39;|&rsquo;/g, '\u2019')
     .replace(/\s+/g, ' ')
     .trim();
-  const sentences = text.match(/[^.!?]+[.!?]+/g) ?? [text];
-  return sentences.slice(0, 2).join('').trim();
+}
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/**
+ * Split the description so nothing is said twice: the lead is the first two
+ * sentences of the first paragraph, and the Details toggle gets everything
+ * else (the rest of that paragraph, then the remaining HTML untouched).
+ */
+function splitDescription(html: string): { lead: string; rest: string } {
+  const first = html.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+  const source = first ? toText(first[1]) : toText(html);
+  const sentences = source.match(/[^.!?]+[.!?]+(\s|$)/g)?.map((x) => x.trim()) ?? [source];
+  const lead = sentences.slice(0, 2).join(' ');
+  if (!first) return { lead, rest: '' };
+  const remainder = sentences.slice(2).join(' ');
+  const rest = html.replace(first[0], remainder ? `<p>${escapeHtml(remainder)}</p>` : '').trim();
+  return { lead, rest: toText(rest) ? rest : '' };
 }
 
 function TowniesDescription({ html }: { html: string }) {
+  const { lead, rest } = splitDescription(html);
   return (
     <div className="mb-6 max-w-md">
-      <p className="text-[0.9375rem] leading-relaxed text-muted">{leadFrom(html)}</p>
+      <p className="text-[0.9375rem] leading-relaxed text-muted">{lead}</p>
+      {rest && (
       <details className="group mt-4 border-y border-rule">
         <summary className="flex cursor-pointer list-none items-center justify-between py-3 font-label text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-text [&::-webkit-details-marker]:hidden">
           Details
@@ -446,9 +467,10 @@ function TowniesDescription({ html }: { html: string }) {
         </summary>
         <div
           className="pb-4 text-[0.875rem] text-muted leading-relaxed space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_strong]:text-text [&_strong]:font-semibold"
-          dangerouslySetInnerHTML={{ __html: html }}
+          dangerouslySetInnerHTML={{ __html: rest }}
         />
       </details>
+      )}
     </div>
   );
 }
