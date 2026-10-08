@@ -166,12 +166,13 @@ export function HatWheelHero({
   return (
     <section ref={ref} style={{ height: `calc(100svh + ${pinned * STEP_SVH}svh)` }} className="relative">
       <div className="sticky top-[4.75rem] sm:top-[5.5rem] h-[calc(100svh-4.75rem)] sm:h-[calc(100svh-5.5rem)] overflow-hidden bg-[radial-gradient(120%_90%_at_70%_45%,#FBFAF7_0%,#EDEAE3_55%,#E2DED5_100%)]">
-        <div className="mx-auto grid h-full max-w-[1320px] grid-rows-[1fr_auto] px-4 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:grid-rows-1 lg:gap-8">
-          <div className="order-2 self-center pb-8 lg:order-1 lg:pb-0">
+        <div className="mx-auto grid h-full max-w-[1320px] grid-rows-[auto_1fr] px-4 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:grid-rows-1 lg:gap-8">
+          {/* Phones: copy first, wheel underneath (Lucas, 10-07). Desktop: side by side. */}
+          <div className="order-1 self-center pt-6 lg:pt-0">
             <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/70">{eyebrow}</p>
-            <h1 className="display mt-3 text-[2.75rem] sm:text-[4rem] lg:text-[5rem] text-text">{headline}</h1>
-            <p className="mt-4 max-w-md text-[1rem] sm:text-[1.0625rem] leading-relaxed text-text/75">{sub}</p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <h1 className="display mt-2 text-[2.5rem] sm:text-[4rem] lg:mt-3 lg:text-[5rem] text-text">{headline}</h1>
+            <p className="mt-3 max-w-md text-[0.9375rem] sm:text-[1.0625rem] leading-relaxed text-text/75 lg:mt-4">{sub}</p>
+            <div className="mt-5 flex flex-wrap gap-2 sm:gap-3 lg:mt-6">
               <Link href={cta.href} className="font-label bg-text px-7 py-3.5 text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-black">
                 {cta.label}
               </Link>
@@ -201,7 +202,7 @@ export function HatWheelHero({
           </div>
           <div
             ref={stage}
-            className="relative order-1 min-h-0 touch-pan-y overflow-hidden lg:order-2 lg:overflow-visible"
+            className="relative order-2 min-h-0 touch-pan-y overflow-hidden lg:overflow-visible"
           >
             {hats.slice(0, n).map((h, i) => (
               <WheelHatImg key={h.id} hat={h} index={i} pos={pos} n={n} />
