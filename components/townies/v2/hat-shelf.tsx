@@ -10,7 +10,9 @@ export function HatShelf({
   sub,
   link,
   count = 8,
+  ratings = {},
 }: {
+  ratings?: Record<string, { count: number; average: number }>;
   products: CollectionProduct[];
   title: string;
   sub?: string;
@@ -25,7 +27,7 @@ export function HatShelf({
         <ShelfHeader title={title} sub={sub} link={link} />
         <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 lg:grid-cols-4">
           {shown.map((p, i) => (
-            <HatCard key={p.id} product={p} priority={i < 4} />
+            <HatCard key={p.id} product={p} priority={i < 4} rating={ratings[p.handle]} />
           ))}
         </div>
       </div>

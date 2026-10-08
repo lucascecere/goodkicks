@@ -4,6 +4,7 @@ import type { CollectionProduct } from '@/lib/shopify/collections';
 import { isPreorder } from '@/lib/townies/preorder';
 import { LOW_STOCK_THRESHOLD } from '@/lib/shopify/stock-copy';
 import { QuickAdd } from './quick-add';
+import { Stars } from './v2/stars';
 
 // Product-framed card for the launch drop (hats + designs) — the product name is
 // a normal title, NOT the town-as-hero treatment used by TownCard. Feeds off the
@@ -38,7 +39,10 @@ export function ProductCard({
   fit = 'contain',
   quickAdd = true,
   flavor = 'townies',
+  rating,
 }: {
+  /** Approved-review summary for this hat; stars show only when present. */
+  rating?: { count: number; average: number };
   product: CollectionProduct;
   priority?: boolean;
   /** The add-to-cart button under the card. */
@@ -137,6 +141,11 @@ export function ProductCard({
         </p>
         <p className="text-muted text-[0.9375rem] shrink-0">{priceLabel(product)}</p>
       </div>
+      {rating && rating.count > 0 && (
+        <p className="mt-1 flex items-center gap-1.5 text-[0.75rem] text-muted">
+          <Stars value={rating.average} size={12} /> ({rating.count})
+        </p>
+      )}
     </Link>
       {/* OUTSIDE the anchor — a button nested in a link leaves the browser to
           decide which one a click meant, and the add races the navigation. */}

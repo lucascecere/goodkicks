@@ -2,13 +2,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { CollectionProduct } from '@/lib/shopify/collections';
 import { STUDIO_TILE, STUDIO_IMG, altImage, badge, price, styleLine } from './studio';
+import { Stars } from './stars';
 
 /**
  * Melin's product tile: the hat on a studio ground, a small status tag, then
  * name and price on one line with the style underneath. Hover cross-fades to
  * the second shot. No button on the tile; the product page sells.
  */
-export function HatCard({ product, priority }: { product: CollectionProduct; priority?: boolean }) {
+export function HatCard({
+  product,
+  priority,
+  rating,
+}: {
+  product: CollectionProduct;
+  priority?: boolean;
+  rating?: { count: number; average: number };
+}) {
   const alt = altImage(product);
   const b = badge(product);
   const sizes = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw';
@@ -49,7 +58,12 @@ export function HatCard({ product, priority }: { product: CollectionProduct; pri
         <p className="text-[0.9375rem] font-semibold text-text leading-snug">{product.title}</p>
         <p className="shrink-0 text-[0.9375rem] text-text">{price(product)}</p>
       </div>
-      <p className="mt-0.5 text-[0.8125rem] text-muted">{styleLine(product)}</p>
+      <p className="mt-0.5 flex items-center gap-2 text-[0.8125rem] text-muted">
+        {styleLine(product)}
+        {rating && rating.count > 0 && (
+          <span className="inline-flex items-center gap-1"><Stars value={rating.average} size={12} />({rating.count})</span>
+        )}
+      </p>
     </Link>
   );
 }

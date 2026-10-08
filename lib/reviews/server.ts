@@ -92,6 +92,9 @@ export type ReviewSubmission = {
   brand?: RealBrand;
   /** Present when the submission came from a tokenised request link. */
   token?: string;
+  /** Open form only: which hat it's about (validated against the catalogue by the caller). */
+  productHandle?: string;
+  productTitle?: string;
 };
 
 export type SubmitResult =
@@ -158,8 +161,8 @@ export async function submitReview(input: ReviewSubmission): Promise<SubmitResul
       name,
       town: input.town?.trim() || null,
       email: request?.email ?? input.email?.trim() ?? null,
-      product_title: request?.product_title ?? null,
-      product_handle: request?.product_handle ?? null,
+      product_title: request?.product_title ?? input.productTitle ?? null,
+      product_handle: request?.product_handle ?? input.productHandle ?? null,
       shopify_order_id: request?.shopify_order_id ?? null,
       verified: Boolean(request),
       source: request ? 'request' : 'form',
@@ -211,4 +214,53 @@ export async function lookupRequest(token: string) {
 /** 32 bytes of url-safe randomness — this token is the whole auth for the form. */
 export function newToken(): string {
   return randomBytes(24).toString('base64url');
+}
+
+
+export type ReviewSummary = { count: number; average: number };
+
+/**
+ * Approved reviews for ONE hat (PDP), newest first. [] on any failure.
+ */
+export async function getProductReviews(handle: string, limit = 20): Promise<PublicReview[]> {
+  if (!handle || !process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) return [];
+  try {
+    const { data, error } = await createSupabaseServiceClient()
+      .from('reviews')
+      .select('*')
+      .eq('status', 'approved')
+      .eq('product_handle', handle)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) return [];
+    return (data as ReviewRow[]).map(toPublic);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Count + average per product handle, for stars on cards and the PDP head.
+ * Only approved reviews. {} on any failure, so the stars simply don't show.
+ */
+export async function getReviewSummaries(brand: RealBrand = 'townies'): Promise<Record<string, ReviewSummary>> {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) return {};
+  try {
+    const { data, error } = await createSupabaseServiceClient()
+      .from('reviews')
+      .select('product_handle, rating')
+      .eq('brand', brand)
+      .eq('status', 'approved')
+      .not('product_handle', 'is', null);
+    if (error || !data) return {};
+    const acc: Record<string, { n: number; sum: number }> = {};
+    for (const r of data as Array<{ product_handle: string; rating: number }>) {
+      const a = (acc[r.product_handle] ??= { n: 0, sum: 0 });
+      a.n += 1;
+      a.sum += r.rating;
+    }
+    return Object.fromEntries(Object.entries(acc).map(([h, a]) => [h, { count: a.n, average: a.sum / a.n }]));
+  } catch {
+    return {};
+  }
 }

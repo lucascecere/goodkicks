@@ -10,6 +10,7 @@ import { ReviewBand } from '@/components/townies/review-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { townKey, hatStyle } from '@/lib/townies/towns';
 import { stockTier } from '@/lib/townies/stock-tier';
+import { getReviewSummaries } from '@/lib/reviews/server';
 
 export const revalidate = 60;
 
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
  * approved Milton ledge; no generated imagery beyond what's already approved.
  */
 export default async function HomePage() {
-  const products = await getTownieProducts();
+  const [products, ratings] = await Promise.all([getTownieProducts(), getReviewSummaries()]);
 
   // The hero wheel: one hat per town, Milton (the first town) leading, then
   // whatever is buyable today. Eight stops keeps the pinned scroll short.
@@ -79,6 +80,7 @@ export default async function HomePage() {
         title="The hats"
         sub={`${townCount} towns so far, all embroidered. More on the way.`}
         link={{ href: '/shop', label: 'Shop all' }}
+        ratings={ratings}
       />
 
       <CampaignBand

@@ -6,6 +6,7 @@
 
 import type { NextRequest } from 'next/server';
 import { submitReview } from '@/lib/reviews/server';
+import { getTownieProducts } from '@/lib/shopify/collections';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,7 +25,21 @@ export async function POST(req: NextRequest) {
     return Response.json({ ok: true, verified: false });
   }
 
+  // Open form: a hat picked from the list. Only a handle that is really in the
+  // catalogue is kept, so the field can't be used to pin text to a made-up page.
+  let productHandle: string | undefined;
+  let productTitle: string | undefined;
+  if (!body.token && typeof body.product === 'string' && body.product) {
+    const hit = (await getTownieProducts().catch(() => [])).find((p) => p.handle === body.product);
+    if (hit) {
+      productHandle = hit.handle;
+      productTitle = hit.title;
+    }
+  }
+
   const result = await submitReview({
+    productHandle,
+    productTitle,
     rating: Number(body.rating),
     quote: String(body.quote ?? ''),
     name: String(body.name ?? ''),

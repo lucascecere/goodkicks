@@ -18,10 +18,15 @@ export function ReviewForm({
   token,
   brand = 'townies',
   productTitle,
+  hats,
+  defaultHat,
 }: {
   token?: string;
   brand?: 'townies' | 'goodkicks';
   productTitle?: string | null;
+  /** Open form only: the catalogue, so the review attaches to a hat page. */
+  hats?: Array<{ handle: string; title: string }>;
+  defaultHat?: string;
 }) {
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
@@ -43,6 +48,7 @@ export function ReviewForm({
           name: form.get('name'),
           town: form.get('town'),
           email: form.get('email'),
+          product: form.get('product'),
           website: form.get('website'), // honeypot
           token,
           brand,
@@ -80,6 +86,22 @@ export function ReviewForm({
         <p className="mb-6 text-[0.6875rem] uppercase tracking-[0.18em] text-accent">
           {productTitle}
         </p>
+      )}
+
+      {!token && hats && hats.length > 0 && (
+        <label className="mb-7 block">
+          <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-text">Which hat?</span>
+          <select
+            name="product"
+            defaultValue={defaultHat ?? ''}
+            className="mt-2 w-full border border-rule bg-white px-3 py-3 text-[1rem] text-text focus:border-text focus:outline-none"
+          >
+            <option value="">Pick your hat (optional)</option>
+            {hats.map((h) => (
+              <option key={h.handle} value={h.handle}>{h.title}</option>
+            ))}
+          </select>
+        </label>
       )}
 
       <fieldset className="border-0 p-0 m-0">

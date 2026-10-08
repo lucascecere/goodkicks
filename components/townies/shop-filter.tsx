@@ -56,7 +56,10 @@ export function ShopFilter({
   initialTown,
   initialRegion,
   initialStyle,
+  ratings = {},
 }: {
+  /** Approved-review summaries by product handle. */
+  ratings?: Record<string, { count: number; average: number }>;
   items: ShopItem[];
   towns: TownTab[];
   regions: RegionTab[];
@@ -198,7 +201,7 @@ export function ShopFilter({
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {shown.map((i, idx) => (
-            <ProductCard key={i.product.id} product={i.product} priority={idx < 4} />
+            <ProductCard key={i.product.id} product={i.product} priority={idx < 4} rating={ratings[i.product.handle]} />
           ))}
         </div>
       )}

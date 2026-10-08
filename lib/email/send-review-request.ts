@@ -10,7 +10,8 @@ import { TOWNIES_FROM } from './send-rep-welcome';
  * one buys a better rating rather than an honest one, and a review bought with
  * a coupon is the kind we've already decided not to have.
  *
- * Sent once, seven days after fulfilment, to the person who bought that order.
+ * Sent once, seven days after the parcel was DELIVERED (lib/reviews/delivered-sync.ts),
+ * to the person who bought that order.
  */
 export async function sendReviewRequestEmail({
   to,
@@ -29,7 +30,7 @@ export async function sendReviewRequestEmail({
   const isTownies = brand !== 'goodkicks';
   const from = isTownies ? TOWNIES_FROM : `Good Kicks <${chrome.email}>`;
   const link = `${chrome.url}/review/${token}`;
-  const item = productTitle?.trim() || (isTownies ? 'your hat' : 'your foot bag');
+  const item = productTitle?.trim() || (isTownies ? 'hat' : 'foot bag');
   const hello = name?.trim()?.split(' ')[0] ?? 'Hey';
 
   const subject = isTownies ? `How's the hat?` : `How are the kicks?`;
@@ -43,13 +44,14 @@ export async function sendReviewRequestEmail({
           <span style="color:#ffffff;font-size:15px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;">${chrome.wordmark}</span>
         </td></tr>
         <tr><td style="padding:32px 28px 8px 28px;">
-          <p style="margin:0 0 16px 0;font-size:16px;line-height:1.6;color:#0D1B2A;">${hello} —</p>
+          <p style="margin:0 0 16px 0;font-size:16px;line-height:1.6;color:#0D1B2A;">${hello},</p>
           <p style="margin:0 0 16px 0;font-size:16px;line-height:1.6;color:#0D1B2A;">
-            ${item} should have been with you about a week now. How is it?
+            Your ${item} landed about a week ago. How's it wearing?
           </p>
           <p style="margin:0 0 24px 0;font-size:16px;line-height:1.6;color:#0D1B2A;">
-            If you've got thirty seconds, tell us what you think — good or bad. We
-            read all of them, and the good ones end up on the site.
+            If you have thirty seconds, tell us what you think, good or bad. Every review
+            gets read, and they go up on the hat's page so the next person from your town
+            knows what they're getting.
           </p>
           <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:${chrome.accent};border-radius:2px;">
             <a href="${link}" style="display:inline-block;padding:13px 28px;color:#ffffff;font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;text-decoration:none;">Leave a review</a>
@@ -69,12 +71,13 @@ export async function sendReviewRequestEmail({
   </table>
 </body></html>`;
 
-  const text = `${hello} —
+  const text = `${hello},
 
-${item} should have been with you about a week now. How is it?
+Your ${item} landed about a week ago. How's it wearing?
 
-If you've got thirty seconds, tell us what you think — good or bad. We read all
-of them, and the good ones end up on the site.
+If you have thirty seconds, tell us what you think, good or bad. Every review gets
+read, and they go up on the hat's page so the next person from your town knows
+what they're getting.
 
 Leave a review: ${link}
 

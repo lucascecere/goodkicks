@@ -7,6 +7,7 @@ import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
 import { HAT_SACK_LIVE, HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
+import { getReviewSummaries } from '@/lib/reviews/server';
 
 export const revalidate = 60;
 
@@ -101,6 +102,7 @@ export default async function ShopPage({
           </div>
         ) : (
           <ShopFilter
+            ratings={await getReviewSummaries()}
             items={items}
             towns={towns}
             regions={regions}

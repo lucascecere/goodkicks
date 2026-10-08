@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { hatStyle, regionHref, townHref, townPages, type TownPage } from '@/lib/townies/towns';
 import { ProductCard } from '@/components/townies/product-card';
+import { getReviewSummaries } from '@/lib/reviews/server';
 import { PageMasthead } from '@/components/townies/page-masthead';
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { TownLinks } from '@/components/townies/town-links';
@@ -105,6 +106,7 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
     ]),
   ];
 
+  const ratings = await getReviewSummaries();
   return (
     <div className="bg-bg">
       <script
@@ -124,7 +126,7 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
             and a four-column grid would leave them hugging the left edge. */}
         <div className={`grid grid-cols-2 gap-4 sm:gap-6 mx-auto ${GRID[Math.min(count, 4)]}`}>
           {town.products.map((p, i) => (
-            <ProductCard key={p.id} product={p} priority={i < 4} />
+            <ProductCard key={p.id} product={p} priority={i < 4} rating={ratings[p.handle]} />
           ))}
         </div>
       </div>

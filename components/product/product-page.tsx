@@ -26,6 +26,9 @@ import {
   isBundleEligible,
 } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
+import { getProductReviews } from '@/lib/reviews/server';
+import { ProductReviews } from '@/components/townies/v2/product-reviews';
+import { Stars } from '@/components/townies/v2/stars';
 
 // Shared product-detail body, rendered by BOTH the Townies route
 // (app/products/[handle]) and the Good Kicks route (app/goodkicks/products/[handle]).
@@ -193,6 +196,10 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
   const townCross = gk ? [] : (await getTownieProducts()).filter((p) => p.handle !== handle).slice(0, 4);
   const gkCross = gk ? (await getGoodKicksProducts()).filter((p) => p.handle !== handle).slice(0, 4) : [];
 
+  // Real approved reviews for this hat (Townies only).
+  const reviews = gk ? [] : await getProductReviews(handle);
+  const reviewAvg = reviews.length ? reviews.reduce((a, r) => a + r.rating, 0) / reviews.length : 0;
+
   // Absolute, canonical URLs — Google's merchant-listing parser does not resolve
   // relative ones, and a GK product's real home is its own domain.
   const productUrl = gk ? gkCanonical(`products/${handle}`) : `${SITE_URL}/products/${handle}`;
@@ -208,6 +215,24 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
       ? `${name} — a hand-stitched Good Kicks foot bag, properly weighted and built to take a beating.`
       : `${name} — a Massachusetts town-pride hat from Townies Apparel Co. Stitched, not printed.`,
     brand: { '@type': 'Brand', name: gk ? 'Good Kicks' : 'Townies' },
+    // Only real, approved reviews; omitted entirely when there are none.
+    ...(reviews.length
+      ? {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: reviewAvg.toFixed(1),
+            reviewCount: reviews.length,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          review: reviews.slice(0, 10).map((r) => ({
+            '@type': 'Review',
+            reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+            author: { '@type': 'Person', name: r.name },
+            reviewBody: r.quote,
+          })),
+        }
+      : {}),
     offers: {
       '@type': 'Offer',
       price: (variants[0].priceInCents / 100).toFixed(2),
@@ -290,6 +315,13 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             <h1 className={`display text-text break-words ${gk ? 'text-3xl sm:text-[2.75rem] lg:text-[3.25rem] mb-3' : 'text-[1.875rem] sm:text-[2.25rem] mb-2'}`}>
               {name}
             </h1>
+            {!gk && reviews.length > 0 && (
+              <a href="#reviews" className="mb-2 flex w-fit items-center gap-2 text-[0.875rem] text-text hover:underline underline-offset-4">
+                <Stars value={reviewAvg} size={15} />
+                <span className="font-semibold">{reviewAvg.toFixed(1)}</span>
+                <span className="text-muted">({reviews.length})</span>
+              </a>
+            )}
             {!gk && (
               <Link
                 href={townHref(townKey(shopifyProduct).slug)}
@@ -371,6 +403,8 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             )}
           </div>
         </div>
+
+        {!gk && <ProductReviews reviews={reviews} handle={handle} />}
 
         {/* Cross-sell — Townies towns */}
         {townCross.length > 0 && (

@@ -8,10 +8,10 @@
 //  Add `?dry=1` to force that behaviour even once it's live.
 // ────────────────────────────────────────────────────────────────────────────
 //
-// Only asks for orders fulfilled since the queue started, one per order, seven
-// days after the parcel shipped. There is no path in here that mails a back
-// catalogue — `review_requests` rows are written solely by the fulfilment
-// webhook, and every row is marked sent the moment it goes out.
+// One ask per order, seven days after the parcel was DELIVERED (Shopify's
+// carrier scan), for deliveries since Sept 1, 2026 only. Rows come from
+// syncDeliveredRequests() below (and the fulfilment webhook if it ever fires);
+// every row is marked sent the moment it goes out.
 //
 // It ALSO repairs the Shopify webhook subscriptions on every run. Shopify
 // deletes a subscription after repeated delivery failures and tells nobody in
@@ -24,6 +24,7 @@ import type { NextRequest } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { sendReviewRequestEmail } from '@/lib/email/send-review-request';
 import { reconcileWebhooks } from '@/lib/shopify/webhooks';
+import { syncDeliveredRequests } from '@/lib/reviews/delivered-sync';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -66,6 +67,16 @@ export async function GET(req: NextRequest) {
     webhooks = { ok: false, present: [], created: [], failed: [{ topic: '*', error: String(err) }] };
   }
 
+  // Queue from Shopify DELIVERY dates (lib/reviews/delivered-sync.ts). Runs
+  // in dry mode too: queuing is safe, only sending is gated.
+  let sync: { planned: number; queued: number } | { error: string };
+  try {
+    sync = await syncDeliveredRequests();
+  } catch (err) {
+    console.error('[review-cron] delivery sync failed:', err);
+    sync = { error: err instanceof Error ? err.message : String(err) };
+  }
+
   const dry = req.nextUrl.searchParams.get('dry') === '1'
     || process.env.REVIEW_REQUESTS_ENABLED !== '1';
 
@@ -90,6 +101,7 @@ export async function GET(req: NextRequest) {
     return Response.json({
       ok: true,
       webhooks,
+      sync,
       dryRun: true,
       reason:
         process.env.REVIEW_REQUESTS_ENABLED === '1'
@@ -128,5 +140,5 @@ export async function GET(req: NextRequest) {
   }
 
   if (failures.length) console.error('[review-cron] failures:', JSON.stringify(failures));
-  return Response.json({ ok: true, webhooks, due: due.length, sent, failed: failures.length });
+  return Response.json({ ok: true, webhooks, sync, due: due.length, sent, failed: failures.length });
 }
