@@ -148,7 +148,10 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                               ))}
                             </ul>
                           ) : (
-                            <p className="text-muted text-xs mt-0.5">{item.variantName}</p>
+                            // Single-variant products send their own title as the variant name.
+                            item.variantName && item.variantName !== item.productTitle ? (
+                              <p className="text-muted text-xs mt-0.5">{item.variantName}</p>
+                            ) : null
                           );
                         })()}
                         <div className="flex items-center justify-between mt-2">

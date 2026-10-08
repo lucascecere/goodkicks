@@ -21,7 +21,7 @@ export function SocialLinks({ socials, className }: { socials: readonly Social[]
           target="_blank"
           rel="noopener noreferrer"
           aria-label={s.label}
-          className="text-foot-contrast/60 hover:text-foot-strong transition-colors"
+          className="-m-2 p-2 text-foot-contrast/60 hover:text-foot-strong transition-colors"
         >
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className="h-[18px] w-[18px]">
             <path d={ICONS[s.label]} />

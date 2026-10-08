@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +34,17 @@ export function BuyBox({
   stockNote?: string | null;
 }) {
   const { addItem, openCart } = useCart();
+  // Phones: a sticky Add to cart bar whenever the real button is off screen
+  // (it starts below the fold under the photo, title and description).
+  const mainBtn = useRef<HTMLButtonElement>(null);
+  const [showBar, setShowBar] = useState(false);
+  useEffect(() => {
+    const el = mainBtn.current;
+    if (!el || flavor !== 'townies') return;
+    const io = new IntersectionObserver(([e]) => setShowBar(!e.isIntersecting), { rootMargin: '0px 0px -40px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [flavor]);
   const [selectedId, setSelectedId] = useState(
     variants.find((v) => v.available)?.id ?? variants[0]?.id,
   );
@@ -106,6 +117,7 @@ export function BuyBox({
 
       <div className="space-y-3">
         <button
+          ref={mainBtn}
           onClick={handleAdd}
           disabled={!selected.available}
           className={cn(
@@ -126,6 +138,38 @@ export function BuyBox({
           </p>
         )}
       </div>
+
+      {flavor === 'townies' && (
+        <div
+          aria-hidden={!showBar}
+          className={cn(
+            'fixed inset-x-0 bottom-0 z-40 border-t border-rule bg-white/95 px-4 pt-3 backdrop-blur transition-transform duration-300 lg:hidden',
+            'pb-[max(0.75rem,env(safe-area-inset-bottom))]',
+            showBar ? 'translate-y-0' : 'translate-y-full',
+          )}
+        >
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[0.875rem] font-semibold text-text">{productTitle}</p>
+              <p className="text-[0.8125rem] text-muted">
+                {price}
+                {preorder && selected.available ? ' · Pre-order' : stockNote && selected.available ? ` · ${stockNote.split('·')[1]?.trim() ?? ''}` : ''}
+              </p>
+            </div>
+            <button
+              onClick={handleAdd}
+              disabled={!selected.available}
+              tabIndex={showBar ? 0 : -1}
+              className={cn(
+                'shrink-0 rounded-sm px-6 py-3.5 text-[0.75rem] font-semibold uppercase tracking-[0.12em] text-accent-contrast disabled:opacity-50',
+                accent,
+              )}
+            >
+              {selected.available ? (preorder ? 'Pre-order' : 'Add to cart') : 'Sold out'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
