@@ -46,12 +46,15 @@ function ringDistance(index: number, pos: number, n: number) {
 }
 
 // Phone-first sizes: the stage is ~80% of a phone width, ~45% of desktop.
-const WIDTHS = [480, 720, 1100];
+// Through Next's image optimiser (WebP/AVIF, ~5x smaller than Shopify's PNG),
+// the same pipeline the product tiles use. Widths must be in Next's default
+// device/image size lists.
+const WIDTHS = [384, 640, 828, 1080];
 const SIZES = '(max-width: 1024px) 80vw, 45vw';
 const srcSet = (src: string) => WIDTHS.map((w) => `${sized(src, w)} ${w}w`).join(', ');
 
 function sized(src: string, w: number) {
-  return `${src}${src.includes('?') ? '&' : '?'}width=${w}`;
+  return `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=75`;
 }
 
 function WheelHatImg({
@@ -81,7 +84,7 @@ function WheelHatImg({
   });
   return (
     <motion.img
-      src={sized(hat.src, 720)}
+      src={sized(hat.src, 640)}
       srcSet={srcSet(hat.src)}
       sizes={SIZES}
       alt={index === 0 ? hat.alt : ''}
@@ -115,7 +118,7 @@ export function HatWheelHero({
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   // Preload the first hat in the document head so it starts with the HTML.
-  if (hats[0]) preload(sized(hats[0].src, 720), { as: 'image', fetchPriority: 'high', imageSrcSet: srcSet(hats[0].src), imageSizes: SIZES });
+  if (hats[0]) preload(sized(hats[0].src, 640), { as: 'image', fetchPriority: 'high', imageSrcSet: srcSet(hats[0].src), imageSizes: SIZES });
   // The other seven wait until the first hat has painted (or 1.5s), so they
   // never compete with it for a phone's bandwidth.
   const [rest, setRest] = useState(false);
