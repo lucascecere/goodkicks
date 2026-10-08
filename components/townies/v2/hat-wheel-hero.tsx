@@ -105,7 +105,7 @@ export function HatWheelHero({
               </Link>
             )}
           </div>
-          <div className="relative order-1 min-h-0 lg:order-2">
+          <div className="relative order-1 min-h-0 overflow-hidden lg:order-2 lg:overflow-visible">
             {hats.slice(0, n).map((h, i) => (
               <WheelHatImg key={h.id} hat={h} index={i} pos={pos} />
             ))}

@@ -151,8 +151,10 @@
 
   html {
     scroll-behavior: smooth;
-    /* Safety net: never let an oversized element create sideways scroll on mobile. */
-    overflow-x: hidden;
+    /* Safety net: never let an oversized element create sideways scroll on mobile.
+       `clip`, not `hidden`: hidden turns html/body into scroll containers, which
+       silently breaks every position:sticky (the header and the v2 hat wheel). */
+    overflow-x: clip;
   }
 
   body {
@@ -169,7 +171,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4, h5, h6 {
