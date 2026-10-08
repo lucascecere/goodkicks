@@ -26,6 +26,7 @@ import {
   formatUsd,
 } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
+import { bundleTier } from '@/lib/townies/hat-sack';
 import { getProductReviews } from '@/lib/reviews/server';
 import { ProductReviews } from '@/components/townies/v2/product-reviews';
 import { Stars } from '@/components/townies/v2/stars';
@@ -390,7 +391,8 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                 >
                   <span className="text-[0.8125rem] leading-snug text-text">
                     <span className="font-semibold">
-                      Make it {formatUsd(hatSack?.priceCents ?? HAT_SACK_PRICE_FALLBACK_CENTS)}
+                      {/* Same tier rule as the picker: this hat with a state bag. */}
+                      Make it {formatUsd(hatSack.tiers[bundleTier(variants[0].priceInCents, 999)].cents)}
                     </span>
                     <span className="text-muted">: add any Good Kicks foot bag, shipping included</span>
                   </span>

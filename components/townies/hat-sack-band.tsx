@@ -21,7 +21,8 @@ import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 export async function HatSackBand() {
   if (!HAT_SACK_LIVE) return null;
 
-  const { priceCents } = await getHatSackOffer();
+  const { tiers } = await getHatSackOffer();
+  const priceCents = Math.min(tiers.everyday.cents, tiers.standard.cents, tiers.titletown.cents);
 
   // v2 (2026-10-08): studio ground, any in-stock hat + any in-stock bag, shipped.
   return (
@@ -39,7 +40,7 @@ export async function HatSackBand() {
           </div>
           <div>
             <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">Townies × Good Kicks</p>
-            <h2 className="display mt-3 text-[2rem] text-text sm:text-[2.75rem]">Hat &amp; Sack. {formatUsd(priceCents)} shipped.</h2>
+            <h2 className="display mt-3 text-[2rem] text-text sm:text-[2.75rem]">Hat &amp; Sack. From {formatUsd(priceCents)} shipped.</h2>
             <p className="mt-3 max-w-md text-[1rem] leading-relaxed text-text/75">
               Any hat on the shelf plus any Good Kicks foot bag. Shipping included, one box.
             </p>

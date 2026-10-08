@@ -20,8 +20,13 @@ import {
 } from '@/lib/townies/hat-sack';
 import { getProductsByCollection, GOODKICKS_COLLECTION } from './collections';
 
+export type TierVariant = { id: string | null; cents: number };
+
 export type HatSackOffer = {
+  /** The standard ($40) tier: what "the bundle price" means in copy. */
   priceCents: number;
+  /** Every tier, keyed by bundleTier(). */
+  tiers: Record<'everyday' | 'standard' | 'titletown', TierVariant>;
   /** Cheapest bag in the draw pool — understates the saving rather than overstating it. */
   sackValueCents: number;
   shipsNowId: string | null;
@@ -63,6 +68,11 @@ function toCents(amount: string | undefined): number | null {
 export async function getHatSackOffer(): Promise<HatSackOffer> {
   const fallback: HatSackOffer = {
     priceCents: HAT_SACK_PRICE_FALLBACK_CENTS,
+    tiers: {
+      everyday: { id: null, cents: HAT_SACK_PRICE_FALLBACK_CENTS - 500 },
+      standard: { id: null, cents: HAT_SACK_PRICE_FALLBACK_CENTS },
+      titletown: { id: null, cents: HAT_SACK_PRICE_FALLBACK_CENTS + 500 },
+    },
     sackValueCents: SACK_VALUE_FALLBACK_CENTS,
     shipsNowId: null,
     preorderId: null,
@@ -103,8 +113,17 @@ export async function getHatSackOffer(): Promise<HatSackOffer> {
       toCents(preorder?.price.amount) ??
       HAT_SACK_PRICE_FALLBACK_CENTS;
 
+    const tier = (t: string, fb: number): TierVariant => {
+      const n = byTitle(t);
+      return { id: n?.availableForSale ? n.id : null, cents: toCents(n?.price.amount) ?? fb };
+    };
     return {
       priceCents,
+      tiers: {
+        everyday: tier(HAT_SACK_VARIANT_TITLE.everyday, priceCents - 500),
+        standard: { id: shipsNow?.availableForSale ? shipsNow.id : null, cents: priceCents },
+        titletown: tier(HAT_SACK_VARIANT_TITLE.titletown, priceCents + 500),
+      },
       sackValueCents: await poolFloorCents(),
       // Only sell a variant that is actually purchasable.
       shipsNowId: shipsNow?.availableForSale ? shipsNow.id : null,

@@ -6,9 +6,9 @@ import { Check } from 'lucide-react';
 import { useCart } from '@/lib/cart/cart-context';
 import type { CollectionProduct } from '@/lib/shopify/collections';
 import { townKey } from '@/lib/townies/towns';
-import { formatUsd, priceCents, sackName } from '@/lib/townies/hat-sack';
+import { bundleTier, formatUsd, priceCents, sackName } from '@/lib/townies/hat-sack';
+import type { HatSackOffer } from '@/lib/shopify/hat-sack-offer';
 
-export type HatSackVariants = { shipsNowId: string | null; preorderId: string | null };
 
 /**
  * Hat & Sack v2 (Lucas, 2026-10-08): pick any in-stock hat, pick any in-stock
@@ -78,14 +78,12 @@ function PickGrid({
 export function HatSackPicker({
   hats,
   sacks,
-  variants,
-  bundleCents,
+  tiers,
 }: {
   hats: CollectionProduct[];
   sacks: CollectionProduct[];
-  variants: HatSackVariants;
-  /** Live from Shopify. Shipping is included in this number. */
-  bundleCents: number;
+  /** Live from Shopify; shipping is included in every tier. */
+  tiers: HatSackOffer['tiers'];
 }) {
   const { addItem, openCart } = useCart();
   const [hatHandle, setHatHandle] = useState<string | null>(null);
@@ -93,14 +91,18 @@ export function HatSackPicker({
   const hat = hats.find((h) => h.handle === hatHandle) ?? null;
   const sack = sacks.find((s) => s.handle === sackHandle) ?? null;
   const separately = hat && sack ? (priceCents(hat) ?? 0) + (priceCents(sack) ?? 0) : null;
-  const canAdd = Boolean(hat && sack && variants.shipsNowId);
+  // Price follows the picks (see bundleTier); before both are picked, show "from".
+  const tier = hat && sack ? tiers[bundleTier(priceCents(hat), priceCents(sack))] : null;
+  const fromCents = Math.min(...Object.values(tiers).map((t) => t.cents));
+  const bundleCents = tier?.cents ?? fromCents;
+  const canAdd = Boolean(hat && sack && tier?.id);
 
   function handleAdd() {
-    if (!hat || !sack || !variants.shipsNowId) return;
+    if (!hat || !sack || !tier?.id) return;
     addItem({
       // One line per hat + bag pair.
       cartKey: `hat-sack:${hat.handle}:${sack.handle}`,
-      variantId: variants.shipsNowId,
+      variantId: tier.id,
       variantName: `${hat.title} + ${sackName(sack)}`,
       productTitle: 'Hat & Sack Bundle',
       priceInCents: bundleCents,
@@ -152,7 +154,7 @@ export function HatSackPicker({
       {/* Summary: sticky on desktop, fixed bar on phones. */}
       <aside className="lg:sticky lg:top-28 lg:self-start">
         <div className="hidden border border-rule p-5 lg:block">
-          <Summary hat={hat} sack={sack} bundleCents={bundleCents} separately={separately} canAdd={canAdd} onAdd={handleAdd} />
+          <Summary hat={hat} sack={sack} bundleCents={bundleCents} priced={Boolean(tier)} separately={separately} canAdd={canAdd} onAdd={handleAdd} />
         </div>
       </aside>
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-rule bg-white/95 px-4 pt-3 backdrop-blur pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden">
@@ -161,7 +163,7 @@ export function HatSackPicker({
             <p className="truncate text-[0.8125rem] font-semibold text-text">
               {hat ? townKey(hat).name : 'Pick a hat'} + {sack ? sackName(sack) : 'pick a sack'}
             </p>
-            <p className="text-[0.75rem] text-muted">{formatUsd(bundleCents)} · shipping included</p>
+            <p className="text-[0.75rem] text-muted">{tier ? formatUsd(bundleCents) : `From ${formatUsd(fromCents)}`} · shipping included</p>
           </div>
           <button
             type="button"
@@ -181,6 +183,7 @@ function Summary({
   hat,
   sack,
   bundleCents,
+  priced,
   separately,
   canAdd,
   onAdd,
@@ -188,6 +191,7 @@ function Summary({
   hat: CollectionProduct | null;
   sack: CollectionProduct | null;
   bundleCents: number;
+  priced: boolean;
   separately: number | null;
   canAdd: boolean;
   onAdd: () => void;
@@ -219,7 +223,7 @@ function Summary({
       </dl>
       <div className="mt-4 flex items-baseline justify-between border-t border-rule pt-4">
         <span className="font-label text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-text">Total</span>
-        <span className="text-[1.5rem] font-medium text-text">{formatUsd(bundleCents)}</span>
+        <span className="text-[1.5rem] font-medium text-text">{priced ? formatUsd(bundleCents) : `From ${formatUsd(bundleCents)}`}</span>
       </div>
       {separately !== null && (
         <p className="mt-1 text-right text-[0.75rem] text-muted">Separately {formatUsd(separately)} plus shipping</p>

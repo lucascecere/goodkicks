@@ -49,7 +49,31 @@ export const HAT_SACK_PRICE_FALLBACK_CENTS = 4000;
 export const HAT_SACK_VARIANT_TITLE = {
   shipsNow: 'Ships now',
   preorder: 'Pre-order',
+  everyday: 'Ships now · Everyday + Good Kicks',
+  titletown: 'Ships now · Titletown',
 } as const;
+
+/**
+ * Bundle price tiers (Lucas, 2026-10-08), shipping included in every one:
+ *
+ *                    state bag ($9.99)   Pro bag ($12.99)
+ *   Everyday hat           $35                $40
+ *   Lifestyle hat          $40                $40
+ *   Titletown hat          $45                $45
+ *
+ * Each tier is its own Shopify variant (prices live in Shopify, so a reprice is
+ * an admin edit). Tiers are decided by the hat's and bag's own prices, not
+ * names, so a new $24.99 hat or $12.99 bag lands in the right tier untouched:
+ * hat >= $33 → Titletown tier; hat <= $27 with a sub-$12 bag → Everyday tier;
+ * everything else → standard.
+ */
+export type BundleTier = 'everyday' | 'standard' | 'titletown';
+
+export function bundleTier(hatCents: number | null, sackCents: number | null): BundleTier {
+  if ((hatCents ?? 0) >= 3300) return 'titletown';
+  if ((hatCents ?? 0) <= 2700 && (sackCents ?? 9999) < 1200) return 'everyday';
+  return 'standard';
+}
 
 /**
  * The draw pool: the $9.99 Good Kicks v1 foot bags that are actually in stock.

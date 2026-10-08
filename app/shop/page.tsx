@@ -80,7 +80,7 @@ export default async function ShopPage({
               href={HAT_SACK_PATH}
               className="mt-5 inline-block text-[0.875rem] underline underline-offset-4 text-text/80 hover:text-text"
             >
-              Hat &amp; Sack: a town hat plus a Good Kicks foot bag, {formatUsd(hatSack.priceCents)}
+              Hat &amp; Sack: any hat plus a Good Kicks foot bag, from {formatUsd(Math.min(hatSack.tiers.everyday.cents, hatSack.tiers.standard.cents, hatSack.tiers.titletown.cents))} shipped
             </Link>
           )}
         </div>
