@@ -192,6 +192,12 @@ export function HatWheelHero({
                 <span className="text-[0.9375rem] text-text/70">{hat.price}</span>
               </Link>
             )}
+            {n > 1 && (
+              <p className="mt-4 font-label text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-text/45">
+                <span className="hidden lg:inline">Scroll over the hats for every town →</span>
+                <span className="lg:hidden">Swipe the hats for every town</span>
+              </p>
+            )}
           </div>
           <div
             ref={stage}
@@ -200,12 +206,6 @@ export function HatWheelHero({
             {hats.slice(0, n).map((h, i) => (
               <WheelHatImg key={h.id} hat={h} index={i} pos={pos} n={n} />
             ))}
-            {n > 1 && (
-              <p className="pointer-events-none absolute bottom-4 right-0 font-label text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-text/45">
-                <span className="hidden lg:inline">Scroll over the hats for every town</span>
-                <span className="lg:hidden">Swipe the hats</span>
-              </p>
-            )}
           </div>
         </div>
       </div>
