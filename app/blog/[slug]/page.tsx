@@ -99,7 +99,7 @@ export default async function BlogPostPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
         <div className="mt-16 rounded-sm bg-ink text-ink-contrast p-8 text-center space-y-4">
-          <p className="font-block uppercase text-2xl sm:text-3xl">Rep your town.</p>
+          <p className="display text-2xl sm:text-3xl">Find your town.</p>
           <Link
             href="/shop"
             className="inline-flex items-center justify-center bg-accent text-accent-contrast px-6 py-3 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-white transition-colors"

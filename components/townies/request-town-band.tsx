@@ -13,7 +13,7 @@ export function RequestTownBand() {
     <ClosingBand
       eyebrow="Don’t see your town?"
       title="Tell us where you’re from."
-      body="Towns get made because people ask for them. Put yours in — if enough people from the same place raise their hand, it goes into the queue."
+      body="Towns get made because people ask for them. Put yours in. When enough people from the same place ask, it goes into the queue."
       cta={{ href: '/request-a-town', label: 'Request your town' }}
       secondary={{ href: '/shop', label: 'see what’s live' }}
       pattern="pine"

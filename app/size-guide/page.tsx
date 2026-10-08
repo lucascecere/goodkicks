@@ -25,7 +25,7 @@ export default function SizeGuidePage() {
             <h2 className="font-block uppercase text-2xl text-text mb-3">One size fits most</h2>
             <p className="text-muted leading-relaxed">
               Every Townies hat is an <strong>adjustable snapback</strong> with a plastic closure.
-              It fits roughly <strong>55–60cm</strong> (about 21.5″–23.5″) of head circumference —
+              It fits roughly <strong>55–60cm</strong> (about 21.5″–23.5″) of head circumference,
               which covers the large majority of adults. If a standard snapback has fit you before,
               this one will too. No hard sizes to pick, no XS/L guessing.
             </p>
@@ -37,11 +37,11 @@ export default function SizeGuidePage() {
             </h2>
             <p className="text-muted leading-relaxed mb-3">
               Want to be sure? Run a soft tape measure around your head, just above the ears and
-              across the middle of your forehead — where a hat actually sits.
+              across the middle of your forehead, where a hat actually sits.
             </p>
             <ul className="text-muted leading-relaxed list-disc pl-5 space-y-1.5">
               <li>
-                <strong>55–60cm:</strong> you&apos;re dead center — the snapback dials right in.
+                <strong>55–60cm:</strong> you&apos;re dead center; the snapback dials right in.
               </li>
               <li>
                 <strong>Under 55cm:</strong> still works, tightened to the smaller settings.
@@ -61,14 +61,14 @@ export default function SizeGuidePage() {
                 <h3 className="font-block uppercase text-lg text-text mb-2">Lifestyle Hat</h3>
                 <p className="text-muted text-sm leading-relaxed">
                   Two-tone. Slightly structured 5-panel crown, pre-curved brim, 100% brushed cotton
-                  twill — soft and broken-in from day one. Mid-profile.
+                  twill, soft and broken-in from day one. Mid-profile.
                 </p>
               </div>
               <div className="rounded-sm border border-rule bg-white/50 p-6">
                 <h3 className="font-block uppercase text-lg text-text mb-2">Everyday Hat</h3>
                 <p className="text-muted text-sm leading-relaxed">
                   Solid color. Low-profile unstructured 5-panel crown, flat brim, 60/40
-                  cotton-poly — soft hand, sits closer to the head.
+                  cotton-poly, soft hand, sits closer to the head.
                 </p>
               </div>
             </div>
@@ -78,7 +78,7 @@ export default function SizeGuidePage() {
             <h2 className="font-block uppercase text-2xl text-text mb-3">Care</h2>
             <p className="text-muted leading-relaxed">
               Spot clean with cold water and a little mild soap, then air dry in shape. Skip the
-              washing machine and the dryer — heat and a spin cycle are how a good hat loses its
+              washing machine and the dryer: heat and a spin cycle are how a good hat loses its
               shape. Treat it right and it&apos;ll wear in, not out.
             </p>
           </section>

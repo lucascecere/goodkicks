@@ -15,7 +15,7 @@ export function SupportForm() {
     return (
       <Submitted
         title="Got it."
-        body="We read everything and answer fast — usually same day, always within one business day."
+        body="We read everything and answer fast: usually the same day, always within one business day."
       />
     );
   }
@@ -37,7 +37,7 @@ export function SupportForm() {
         <input type="email" className={fieldClass} placeholder="you@email.com"
           {...register('email', { required: 'Email is required' })} />
       </Field>
-      <Field label="Order number" hint="Optional — only if this is about an order.">
+      <Field label="Order number" hint="Optional. Only if this is about an order.">
         <input className={fieldClass} placeholder="#1234" {...register('orderNumber')} />
       </Field>
       <Field label="How can we help?" error={errors.message?.message}>

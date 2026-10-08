@@ -31,11 +31,11 @@ export default function TownRepPage() {
             Townies Town Rep Program
           </p>
           <h1 className="display text-[2.5rem] sm:text-[3.25rem] lg:text-[4rem]">
-            Rep your town.<br />We&apos;ll back you.
+            Loudest fan in town?<br />We&apos;ll back you.
           </h1>
           <p className="text-ink-contrast/70 text-lg max-w-2xl mx-auto leading-relaxed">
-            If you&apos;re already the one repping your town the loudest — the local account, the
-            hometown-proud creator, the person everyone knows is from there — we want to back you.
+            If you&apos;re already the one repping your town the loudest (the local account, the
+            hometown-proud creator, the person everyone knows is from there), we want to back you.
             Free hats, your own code, and a cut of every sale you drive.
           </p>
           <a
@@ -57,7 +57,7 @@ export default function TownRepPage() {
             </h2>
             <p className="text-muted leading-relaxed">
               Townies makes town-pride hats for people who actually rep where they&apos;re from. If
-              that&apos;s you — and your people trust what you put on — a Town Rep partnership gets
+              that&apos;s you, and your people trust what you put on, a Town Rep partnership gets
               you the product free, your own discount code, and a cut of every order you drive.
             </p>
             <p className="text-muted leading-relaxed">
@@ -90,11 +90,11 @@ export default function TownRepPage() {
           {[
             {
               title: 'Your own code.',
-              body: 'A custom code tied to your town — think MILTON15, WEYMOUTH15. Anyone who uses it saves on any Townies hat, and every order it touches is tracked back to you automatically.',
+              body: 'A custom code tied to your town, like MILTON15 or WEYMOUTH15. Anyone who uses it saves on any Townies hat, and every order it touches is tracked back to you automatically.',
             },
             {
               title: 'Real commission.',
-              body: 'You earn a straight percentage of every order placed with your code — no thresholds to clear, no points to chase. We set your rate when we bring you on. Paid out monthly via Venmo or PayPal.',
+              body: 'You earn a straight percentage of every order placed with your code. No thresholds to clear, no points to chase. We set your rate when we bring you on. Paid out monthly via Venmo or PayPal.',
             },
             {
               title: 'Free hat.',
@@ -114,10 +114,10 @@ export default function TownRepPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 sm:mb-16 space-y-3">
             <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent">The numbers</p>
-            <h2 className="display text-[2rem] sm:text-[2.5rem] text-text">No tiers. No games.</h2>
+            <h2 className="display text-[2rem] sm:text-[2.5rem] text-text">Your rate, agreed up front.</h2>
             <p className="text-muted max-w-xl mx-auto">
-              We don&apos;t make you grind through levels to earn a real rate. We agree on your
-              numbers when you come on, and that&apos;s what you get from order one.
+              Rates are set per rep, up to 20%, and agreed when you come on. That&apos;s what you
+              get from order one; no levels to grind through first.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
@@ -130,7 +130,7 @@ export default function TownRepPage() {
               {
                 stat: 'Up to 20%',
                 label: 'Commission to you',
-                body: 'A straight cut of every order your code brings in — not of our margin, not of some adjusted number.',
+                body: 'A straight cut of every order your code brings in. Not of our margin, not of some adjusted number.',
               },
               {
                 stat: 'Monthly',
@@ -158,7 +158,7 @@ export default function TownRepPage() {
           <div className="space-y-0">
             {[
               { step: '01', title: 'Apply below.', body: 'Fill out the form. Tell us your town, your account, and how you rep it. Takes two minutes.' },
-              { step: '02', title: 'We review + approve.', body: "We check that you're the real deal — actually from the town, actually repping it — and reach out within a few days." },
+              { step: '02', title: 'We review + approve.', body: "We check that you're the real deal (actually from the town, actually repping it) and reach out within a few days." },
               { step: '03', title: 'Get your code + free hat.', body: 'Once approved, we send your custom code and your town’s hat free, so you can post with the real product in hand.' },
               { step: '04', title: 'Post. Earn. Repeat.', body: 'Share your code, watch the orders come in, and get paid monthly. We track everything on our end.' },
             ].map((item, i, arr) => (
@@ -195,7 +195,7 @@ export default function TownRepPage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 text-left">
             {[
-              { label: 'Town & local accounts', desc: 'Pages built around a town, neighborhood, or region — the ones everyone from there follows, posting constantly.' },
+              { label: 'Town & local accounts', desc: 'Pages built around a town, neighborhood or region: the ones everyone from there follows.' },
               { label: 'College & pro athletes', desc: 'Any size audience. If you compete somewhere people from your town follow, we want to talk.' },
               { label: 'Hometown creators', desc: 'Local personalities and creators who lead with where they’re from, with the audience to match.' },
             ].map((item) => (

@@ -21,7 +21,7 @@ export function TownRequestForm() {
     return (
       <Submitted
         title="Town noted."
-        body="Every request gets counted. The towns that shout loudest get made first — tell your group chat."
+        body="Every request gets counted. The towns that shout loudest get made first. Tell your group chat."
       />
     );
   }

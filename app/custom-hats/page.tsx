@@ -39,7 +39,7 @@ import { SITE_URL, breadcrumbSchema } from '@/lib/seo/site';
 export const revalidate = 60;
 
 const TITLE = 'Custom Embroidered Hats in Massachusetts';
-const DESCRIPTION = `Custom embroidered hats for Massachusetts businesses, teams, schools and fundraisers. ${CUSTOM_MIN} to ${CUSTOM_MAX} hats on Weld, Richardson or Yupoong blanks, priced within ${CUSTOM_QUOTE_WINDOW}.`;
+const DESCRIPTION = `Custom embroidered hats for Massachusetts businesses, teams and schools. ${CUSTOM_MIN} to ${CUSTOM_MAX} hats, mock it up online, priced within ${CUSTOM_QUOTE_WINDOW}.`;
 
 export const metadata: Metadata = {
   title: TITLE,

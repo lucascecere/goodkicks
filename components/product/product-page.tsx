@@ -295,7 +295,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             <div className="relative aspect-square overflow-hidden rounded-sm">
               <BrandImage
                 src={imgSrc}
-                alt={`${name} — ${gk ? 'Good Kicks' : 'Townies'}`}
+                alt={`${name}, ${gk ? 'Good Kicks' : 'Townies'}`}
                 tone={gk ? 'cream' : 'navy'}
                 label={name}
                 priority
@@ -371,7 +371,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             {!gk && (
               <>
                 <p className="mt-4 text-xs text-muted">
-                  One size fits most, adjustable snapback —{' '}
+                  One size fits most, adjustable snapback.{' '}
                   <Link
                     href="/size-guide"
                     className="underline underline-offset-2 hover:text-text transition-colors"
@@ -393,7 +393,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                     <span className="font-semibold">
                       Make it {formatUsd(hatSack?.priceCents ?? HAT_SACK_PRICE_FALLBACK_CENTS)}
                     </span>
-                    <span className="text-muted"> — add a random Good Kicks foot bag</span>
+                    <span className="text-muted">: add a random Good Kicks foot bag</span>
                   </span>
                   <span aria-hidden className="text-muted text-sm">
                     &rarr;

@@ -21,7 +21,7 @@ export default function Page() {
       <PageMasthead
         eyebrow="Support"
         title="Need a hand?"
-        sub={`Order gone sideways, sizing question, or something we got wrong — this reaches a person, not a ticket queue.`}
+        sub={`Order gone sideways, sizing question, or something we got wrong? This reaches a person, not a ticket queue.`}
         pattern="speckle"
       />
 

@@ -39,10 +39,10 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: 'What are the hats made of?',
     a: (
       <>
-        Our two-tone Lifestyle Hats run a soft brushed 100% cotton-twill workhorse blank — slightly
+        Our two-tone Lifestyle Hats run a soft brushed 100% cotton-twill workhorse blank: slightly
         structured, pre-curved brim, broken-in from day one. The solid-color Everyday Hats use a
         low-profile unstructured cotton-poly blank. Both are adjustable snapbacks, and all the
-        lettering is raised embroidery — stitched, not printed.
+        lettering is raised embroidery, stitched, not printed.
       </>
     ),
   },
@@ -65,7 +65,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: 'Can I return or exchange a hat?',
     a: (
       <>
-        Yeah — see the{' '}
+        Yes. See the{' '}
         <Link
           href="/returns-policy"
           className="underline underline-offset-2 hover:text-accent"
@@ -81,7 +81,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: 'You don’t have my town. What gives?',
     a: (
       <>
-        We&apos;re working our way across the map one town at a time — South Shore first, then
+        We&apos;re working our way across the map one town at a time: South Shore first, then
         Boston&apos;s neighborhoods and Southeastern Mass, and outward from there. Tell us which
         town to do next on the{' '}
         <Link href="/request-a-town" className="underline underline-offset-2 hover:text-accent">
@@ -95,7 +95,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: 'Do you do wholesale or custom town orders?',
     a: (
       <>
-        We do — teams, shops, reunions, whatever. Hit us through the wholesale option on the{' '}
+        We do: teams, shops, reunions, whatever. Hit us through the wholesale option on the{' '}
         <Link href="/support" className="underline underline-offset-2 hover:text-accent">
           contact page
         </Link>{' '}
@@ -107,7 +107,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     q: 'Are you the same people as Good Kicks?',
     a: (
       <>
-        Same crew. Good Kicks — the hand-stitched foot bags — came first and taught us how to make
+        Same crew. Good Kicks, the hand-stitched foot bags, came first and taught us how to make
         something people actually keep. Townies grew out of it. Both are still going.
       </>
     ),

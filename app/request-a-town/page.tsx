@@ -22,7 +22,7 @@ export default function Page() {
       <PageMasthead
         eyebrow="Not on the list yet"
         title="Request your town."
-        sub={`We’re working out from the South Shore one town at a time. Every request gets counted — the loudest towns get made first.`}
+        sub={`We’re working out from the South Shore one town at a time. Every request gets counted, and the loudest towns get made first.`}
         pattern="ma"
       />
 

@@ -205,7 +205,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
         <label className={labelClass}>
           shipping address{' '}
           <span className={`${mutedClass} font-normal`}>
-            {isTownies ? '(where we send your free hat)' : '(optional — where we send your free sack)'}
+            {isTownies ? '(where we send your free hat)' : '(optional: where we send your free sack)'}
           </span>
         </label>
         <input type="text" placeholder="street address" value={form.addressLine1} onChange={(e) => set('addressLine1', e.target.value)} className={inputClass} />
@@ -235,7 +235,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
             <option value="not-listed">my town isn&apos;t listed yet</option>
           </select>
           <p className={`${mutedClass} text-xs mt-1.5`}>
-            don&apos;t see your town? pick &ldquo;not listed&rdquo; — we make new ones all the time.
+            don&apos;t see your town? pick &ldquo;not listed&rdquo;. New towns get added all the time.
           </p>
         </div>
       ) : (
@@ -252,7 +252,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
 
       {state === 'error' && (
         <p className="text-red-500 text-sm">
-          something went wrong — try again or email us at{' '}
+          something went wrong. Try again or email us at{' '}
           {isTownies ? 'hello@townies.shop' : 'info@goodkicks.co'}
         </p>
       )}

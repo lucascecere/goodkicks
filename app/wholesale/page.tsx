@@ -7,7 +7,7 @@ import { WholesaleForm } from '@/components/forms/wholesale-form';
 // events, fundraisers). Their own logo on a hat is /custom-hats (Lucas, 10-07).
 const TITLE = 'Wholesale Townies Hats for Shops, Events and Fundraisers';
 const DESCRIPTION =
-  'Stock Townies town hats in your shop, or buy them in volume for an event or fundraiser. Tell us which towns and how many, and we reply with wholesale pricing and a lead time.';
+  'Stock Townies town hats in your shop, or buy them in volume for an event or fundraiser. Wholesale pricing and a lead time by email.';
 
 export const metadata: Metadata = {
   title: TITLE,
