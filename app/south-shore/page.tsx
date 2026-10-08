@@ -10,9 +10,9 @@ import { breadcrumbSchema } from '@/lib/seo/site';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'South Shore — Shop the Drop',
+  title: 'South Shore Town Hats',
   description:
-    'The first Townies drop: South Shore hats and designs. Massachusetts town-pride apparel, available to pre-order now.',
+    'Embroidered snapbacks for South Shore towns: Milton, Quincy, Braintree, Weymouth, Hingham and more, from Townies Apparel Co.',
   alternates: { canonical: '/south-shore' },
 };
 

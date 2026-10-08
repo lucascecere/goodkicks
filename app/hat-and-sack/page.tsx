@@ -23,11 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const { priceCents } = await getHatSackOffer();
   const price = formatUsd(priceCents);
   return {
-    title: `Hat & Sack — ${price} | Townies × Good Kicks`,
+    title: { absolute: `Hat & Sack, ${price} for Both | Townies × Good Kicks` },
     description: `Pick a Townies town snapback and we’ll pack a random Good Kicks foot bag with it. ${price} for both, shipped together.`,
     alternates: { canonical: HAT_SACK_PATH },
     openGraph: {
-      title: `Hat & Sack — ${price} | Townies × Good Kicks`,
+      title: `Hat & Sack, ${price} for Both | Townies × Good Kicks`,
       description: `Pick your town. We pick the bag. ${price} for both.`,
       url: HAT_SACK_PATH,
       images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],

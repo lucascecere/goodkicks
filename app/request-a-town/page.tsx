@@ -5,11 +5,11 @@ import { PageMasthead } from '@/components/townies/page-masthead';
 import { TownRequestForm } from '@/components/forms/town-request-form';
 
 export const metadata: Metadata = {
-  title: 'Request a Town — Townies',
+  title: 'Request a Town',
   description: 'Do not see your town? Tell us. Every request is counted, and the towns that shout loudest get made first.',
   alternates: { canonical: '/request-a-town' },
   openGraph: {
-    title: 'Request a Town — Townies',
+    title: 'Request a Town | Townies',
     description: 'Do not see your town? Tell us. Every request is counted, and the towns that shout loudest get made first.',
     url: '/request-a-town',
     images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],

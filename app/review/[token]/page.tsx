@@ -13,7 +13,7 @@ import { lookupRequest } from '@/lib/reviews/server';
  * cannot be used to manufacture a verified review.
  */
 export const metadata: Metadata = {
-  title: 'Leave a review — Townies',
+  title: 'Leave a Review',
   robots: { index: false, follow: false },
 };
 

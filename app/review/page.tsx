@@ -13,7 +13,7 @@ import { getTownieProducts } from '@/lib/shopify/collections';
  * /review/<token> link from the post-delivery email is the one that does.
  */
 export const metadata: Metadata = {
-  title: 'Leave a review | Townies',
+  title: 'Leave a review',
   description: 'Got a Townies hat? Tell us what you think.',
   // Nothing to gain from ranking this, and a review form in search results
   // collects noise from people who never bought anything.

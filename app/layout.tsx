@@ -63,10 +63,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     template: '%s | Townies',
-    default: 'Townies — Rep Your Town.',
+    default: 'Townies Apparel Co. | Embroidered Hats for Massachusetts Towns',
   },
   description:
-    'Massachusetts town-pride hats for people who rep where they’re from. Heavyweight — Milton, Weymouth, Hingham, Braintree and more. South Shore first.',
+    'Embroidered snapbacks for Massachusetts towns, from Milton to West Roxbury, plus custom embroidered hats for local businesses, teams and schools.',
   openGraph: {
     siteName: 'Townies',
     type: 'website',

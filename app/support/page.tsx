@@ -4,11 +4,11 @@ import { PageMasthead } from '@/components/townies/page-masthead';
 import { SupportForm } from '@/components/forms/support-form';
 
 export const metadata: Metadata = {
-  title: 'Support — Townies',
+  title: 'Support',
   description: 'Questions about an order, sizing, shipping or returns. We answer everything, usually the same day.',
   alternates: { canonical: '/support' },
   openGraph: {
-    title: 'Support — Townies',
+    title: 'Support | Townies',
     description: 'Questions about an order, sizing, shipping or returns. We answer everything, usually the same day.',
     url: '/support',
     images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],

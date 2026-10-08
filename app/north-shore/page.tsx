@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { ComingSoonRegion } from '@/components/townies/coming-soon-region';
 
 export const metadata: Metadata = {
-  title: 'North Shore — Coming Soon',
+  title: 'North Shore Town Hats: Coming Soon',
   description:
-    'Townies is bringing Massachusetts town-pride apparel to the North Shore. The South Shore drops first — request your town to get the North Shore moving.',
+    'Townies is working its way up to the North Shore. Request your town and get on the list for the first North Shore hats.',
   alternates: { canonical: '/north-shore' },
 };
 

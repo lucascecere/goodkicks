@@ -97,6 +97,9 @@ export const TOWNIES: BrandConfig = {
   logoClass: 'h-11 sm:h-[3.25rem] w-auto translate-y-[3px] sm:translate-y-[4px]',
   nav: [
     { href: '/shop', label: 'Shop' },
+    // Custom embroidery for businesses and teams (their logo, our hats). Bulk
+    // Orders stays alongside: that one is for buying our town hats in volume.
+    { href: '/custom-hats', label: 'Custom Hats' },
     { href: '/about', label: 'About' },
     // "Wholesale" only reads as "I want to stock you". Most of the volume is
     // teams, companies and fundraisers buying once, so the label leads with
@@ -126,6 +129,7 @@ export const TOWNIES: BrandConfig = {
         links: [
           { href: '/about', label: 'Our Story' },
           { href: '/request-a-town', label: 'Request Your Town' },
+          { href: '/custom-hats', label: 'Custom Hats' },
           { href: '/wholesale', label: 'Bulk Orders' },
           { href: '/ambassadors', label: 'Become an Ambassador' },
           { href: '/blog', label: 'The Town Paper' },

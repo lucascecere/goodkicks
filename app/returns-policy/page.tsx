@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { PolicyPage } from '@/components/townies/v2/policy-page';
 
 export const metadata: Metadata = {
-  title: 'Returns Policy | Townies',
+  title: 'Returns Policy',
   description: 'Townies returns and exchanges: 30 days on unworn in-stock hats, made-to-order pre-orders are final sale, and damaged or wrong items made right.',
   alternates: { canonical: '/returns-policy' },
 };

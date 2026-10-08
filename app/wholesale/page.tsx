@@ -6,7 +6,7 @@ import { WholesaleForm } from '@/components/forms/wholesale-form';
 // URL stays /wholesale — it has the inbound links and the search history — but
 // everything a person actually reads now leads with bulk. /bulk-orders is
 // redirected here in middleware.ts for anyone who guesses the obvious address.
-const TITLE = 'Bulk orders & wholesale — Townies';
+const TITLE = 'Bulk Hat Orders for Teams, Schools & Businesses';
 const DESCRIPTION =
   'Hats for teams, companies, schools, fundraisers and shops. Tell us how many and which towns, and the first reply comes back with a real price and a lead time.';
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   description: DESCRIPTION,
   alternates: { canonical: '/wholesale' },
   openGraph: {
-    title: TITLE,
+    title: `${TITLE} | Townies`,
     description: DESCRIPTION,
     url: '/wholesale',
     images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
@@ -40,7 +40,7 @@ export default function Page() {
               program instead" — which read as a dismissal to the coach ordering
               thirty team hats, i.e. exactly the person the page is for. Only
               genuinely different jobs get pointed elsewhere now. */}
-          Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-text">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request it here</Link>. Want to rep Townies for a cut? <Link href="/ambassadors" className="underline underline-offset-4 hover:text-text">The Town Rep program</Link>.
+          Want your own logo on the hat? <Link href="/custom-hats" className="underline underline-offset-4 hover:text-text">Custom hats</Link>. Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-text">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request it here</Link>. Want to rep Townies for a cut? <Link href="/ambassadors" className="underline underline-offset-4 hover:text-text">The Town Rep program</Link>.
         </div>
       </div>
     </div>

@@ -14,11 +14,11 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: 'Shop Massachusetts Town Hats',
   description:
-    'Every town, one place. Massachusetts town-pride apparel — filter by your town. Milton, Weymouth, Hingham, Braintree and more.',
+    'Every Townies hat in one place. Embroidered snapbacks for Massachusetts towns, filterable by town: Milton, Weymouth, Hingham, Braintree and more.',
   alternates: { canonical: '/shop' },
   openGraph: {
     title: 'Shop Massachusetts Town Hats',
-    description: 'Massachusetts town-pride apparel. Filter by your town.',
+    description: 'Embroidered snapbacks for Massachusetts towns. Filter by your town.',
     url: '/shop',
     images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },

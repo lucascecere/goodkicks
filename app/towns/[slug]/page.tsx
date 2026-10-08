@@ -9,6 +9,7 @@ import { PageMasthead } from '@/components/townies/page-masthead';
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { TownLinks } from '@/components/townies/town-links';
 import { SITE_URL, breadcrumbSchema } from '@/lib/seo/site';
+import { customTownHref, hasCustomPage } from '@/lib/townies/custom-hats';
 
 /**
  * One page per town — /towns/milton, /towns/west-roxbury.
@@ -64,7 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: `${title} | Townies`,
       description,
       url: townHref(town.slug),
-      ...(image ? { images: [{ url: image, width: 1000, height: 1000, alt: `${town.name} hat — Townies` }] } : {}),
+      ...(image ? { images: [{ url: image, width: 1000, height: 1000, alt: `${town.name} hat by Townies` }] } : {}),
     },
   };
 }
@@ -116,7 +117,7 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
       <PageMasthead
         eyebrow={`${town.regionLabel} · Massachusetts`}
         title={`${town.name}, MA.`}
-        sub={`${count === 1 ? 'The Townies hat' : count === 2 ? 'Both Townies hats' : `All ${count} Townies hats`} for ${town.name} — ${styleSummary(town)}. For people who rep where they're from.`}
+        sub={`${count === 1 ? 'The Townies hat' : count === 2 ? 'Both Townies hats' : `All ${count} Townies hats`} for ${town.name}: ${styleSummary(town)}, with ${town.name} stitched on the front.`}
         pattern="topo"
         align="center"
       />
@@ -129,6 +130,14 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
             <ProductCard key={p.id} product={p} priority={i < 4} rating={ratings[p.handle]} />
           ))}
         </div>
+        {hasCustomPage(town.slug) && (
+          <p className="mt-10 text-center text-sm text-muted">
+            Ordering for a business or team in {town.name}?{' '}
+            <Link href={customTownHref(town.slug)} className="underline underline-offset-4 hover:text-text">
+              Custom hats for {town.name}
+            </Link>
+          </p>
+        )}
       </div>
 
       {(neighbours.length > 0 || elsewhere.length > 0) && (

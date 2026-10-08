@@ -3,9 +3,9 @@ import Image from 'next/image';
 import { AmbassadorForm } from '@/components/partners/ambassador-form';
 
 export const metadata: Metadata = {
-  title: 'Town Rep Program — Townies',
+  title: 'Town Rep Program',
   description:
-    'Rep your town the loudest? Become a Townies Town Rep. Get a free hat, your own discount code, and earn commission on every sale you drive.',
+    'Become a Townies Town Rep: a free hat, your own discount code, and commission on every sale you drive.',
   alternates: { canonical: '/ambassadors' },
   openGraph: {
     title: 'Townies Town Rep Program',

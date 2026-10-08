@@ -39,7 +39,7 @@ export const BUSINESS = {
   logo: `${SITE_URL}/icon.png`,
   ogImage: `${SITE_URL}/opengraph-image.jpg`,
   description:
-    'Massachusetts town-pride apparel. The town is the hero — Townies is the label. Starting with the South Shore.',
+    'Embroidered snapback hats for Massachusetts towns, and custom embroidered hats for local businesses, teams and schools.',
   email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'hello@townies.shop',
   // Set once confirmed for the Google Business Profile (kept blank until then
   // rather than guessed — a wrong number is worse than none for NAP).

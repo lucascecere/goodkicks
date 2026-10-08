@@ -8,10 +8,10 @@ import { BrandPattern } from '@/components/townies/brand-pattern';
 export const metadata: Metadata = {
   title: { absolute: 'About Townies Apparel Co. | Town-Pride Hats from Massachusetts' },
   description:
-    'The town is the hero, Townies is the label. How a Massachusetts apparel brand — made by Massholes, for Massholes — started on the South Shore and grew out of Good Kicks.',
+    'The town is the hero, Townies is the label. How a Massachusetts hat label started on the South Shore and grew out of Good Kicks.',
   alternates: { canonical: '/about' },
   openGraph: {
-    title: 'About Townies — Town-Pride Apparel from Massachusetts',
+    title: 'About Townies Apparel Co.',
     description: 'The town is the hero, Townies is the label.',
     url: '/about',
     images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],

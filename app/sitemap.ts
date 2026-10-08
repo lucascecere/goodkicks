@@ -4,6 +4,7 @@ import { getTownieProducts, getGoodKicksProducts } from '@/lib/shopify/collectio
 import { towniePosts } from '@/lib/townies/blog-posts';
 import { townHref, townPages } from '@/lib/townies/towns';
 import { SITE_URL, GK_HOST_LIVE, gkCanonical } from '@/lib/seo/site';
+import { customTownHref, customTowns } from '@/lib/townies/custom-hats';
 import { isGoodKicksHost } from '@/lib/seo/hosts';
 
 // Each domain lists only its own URLs. A sitemap on townies.shop that also
@@ -31,6 +32,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.85,
+  }));
+
+  const customTownRoutes: MetadataRoute.Sitemap = customTowns(towns).map((t) => ({
+    url: `${siteUrl}${customTownHref(t.slug)}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
   }));
 
   const goodKicksRoutes: MetadataRoute.Sitemap = goodKicks.map((p) => ({
@@ -71,6 +79,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/about`,             lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.6 },
     { url: `${siteUrl}/support`,           lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.5 },
     { url: `${siteUrl}/request-a-town`,    lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.7 },
+    { url: `${siteUrl}/custom-hats`,       lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     { url: `${siteUrl}/wholesale`,         lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.6 },
     { url: `${siteUrl}/faq`,               lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
     { url: `${siteUrl}/size-guide`,        lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.4 },
@@ -78,6 +87,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/returns-policy`,  lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.4 },
     { url: `${siteUrl}/privacy`,           lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.3 },
     ...townPageRoutes,
+    ...customTownRoutes,
     ...townRoutes,
     ...blogRoutes,
   ];
