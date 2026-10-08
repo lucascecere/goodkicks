@@ -41,9 +41,23 @@ export function BuyBox({
   useEffect(() => {
     const el = mainBtn.current;
     if (!el || flavor !== 'townies') return;
-    const io = new IntersectionObserver(([e]) => setShowBar(!e.isIntersecting), { rootMargin: '0px 0px -40px 0px' });
+    let offScreen = false;
+    // Step aside near the bottom so it never sits on the sign-up band or footer.
+    const update = () => {
+      const h = document.documentElement;
+      const nearEnd = h.scrollTop + h.clientHeight > h.scrollHeight - 900;
+      setShowBar(offScreen && !nearEnd);
+    };
+    const io = new IntersectionObserver(([e]) => {
+      offScreen = !e.isIntersecting;
+      update();
+    }, { rootMargin: '0px 0px -40px 0px' });
     io.observe(el);
-    return () => io.disconnect();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', update);
+    };
   }, [flavor]);
   const [selectedId, setSelectedId] = useState(
     variants.find((v) => v.available)?.id ?? variants[0]?.id,
