@@ -60,8 +60,8 @@
   --color-band: var(--color-town-forest);
   /* The strip above the header: forest, so the cream logo stays the brightest
      thing at the top of a navy page. */
-  --color-announce: var(--color-town-white);
-  --color-announce-contrast: var(--color-town-navy);
+  --color-announce: var(--color-town-forest);
+  --color-announce-contrast: var(--color-town-cream);
   /* The header's own ground. Townies runs it navy on a light page; Good Kicks
      keeps its cream header. */
   --color-chrome: var(--color-town-navy);
