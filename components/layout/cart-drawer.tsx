@@ -183,7 +183,9 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                     Your whole order ships together once the pre-order is ready — {PREORDER_SHIP_NOTE.toLowerCase()}.
                   </p>
                 )}
-                {brand.freeShippingCents !== null && (
+                {/* A cart of only Hat & Sack bundles already ships free; the
+                    "$X from free shipping" nudge would be wrong there. */}
+                {brand.freeShippingCents !== null && !items.every((i) => i.productTitle === 'Hat & Sack Bundle') && (
                   <FreeShippingBar subtotalCents={subtotalCents} thresholdCents={brand.freeShippingCents} />
                 )}
                 <div className="flex justify-between items-center text-sm">

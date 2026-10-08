@@ -140,10 +140,20 @@ export function eligibleHats(products: CollectionProduct[]): CollectionProduct[]
 /** Handles that are never a single foot bag (the archived build-your-own pack). */
 const NOT_A_BAG = new Set(['3-pack']);
 
-/** In-stock Good Kicks foot bags, cheapest first. */
+/**
+ * In-stock Good Kicks foot bags, cheapest first. The v1 state bags run Shopify's
+ * "continue selling at 0" policy, which the shared stock read reports as no
+ * count (null); for bags that means "sellable", so a null count passes as long
+ * as Shopify says the bag is available. A real 0 still drops it.
+ */
 export function eligibleSacks(products: CollectionProduct[]): CollectionProduct[] {
   return products
-    .filter((p) => !NOT_A_BAG.has(p.handle) && inStock(p))
+    .filter(
+      (p) =>
+        !NOT_A_BAG.has(p.handle) &&
+        (p.variants.edges[0]?.node.availableForSale ?? false) &&
+        (p.stock === null || p.stock === undefined || p.stock > 0),
+    )
     .sort((a, b) => (priceCents(a) ?? 0) - (priceCents(b) ?? 0) || a.title.localeCompare(b.title));
 }
 
