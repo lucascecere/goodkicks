@@ -25,7 +25,7 @@ export const QUESTIONS: Question[] = [
   { id: 'harbor', q: 'What did colonists throw into Boston Harbor in 1773?', answer: 'Tea', wrong: ['Coffee', 'Lobsters', 'Hats'] },
 ];
 
-export const QUIZ_LENGTH = 4;
+export const QUIZ_LENGTH = 2;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];

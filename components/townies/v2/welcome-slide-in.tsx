@@ -5,9 +5,9 @@ import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 
 /**
- * Mass trivia (Lucas, 2026-10-07): a small card that rises from the bottom
- * corner on the visitor's second page or at 60% scroll (no timer, no
- * exit-intent). Four crazy-easy questions; the score picks the prize, and
+ * Mass trivia (Lucas, 2026-10-07): a full centred pop-up that opens on the
+ * visitor's second page or at 60% scroll (no timer, no exit-intent). Two
+ * crazy-easy questions; the score picks the prize, and
  * everyone wins at least $5 off. Graded on the server (/api/quiz/grade), the
  * code is minted through the same /api/spin/claim path as the old rotary.
  */
@@ -141,26 +141,49 @@ export function WelcomeSlideIn() {
     setBusy(false);
   }
 
+  // Escape closes, and the page behind doesn't scroll while the pop-up is up.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   if (!open) return null;
   const q = questions[i];
   const label = 'font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60';
   const primary = 'font-label bg-text px-5 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white hover:bg-black disabled:opacity-60';
 
   return (
-    <div
-      role="dialog"
-      aria-label="Mass trivia"
-      className="fixed inset-x-3 bottom-3 z-[60] animate-[slide-in_.4s_ease-out_both] border border-rule bg-white p-5 shadow-[0_18px_50px_-20px_rgba(13,27,42,0.45)] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[380px] sm:p-6"
-    >
-      <button onClick={close} aria-label="Close" className="absolute right-3 top-3 p-1 text-text/50 hover:text-text">
-        <X size={18} />
-      </button>
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+      {/* Full pop-up (Lucas, 10-07): a centred card over a dimmed page. */}
+      <button aria-label="Close" onClick={close} className="absolute inset-0 animate-[fade-in_.3s_ease-out_both] bg-[#0D1B2A]/60 backdrop-blur-[2px]" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mass trivia"
+        className="relative w-full max-w-[460px] animate-[pop-in_.35s_ease-out_both] overflow-hidden bg-white shadow-[0_30px_80px_-20px_rgba(13,27,42,0.6)]"
+      >
+        <div className="bg-[#0D1B2A] px-6 py-5 text-center sm:px-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logos/townies-script-natural.svg" alt="Townies" className="mx-auto h-10 w-auto" />
+        </div>
+        <button onClick={close} aria-label="Close" className="absolute right-3 top-3 p-1 text-white/70 hover:text-white">
+          <X size={20} />
+        </button>
+        <div className="p-6 sm:p-8">
 
       {step === 'intro' && (
         <div>
           <p className={label}>Mass trivia</p>
-          <p className="display mt-2 pr-6 text-[1.5rem] leading-tight text-text">Know your Mass? Win up to $10 off.</p>
-          <p className="mt-2 text-[0.9375rem] text-text/70">Four easy questions. Everyone wins at least $5 off.</p>
+          <p className="display mt-2 text-[2rem] leading-[1.05] text-text">Know your Mass? Win up to $10 off.</p>
+          <p className="mt-2 text-[0.9375rem] text-text/70">Two easy questions. Everyone wins at least $5 off. Get both right for $10.</p>
           <div className="mt-4 flex items-center gap-4">
             <button onClick={start} disabled={busy} className={primary}>{busy ? '…' : 'Play'}</button>
             <button type="button" onClick={close} className="text-[0.8125rem] text-text/55 underline underline-offset-4 hover:text-text">Not now</button>
@@ -170,7 +193,7 @@ export function WelcomeSlideIn() {
 
       {step === 'quiz' && q && (
         <div>
-          <div className="flex items-center justify-between pr-6">
+          <div className="flex items-center justify-between">
             <p className={label}>Question {i + 1} of {questions.length}</p>
             <div className="flex gap-1">
               {questions.map((x, k) => (
@@ -178,14 +201,14 @@ export function WelcomeSlideIn() {
               ))}
             </div>
           </div>
-          <p className="display mt-3 text-[1.25rem] leading-snug text-text">{q.q}</p>
+          <p className="display mt-3 text-[1.625rem] leading-snug text-text">{q.q}</p>
           <div className="mt-4 grid grid-cols-2 gap-2">
             {q.options.map((o) => (
               <button
                 key={o}
                 onClick={() => choose(o)}
                 disabled={!!picked || busy}
-                className={`border px-3 py-3 text-left text-[0.875rem] font-medium transition-colors ${
+                className={`border px-4 py-4 text-left text-[0.9375rem] font-medium transition-colors ${
                   picked === o ? 'border-text bg-text text-white' : 'border-rule text-text hover:border-text'
                 }`}
               >
@@ -199,8 +222,8 @@ export function WelcomeSlideIn() {
       {step === 'result' && graded && (
         <form onSubmit={claim}>
           <p className={label}>{graded.score} of {questions.length} right</p>
-          <p className="display mt-2 pr-6 text-[1.5rem] leading-tight text-text">
-            {graded.score === questions.length ? 'Perfect. ' : graded.score >= 2 ? 'Not bad. ' : 'Close enough. '}
+          <p className="display mt-2 text-[1.75rem] leading-tight text-text">
+            {graded.score === questions.length ? 'Perfect. ' : graded.score === 1 ? 'Not bad. ' : 'Close enough. '}
             You won {graded.prize.terms.toLowerCase()}.
           </p>
           <p className="mt-2 text-[0.875rem] text-text/70">Where should we send the code?</p>
@@ -224,7 +247,7 @@ export function WelcomeSlideIn() {
       {step === 'done' && result && (
         <div>
           <p className={label}>{result.alreadyClaimed ? 'Already yours' : 'Nice work'}</p>
-          <p className="display mt-2 text-[1.625rem] text-text">Your code: {result.code}</p>
+          <p className="display mt-2 text-[1.75rem] text-text">Your code: {result.code}</p>
           <p className="mt-2 text-[0.9375rem] text-text/70">
             {result.emailed ? 'We sent it to your inbox too. ' : ''}Enter it at checkout.
           </p>
@@ -232,6 +255,8 @@ export function WelcomeSlideIn() {
       )}
 
       {error && <p className="mt-2 text-[0.8125rem] text-red-700">{error}</p>}
+        </div>
+      </div>
     </div>
   );
 }

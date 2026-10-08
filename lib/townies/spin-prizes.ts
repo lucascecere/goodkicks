@@ -222,9 +222,13 @@ export const QUIZ_PRIZES: SpinWedge[] = [
   { id: 'quizship', exit: 'Mass trivia', label: 'FREE SHIP', kind: 'free_shipping', weight: 0, codePrefix: 'MASSSHIP', terms: 'Free shipping on your order', fill: 'forest' },
   { id: 'quiz10', exit: 'Mass trivia', label: '$10 OFF', kind: 'fixed_amount', amountOff: 10, weight: 0, codePrefix: 'MASS10', terms: '$10 off your order', fill: 'navy' },
 ];
-/** Score out of 4 → prize tier: 0–1 $5, 2 $7, 3 free shipping, 4 $10. */
+/**
+ * Score out of 2 → prize tier (Lucas, 10-07: two questions): 0 right $5,
+ * 1 right $7, 2 right $10. The free-shipping tier is kept for codes already
+ * issued but no longer awarded.
+ */
 export function quizTier(score: number): number {
-  return score >= 4 ? 3 : score === 3 ? 2 : score === 2 ? 1 : 0;
+  return score >= 2 ? 3 : score === 1 ? 1 : 0;
 }
 
 export function wedgeById(id: string): SpinWedge | null {
