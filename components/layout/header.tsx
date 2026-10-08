@@ -66,7 +66,7 @@ export function Header({ brand }: { brand: BrandConfig }) {
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
-            <Link href={home} aria-label={`${brand.name} — home`} className="inline-flex">
+            <Link href={home} aria-label={`${brand.name} home`} className="inline-flex">
               <LogoImg logo={logo} priority className={brand.logoClass} />
             </Link>
           </div>

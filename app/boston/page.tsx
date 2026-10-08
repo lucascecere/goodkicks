@@ -37,7 +37,7 @@ export default async function BostonPage() {
       <PageMasthead
         eyebrow="The city"
         title="Boston."
-        sub={`Neighborhood pride, done right. West Roxbury and Roslindale are up first — Southie, Dorchester, and the rest of the city are working their way onto the map, corner by corner. Rep yours.`}
+        sub={`Hats for the neighborhoods: West Roxbury, Roslindale, Dorchester, Hyde Park, Brighton, with more on the way.`}
         pattern="speckle"
         align="center"
       />

@@ -37,7 +37,7 @@ export default async function SouthShorePage() {
       <PageMasthead
         eyebrow="The first drop"
         title="The South Shore."
-        sub={`Where it all kicked off. Hats repping the towns we actually know — Milton, Weymouth, Hingham, Braintree. Grab yours before the run's gone.`}
+        sub={`Where Townies started. Milton, Braintree, Weymouth, Hingham and the towns around them.`}
         pattern="ma"
         align="center"
       />

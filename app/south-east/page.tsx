@@ -37,7 +37,7 @@ export default async function SouthEastPage() {
       <PageMasthead
         eyebrow="Down the map"
         title="Southeastern Mass."
-        sub={`The part of the map everyone forgets — we didn't. Norton's up first, with Mansfield, Foxboro, and Attleboro on deck. Down 24 and 495, this one's for you.`}
+        sub={`Bristol County and the towns down 24 and 495. Yours not here yet? Ask for it.`}
         pattern="topo"
         align="center"
       />
