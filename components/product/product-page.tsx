@@ -5,6 +5,7 @@ import { getProductByHandle, getAllProducts } from '@/lib/shopify/service';
 import { getTownieProducts, getGoodKicksProducts, type CollectionProduct } from '@/lib/shopify/collections';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { townHref, townKey } from '@/lib/townies/towns';
+import { customTownHref, hasCustomPage } from '@/lib/townies/custom-hats';
 import { imageForVariant } from '@/lib/shopify/variant-colors';
 import { BrandImage } from '@/components/ui/brand-image';
 import { TowniesBlock } from '@/components/brand/wordmark';
@@ -84,7 +85,7 @@ export async function productPageMetadata(handle: string, brand?: Brand): Promis
     product.seo?.description?.trim() ||
     (gk
       ? `${name} — a premium Good Kicks foot bag. Properly weighted, built to last.`
-      : `${name}, Massachusetts. Town-pride apparel — the town is the hero, Townies is the label.`);
+      : `${name}, an embroidered snapback from Townies Apparel Co. The town is the hero, Townies is the label.`);
   return {
     title: seoTitle,
     description: seoDescription,
@@ -94,7 +95,7 @@ export async function productPageMetadata(handle: string, brand?: Brand): Promis
       description: seoDescription,
       url: canonical,
       images: imgUrl
-        ? [{ url: imgUrl, width: 1000, height: 1000, alt: `${name} — ${label}` }]
+        ? [{ url: imgUrl, width: 1000, height: 1000, alt: gk ? `${name} — ${label}` : `${name} by ${label}` }]
         : [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
     },
   };
@@ -206,7 +207,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
     image: schemaImages,
     description: gk
       ? `${name} — a hand-stitched Good Kicks foot bag, properly weighted and built to take a beating.`
-      : `${name} — a Massachusetts town-pride hat from Townies Apparel Co. Stitched, not printed.`,
+      : `${name}, a Massachusetts town hat from Townies Apparel Co. Embroidered, not printed.`,
     brand: { '@type': 'Brand', name: gk ? 'Good Kicks' : 'Townies' },
     offers: {
       '@type': 'Offer',
@@ -311,7 +312,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               </p>
             ) : (
               <p className="text-muted leading-relaxed mb-8 max-w-md">
-                Rep your town before anyone has to ask where you’re from. Wear it ’til it’s got a story.
+                Your town, stitched on the front. Wear it until it has a story.
               </p>
             )}
 
@@ -366,6 +367,17 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                     &rarr;
                   </span>
                 </Link>
+                )}
+                {hasCustomPage(townKey(shopifyProduct).slug) && (
+                  <p className="mt-5 text-xs text-muted">
+                    Ordering for a business or team in {townKey(shopifyProduct).name}?{' '}
+                    <Link
+                      href={customTownHref(townKey(shopifyProduct).slug)}
+                      className="underline underline-offset-2 hover:text-text transition-colors"
+                    >
+                      Custom hats for {townKey(shopifyProduct).name}
+                    </Link>
+                  </p>
                 )}
               </>
             )}

@@ -10,9 +10,9 @@ import { breadcrumbSchema } from '@/lib/seo/site';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Southeastern Mass — Town Hats',
+  title: 'Southeastern Mass Town Hats',
   description:
-    'Southeastern Massachusetts town-pride hats from Townies — Norton up first, with Mansfield, Foxboro, and Attleboro on deck. Pre-order now.',
+    'Embroidered town hats for Southeastern Massachusetts, from Townies Apparel Co. See what is out now, or request your town.',
   alternates: { canonical: '/south-east' },
 };
 

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { PageMasthead } from '@/components/townies/page-masthead';
 
 export const metadata: Metadata = {
-  title: 'Size Guide — Townies',
+  title: 'Hat Size Guide & Care',
   description:
     'How Townies hats fit: one size fits most, adjustable snapback, ~55–60cm. Materials and care for the Lifestyle and Everyday hats.',
   alternates: { canonical: '/size-guide' },

@@ -4,19 +4,19 @@ import { towniePosts } from '@/lib/townies/blog-posts';
 import { BrandPattern } from '@/components/townies/brand-pattern';
 
 export const metadata: Metadata = {
-  title: 'The Town Paper — Massachusetts Town Pride, Stories & Culture',
+  title: 'The Town Paper: Massachusetts Town Stories & Guides',
   description:
-    'Stories, town guides, and the case for repping where you’re from. Massachusetts town-pride culture from Townies Apparel Co.',
+    'Stories and town guides from around Massachusetts, from Townies Apparel Co.',
   alternates: { canonical: '/blog' },
   openGraph: {
-    title: 'The Town Paper — Townies Blog',
+    title: 'The Town Paper | Townies Blog',
     description: 'Massachusetts town-pride stories, guides, and culture from Townies Apparel Co.',
     url: '/blog',
     images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'The Town Paper — Townies Blog',
+    title: 'The Town Paper | Townies Blog',
     description: 'Massachusetts town-pride stories, guides, and culture.',
     images: ['/opengraph-image.jpg'],
   },

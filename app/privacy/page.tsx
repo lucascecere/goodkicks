@@ -3,7 +3,7 @@ import { BrandPattern } from '@/components/townies/brand-pattern';
 import { PrivacyContent, PRIVACY_UPDATED } from '@/components/legal/privacy-content';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy & Terms — Townies',
+  title: 'Privacy Policy & Terms',
   description: 'Privacy policy and terms of service for Townies Apparel Co.',
   alternates: { canonical: '/privacy' },
   robots: { index: false },

@@ -7,7 +7,7 @@ import { TOWNIES } from '@/lib/brand/brands';
 const FREE_OVER = `$${(TOWNIES.freeShippingCents ?? 7500) / 100}`;
 
 export const metadata: Metadata = {
-  title: 'Shipping Policy | Townies',
+  title: 'Shipping Policy',
   description: `How Townies ships: from Massachusetts, US only, free over ${FREE_OVER}. In-stock hats leave in 1 to 3 business days; pre-orders are made to order.`,
   alternates: { canonical: '/shipping-policy' },
 };

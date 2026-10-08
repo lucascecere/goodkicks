@@ -10,9 +10,9 @@ import { breadcrumbSchema } from '@/lib/seo/site';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: 'Boston — Neighborhood Hats',
+  title: 'Boston Neighborhood Hats',
   description:
-    'Boston neighborhood town-pride hats from Townies — West Roxbury, Roslindale, and more of the city, corner by corner. Massachusetts apparel, in stock and shipping now.',
+    'Embroidered snapbacks for Boston neighborhoods: Dorchester, West Roxbury, Roslindale, Brighton, Hyde Park and more of the city, from Townies Apparel Co.',
   alternates: { canonical: '/boston' },
 };
 
