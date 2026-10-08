@@ -31,7 +31,7 @@ const STEP_SVH = 42;
 /** Page scroll only turns the first few hats, so nobody is trapped in the hero (Lucas, 10-07). */
 const PINNED_HATS = 3;
 /** Wheel-delta pixels per hat when scrolling over the hats themselves. */
-const PX_PER_HAT = 260;
+const PX_PER_HAT = 180;
 
 /** Signed distance from the centre on a ring of n hats, in (-n/2, n/2]. */
 function ringDistance(index: number, pos: number, n: number) {
@@ -98,10 +98,16 @@ export function HatWheelHero({
     const el = stage.current;
     if (!el || n < 2) return;
     let settle: ReturnType<typeof setTimeout> | undefined;
-    // Come to rest on a hat, not between two.
-    const snap = () => {
+    // Come to rest on a hat, not between two — and always the NEXT hat in the
+    // direction of travel, so one slow wheel notch still moves the ring on
+    // instead of rounding back to where it started.
+    const snap = (dir: number) => {
       clearTimeout(settle);
-      settle = setTimeout(() => extra.set(Math.round(pagePos.get() + extra.get()) - pagePos.get()), 140);
+      settle = setTimeout(() => {
+        const at = pagePos.get() + extra.get();
+        const target = dir > 0 ? Math.ceil(at - 0.001) : dir < 0 ? Math.floor(at + 0.001) : Math.round(at);
+        extra.set(target - pagePos.get());
+      }, 200);
     };
     const onWheel = (e: WheelEvent) => {
       // Over the hats the wheel turns the ring and the page stays put. The
@@ -109,11 +115,12 @@ export function HatWheelHero({
       e.preventDefault();
       const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
       extra.set(extra.get() + delta / PX_PER_HAT);
-      snap();
+      snap(Math.sign(delta));
     };
     // Phones: a sideways swipe on the hats turns the ring; vertical still scrolls.
     let startX = 0;
     let startExtra = 0;
+    let lastDx = 0;
     const onDown = (e: PointerEvent) => {
       if (e.pointerType === 'mouse') return;
       startX = e.clientX;
@@ -121,12 +128,14 @@ export function HatWheelHero({
     };
     const onMove = (e: PointerEvent) => {
       if (e.pointerType === 'mouse' || !startX) return;
-      extra.set(startExtra - (e.clientX - startX) / 120);
+      lastDx = e.clientX - startX;
+      extra.set(startExtra - lastDx / 120);
     };
     const onUp = () => {
       if (!startX) return;
       startX = 0;
-      snap();
+      snap(Math.abs(lastDx) > 24 ? -Math.sign(lastDx) : 0);
+      lastDx = 0;
     };
     el.addEventListener('wheel', onWheel, { passive: false });
     el.addEventListener('pointerdown', onDown);
