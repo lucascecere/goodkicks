@@ -33,9 +33,9 @@ export function GoogleAnalytics({ host = '' }: { host?: string }) {
     <>
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
-      <Script id={`ga-${gaId}`} strategy="afterInteractive">
+      <Script id={`ga-${gaId}`} strategy="lazyOnload">
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}

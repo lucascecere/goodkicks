@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { preload } from 'react-dom';
 import Link from 'next/link';
 import {
   motion,
@@ -44,11 +45,28 @@ function ringDistance(index: number, pos: number, n: number) {
   return d;
 }
 
+// Phone-first sizes: the stage is ~80% of a phone width, ~45% of desktop.
+const WIDTHS = [480, 720, 1100];
+const SIZES = '(max-width: 1024px) 80vw, 45vw';
+const srcSet = (src: string) => WIDTHS.map((w) => `${sized(src, w)} ${w}w`).join(', ');
+
 function sized(src: string, w: number) {
   return `${src}${src.includes('?') ? '&' : '?'}width=${w}`;
 }
 
-function WheelHatImg({ hat, index, pos, n }: { hat: WheelHat; index: number; pos: MotionValue<number>; n: number }) {
+function WheelHatImg({
+  hat,
+  index,
+  pos,
+  n,
+  onLoad,
+}: {
+  hat: WheelHat;
+  index: number;
+  pos: MotionValue<number>;
+  n: number;
+  onLoad?: () => void;
+}) {
   const d = useTransform(pos, (p) => ringDistance(index, p, n));
   // A "C" hugging the right edge of the page (Lucas, 10-07): the next hat
   // rises in from the lower right edge, the current one sits at the C's
@@ -63,8 +81,15 @@ function WheelHatImg({ hat, index, pos, n }: { hat: WheelHat; index: number; pos
   });
   return (
     <motion.img
-      src={sized(hat.src, 1100)}
+      src={sized(hat.src, 720)}
+      srcSet={srcSet(hat.src)}
+      sizes={SIZES}
       alt={index === 0 ? hat.alt : ''}
+      // The first hat is the page's largest paint: fetch it first, the rest after.
+      fetchPriority={index === 0 ? 'high' : 'low'}
+      loading={index === 0 ? 'eager' : 'lazy'}
+      decoding="async"
+      onLoad={onLoad}
       draggable={false}
       style={{ x, y, scale, opacity }}
       className="absolute left-[2%] top-[17%] h-[66%] w-[78%] select-none object-contain mix-blend-multiply will-change-transform"
@@ -89,6 +114,15 @@ export function HatWheelHero({
 }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
+  // Preload the first hat in the document head so it starts with the HTML.
+  if (hats[0]) preload(sized(hats[0].src, 720), { as: 'image', fetchPriority: 'high', imageSrcSet: srcSet(hats[0].src), imageSizes: SIZES });
+  // The other seven wait until the first hat has painted (or 1.5s), so they
+  // never compete with it for a phone's bandwidth.
+  const [rest, setRest] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setRest(true), 1500);
+    return () => clearTimeout(t);
+  }, []);
   const stage = useRef<HTMLDivElement>(null);
   const n = reduce ? 1 : hats.length;
   const pinned = Math.max(Math.min(PINNED_HATS, n) - 1, 0);
@@ -204,9 +238,11 @@ export function HatWheelHero({
             ref={stage}
             className="relative order-2 min-h-0 touch-pan-y overflow-hidden lg:overflow-visible"
           >
-            {hats.slice(0, n).map((h, i) => (
-              <WheelHatImg key={h.id} hat={h} index={i} pos={pos} n={n} />
-            ))}
+            {hats.slice(0, n).map((h, i) =>
+              i === 0 || rest ? (
+                <WheelHatImg key={h.id} hat={h} index={i} pos={pos} n={n} onLoad={i === 0 ? () => setTimeout(() => setRest(true), 200) : undefined} />
+              ) : null,
+            )}
           </div>
         </div>
       </div>
