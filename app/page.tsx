@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { StudioHero } from '@/components/townies/v2/studio-hero';
+import { HatWheelHero, type WheelHat } from '@/components/townies/v2/hat-wheel-hero';
+import { price } from '@/components/townies/v2/studio';
 import { TownCrests } from '@/components/townies/v2/town-crests';
 import { HatShelf } from '@/components/townies/v2/hat-shelf';
 import { RegionCards } from '@/components/townies/v2/region-cards';
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
 
 /**
  * v2 home (2026-10), modelled on melin.com with Homefield's shop-by-school row:
- * studio hero → town badges → hat grid → one photo band → regions → bulk →
+ * hat-wheel hero (scroll turns the wheel) → town badge slider → hat grid → one photo band → regions → bulk →
  * reviews (empty until real ones exist) → sign-up (site-wide, SiteWrapper) → footer.
  *
  * Every hat is a real Shopify shot on the shared studio ground (see
@@ -37,18 +38,35 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const products = await getTownieProducts();
 
-  // Hero hat: the Milton Lifestyle (the first town), else the first hat in stock.
+  // The hero wheel: one hat per town, Milton (the first town) leading, then
+  // whatever is buyable today. Eight stops keeps the pinned scroll short.
   const ranked = [...products].sort((a, b) => stockTier(a) - stockTier(b));
-  const heroHat =
-    ranked.find((p) => townKey(p).slug === 'milton' && hatStyle(p.title) === 'lifestyle') ?? ranked[0];
+  const seen = new Set<string>();
+  const wheelProducts = [
+    ...ranked.filter((p) => townKey(p).slug === 'milton' && hatStyle(p.title) === 'lifestyle'),
+    ...ranked,
+  ].filter((p) => {
+    const slug = townKey(p).slug;
+    if (!p.featuredImage?.url || seen.has(slug)) return false;
+    seen.add(slug);
+    return true;
+  }).slice(0, 8);
+  const wheel: WheelHat[] = wheelProducts.map((p) => ({
+    id: p.id,
+    src: p.featuredImage!.url,
+    alt: p.featuredImage!.altText ?? p.title,
+    title: p.title,
+    price: price(p),
+    href: `/products/${p.handle}`,
+  }));
   const townCount = new Set(products.map((p) => townKey(p).slug)).size;
 
   return (
     <>
-      <StudioHero
-        product={heroHat}
+      <HatWheelHero
+        hats={wheel}
         eyebrow="Massachusetts · Est. 2024"
-        headline="Your town, stitched."
+        headline="Get your town."
         sub="Embroidered hats for Massachusetts towns. The zip, the year, the nickname only locals use."
         cta={{ href: '/shop', label: 'Shop all towns' }}
         ctaSecondary={{ href: '#towns', label: 'Find your town' }}
