@@ -4,24 +4,11 @@ import { useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type
 import { fieldClass, labelClass } from '@/components/forms/form-kit';
 import { FRONT_BOUNDS, FrontHat, SIDE_BOUNDS, SideHat, type HatStyleId, type Placed, type SideMark } from './hat-art';
 import { LOGO_MAX_BYTES, LOGO_TYPES, logoForUpload, normaliseLogo, removeWhite, renderMockup } from './image-utils';
-import { BLANK_COLORWAYS, type Colorway } from '@/lib/townies/blanks';
+import { BLANKS, BLANK_BRANDS, blankById, type Colorway } from '@/lib/townies/blanks';
 
 /* ---------- options ---------- */
 
-const STYLES: { id: HatStyleId; name: string; line: string; blank: string }[] = [
-  {
-    id: 'lifestyle',
-    name: 'Lifestyle',
-    line: 'Two-tone 5-panel. Slightly structured, pre-curved brim, brushed cotton twill.',
-    blank: 'Weld Workhorse',
-  },
-  {
-    id: 'everyday',
-    name: 'Everyday',
-    line: 'One colour, low profile 5-panel. Unstructured, 60/40 cotton-poly.',
-    blank: 'Yupoong 6502',
-  },
-];
+
 
 const COLOURS = [
   { name: 'Natural', hex: '#EDE6D6' },
@@ -69,6 +56,58 @@ function Step({ n, title, children, hint }: { n: string; title: string; children
   );
 }
 
+function BlankPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+  const current = blankById(value);
+  const [brand, setBrand] = useState<string>(current.brand);
+  const models = BLANKS.filter((b) => b.brand === brand);
+  return (
+    <div>
+      <div role="tablist" aria-label="Maker" className="mb-3 flex gap-1">
+        {BLANK_BRANDS.map((b) => (
+          <button
+            key={b}
+            type="button"
+            role="tab"
+            aria-selected={brand === b}
+            onClick={() => {
+              setBrand(b);
+              const first = BLANKS.find((m) => m.brand === b);
+              if (first && current.brand !== b) onChange(first.id);
+            }}
+            className={`font-label px-4 py-2 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] transition-colors ${
+              brand === b ? 'bg-text text-white' : 'border border-rule text-text hover:border-text'
+            }`}
+          >
+            {b}
+          </button>
+        ))}
+      </div>
+      <div role="radiogroup" aria-label="Hat" className="grid gap-2 sm:grid-cols-2">
+        {models.map((m) => {
+          const on = m.id === value;
+          return (
+            <label
+              key={m.id}
+              className={`block cursor-pointer border p-3.5 transition-colors focus-within:ring-2 focus-within:ring-[#2F4F3A] ${
+                on ? 'border-text bg-[#F1EEE8]' : 'border-rule hover:border-text/50'
+              }`}
+            >
+              <input type="radio" name="blank" value={m.id} checked={on} onChange={() => onChange(m.id)} className="sr-only" />
+              <span className="flex items-baseline justify-between gap-2">
+                <span className="text-[0.9375rem] font-semibold text-text">{m.brand} {m.model}</span>
+                <span className="font-label text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-muted">
+                  {m.colorways.length} colours
+                </span>
+              </span>
+              <span className="mt-1 block text-[0.8125rem] leading-snug text-muted">{m.short}</span>
+            </label>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ColorwayPicker({
   list,
   value,
@@ -78,25 +117,31 @@ function ColorwayPicker({
   value: string;
   onChange: (v: string) => void;
 }) {
+  // Split swatch: front panel left, brim lower right, mesh/back upper right.
   return (
-    <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-2">
-      {list.map((c) => {
-        const checked = c.name === value;
-        return (
-          <label
-            key={c.name}
-            className={`flex cursor-pointer items-center gap-3 border px-3 py-2.5 transition ${checked ? 'border-text' : 'border-rule hover:border-text/50'}`}
-          >
-            <input type="radio" name="colorway" value={c.name} checked={checked} onChange={() => onChange(c.name)} className="sr-only" />
-            {/* split swatch: crown on top, brim below */}
-            <span aria-hidden className="block h-8 w-8 overflow-hidden rounded-full border border-black/15">
-              <span className="block h-1/2" style={{ background: c.crown }} />
-              <span className="block h-1/2" style={{ background: c.brim }} />
-            </span>
-            <span className="text-[0.875rem] font-medium text-text">{c.name}</span>
-          </label>
-        );
-      })}
+    <div>
+      <p className="font-label mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-muted">
+        Selected <span className="ml-1 normal-case tracking-normal text-text">{value}</span>
+      </p>
+      <div role="radiogroup" aria-label="Colourway" className="flex max-h-[232px] flex-wrap gap-2 overflow-y-auto p-1">
+        {list.map((c) => {
+          const checked = c.name === value;
+          return (
+            <label key={c.name} title={c.name} className="relative cursor-pointer">
+              <input type="radio" name="colorway" value={c.name} checked={checked} onChange={() => onChange(c.name)} className="peer sr-only" />
+              <span className="sr-only">{c.name}</span>
+              <span
+                aria-hidden
+                className={`grid h-9 w-9 grid-cols-2 grid-rows-2 overflow-hidden rounded-full border border-black/15 ring-offset-2 transition peer-focus-visible:ring-2 peer-focus-visible:ring-[#2F4F3A] ${checked ? 'ring-2 ring-text' : ''}`}
+              >
+                <span className="row-span-2" style={{ background: c.front }} />
+                <span style={{ background: c.back }} />
+                <span style={{ background: c.brim }} />
+              </span>
+            </label>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -252,12 +297,11 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
   const sideRef = useRef<SVGSVGElement>(null);
   const crownRef = useRef<SVGGElement>(null);
 
-  const [style, setStyle] = useState<HatStyleId>('lifestyle');
-  // Real blank colourways only (lib/townies/blanks.ts), one pick per style.
-  const [colorwayName, setColorwayName] = useState<Record<HatStyleId, string>>({
-    lifestyle: BLANK_COLORWAYS.lifestyle[0].name,
-    everyday: BLANK_COLORWAYS.everyday[0].name,
-  });
+  // Real blanks and their real colourways only (lib/townies/blanks.ts).
+  const [blankId, setBlankId] = useState(BLANKS[0].id);
+  const [colorwayByBlank, setColorwayByBlank] = useState<Record<string, string>>({});
+  const blank = blankById(blankId);
+  const style: HatStyleId = blank.profile;
   const [view, setView] = useState<'front' | 'side'>('front');
 
   const [logo, setLogo] = useState<Logo | null>(null);
@@ -280,10 +324,12 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
   const [mockupUrl, setMockupUrl] = useState<string | null>(null);
 
   const colorway =
-    BLANK_COLORWAYS[style].find((c) => c.name === colorwayName[style]) ?? BLANK_COLORWAYS[style][0];
-  const crown = colorway.crown;
+    blank.colorways.find((c) => c.name === colorwayByBlank[blank.id]) ?? blank.colorways[0];
+  const crown = colorway.front;
   const brim = colorway.brim;
+  const back = colorway.back !== colorway.front ? colorway.back : undefined;
   const colourLine = colorway.name;
+  const hatLine = `${blank.brand} ${blank.model}`;
 
   // White-background knockout is computed once per logo, the first time it is asked for.
   useEffect(() => {
@@ -420,7 +466,7 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
   /* ----- export + submit ----- */
 
   const caption = () => [
-    `${style === 'lifestyle' ? 'Lifestyle' : 'Everyday'} · ${colourLine}`,
+    `${hatLine} · ${colourLine}`,
     'Mockup for a quote. Colours are approximate; thread colours and stitch count confirmed with your price.',
   ];
 
@@ -456,7 +502,7 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
     setServerError('');
     try {
       const fd = new FormData(e.currentTarget);
-      fd.set('style', style === 'lifestyle' ? 'Lifestyle (Weld Workhorse)' : 'Everyday (Yupoong 6502)');
+      fd.set('style', `${blank.brand} ${blank.model} (${blank.name})`);
       fd.set('colours', colourLine);
       fd.set(
         'frontLogo',
@@ -536,6 +582,8 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
                 style={style}
                 crown={crown}
                 brim={brim}
+                back={back}
+                mesh={blank.mesh}
                 stitched={stitched}
                 logo={frontPlaced}
                 svgRef={frontRef}
@@ -550,6 +598,8 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
                 style={style}
                 crown={crown}
                 brim={brim}
+                back={back}
+                mesh={blank.mesh}
                 stitched={stitched}
                 mark={sideMark}
                 svgRef={sideRef}
@@ -567,41 +617,19 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
 
           {/* Controls */}
           <div className="space-y-8">
-            <Step n="01" title="Pick the hat">
-              <div role="radiogroup" aria-label="Hat style" className="grid gap-3 sm:grid-cols-2">
-                {STYLES.map((s) => {
-                  const on = style === s.id;
-                  return (
-                    <label
-                      key={s.id}
-                      className={`block cursor-pointer border p-4 transition-colors focus-within:ring-2 focus-within:ring-[#2F4F3A] ${
-                        on ? 'border-text bg-[#F1EEE8]' : 'border-rule hover:border-text/50'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="hat-style"
-                        value={s.id}
-                        checked={on}
-                        onChange={() => setStyle(s.id)}
-                        className="sr-only"
-                      />
-                      <span className="flex items-baseline justify-between gap-2">
-                        <span className="display text-[1.5rem] text-text">{s.name}</span>
-                        <span className="font-label text-[0.625rem] font-semibold uppercase tracking-[0.14em] text-muted">{s.blank}</span>
-                      </span>
-                      <span className="mt-1.5 block text-[0.875rem] leading-snug text-muted">{s.line}</span>
-                    </label>
-                  );
-                })}
-              </div>
+            <Step n="01" title="Pick the hat" hint="The blanks we embroider on, from Weld, Richardson and Yupoong.">
+              <BlankPicker value={blank.id} onChange={setBlankId} />
             </Step>
 
-            <Step n="02" title="Colourway" hint="These are the blanks we stock. Colours on screen are approximate. Want a colour you don't see? Put it in the notes and we'll check.">
+            <Step
+              n="02"
+              title="Colourway"
+              hint={`${blank.colorways.length} colourways, as ${blank.brand} makes them. Colours on screen are approximate; we confirm the exact blank with your quote.`}
+            >
               <ColorwayPicker
-                list={BLANK_COLORWAYS[style]}
+                list={blank.colorways}
                 value={colorway.name}
-                onChange={(v) => setColorwayName((m) => ({ ...m, [style]: v }))}
+                onChange={(v) => setColorwayByBlank((m) => ({ ...m, [blank.id]: v }))}
               />
             </Step>
 

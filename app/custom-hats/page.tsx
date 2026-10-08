@@ -39,7 +39,7 @@ import { SITE_URL, breadcrumbSchema } from '@/lib/seo/site';
 export const revalidate = 60;
 
 const TITLE = 'Custom Embroidered Hats in Massachusetts';
-const DESCRIPTION = `Custom embroidered hats for Massachusetts businesses, teams, schools and fundraisers. ${CUSTOM_MIN} to ${CUSTOM_MAX} hats on our Lifestyle or Everyday snapback, priced within ${CUSTOM_QUOTE_WINDOW}.`;
+const DESCRIPTION = `Custom embroidered hats for Massachusetts businesses, teams, schools and fundraisers. ${CUSTOM_MIN} to ${CUSTOM_MAX} hats on Weld, Richardson or Yupoong blanks, priced within ${CUSTOM_QUOTE_WINDOW}.`;
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -64,7 +64,7 @@ const FAQS: Faq[] = [
   },
   {
     q: 'Which hats can I choose from?',
-    a: 'Two. The Lifestyle is a two-tone 5-panel, slightly structured, with a pre-curved brim, in brushed cotton twill. The Everyday is a solid, unstructured, low-profile 5-panel in 60/40 cotton-poly.',
+    a: 'Blanks from Weld, Richardson and Yupoong: two-tone and solid 5-panel snapbacks, rope caps, flat-bill snapbacks and the classic truckers (Richardson 112, Yupoong 6006). The builder shows every colourway each maker sells.',
   },
   {
     q: 'Is the logo printed or embroidered?',
@@ -151,7 +151,7 @@ export default async function CustomHatsPage() {
       <WhatGoesOn />
 
       <Section ground>
-        <SectionHead label="The hats" title="Two blanks to choose from." sub="Both are snapbacks, and both are the hats we make our own town hats on." />
+        <SectionHead label="The hats" title="Weld, Richardson, Yupoong." sub="The makers we embroider on, in the colourways they actually sell." />
         <TheBlanks />
       </Section>
 

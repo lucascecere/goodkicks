@@ -36,8 +36,13 @@ export type SideMark =
 type Common = {
   id: string;
   style: HatStyleId;
+  /** Front panels (where the logo goes). */
   crown: string;
   brim: string;
+  /** Rear/side panels when they differ from the front (two-tone, trucker mesh). */
+  back?: string;
+  /** Rear panels are trucker mesh: draws a fine mesh texture over them. */
+  mesh?: boolean;
   stitched: boolean;
   svgRef?: Ref<SVGSVGElement>;
   crownRef?: Ref<SVGGElement>;
@@ -82,6 +87,10 @@ function stitchInk(hex: string) {
 function Defs({ id }: { id: string }) {
   return (
     <defs>
+      <pattern id={`${id}-mesh`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="7" height="7" fill="#000" fillOpacity="0.16" />
+        <circle cx="3.5" cy="3.5" r="2.2" fill="#fff" fillOpacity="0.14" />
+      </pattern>
       {/* Light from the upper left. */}
       <radialGradient id={`${id}-hi`} cx="0.36" cy="0.26" r="0.62">
         <stop offset="0" stopColor="#fff" stopOpacity="0.30" />
@@ -242,6 +251,8 @@ export function FrontHat({
   style,
   crown,
   brim,
+  back,
+  mesh,
   stitched,
   logo,
   svgRef,
@@ -304,7 +315,8 @@ export function FrontHat({
       <path d={F_BRIM_EDGE} fill="none" stroke="#fff" strokeOpacity="0.12" strokeWidth="1.2" />
 
       <g ref={crownRef} transform={crownSquash(style, 338)}>
-        <path d={F_CROWN} fill={crown} />
+        <path d={F_CROWN} fill={back ?? crown} />
+        {mesh && <path d={F_CROWN} fill={`url(#${id}-mesh)`} />}
         <path d={F_FRONT} fill={shade(crown, -0.03)} />
 
         {logo && (
@@ -357,6 +369,7 @@ export function FrontHat({
 const S_CROWN = 'M176,340 C166,236 226,140 330,128 C430,120 500,200 504,334 Q340,356 176,340 Z';
 const S_SIDE_PANEL = 'M246,345 C242,262 270,170 332,129 C416,150 452,232 452,338 Q350,350 246,345 Z';
 const S_SEAM_F = 'M246,345 C242,262 270,170 332,129';
+const S_FRONT_SIDE = 'M176,340 C166,236 226,140 330,128 L332,129 C270,170 242,262 246,345 Z';
 const S_SEAM_B = 'M332,129 C416,150 452,232 452,338';
 const S_BRIM_TOP = 'M206,334 C160,334 98,346 30,370 C34,377 44,380 56,378 C120,362 170,346 208,341 Z';
 const S_BRIM_UNDER = 'M30,370 C34,384 50,388 66,386 C128,372 176,350 210,344 L208,341 C170,346 120,362 56,378 C44,380 34,377 30,370 Z';
@@ -366,6 +379,8 @@ export function SideHat({
   style,
   crown,
   brim,
+  back,
+  mesh,
   stitched,
   mark,
   svgRef,
@@ -397,7 +412,10 @@ export function SideHat({
       <path d="M200,338 C160,339 100,350 40,371" fill="none" stroke={stitchInk(brim)} strokeWidth="1.1" strokeDasharray="3.2 2.6" />
       <path d="M202,342 C164,345 108,358 50,376" fill="none" stroke={stitchInk(brim)} strokeWidth="1.1" strokeDasharray="3.2 2.6" />
       <g transform={crownSquash(style, 340)}>
-        <path d={S_CROWN} fill={crown} />
+        <path d={S_CROWN} fill={back ?? crown} />
+        {mesh && <path d={S_CROWN} fill={`url(#${id}-mesh)`} />}
+        {/* Front panel, seen from the side: the front colour up to the front seam. */}
+        <path d={S_FRONT_SIDE} fill={crown} />
 
         {mark.kind === 'logo' && (
           <Logo id={id} clip={`${id}-sideclip`} logo={mark.logo} stitched={stitched} label="Side logo" />

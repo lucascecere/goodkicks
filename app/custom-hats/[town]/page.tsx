@@ -225,7 +225,7 @@ export default async function CustomTownPage({ params }: Props) {
       <HowItWorks />
 
       <Section ground>
-        <SectionHead label="The hats" title="Two blanks to choose from." />
+        <SectionHead label="The hats" title="Weld, Richardson, Yupoong." />
         <TheBlanks />
       </Section>
 

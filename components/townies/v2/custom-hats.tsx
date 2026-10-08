@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BLANKS, BLANK_BRANDS } from '@/lib/townies/blanks';
 import Image from 'next/image';
 import type { TownPage } from '@/lib/townies/towns';
 import { CUSTOM_BUILDER, CUSTOM_MAX, CUSTOM_MIN, CUSTOM_QUOTE_WINDOW, customTownHref } from '@/lib/townies/custom-hats';
@@ -99,7 +100,7 @@ export function HowItWorks() {
             title: 'Mock it up.',
             body: (
               <>
-                Put your logo on the Lifestyle or the Everyday in the{' '}
+                Pick a Weld, Richardson or Yupoong blank and put your logo on it in the{' '}
                 <Link href={CUSTOM_BUILDER} className="text-text underline underline-offset-4">
                   hat builder
                 </Link>
@@ -124,21 +125,23 @@ export function HowItWorks() {
 }
 
 export function TheBlanks() {
+  // From lib/townies/blanks.ts: the makers we embroider on, with real colourway counts.
   return (
     <CardGrid
-      cols={2}
-      items={[
-        {
-          kicker: 'The Lifestyle',
-          title: 'Two-tone 5-panel.',
-          body: 'Slightly structured, with a pre-curved brim, in brushed cotton twill. The two-tone you see on most of our town hats.',
-        },
-        {
-          kicker: 'The Everyday',
-          title: 'Solid, low and soft.',
-          body: 'An unstructured, low-profile 5-panel in one colour, 60/40 cotton-poly. Sits lower and softer.',
-        },
-      ]}
+      cols={3}
+      items={BLANK_BRANDS.map((brand) => {
+        const models = BLANKS.filter((m) => m.brand === brand);
+        const colours = models.reduce((n, m) => n + m.colorways.length, 0);
+        return {
+          kicker: brand,
+          title: `${models.length} blanks, ${colours} colourways.`,
+          body: models.map((m) => `${m.model}`).join(' · ') + '. ' + (brand === 'Weld'
+            ? 'The two-tone Workhorse is the blank on most of our own town hats.'
+            : brand === 'Richardson'
+              ? 'The 112 is the trucker everyone knows.'
+              : 'Classic truckers and flat-bill snapbacks; the 6502 is our Everyday.'),
+        };
+      })}
     />
   );
 }
