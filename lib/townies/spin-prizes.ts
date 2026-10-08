@@ -25,7 +25,7 @@
 // number IS the discount, which is the whole joke — keep that pairing intact if
 // you change the percentages (18% off should sit on "EXIT 18").
 
-export type PrizeKind = 'percentage' | 'free_shipping';
+export type PrizeKind = 'percentage' | 'free_shipping' | 'fixed_amount';
 
 export type SpinWedge = {
   /** Stable id — stored on the claim row, so don't recycle one for a new offer. */
@@ -37,6 +37,8 @@ export type SpinWedge = {
   kind: PrizeKind;
   /** Whole percent off. Required for `percentage`, ignored otherwise. */
   percentOff?: number;
+  /** Dollars off the order. Required for `fixed_amount`, ignored otherwise. */
+  amountOff?: number;
   /** Relative draw weight within this array. */
   weight: number;
   /** Leading half of the minted code, e.g. ROTARY15-K4Q7NP. Letters/digits only. */
@@ -208,13 +210,35 @@ export const WELCOME: SpinWedge = {
   fill: 'navy',
 };
 
+/**
+ * Mass trivia prizes (2026-10-07, Lucas): the pop-up is four easy questions
+ * and the score picks the prize. Everyone wins at least $5 off. Token indexes
+ * QUIZ_BASE + tier, so the wheel can never draw them.
+ */
+export const QUIZ_BASE = 200;
+export const QUIZ_PRIZES: SpinWedge[] = [
+  { id: 'quiz5', exit: 'Mass trivia', label: '$5 OFF', kind: 'fixed_amount', amountOff: 5, weight: 0, codePrefix: 'MASS5', terms: '$5 off your order', fill: 'navy' },
+  { id: 'quiz7', exit: 'Mass trivia', label: '$7 OFF', kind: 'fixed_amount', amountOff: 7, weight: 0, codePrefix: 'MASS7', terms: '$7 off your order', fill: 'navy' },
+  { id: 'quizship', exit: 'Mass trivia', label: 'FREE SHIP', kind: 'free_shipping', weight: 0, codePrefix: 'MASSSHIP', terms: 'Free shipping on your order', fill: 'forest' },
+  { id: 'quiz10', exit: 'Mass trivia', label: '$10 OFF', kind: 'fixed_amount', amountOff: 10, weight: 0, codePrefix: 'MASS10', terms: '$10 off your order', fill: 'navy' },
+];
+/** Score out of 4 → prize tier: 0–1 $5, 2 $7, 3 free shipping, 4 $10. */
+export function quizTier(score: number): number {
+  return score >= 4 ? 3 : score === 3 ? 2 : score === 2 ? 1 : 0;
+}
+
 export function wedgeById(id: string): SpinWedge | null {
   if (id === WELCOME.id) return WELCOME;
+  const quiz = QUIZ_PRIZES.find((w) => w.id === id);
+  if (quiz) return quiz;
   return WEDGES.find((w) => w.id === id) ?? null;
 }
 
 export function wedgeAt(index: unknown): SpinWedge | null {
   if (index === WELCOME_INDEX) return WELCOME;
+  if (typeof index === 'number' && index >= QUIZ_BASE && index < QUIZ_BASE + QUIZ_PRIZES.length) {
+    return QUIZ_PRIZES[index - QUIZ_BASE];
+  }
   return typeof index === 'number' && Number.isInteger(index) && index >= 0 && index < WEDGES.length
     ? WEDGES[index]
     : null;

@@ -95,7 +95,7 @@ async function mintOnce(
   startsAt: string,
   endsAt: string,
 ): Promise<{ result?: MintedCode; errors: UserError[] }> {
-  const title = `Rotary spin — ${wedge.label}`;
+  const title = wedge.id.startsWith('quiz') ? `Mass trivia: ${wedge.label}` : `Rotary spin — ${wedge.label}`;
 
   if (wedge.kind === 'free_shipping') {
     const data = await shopifyAdminGraphQL<{
@@ -127,8 +127,15 @@ async function mintOnce(
     };
   }
 
+  // Fixed-dollar prizes (Mass trivia) use the same basic-discount mutation with
+  // a discountAmount instead of a percentage, scoped to the same collection.
+  const fixed = wedge.kind === 'fixed_amount';
   const percentOff = wedge.percentOff;
-  if (!percentOff || percentOff <= 0 || percentOff > 100) {
+  if (fixed) {
+    if (!wedge.amountOff || wedge.amountOff <= 0) {
+      throw new Error(`Wedge "${wedge.id}" is a fixed-amount prize with no usable amountOff.`);
+    }
+  } else if (!percentOff || percentOff <= 0 || percentOff > 100) {
     throw new Error(`Wedge "${wedge.id}" is a percentage prize with no usable percentOff.`);
   }
 
@@ -147,7 +154,9 @@ async function mintOnce(
       endsAt,
       customerSelection: { all: true },
       customerGets: {
-        value: { percentage: percentOff / 100 },
+        value: fixed
+          ? { discountAmount: { amount: wedge.amountOff!.toFixed(2), appliesOnEachItem: false } }
+          : { percentage: percentOff! / 100 },
         items: { collections: { add: [collectionGid] } },
       },
       appliesOncePerCustomer: true,

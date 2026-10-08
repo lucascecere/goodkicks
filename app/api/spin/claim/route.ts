@@ -130,6 +130,7 @@ export async function POST(req: NextRequest) {
       discount_code: minted.code,
       discount_kind: wedge.kind,
       percent_off: wedge.percentOff ?? null,
+      amount_off: wedge.amountOff ?? null,
       shopify_discount_gid: minted.gid,
       expires_at: minted.expiresAt,
       token_nonce: payload.n,

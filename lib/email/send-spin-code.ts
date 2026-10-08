@@ -33,6 +33,13 @@ function formatExpiry(iso: string): string {
 
 /** The welcome offer is not a spin, so it doesn't talk about the rotary. */
 function emailCopy(wedge: SpinWedge) {
+  if (wedge.id.startsWith('quiz')) {
+    return {
+      headline: 'You know your Mass.',
+      sub: `Your trivia prize: ${wedge.terms.toLowerCase()}.`,
+      why: 'You got this because you played Mass trivia at townies.shop. You will hear from us when a new town drops.',
+    };
+  }
   if (wedge.id === 'welcome10') {
     return {
       headline: 'Welcome to Townies.',

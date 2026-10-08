@@ -5,12 +5,15 @@ import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 
 /**
- * Replaces the rotary popup (2026-10). A small card that rises from the
- * bottom corner on the visitor's second page or at 60% scroll: no timer, no
- * exit-intent, no wheel. The offer is the fixed WELCOME prize, minted through
- * the same /api/spin/claim path as the rotary.
+ * Mass trivia (Lucas, 2026-10-07): a small card that rises from the bottom
+ * corner on the visitor's second page or at 60% scroll (no timer, no
+ * exit-intent). Four crazy-easy questions; the score picks the prize, and
+ * everyone wins at least $5 off. Graded on the server (/api/quiz/grade), the
+ * code is minted through the same /api/spin/claim path as the old rotary.
  */
 const KEY = 'townies_welcome_v1';
+type Q = { id: string; q: string; options: string[] };
+type Graded = { score: number; correct: Record<string, string>; prize: { label: string; terms: string }; token: string };
 const SNOOZE_DAYS = { dismissed: 14, claimed: 365 } as const;
 const VIEWS = 'townies_welcome_views';
 const BLOCKED = ['/admin', '/checkout', '/cart', '/goodkicks', '/stick'];
@@ -32,8 +35,14 @@ function snooze(reason: keyof typeof SNOOZE_DAYS) {
 export function WelcomeSlideIn() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<'intro' | 'quiz' | 'result' | 'done'>('intro');
+  const [questions, setQuestions] = useState<Q[]>([]);
+  const [i, setI] = useState(0);
+  const [picks, setPicks] = useState<Record<string, string>>({});
+  const [picked, setPicked] = useState<string | null>(null);
+  const [graded, setGraded] = useState<Graded | null>(null);
   const [email, setEmail] = useState('');
-  const [state, setState] = useState<'idle' | 'busy' | 'done' | 'error'>('idle');
+  const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ code: string; emailed: boolean; alreadyClaimed: boolean } | null>(null);
   const [error, setError] = useState('');
 
@@ -65,63 +74,140 @@ export function WelcomeSlideIn() {
 
   function close() {
     setOpen(false);
-    if (state !== 'done') snooze('dismissed');
+    if (step !== 'done') snooze('dismissed');
   }
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setState('busy');
+  async function start() {
+    setBusy(true);
     setError('');
     try {
-      const t = await fetch('/api/spin/welcome', { method: 'POST' }).then((r) => r.json());
-      if (!t.token) throw new Error(t.error ?? 'Try again in a minute.');
+      const r = await fetch('/api/quiz/start').then((x) => x.json());
+      setQuestions(r.questions);
+      setI(0);
+      setPicks({});
+      setStep('quiz');
+    } catch {
+      setError('Couldn’t load the questions. Try again in a minute.');
+    }
+    setBusy(false);
+  }
+
+  async function choose(option: string) {
+    if (picked) return;
+    const q = questions[i];
+    const next = { ...picks, [q.id]: option };
+    setPicked(option);
+    setPicks(next);
+    // A short beat on the chosen answer, then the next question.
+    await new Promise((r) => setTimeout(r, 450));
+    setPicked(null);
+    if (i + 1 < questions.length) return setI(i + 1);
+    setBusy(true);
+    try {
+      const res = await fetch('/api/quiz/grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ picks: next }),
+      });
+      const g = await res.json();
+      if (!res.ok) throw new Error(g.error);
+      setGraded(g);
+      setStep('result');
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : 'Try again in a minute.');
+    }
+    setBusy(false);
+  }
+
+  async function claim(e: React.FormEvent) {
+    e.preventDefault();
+    if (!graded) return;
+    setBusy(true);
+    setError('');
+    try {
       const res = await fetch('/api/spin/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: t.token, email }),
+        body: JSON.stringify({ token: graded.token, email }),
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? 'Try again in a minute.');
       setResult({ code: body.code, emailed: body.emailed, alreadyClaimed: body.alreadyClaimed });
-      setState('done');
+      setStep('done');
       snooze('claimed');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Try again in a minute.');
-      setState('error');
     }
+    setBusy(false);
   }
 
   if (!open) return null;
+  const q = questions[i];
+  const label = 'font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60';
+  const primary = 'font-label bg-text px-5 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white hover:bg-black disabled:opacity-60';
 
   return (
     <div
       role="dialog"
-      aria-label="New towns first"
-      className="fixed inset-x-3 bottom-3 z-[60] animate-[slide-in_.4s_ease-out_both] border border-rule bg-white p-5 shadow-[0_18px_50px_-20px_rgba(13,27,42,0.45)] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[360px] sm:p-6"
+      aria-label="Mass trivia"
+      className="fixed inset-x-3 bottom-3 z-[60] animate-[slide-in_.4s_ease-out_both] border border-rule bg-white p-5 shadow-[0_18px_50px_-20px_rgba(13,27,42,0.45)] sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[380px] sm:p-6"
     >
       <button onClick={close} aria-label="Close" className="absolute right-3 top-3 p-1 text-text/50 hover:text-text">
         <X size={18} />
       </button>
-      {state === 'done' && result ? (
+
+      {step === 'intro' && (
         <div>
-          <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">
-            {result.alreadyClaimed ? 'Already yours' : 'Welcome in'}
-          </p>
-          <p className="display mt-2 text-[1.625rem] text-text">Your code: {result.code}</p>
-          <p className="mt-2 text-[0.9375rem] text-text/70">
-            {result.emailed ? 'We sent it to your inbox too. ' : ''}10% off your first order, applied at checkout.
-          </p>
+          <p className={label}>Mass trivia</p>
+          <p className="display mt-2 pr-6 text-[1.5rem] leading-tight text-text">Know your Mass? Win up to $10 off.</p>
+          <p className="mt-2 text-[0.9375rem] text-text/70">Four easy questions. Everyone wins at least $5 off.</p>
+          <div className="mt-4 flex items-center gap-4">
+            <button onClick={start} disabled={busy} className={primary}>{busy ? '…' : 'Play'}</button>
+            <button type="button" onClick={close} className="text-[0.8125rem] text-text/55 underline underline-offset-4 hover:text-text">Not now</button>
+          </div>
         </div>
-      ) : (
-        <form onSubmit={submit}>
-          <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">New towns first</p>
+      )}
+
+      {step === 'quiz' && q && (
+        <div>
+          <div className="flex items-center justify-between pr-6">
+            <p className={label}>Question {i + 1} of {questions.length}</p>
+            <div className="flex gap-1">
+              {questions.map((x, k) => (
+                <span key={x.id} className={`h-1 w-5 ${k <= i ? 'bg-text' : 'bg-rule'}`} />
+              ))}
+            </div>
+          </div>
+          <p className="display mt-3 text-[1.25rem] leading-snug text-text">{q.q}</p>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {q.options.map((o) => (
+              <button
+                key={o}
+                onClick={() => choose(o)}
+                disabled={!!picked || busy}
+                className={`border px-3 py-3 text-left text-[0.875rem] font-medium transition-colors ${
+                  picked === o ? 'border-text bg-text text-white' : 'border-rule text-text hover:border-text'
+                }`}
+              >
+                {o}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {step === 'result' && graded && (
+        <form onSubmit={claim}>
+          <p className={label}>{graded.score} of {questions.length} right</p>
           <p className="display mt-2 pr-6 text-[1.5rem] leading-tight text-text">
-            One email when a town drops, and 10% off your first order.
+            {graded.score === questions.length ? 'Perfect. ' : graded.score >= 2 ? 'Not bad. ' : 'Close enough. '}
+            You won {graded.prize.terms.toLowerCase()}.
           </p>
-          <div className="mt-4 flex gap-2">
-            <label htmlFor="welcome-email" className="sr-only">Email</label>
+          <p className="mt-2 text-[0.875rem] text-text/70">Where should we send the code?</p>
+          <div className="mt-3 flex gap-2">
+            <label htmlFor="quiz-email" className="sr-only">Email</label>
             <input
-              id="welcome-email"
+              id="quiz-email"
               type="email"
               required
               value={email}
@@ -129,19 +215,23 @@ export function WelcomeSlideIn() {
               placeholder="Email address"
               className="min-w-0 flex-1 border border-text/25 px-3 py-3 text-[1rem] text-text placeholder:text-text/40 focus:border-text focus:outline-none"
             />
-            <button
-              disabled={state === 'busy'}
-              className="font-label bg-text px-5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white hover:bg-black disabled:opacity-60"
-            >
-              {state === 'busy' ? '…' : 'Send it'}
-            </button>
+            <button disabled={busy} className={primary}>{busy ? '…' : 'Send it'}</button>
           </div>
-          {error && <p className="mt-2 text-[0.8125rem] text-red-700">{error}</p>}
-          <button type="button" onClick={close} className="mt-3 text-[0.8125rem] text-text/55 underline underline-offset-4 hover:text-text">
-            Not now
-          </button>
+          <p className="mt-2 text-[0.75rem] text-text/50">One code per person. You’ll also hear when a new town drops.</p>
         </form>
       )}
+
+      {step === 'done' && result && (
+        <div>
+          <p className={label}>{result.alreadyClaimed ? 'Already yours' : 'Nice work'}</p>
+          <p className="display mt-2 text-[1.625rem] text-text">Your code: {result.code}</p>
+          <p className="mt-2 text-[0.9375rem] text-text/70">
+            {result.emailed ? 'We sent it to your inbox too. ' : ''}Enter it at checkout.
+          </p>
+        </div>
+      )}
+
+      {error && <p className="mt-2 text-[0.8125rem] text-red-700">{error}</p>}
     </div>
   );
 }
