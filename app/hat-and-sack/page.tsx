@@ -1,169 +1,100 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getTownieProducts } from '@/lib/shopify/collections';
+import { getTownieProducts, getGoodKicksProducts } from '@/lib/shopify/collections';
 import { breadcrumbSchema } from '@/lib/seo/site';
-import { BrandPattern } from '@/components/townies/brand-pattern';
-import { RequestTownBand } from '@/components/townies/request-town-band';
 import { HatSackPicker, type HatSackVariants } from '@/components/townies/hat-sack-picker';
-import {
-  HAT_SACK_LIVE,
-  HAT_SACK_PATH,
-  SACK_POOL,
-  eligibleHats,
-  formatUsd,
-} from '@/lib/townies/hat-sack';
+import { HAT_SACK_LIVE, HAT_SACK_PATH, eligibleHats, eligibleSacks, formatUsd } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 
 export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   if (!HAT_SACK_LIVE) return { title: 'Not Found', robots: { index: false, follow: false } };
-
-  const { priceCents } = await getHatSackOffer();
-  const price = formatUsd(priceCents);
+  const price = formatUsd((await getHatSackOffer()).priceCents);
   return {
-    title: { absolute: `Hat & Sack, ${price} for Both | Townies × Good Kicks` },
-    description: `Pick a Townies town snapback and we’ll pack a random Good Kicks foot bag with it. ${price} for both, shipped together.`,
+    title: { absolute: `Hat & Sack: ${price} With Shipping | Townies × Good Kicks` },
+    description: `Any Townies hat in stock plus any Good Kicks foot bag in stock, ${price} with shipping included. Shipped together in one box.`,
     alternates: { canonical: HAT_SACK_PATH },
-    openGraph: {
-      title: `Hat & Sack, ${price} for Both | Townies × Good Kicks`,
-      description: `Pick your town. We pick the bag. ${price} for both.`,
-      url: HAT_SACK_PATH,
-      images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
-    },
   };
 }
 
+/**
+ * Hat & Sack v2 (Lucas, 2026-10-08): any in-stock hat + any in-stock foot bag,
+ * one price with shipping included. Lists follow live Shopify stock.
+ */
 export default async function HatAndSackPage() {
-  // The promo is dark until fulfilment is solved. 404 rather than an empty
-  // page: a reachable-but-unbuyable offer is worse than no offer.
   if (!HAT_SACK_LIVE) notFound();
 
-  const [products, offer] = await Promise.all([getTownieProducts(), getHatSackOffer()]);
-
-  const hats = eligibleHats(products);
+  const [townies, goodkicks, offer] = await Promise.all([getTownieProducts(), getGoodKicksProducts(), getHatSackOffer()]);
+  const hats = eligibleHats(townies);
+  const sacks = eligibleSacks(goodkicks);
   const price = formatUsd(offer.priceCents);
-
-  const variants: HatSackVariants = {
-    shipsNowId: offer.shipsNowId,
-    preorderId: offer.preorderId,
-  };
+  const variants: HatSackVariants = { shipsNowId: offer.shipsNowId, preorderId: offer.preorderId };
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: 'Hat & Sack Bundle',
-    url: HAT_SACK_PATH,
     image: offer.imageUrl ?? undefined,
-    description:
-      `A Townies Massachusetts town snapback plus a random Good Kicks v1 foot bag, shipped together for ${price}.`,
+    description: `Any in-stock Townies hat plus any in-stock Good Kicks foot bag, shipped together for ${price} with shipping included.`,
     brand: { '@type': 'Brand', name: 'Townies' },
     offers: {
       '@type': 'Offer',
       price: (offer.priceCents / 100).toFixed(2),
       priceCurrency: 'USD',
-      url: HAT_SACK_PATH,
       itemCondition: 'https://schema.org/NewCondition',
-      availability:
-        variants.shipsNowId || variants.preorderId
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/OutOfStock',
+      availability: hats.length && sacks.length && variants.shipsNowId ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      shippingDetails: { '@type': 'OfferShippingDetails', shippingRate: { '@type': 'MonetaryAmount', value: 0, currency: 'USD' }, shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'US' } },
     },
   };
 
   return (
-    <div className="relative overflow-hidden bg-bg">
+    <div className="bg-bg pb-24 lg:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify([
-            jsonLd,
-            breadcrumbSchema([
-              { name: 'Home', path: '/' },
-              { name: 'Hat & Sack', path: HAT_SACK_PATH },
-            ]),
-          ]).replace(/</g, '\\u003c'),
+          __html: JSON.stringify([jsonLd, breadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Hat & Sack', path: HAT_SACK_PATH }])]).replace(/</g, '\\u003c'),
         }}
       />
-
-      {/* Masthead — the same dark top edge /shop uses, so the promo reads as part
-          of the shop rather than as a landing page bolted on beside it. */}
-      <section className="relative overflow-hidden bg-ink">
-        <BrandPattern variant="ma" color="cream" opacity={0.08} size={360} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 text-center">
-          <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
-            Townies × Good Kicks
-          </p>
-          <h1 className="display text-[2.5rem] sm:text-[3.25rem] lg:text-[4rem] text-white mb-4">
-            Hat &amp; Sack.
-          </h1>
-          <p className="text-ink-contrast/80 max-w-md mx-auto leading-relaxed">
-            {price} for a town hat and a Good Kicks foot bag. You pick
-            the town. We pick the bag.
+      <section className="border-b border-rule bg-[#F1EEE8]">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
+          <p className="mb-3 font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">Townies × Good Kicks</p>
+          <h1 className="display text-[2.5rem] text-text sm:text-[3.25rem]">Hat &amp; Sack.</h1>
+          <p className="mt-3 max-w-lg leading-relaxed text-text/75">
+            Any hat on the shelf, any foot bag on the shelf. {price} for both, shipping included, packed in one box.
           </p>
         </div>
       </section>
 
-      <BrandPattern variant="ma" color="forest" opacity={0.05} size={340} fade="b" />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
-        {hats.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-muted text-sm mb-6">
-              The bundle is between drops. Tell us which town you want next.
-            </p>
-            <Link
-              href="/request-a-town"
-              className="inline-flex items-center bg-accent text-accent-contrast px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors"
-            >
-              Request your town
+      <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-8 sm:pt-14">
+        {hats.length === 0 || sacks.length === 0 || !variants.shipsNowId ? (
+          <div className="py-10 text-center">
+            <p className="mb-6 text-muted">The bundle is between restocks. Check back soon.</p>
+            <Link href="/shop" className="inline-flex bg-text px-7 py-3.5 font-label text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white">
+              Shop the hats
             </Link>
           </div>
         ) : (
-          <HatSackPicker
-            hats={hats}
-            variants={variants}
-            bundleImageUrl={offer.imageUrl}
-            bundleCents={offer.priceCents}
-            sackCents={offer.sackValueCents}
-          />
+          <HatSackPicker hats={hats} sacks={sacks} variants={variants} bundleCents={offer.priceCents} />
         )}
 
-        {/* The plain-English terms. A surprise item invites exactly these
-            questions, and a promo that makes people go looking for the answer
-            loses them on the way. */}
-        <div className="mt-16 sm:mt-24 border-t border-rule pt-10">
-          <h2 className="font-block font-bold uppercase text-lg tracking-[0.02em] text-text mb-6">
-            How it works
-          </h2>
+        <div className="mt-16 border-t border-rule pt-10 sm:mt-20">
+          <h2 className="display mb-6 text-[1.75rem] text-text">The short version.</h2>
           <dl className="grid gap-8 sm:grid-cols-3">
             {[
-              {
-                q: 'Can I choose the foot bag?',
-                a: `No — that's what makes it ${price}. It'll be one of the ${SACK_POOL.length} Good Kicks v1 colorways, packed with your hat.`,
-              },
-              {
-                q: 'What if I pick a pre-order town?',
-                a: 'The whole bundle ships when that town’s hats land. Checkout will quote the pre-order window, not a ship-now date.',
-              },
-              {
-                q: 'Does it ship as one order?',
-                a: 'Yes. One box, one shipping charge, hat and bag together.',
-              },
+              { q: 'What can I pick?', a: 'Any hat and any foot bag that are in stock right now. If it is on this page, it ships now.' },
+              { q: 'Is shipping really included?', a: `Yes. ${price} is the total for the bundle, with shipping to anywhere in the US. Tax is added at checkout where it applies.` },
+              { q: 'How does it ship?', a: 'Together, in the hat box, as one package.' },
             ].map((item) => (
               <div key={item.q}>
-                <dt className="font-block font-bold uppercase text-sm leading-snug tracking-[0.02em] text-text mb-1.5">
-                  {item.q}
-                </dt>
-                <dd className="text-[0.8125rem] leading-relaxed text-muted">{item.a}</dd>
+                <dt className="font-label mb-1.5 text-[0.9375rem] font-bold text-text">{item.q}</dt>
+                <dd className="text-[0.875rem] leading-relaxed text-muted">{item.a}</dd>
               </div>
             ))}
           </dl>
         </div>
       </div>
-
-      <RequestTownBand />
     </div>
   );
 }

@@ -38,6 +38,7 @@ import type { NextRequest } from 'next/server';
 import { after } from 'next/server';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { markSpinCodeRedeemed } from '@/lib/townies/spin-redemption';
+import { adjustBundleStock } from '@/lib/townies/hat-sack-stock';
 import { lineBrand, type ShopifyLineItem } from '@/lib/shopify/orders-source';
 import type { RealBrand } from '@/lib/admin/brand';
 import { verifyWebhookDetailed } from '@/lib/shopify/webhooks';
@@ -92,6 +93,14 @@ export async function POST(req: NextRequest) {
   // can change the status code; failures are logged and picked up by the
   // manual Sync button, which writes through the same upsertContact.
   after(async () => {
+    // Hat & Sack: take the chosen hat and bag off the shelf. First, and before
+    // the email check, because a no-email order still ships the stock.
+    try {
+      if (order.id != null) await adjustBundleStock(order.id, order.line_items ?? []);
+    } catch (err) {
+      console.error('[shopify-webhook] bundle stock adjust failed', err);
+    }
+
     const email = order.email || order.contact_email;
     if (!email) return; // Guest/POS order with no email — nothing to capture.
 

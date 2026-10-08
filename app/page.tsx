@@ -5,6 +5,7 @@ import { TownCrests } from '@/components/townies/v2/town-crests';
 import { HatShelf } from '@/components/townies/v2/hat-shelf';
 import { RegionCards } from '@/components/townies/v2/region-cards';
 import { BulkSplit } from '@/components/townies/v2/bulk-split';
+import { HatSackBand } from '@/components/townies/hat-sack-band';
 import { CampaignBand } from '@/components/townies/campaign-band';
 import { ReviewBand } from '@/components/townies/review-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
@@ -82,6 +83,8 @@ export default async function HomePage() {
         link={{ href: '/shop', label: 'Shop all' }}
         ratings={ratings}
       />
+
+      <HatSackBand />
 
       <CampaignBand
         src="/brand/scene/milton-21x9.jpg"

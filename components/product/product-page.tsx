@@ -24,7 +24,6 @@ import {
   HAT_SACK_PATH,
   HAT_SACK_PRICE_FALLBACK_CENTS,
   formatUsd,
-  isBundleEligible,
 } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 import { getProductReviews } from '@/lib/reviews/server';
@@ -384,7 +383,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                     controls in one buy box is how people buy the wrong one.
                     Suppressed on towns the bundle excludes — offering it there
                     sends people to a picker their town isn't in. */}
-                {hatSack && isBundleEligible(shopifyProduct.tags) && (
+                {hatSack && !preorder && (stock[firstVariant.id]?.quantity ?? 0) > 0 && (
                 <Link
                   href={HAT_SACK_PATH}
                   className="mt-5 flex items-center justify-between gap-4 rounded-sm border border-rule bg-surface px-4 py-3 transition-colors hover:border-accent"
@@ -393,7 +392,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                     <span className="font-semibold">
                       Make it {formatUsd(hatSack?.priceCents ?? HAT_SACK_PRICE_FALLBACK_CENTS)}
                     </span>
-                    <span className="text-muted">: add a random Good Kicks foot bag</span>
+                    <span className="text-muted">: add any Good Kicks foot bag, shipping included</span>
                   </span>
                   <span aria-hidden className="text-muted text-sm">
                     &rarr;

@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { BrandPattern } from '@/components/townies/brand-pattern';
 import { HAT_SACK_LIVE, HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 
@@ -24,59 +23,31 @@ export async function HatSackBand() {
 
   const { priceCents } = await getHatSackOffer();
 
+  // v2 (2026-10-08): studio ground, any in-stock hat + any in-stock bag, shipped.
   return (
-    <section className="relative overflow-hidden bg-ink">
-      <BrandPattern variant="ma" color="cream" opacity={0.07} size={360} />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          {/* Product lockup. Order-last on mobile so the offer is read before
-              it is illustrated; a phone shows one thing at a time. */}
-          <div className="order-last lg:order-first">
-            <div className="flex items-center justify-center gap-4 sm:gap-8">
-              <div className="relative w-[58%] max-w-[380px] aspect-[900/641]">
-                <Image
-                  src="/brand/product/wey-cutout.webp"
-                  alt="A Townies town snapback"
-                  fill
-                  sizes="(max-width: 1024px) 55vw, 380px"
-                  className="object-contain"
-                />
-              </div>
-              <span className="font-block font-bold text-2xl sm:text-3xl text-ink-contrast/50" aria-hidden>
-                +
-              </span>
-              <div className="relative w-[22%] max-w-[150px] aspect-square">
-                <Image
-                  src="/brand/goodkicks/bag-tennessee.webp"
-                  alt="A Good Kicks foot bag"
-                  fill
-                  sizes="(max-width: 1024px) 22vw, 150px"
-                  className="object-contain"
-                />
-              </div>
+    <section className="bg-white">
+      <div className="mx-auto max-w-[1320px] px-4 pb-12 sm:px-8 sm:pb-16">
+        <Link href={HAT_SACK_PATH} className="group grid items-center gap-6 bg-[#F1EEE8] p-6 sm:p-10 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:p-14">
+          <div className="flex items-center justify-center gap-3 sm:gap-6">
+            <div className="relative aspect-[900/641] w-[58%] max-w-[360px] transition-transform duration-500 group-hover:-rotate-2">
+              <Image src="/brand/product/wey-cutout.webp" alt="A Townies hat" fill sizes="(max-width: 1024px) 55vw, 360px" className="object-contain" />
+            </div>
+            <span className="display text-[2rem] text-text/40" aria-hidden>+</span>
+            <div className="relative aspect-square w-[24%] max-w-[140px] transition-transform duration-500 group-hover:rotate-6">
+              <Image src="/brand/goodkicks/bag-tennessee.webp" alt="A Good Kicks foot bag" fill sizes="(max-width: 1024px) 24vw, 140px" className="object-contain" />
             </div>
           </div>
-
-          <div className="text-center lg:text-left">
-            <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-ink-contrast/70 mb-3">
-              Townies × Good Kicks
+          <div>
+            <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">Townies × Good Kicks</p>
+            <h2 className="display mt-3 text-[2rem] text-text sm:text-[2.75rem]">Hat &amp; Sack. {formatUsd(priceCents)} shipped.</h2>
+            <p className="mt-3 max-w-md text-[1rem] leading-relaxed text-text/75">
+              Any hat on the shelf plus any Good Kicks foot bag. Shipping included, one box.
             </p>
-            <h2 className="display text-[2rem] sm:text-[2.5rem] lg:text-[3rem] text-white mb-4">
-              Hat &amp; Sack. {formatUsd(priceCents)}.
-            </h2>
-            <p className="mx-auto lg:mx-0 max-w-md text-sm leading-relaxed text-ink-contrast/80">
-              A town hat, plus a Good Kicks foot bag pulled at random from the v1 run.
-              You pick the town. We pick the bag. One box, one price.
-            </p>
-            <Link
-              href={HAT_SACK_PATH}
-              className="mt-7 inline-flex items-center rounded-none bg-accent px-7 py-3 text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-accent-contrast transition-colors hover:bg-white"
-            >
+            <span className="mt-6 inline-flex bg-text px-7 py-3.5 font-label text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors group-hover:bg-black">
               Build your bundle
-            </Link>
+            </span>
           </div>
-        </div>
+        </Link>
       </div>
     </section>
   );

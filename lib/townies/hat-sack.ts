@@ -27,7 +27,7 @@ import { isPreorder } from '@/lib/townies/preorder';
  * to true and redeploy, then set the product ACTIVE and publish it to the
  * "Townies Shop" channel only.
  */
-export const HAT_SACK_LIVE = false;
+export const HAT_SACK_LIVE = true;
 
 export const HAT_SACK_HANDLE = 'hat-and-sack';
 export const HAT_SACK_PATH = '/hat-and-sack';
@@ -42,7 +42,7 @@ export const HAT_SACK_PATH = '/hat-and-sack';
  * site would show $35, put $35 in the cart, and Shopify would charge $40 at
  * checkout. Repricing must be a Shopify-admin action, never a deploy.
  */
-export const HAT_SACK_PRICE_FALLBACK_CENTS = 3500;
+export const HAT_SACK_PRICE_FALLBACK_CENTS = 4000;
 
 /** Shopify variant titles on the bundle product. Matched by title, not by id, so
  *  the ids can change (a re-created variant, a restored product) without a deploy. */
@@ -115,17 +115,43 @@ export function isBundleEligible(tags: string[] | undefined | null): boolean {
   return !(Array.isArray(tags) && tags.some((t) => t.toLowerCase() === BUNDLE_EXCLUDE_TAG));
 }
 
-/** Every eligible hat, pre-order towns included, in-stock towns first. */
+/**
+ * v2 rules (Lucas, 2026-10-08): ANY hat that is in stock right now, with ANY
+ * foot bag that is in stock right now, for one price with shipping included,
+ * packed in the hat box. Both lists are read live from Shopify stock, so the
+ * offer follows the shelf with no deploy. Pre-order hats are out (they don't
+ * ship now); a hat or bag at 0 drops off on its own.
+ */
+function inStock(p: CollectionProduct): boolean {
+  return (
+    (p.variants.edges[0]?.node.availableForSale ?? false) &&
+    typeof p.stock === 'number' &&
+    p.stock > 0
+  );
+}
+
+/** In-stock Townies hats, alphabetical. */
 export function eligibleHats(products: CollectionProduct[]): CollectionProduct[] {
   return products
-    .filter((p) => p.variants.edges[0]?.node.availableForSale ?? false)
-    .filter((p) => isBundleEligible(p.tags))
-    .sort((a, b) => {
-      // In-stock towns lead: they're the ones that can ship this week, and a
-      // pre-order card at the top of the grid buries that.
-      const pre = Number(isPreorder(a.tags)) - Number(isPreorder(b.tags));
-      return pre !== 0 ? pre : a.title.localeCompare(b.title);
-    });
+    .filter((p) => !isPreorder(p.tags) && inStock(p))
+    .sort((a, b) => a.title.localeCompare(b.title));
+}
+
+/** Handles that are never a single foot bag (the archived build-your-own pack). */
+const NOT_A_BAG = new Set(['3-pack']);
+
+/** In-stock Good Kicks foot bags, cheapest first. */
+export function eligibleSacks(products: CollectionProduct[]): CollectionProduct[] {
+  return products
+    .filter((p) => !NOT_A_BAG.has(p.handle) && inStock(p))
+    .sort((a, b) => (priceCents(a) ?? 0) - (priceCents(b) ?? 0) || a.title.localeCompare(b.title));
+}
+
+/** "Good Kicks — Montana" / "Good Kicks Pro — Miami Vice" → "Montana" / "Miami Vice (Pro)". */
+export function sackName(p: CollectionProduct): string {
+  const [head, tail] = p.title.split(/\s+[—-]\s+/);
+  if (!tail) return p.title;
+  return /pro/i.test(head) ? `${tail} (Pro)` : tail;
 }
 
 export function formatUsd(cents: number): string {
