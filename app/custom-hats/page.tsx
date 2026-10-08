@@ -199,8 +199,8 @@ export default async function CustomHatsPage() {
         ))}
         <p className="mt-8 text-[0.9375rem] text-muted">
           Somewhere else in Massachusetts? Same hats, same process.{' '}
-          <Link href="/wholesale" className="text-text underline underline-offset-4">
-            Tell us where
+          <Link href="/custom-hats/build" className="text-text underline underline-offset-4">
+            Start a mockup
           </Link>
           .
         </p>

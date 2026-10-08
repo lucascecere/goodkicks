@@ -22,17 +22,16 @@ type Values = {
 // is the common case; a shop that wants to stock and resell is the specialist
 // one, so it sits at the bottom rather than the top.
 const BUSINESS_TYPES = [
-  'Team or league',
-  'School or booster club',
-  'Company or staff gift',
+  'Shop or boutique (to resell)',
+  'Town store, gift shop or museum',
   'Event or fundraiser',
-  'Family, wedding or reunion',
-  'Retail shop — I want to stock Townies',
+  'Team, school or booster club',
+  'Company or staff gifts',
   'Other',
 ];
 
-const QUANTITIES = ['Under 25', '25 – 50', '50 – 100', '100 – 250', '250+', 'Not sure yet'];
-const TIMELINES = ['As soon as possible', 'Within a month', '1 – 3 months', 'Just exploring'];
+const QUANTITIES = ['Under 25', '25 to 50', '50 to 100', '100 to 250', '250+', 'Not sure yet'];
+const TIMELINES = ['As soon as possible', 'Within a month', '1 to 3 months', 'Just exploring'];
 
 /**
  * Bulk and wholesale inquiries, one form.
@@ -82,7 +81,7 @@ export function WholesaleForm() {
             {BUSINESS_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </Field>
-        <Field label="Team, company or shop" hint="Optional — skip it if it's just you.">
+        <Field label="Team, company or shop" hint="Optional.">
           <input className={fieldClass} placeholder="Milton Youth Hockey" {...register('company')} />
         </Field>
       </div>
@@ -96,7 +95,7 @@ export function WholesaleForm() {
         </Field>
       </div>
 
-      <Field label="Website or Instagram" hint="Optional — helps us picture who we're making for.">
+      <Field label="Website or Instagram" hint="Optional. Helps us picture where the hats are going.">
         <input className={fieldClass} placeholder="instagram.com/yourteam" {...register('website')} />
       </Field>
 
@@ -115,7 +114,7 @@ export function WholesaleForm() {
         </Field>
       </div>
 
-      <Field label="Which hats?" hint="Towns, styles, or both — and tell us if you want something we don't make yet.">
+      <Field label="Which hats?" hint="Towns, styles, or both. Tell us if you want a town we don't make yet.">
         <input className={fieldClass} placeholder="Milton Lifestyle, Weymouth, or a custom town" {...register('towns')} />
       </Field>
 

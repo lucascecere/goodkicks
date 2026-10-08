@@ -3,12 +3,11 @@ import Link from 'next/link';
 import { PageMasthead } from '@/components/townies/page-masthead';
 import { WholesaleForm } from '@/components/forms/wholesale-form';
 
-// URL stays /wholesale — it has the inbound links and the search history — but
-// everything a person actually reads now leads with bulk. /bulk-orders is
-// redirected here in middleware.ts for anyone who guesses the obvious address.
-const TITLE = 'Bulk Hat Orders for Teams, Schools & Businesses';
+// Wholesale = OUR town hats bought in volume at a wholesale price (shops,
+// events, fundraisers). Their own logo on a hat is /custom-hats (Lucas, 10-07).
+const TITLE = 'Wholesale Townies Hats for Shops, Events and Fundraisers';
 const DESCRIPTION =
-  'Hats for teams, companies, schools, fundraisers and shops. Tell us how many and which towns, and the first reply comes back with a real price and a lead time.';
+  'Stock Townies town hats in your shop, or buy them in volume for an event or fundraiser. Tell us which towns and how many, and we reply with wholesale pricing and a lead time.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -26,9 +25,9 @@ export default function Page() {
   return (
     <div className="bg-bg">
       <PageMasthead
-        eyebrow="Bulk orders & wholesale"
-        title="Kit out the whole town."
-        sub={`Teams, companies, schools, fundraisers and shops. There's no bulk checkout — tell us how many and which hats, and we come back with a real price and a lead time, then run the order over email.`}
+        eyebrow="Wholesale"
+        title="Our town hats, by the box."
+        sub="For shops that want to stock Townies, and for events, fundraisers and teams buying our town hats in volume. Tell us which towns and how many, and we reply with wholesale pricing and a lead time."
         pattern="pine"
       />
 
@@ -40,7 +39,7 @@ export default function Page() {
               program instead" — which read as a dismissal to the coach ordering
               thirty team hats, i.e. exactly the person the page is for. Only
               genuinely different jobs get pointed elsewhere now. */}
-          Want your own logo on the hat? <Link href="/custom-hats" className="underline underline-offset-4 hover:text-text">Custom hats</Link>. Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-text">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request it here</Link>. Want to rep Townies for a cut? <Link href="/ambassadors" className="underline underline-offset-4 hover:text-text">The Town Rep program</Link>.
+          Want your own logo on the hat instead? That's <Link href="/custom-hats" className="underline underline-offset-4 hover:text-text">custom hats</Link>, with a mockup builder. Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-text">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request it here</Link>. Want to rep Townies for a cut? <Link href="/ambassadors" className="underline underline-offset-4 hover:text-text">The Town Rep program</Link>.
         </div>
       </div>
     </div>

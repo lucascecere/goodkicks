@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type
 import { fieldClass, labelClass } from '@/components/forms/form-kit';
 import { FRONT_BOUNDS, FrontHat, SIDE_BOUNDS, SideHat, type HatStyleId, type Placed, type SideMark } from './hat-art';
 import { LOGO_MAX_BYTES, LOGO_TYPES, logoForUpload, normaliseLogo, removeWhite, renderMockup } from './image-utils';
+import { BLANK_COLORWAYS, type Colorway } from '@/lib/townies/blanks';
 
 /* ---------- options ---------- */
 
@@ -65,6 +66,38 @@ function Step({ n, title, children, hint }: { n: string; title: string; children
       <div className="mt-4">{children}</div>
       {hint && <p className="mt-3 text-[0.8125rem] leading-relaxed text-muted">{hint}</p>}
     </fieldset>
+  );
+}
+
+function ColorwayPicker({
+  list,
+  value,
+  onChange,
+}: {
+  list: Colorway[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div role="radiogroup" aria-label="Colourway" className="flex flex-wrap gap-2">
+      {list.map((c) => {
+        const checked = c.name === value;
+        return (
+          <label
+            key={c.name}
+            className={`flex cursor-pointer items-center gap-3 border px-3 py-2.5 transition ${checked ? 'border-text' : 'border-rule hover:border-text/50'}`}
+          >
+            <input type="radio" name="colorway" value={c.name} checked={checked} onChange={() => onChange(c.name)} className="sr-only" />
+            {/* split swatch: crown on top, brim below */}
+            <span aria-hidden className="block h-8 w-8 overflow-hidden rounded-full border border-black/15">
+              <span className="block h-1/2" style={{ background: c.crown }} />
+              <span className="block h-1/2" style={{ background: c.brim }} />
+            </span>
+            <span className="text-[0.875rem] font-medium text-text">{c.name}</span>
+          </label>
+        );
+      })}
+    </div>
   );
 }
 
@@ -220,9 +253,11 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
   const crownRef = useRef<SVGGElement>(null);
 
   const [style, setStyle] = useState<HatStyleId>('lifestyle');
-  const [crownName, setCrownName] = useState('Natural');
-  const [brimName, setBrimName] = useState('Forest');
-  const [solidName, setSolidName] = useState('Navy');
+  // Real blank colourways only (lib/townies/blanks.ts), one pick per style.
+  const [colorwayName, setColorwayName] = useState<Record<HatStyleId, string>>({
+    lifestyle: BLANK_COLORWAYS.lifestyle[0].name,
+    everyday: BLANK_COLORWAYS.everyday[0].name,
+  });
   const [view, setView] = useState<'front' | 'side'>('front');
 
   const [logo, setLogo] = useState<Logo | null>(null);
@@ -244,10 +279,11 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
   const [serverError, setServerError] = useState('');
   const [mockupUrl, setMockupUrl] = useState<string | null>(null);
 
-  const crown = style === 'lifestyle' ? hexOf(crownName) : hexOf(solidName);
-  const brim = style === 'lifestyle' ? hexOf(brimName) : hexOf(solidName);
-  const colourLine =
-    style === 'lifestyle' ? `${crownName} crown, ${brimName} brim` : `${solidName}`;
+  const colorway =
+    BLANK_COLORWAYS[style].find((c) => c.name === colorwayName[style]) ?? BLANK_COLORWAYS[style][0];
+  const crown = colorway.crown;
+  const brim = colorway.brim;
+  const colourLine = colorway.name;
 
   // White-background knockout is computed once per logo, the first time it is asked for.
   useEffect(() => {
@@ -561,15 +597,12 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
               </div>
             </Step>
 
-            <Step n="02" title="Colours" hint="Colours on screen are approximate. We'll confirm the exact blank with your quote.">
-              {style === 'lifestyle' ? (
-                <div className="space-y-5">
-                  <Swatches name="crown" label="Crown" value={crownName} onChange={setCrownName} />
-                  <Swatches name="brim" label="Brim" value={brimName} onChange={setBrimName} />
-                </div>
-              ) : (
-                <Swatches name="solid" label="Colour" value={solidName} onChange={setSolidName} />
-              )}
+            <Step n="02" title="Colourway" hint="These are the blanks we stock. Colours on screen are approximate. Want a colour you don't see? Put it in the notes and we'll check.">
+              <ColorwayPicker
+                list={BLANK_COLORWAYS[style]}
+                value={colorway.name}
+                onChange={(v) => setColorwayName((m) => ({ ...m, [style]: v }))}
+              />
             </Step>
 
             <Step

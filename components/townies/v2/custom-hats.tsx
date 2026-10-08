@@ -18,8 +18,8 @@ export function CustomCtas() {
       <Link href={CUSTOM_BUILDER} className={BTN_SOLID}>
         Build your hat
       </Link>
-      <Link href="/wholesale" className={BTN_OUTLINE}>
-        Get a bulk price
+      <Link href="/shop" className={BTN_OUTLINE}>
+        See our stitching
       </Link>
     </div>
   );
@@ -256,10 +256,10 @@ export function CustomClose({ title, sub }: { title: string; sub: string }) {
               Build your hat
             </Link>
             <Link
-              href="/wholesale"
+              href="/shop"
               className="font-label inline-flex w-fit items-center border border-white/60 px-8 py-4 text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-white hover:text-text"
             >
-              Get a bulk price
+              See our stitching
             </Link>
           </div>
         </div>
