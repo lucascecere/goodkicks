@@ -94,7 +94,7 @@ export default async function HomePage() {
 
       <RegionCards products={products} />
 
-      <BulkSplit products={ranked} />
+      <BulkSplit />
 
       <ReviewBand />
 

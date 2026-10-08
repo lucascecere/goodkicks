@@ -1,11 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import type { CollectionProduct } from '@/lib/shopify/collections';
-import { STUDIO_IMG, STUDIO_TILE } from './studio';
 
-/** Bulk orders as a split: copy on navy, a 2x2 of real hats on the studio ground. */
-export function BulkSplit({ products }: { products: CollectionProduct[] }) {
-  const hats = products.filter((p) => p.featuredImage?.url).slice(0, 4);
+/** Bulk orders as a split: copy on navy, the Braintree pile photo beside it. */
+export function BulkSplit() {
   return (
     <section className="bg-white">
       <div className="mx-auto grid max-w-[1320px] gap-3 px-4 pb-12 sm:px-8 sm:pb-16 lg:grid-cols-2 lg:gap-5">
@@ -22,12 +19,17 @@ export function BulkSplit({ products }: { products: CollectionProduct[] }) {
             Get a bulk price
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-3 lg:gap-5">
-          {hats.map((p) => (
-            <div key={p.id} className={`relative aspect-square ${STUDIO_TILE}`}>
-              <Image src={p.featuredImage!.url} alt="" fill sizes="(max-width:1024px) 50vw, 25vw" className={`object-contain p-[8%] ${STUDIO_IMG}`} />
-            </div>
-          ))}
+        {/* One photograph where the 2x2 of product tiles was: the hat grid is
+            already on the page above, and the Braintree pile says "bulk" in one
+            frame (Lucas, 10-07). Same footprint as the four tiles. */}
+        <div className="relative aspect-square overflow-hidden bg-[#F1EEE8] lg:aspect-auto lg:min-h-[560px]">
+          <Image
+            src="/brand/scene/bulk-order.jpg"
+            alt="A pile of Braintree Townies snapbacks fresh from the embroiderer"
+            fill
+            sizes="(max-width:1024px) 100vw, 50vw"
+            className="object-cover"
+          />
         </div>
       </div>
     </section>
