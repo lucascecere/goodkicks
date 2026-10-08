@@ -115,12 +115,12 @@ export function WholesaleForm() {
       </div>
 
       <Field label="Which hats?" hint="Towns, styles, or both. Tell us if you want a town we don't make yet.">
-        <input className={fieldClass} placeholder="Milton Lifestyle, Weymouth, or a custom town" {...register('towns')} />
+        <input className={fieldClass} placeholder="Milton Lifestyle, Weymouth, or a town we don't make yet" {...register('towns')} />
       </Field>
 
       <Field label="Anything else we should know?" error={errors.message?.message}>
         <textarea rows={5} className={fieldClass}
-          placeholder="Who they're for, whether you need custom embroidery, a date you're working to — anything that helps us quote it properly first time."
+          placeholder="Where the hats are going, a date you're working to, anything that helps us quote it right the first time."
           {...register('message', { required: 'A short note is required', minLength: { value: 10, message: 'A bit more detail, please.' } })} />
       </Field>
 
