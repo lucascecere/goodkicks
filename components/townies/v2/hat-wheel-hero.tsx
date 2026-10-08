@@ -32,6 +32,10 @@ const STEP_SVH = 42;
 const PINNED_HATS = 3;
 /** Wheel-delta pixels per hat when scrolling over the hats themselves. */
 const PX_PER_HAT = 180;
+/** The C: radians per hat step, and the circle's radii as % of a hat's box. */
+const ARC = (52 * Math.PI) / 180;
+const RX = 165;
+const RY = 105;
 
 /** Signed distance from the centre on a ring of n hats, in (-n/2, n/2]. */
 function ringDistance(index: number, pos: number, n: number) {
@@ -46,12 +50,16 @@ function sized(src: string, w: number) {
 
 function WheelHatImg({ hat, index, pos, n }: { hat: WheelHat; index: number; pos: MotionValue<number>; n: number }) {
   const d = useTransform(pos, (p) => ringDistance(index, p, n));
-  const x = useTransform(d, (v) => `${v * 48}%`);
-  const y = useTransform(d, (v) => `${v * 78}%`);
-  const scale = useTransform(d, (v) => 1 - Math.min(Math.abs(v), 2) * 0.24);
+  // A "C" hugging the right edge of the page (Lucas, 10-07): the next hat
+  // rises in from the lower right edge, the current one sits at the C's
+  // leftmost point, and the previous one curls back out to the upper right,
+  // under the header. Points on a circle whose centre sits off to the right.
+  const x = useTransform(d, (v) => `${RX * (1 - Math.cos(v * ARC))}%`);
+  const y = useTransform(d, (v) => `${RY * Math.sin(v * ARC)}%`);
+  const scale = useTransform(d, (v) => 1 - Math.min(Math.abs(v), 2) * 0.26);
   const opacity = useTransform(d, (v) => {
     const a = Math.abs(v);
-    return a <= 1 ? 1 - a * 0.35 : Math.max(0, 0.65 - (a - 1) * 0.65);
+    return a <= 1 ? 1 - a * 0.2 : Math.max(0, 0.8 - (a - 1) * 0.8);
   });
   return (
     <motion.img
@@ -59,7 +67,7 @@ function WheelHatImg({ hat, index, pos, n }: { hat: WheelHat; index: number; pos
       alt={index === 0 ? hat.alt : ''}
       draggable={false}
       style={{ x, y, scale, opacity }}
-      className="absolute left-[8%] top-[14%] h-[72%] w-[84%] select-none object-contain mix-blend-multiply will-change-transform"
+      className="absolute left-[2%] top-[17%] h-[66%] w-[78%] select-none object-contain mix-blend-multiply will-change-transform"
     />
   );
 }
