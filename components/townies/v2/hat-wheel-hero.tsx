@@ -1,9 +1,11 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   motion,
+  useMotionValue,
+  useSpring,
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
@@ -16,8 +18,9 @@ export type WheelHat = { id: string; src: string; alt: string; title: string; pr
 /**
  * The hero as a wheel of hats (Lucas, 2026-10-07): one hat big in the centre,
  * the previous one small above-left, the next one small below-right. Scrolling
- * turns the wheel, so each hat in turn rolls up into the centre while the
- * copy stays put. Pinned with `sticky`; the scroll length is one step per hat.
+ * turns the wheel for the first PINNED_HATS hats, then the page moves on.
+ * Scrolling with the pointer over the hats (or swiping them on a phone) turns
+ * the ring endlessly without moving the page.
  *
  * Blend note: the hats are multiplied onto the sweep. The sticky panel carries
  * the gradient itself (it is the stacking context the blend sees), and the
@@ -25,13 +28,24 @@ export type WheelHat = { id: string; src: string; alt: string; title: string; pr
  * product backgrounds come back as boxes.
  */
 const STEP_SVH = 42;
+/** Page scroll only turns the first few hats, so nobody is trapped in the hero (Lucas, 10-07). */
+const PINNED_HATS = 3;
+/** Wheel-delta pixels per hat when scrolling over the hats themselves. */
+const PX_PER_HAT = 260;
+
+/** Signed distance from the centre on a ring of n hats, in (-n/2, n/2]. */
+function ringDistance(index: number, pos: number, n: number) {
+  let d = (((index - pos) % n) + n) % n;
+  if (d > n / 2) d -= n;
+  return d;
+}
 
 function sized(src: string, w: number) {
   return `${src}${src.includes('?') ? '&' : '?'}width=${w}`;
 }
 
-function WheelHatImg({ hat, index, pos }: { hat: WheelHat; index: number; pos: MotionValue<number> }) {
-  const d = useTransform(pos, (p) => index - p);
+function WheelHatImg({ hat, index, pos, n }: { hat: WheelHat; index: number; pos: MotionValue<number>; n: number }) {
+  const d = useTransform(pos, (p) => ringDistance(index, p, n));
   const x = useTransform(d, (v) => `${v * 48}%`);
   const y = useTransform(d, (v) => `${v * 78}%`);
   const scale = useTransform(d, (v) => 1 - Math.min(Math.abs(v), 2) * 0.24);
@@ -67,16 +81,73 @@ export function HatWheelHero({
 }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
   const n = reduce ? 1 : hats.length;
+  const pinned = Math.max(Math.min(PINNED_HATS, n) - 1, 0);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
-  const pos = useTransform(scrollYProgress, (p) => p * Math.max(n - 1, 0));
+  const pagePos = useTransform(scrollYProgress, (p) => p * pinned);
+  // Extra turns from scrolling (or swiping) on the hats themselves: endless,
+  // the ring wraps. Sprung so a mouse-wheel notch glides instead of jumping.
+  const extra = useMotionValue(0);
+  const extraSmooth = useSpring(extra, { stiffness: 120, damping: 22, mass: 0.6 });
+  const pos = useTransform([pagePos, extraSmooth], ([a, b]: number[]) => a + b);
   const [current, setCurrent] = useState(0);
-  useMotionValueEvent(pos, 'change', (v) => setCurrent(Math.min(n - 1, Math.max(0, Math.round(v)))));
+  useMotionValueEvent(pos, 'change', (v) => setCurrent((((Math.round(v) % n) + n) % n)));
+
+  useEffect(() => {
+    const el = stage.current;
+    if (!el || n < 2) return;
+    let settle: ReturnType<typeof setTimeout> | undefined;
+    // Come to rest on a hat, not between two.
+    const snap = () => {
+      clearTimeout(settle);
+      settle = setTimeout(() => extra.set(Math.round(pagePos.get() + extra.get()) - pagePos.get()), 140);
+    };
+    const onWheel = (e: WheelEvent) => {
+      // Over the hats the wheel turns the ring and the page stays put. The
+      // copy column scrolls the page as normal.
+      e.preventDefault();
+      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      extra.set(extra.get() + delta / PX_PER_HAT);
+      snap();
+    };
+    // Phones: a sideways swipe on the hats turns the ring; vertical still scrolls.
+    let startX = 0;
+    let startExtra = 0;
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') return;
+      startX = e.clientX;
+      startExtra = extra.get();
+    };
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' || !startX) return;
+      extra.set(startExtra - (e.clientX - startX) / 120);
+    };
+    const onUp = () => {
+      if (!startX) return;
+      startX = 0;
+      snap();
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener('pointerdown', onDown);
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', onUp);
+    el.addEventListener('pointercancel', onUp);
+    return () => {
+      clearTimeout(settle);
+      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('pointerdown', onDown);
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerup', onUp);
+      el.removeEventListener('pointercancel', onUp);
+    };
+  }, [extra, pagePos, n]);
+
   const hat = hats[current];
   if (!hats.length) return null;
 
   return (
-    <section ref={ref} style={{ height: `calc(100svh + ${(n - 1) * STEP_SVH}svh)` }} className="relative">
+    <section ref={ref} style={{ height: `calc(100svh + ${pinned * STEP_SVH}svh)` }} className="relative">
       <div className="sticky top-[4.75rem] sm:top-[5.5rem] h-[calc(100svh-4.75rem)] sm:h-[calc(100svh-5.5rem)] overflow-hidden bg-[radial-gradient(120%_90%_at_70%_45%,#FBFAF7_0%,#EDEAE3_55%,#E2DED5_100%)]">
         <div className="mx-auto grid h-full max-w-[1320px] grid-rows-[1fr_auto] px-4 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:grid-rows-1 lg:gap-8">
           <div className="order-2 self-center pb-8 lg:order-1 lg:pb-0">
@@ -105,10 +176,19 @@ export function HatWheelHero({
               </Link>
             )}
           </div>
-          <div className="relative order-1 min-h-0 overflow-hidden lg:order-2 lg:overflow-visible">
+          <div
+            ref={stage}
+            className="relative order-1 min-h-0 touch-pan-y overflow-hidden lg:order-2 lg:overflow-visible"
+          >
             {hats.slice(0, n).map((h, i) => (
-              <WheelHatImg key={h.id} hat={h} index={i} pos={pos} />
+              <WheelHatImg key={h.id} hat={h} index={i} pos={pos} n={n} />
             ))}
+            {n > 1 && (
+              <p className="pointer-events-none absolute bottom-4 right-0 font-label text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-text/45">
+                <span className="hidden lg:inline">Scroll over the hats for every town</span>
+                <span className="lg:hidden">Swipe the hats</span>
+              </p>
+            )}
           </div>
         </div>
       </div>
