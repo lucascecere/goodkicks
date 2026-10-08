@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
       // 2026-10-07: Shipping & Returns split into two Terms pages. Townies host
       // only: on goodkicks.co the middleware rewrites /shipping-returns to the
       // Good Kicks page, and next.config redirects run before middleware.
+      // 2026-10-08: the blog is retired (Lucas: "scratch the blog"). Old links
+      // and indexed posts go home rather than 404. Townies host only.
+      { source: '/blog', destination: '/', permanent: true, missing: [{ type: 'host', value: '(www\\.)?goodkicks\\.co' }] },
+      { source: '/blog/:slug*', destination: '/', permanent: true, missing: [{ type: 'host', value: '(www\\.)?goodkicks\\.co' }] },
       {
         source: '/shipping-returns',
         destination: '/shipping-policy',

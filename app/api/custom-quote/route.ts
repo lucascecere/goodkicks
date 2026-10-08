@@ -136,7 +136,8 @@ export async function POST(request: Request) {
         : []),
     ];
 
-    const inbox = process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co';
+    // Custom-hat quotes go to the Townies inbox (Lucas, 10-08).
+    const inbox = process.env.TOWNIES_NOTIFICATION_EMAIL ?? 'info@townies.shop';
     const qualifier = [d.quantity, d.organisation || d.town].filter(Boolean).join(' · ');
     const subject = `[Townies] Custom hat quote: ${d.name}${qualifier ? ` (${qualifier})` : ''}`;
     const body = [...details, '', 'Mockup and logo attached. Reply to this email to reach the customer.'].join('\n');

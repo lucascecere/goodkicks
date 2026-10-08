@@ -1,7 +1,6 @@
 import { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getTownieProducts, getGoodKicksProducts } from '@/lib/shopify/collections';
-import { towniePosts } from '@/lib/townies/blog-posts';
 import { townHref, townPages } from '@/lib/townies/towns';
 import { SITE_URL, GK_HOST_LIVE, gkCanonical } from '@/lib/seo/site';
 import { customTownHref, customTowns } from '@/lib/townies/custom-hats';
@@ -48,12 +47,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const blogRoutes: MetadataRoute.Sitemap = towniePosts.map((post) => ({
-    url: `${siteUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-  }));
 
   // Good Kicks entries follow the cutover: townies.shop/goodkicks/* while the
   // host rewrite is off, goodkicks.co/* once it is on. Listing a URL the site
@@ -74,7 +67,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/boston`,            lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
     { url: `${siteUrl}/south-east`,        lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
     { url: `${siteUrl}/north-shore`,       lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
-    { url: `${siteUrl}/blog`,              lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.7 },
     { url: `${siteUrl}/ambassadors`,       lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
     { url: `${siteUrl}/about`,             lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.6 },
     { url: `${siteUrl}/support`,           lastModified: new Date(), changeFrequency: 'yearly' as const,  priority: 0.5 },
@@ -89,7 +81,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...townPageRoutes,
     ...customTownRoutes,
     ...townRoutes,
-    ...blogRoutes,
   ];
   // Before the cutover the GK pages live on townies.shop, so they belong here.
   return GK_HOST_LIVE ? towniesPages : [...towniesPages, ...goodKicksPages];

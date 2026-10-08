@@ -130,7 +130,6 @@ export const TOWNIES: BrandConfig = {
           { href: '/custom-hats', label: 'Custom Hats' },
           { href: '/wholesale', label: 'Wholesale' },
           { href: '/ambassadors', label: 'Become an Ambassador' },
-          { href: '/blog', label: 'The Town Paper' },
         ],
       },
       {

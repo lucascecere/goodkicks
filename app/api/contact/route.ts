@@ -196,7 +196,12 @@ export async function POST(request: Request) {
       try {
         await sendEmail({
           from: 'Townies <info@goodkicks.co>',
-          to: process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co',
+          // Townies inquiries (wholesale, support, town requests) land in the
+          // Townies inbox (Lucas, 10-08); Good Kicks keeps its own.
+          to:
+            data.brand === 'townies'
+              ? process.env.TOWNIES_NOTIFICATION_EMAIL ?? 'info@townies.shop'
+              : process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co',
           replyTo: data.email,
           subject,
           text,
