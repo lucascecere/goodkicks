@@ -70,7 +70,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
           href="/returns-policy"
           className="underline underline-offset-2 hover:text-accent"
         >
-          shipping &amp; returns
+          returns policy
         </Link>{' '}
         page for the window and how to start one. Pre-orders are made to order, so heads up on
         those.
