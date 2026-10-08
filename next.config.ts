@@ -20,6 +20,15 @@ const nextConfig: NextConfig = {
         has: [{ type: 'host', value: '(www\\.)?goodkicks\\.co' }],
       },
       { source: '/contact', destination: '/support', permanent: true },
+      // 2026-10-07: Shipping & Returns split into two Terms pages. Townies host
+      // only: on goodkicks.co the middleware rewrites /shipping-returns to the
+      // Good Kicks page, and next.config redirects run before middleware.
+      {
+        source: '/shipping-returns',
+        destination: '/shipping-policy',
+        permanent: true,
+        missing: [{ type: 'host', value: '(www\\.)?goodkicks\\.co' }],
+      },
     ];
   },
   images: {

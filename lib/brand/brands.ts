@@ -136,12 +136,19 @@ export const TOWNIES: BrandConfig = {
         links: [
           { href: ACCOUNT, label: 'Account', external: true },
           { href: '/size-guide', label: 'Size Guide' },
-          { href: '/shipping-returns', label: 'Shipping & Returns' },
           { href: '/faq', label: 'FAQ' },
           { href: '/support', label: 'Support' },
         ],
       },
-      { title: 'Terms', links: [{ href: '/privacy', label: 'Privacy & Terms' }] },
+      // Lucas, 10-07: shipping + returns are policies, so they sit under Terms.
+      {
+        title: 'Terms',
+        links: [
+          { href: '/privacy', label: 'Privacy & Terms' },
+          { href: '/shipping-policy', label: 'Shipping Policy' },
+          { href: '/returns-policy', label: 'Returns Policy' },
+        ],
+      },
     ],
     // @townies.shop is the handle printed on every Content Studio graphic, so
     // it is the one the footer points at. No Facebook: Meta blocks the page

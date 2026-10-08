@@ -223,7 +223,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
       ...(gk
         ? {}
         : {
-            // Mirrors /shipping-returns word for word: 30 days, by mail, the
+            // Mirrors /returns-policy word for word: 30 days, by mail, the
             // customer covers return postage. Change both together.
             hasMerchantReturnPolicy: {
               '@type': 'MerchantReturnPolicy',
@@ -332,7 +332,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             ) : (
               <TrustRow
                 items={['Free shipping over $75', '30-day returns', 'Ships from the South Shore']}
-                href="/shipping-returns"
+                href="/shipping-policy"
               />
             )}
             {!gk && (

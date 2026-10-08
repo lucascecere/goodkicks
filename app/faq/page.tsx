@@ -52,10 +52,10 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
       <>
         We ship across the U.S. Rates and timing are on the{' '}
         <Link
-          href="/shipping-returns"
+          href="/shipping-policy"
           className="underline underline-offset-2 hover:text-accent"
         >
-          shipping &amp; returns
+          shipping policy
         </Link>{' '}
         page. Pre-orders ship in ~3–4 weeks; in-stock orders go out within a few days.
       </>
@@ -67,7 +67,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
       <>
         Yeah — see the{' '}
         <Link
-          href="/shipping-returns"
+          href="/returns-policy"
           className="underline underline-offset-2 hover:text-accent"
         >
           shipping &amp; returns
