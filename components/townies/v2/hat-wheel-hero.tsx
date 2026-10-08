@@ -173,11 +173,11 @@ export function HatWheelHero({
             <h1 className="display mt-2 text-[2.5rem] sm:text-[4rem] lg:mt-3 lg:text-[5rem] text-text">{headline}</h1>
             <p className="mt-3 max-w-md text-[0.9375rem] sm:text-[1.0625rem] leading-relaxed text-text/75 lg:mt-4">{sub}</p>
             <div className="mt-5 flex flex-wrap gap-2 sm:gap-3 lg:mt-6">
-              <Link href={cta.href} className="font-label bg-text px-7 py-3.5 text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-black">
+              <Link href={cta.href} className="font-label bg-text px-5 sm:px-7 py-3.5 text-[0.6875rem] sm:text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-black">
                 {cta.label}
               </Link>
               {ctaSecondary && (
-                <Link href={ctaSecondary.href} className="font-label border border-text px-7 py-3.5 text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-text transition-colors hover:bg-text hover:text-white">
+                <Link href={ctaSecondary.href} className="font-label border border-text px-5 sm:px-7 py-3.5 text-[0.6875rem] sm:text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-text transition-colors hover:bg-text hover:text-white">
                   {ctaSecondary.label}
                 </Link>
               )}
