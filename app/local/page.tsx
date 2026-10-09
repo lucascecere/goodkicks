@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getStalls, townSlug, townsOf } from '@/lib/shop/market';
 import { MARKET_BASE } from '@/lib/shop/paths';
+import { marketOpen } from '@/lib/shop/config';
 import { StallCard } from '@/components/market/stall-card';
 import { TownFilter } from '@/components/market/town-filter';
 import { PageMasthead } from '@/components/townies/page-masthead';
@@ -21,6 +22,7 @@ export const metadata: Metadata = {
 
 export default async function MarketPage({ searchParams }: { searchParams: Promise<{ town?: string; payouts?: string }> }) {
   const { town, payouts } = await searchParams;
+  const open = marketOpen();
   const stalls = await getStalls();
   const towns = townsOf(stalls);
   const active = town && towns.some((t) => townSlug(t) === town) ? town : null;
@@ -29,9 +31,13 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <PageMasthead
-        eyebrow="The Local Market"
+        eyebrow={open ? 'The Local Market' : 'The Local Market · Opening soon'}
         title="Hats from the shops down the street."
-        sub="Local businesses we make custom hats for, each with their own shop here. Pick a town, browse the shops, and buy straight from the business. Ship it, or pick it up at their door."
+        sub={
+          open
+            ? 'Local businesses we make custom hats for, each with their own shop here. Pick a town, browse the shops, and buy straight from the business. Ship it, or pick it up at their door.'
+            : 'Local businesses we make custom hats for, each with their own shop here. Online ordering opens soon: you will be able to buy straight from the business, shipped or picked up at their door.'
+        }
         pattern="topo"
       />
 
@@ -53,7 +59,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
         ) : (
           <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-14">
             {shown.map((s, i) => (
-              <StallCard key={s.seller.id} stall={s} priority={i < 3} />
+              <StallCard key={s.seller.id} stall={s} priority={i < 3} open={open} />
             ))}
           </div>
         )}

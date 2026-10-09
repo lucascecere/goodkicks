@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { startCheckout, CheckoutError } from '@/lib/shop/checkout';
-import { shopStripeConfigured } from '@/lib/shop/config';
+import { marketOpen } from '@/lib/shop/config';
 import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
 
 const Body = z.object({
@@ -14,8 +14,8 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
-  if (!shopStripeConfigured()) {
-    return NextResponse.json({ error: 'Checkout is not open yet.' }, { status: 503 });
+  if (!marketOpen()) {
+    return NextResponse.json({ error: 'Ordering opens soon.' }, { status: 503 });
   }
   if (!rateLimit(`shop-checkout:${callerIp(req.headers)}`, 10, 60_000)) {
     return NextResponse.json({ error: 'Too many tries. Give it a minute.' }, { status: 429 });

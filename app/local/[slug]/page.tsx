@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AtSign, Globe, MapPin, Store } from 'lucide-react';
 import { getStall } from '@/lib/shop/market';
+import { marketOpen } from '@/lib/shop/config';
 import { MARKET_BASE } from '@/lib/shop/paths';
 import { dollars, WHOLESALE_LABEL } from '@/lib/shop/money';
 import { SellerMark } from '@/components/market/seller-mark';
@@ -36,6 +37,7 @@ export default async function StallPage({ params }: { params: Promise<{ slug: st
   const stall = await getStall(slug);
   if (!stall) notFound();
   const { seller, hats } = stall;
+  const open = marketOpen();
 
   // Product + Offer markup so each hat can show in Google with its price.
   const jsonLd = {
@@ -59,7 +61,7 @@ export default async function StallPage({ params }: { params: Promise<{ slug: st
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      {open && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />}
       <section className="border-b border-rule">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-8 sm:py-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-16">
           {seller.cover_url && (
@@ -124,11 +126,14 @@ export default async function StallPage({ params }: { params: Promise<{ slug: st
               </div>
               <div className="mt-3 flex items-baseline justify-between gap-3">
                 <p className="text-[0.9375rem] font-semibold leading-snug text-text">{h.title}</p>
-                <p className="shrink-0 text-[0.9375rem] text-text">{dollars(h.price_cents!)}</p>
+                {open && <p className="shrink-0 text-[0.9375rem] text-text">{dollars(h.price_cents!)}</p>}
               </div>
               <p className="mt-0.5 text-[0.8125rem] text-muted">{WHOLESALE_LABEL[h.wholesale_type]} snapback</p>
               {h.description && <p className="mt-2 line-clamp-3 text-[0.8125rem] leading-relaxed text-muted">{h.description}</p>}
               <div className="mt-auto pt-3">
+                {!open ? (
+                  <p className="border border-rule px-3 py-2.5 text-center font-label text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-muted">Coming soon</p>
+                ) : (
                 <AddToBag
                   compact
                   line={{
@@ -142,13 +147,16 @@ export default async function StallPage({ params }: { params: Promise<{ slug: st
                     image: h.image_url,
                   }}
                 />
+                )}
               </div>
             </div>
           ))}
         </div>
 
         <p className="mt-14 max-w-2xl border-t border-rule pt-8 text-sm leading-relaxed text-muted">
-          Every hat is embroidered by Townies and shipped by us. Part of every sale goes straight to {seller.name}.
+          {open
+            ? `Every hat is embroidered by Townies and shipped by us. Part of every sale goes straight to ${seller.name}.`
+            : `Every hat is embroidered by Townies. Online ordering opens soon, and part of every sale will go straight to ${seller.name}.`}
         </p>
       </div>
     </>

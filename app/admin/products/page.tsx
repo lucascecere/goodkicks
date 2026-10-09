@@ -157,7 +157,8 @@ export default async function ProductsPage({
         </div>
       )}
 
-      {brand !== 'goodkicks' && (
+      {/* Shopify stays the store (Lucas, 10-09); the copy tool is kept but hidden. */}
+      {brand !== 'goodkicks' && process.env.SHOP_SWITCH_TOOLS === 'true' && (
         <Card title="Moving off Shopify" className="mt-8">
           <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <p className="text-sm text-town-cream/70">

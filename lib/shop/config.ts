@@ -29,6 +29,16 @@ export function getShopStripe(): Stripe {
   return stripe;
 }
 
+/**
+ * Can people buy on the market yet? Until this is true the market is a
+ * showcase: shops and hats on display, "Coming soon", no prices, no bag.
+ * Needs Stripe connected AND SHOP_MARKET_OPEN=true, so connecting Stripe
+ * alone never opens it by surprise.
+ */
+export function marketOpen(): boolean {
+  return shopStripeConfigured() && process.env.SHOP_MARKET_OPEN === 'true';
+}
+
 export function shopIsTestMode(): boolean {
   return (process.env.SHOP_STRIPE_SECRET_KEY ?? '').startsWith('sk_test_');
 }

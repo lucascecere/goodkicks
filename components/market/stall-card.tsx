@@ -10,7 +10,7 @@ import { Awning, awningTone } from './awning';
 // picture, then the name and a quiet line of facts. The picture is the shop's
 // own photo (storefront, people wearing the hat) when we have one; otherwise
 // their lead hat, large, on the studio ground the rest of Townies uses.
-export function StallCard({ stall, priority = false }: { stall: Stall; priority?: boolean }) {
+export function StallCard({ stall, priority = false, open = true }: { stall: Stall; priority?: boolean; open?: boolean }) {
   const { seller, hats } = stall;
   const lead = hats[0];
   const from = Math.min(...hats.map((h) => h.price_cents ?? Infinity));
@@ -50,7 +50,7 @@ export function StallCard({ stall, priority = false }: { stall: Stall; priority?
           {seller.name}
         </p>
         <p className="mt-0.5 text-[0.75rem] text-muted sm:text-[0.8125rem]">
-          {[seller.town, `${hats.length} hat${hats.length === 1 ? '' : 's'}`, `from ${dollars(from)}`].filter(Boolean).join(' · ')}
+          {[seller.town, `${hats.length} hat${hats.length === 1 ? '' : 's'}`, open ? `from ${dollars(from)}` : 'Coming soon'].filter(Boolean).join(' · ')}
         </p>
       </div>
     </Link>

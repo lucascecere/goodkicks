@@ -50,11 +50,11 @@ export const ADMIN_NAV: AdminNavItem[] = [
     label: 'Marketing',
     icon: 'marketing',
     match: ['/admin/campaigns', '/admin/reviews', '/admin/studio', '/admin/codes'],
+    // /admin/codes is built but unlisted: Shopify stays the store for now.
     children: [
       { href: '/admin/campaigns', label: 'Campaigns' },
       { href: '/admin/reviews', label: 'Reviews' },
       { href: '/admin/studio', label: 'Studio' },
-      { href: '/admin/codes', label: 'Discount codes' },
     ],
   },
   {
