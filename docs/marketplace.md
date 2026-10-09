@@ -56,3 +56,17 @@ The local market lives at `townies.shop/local`. Each local business gets a stall
    - Pickup: Dropped at the shop, then Buyer picked it up.
 5. **Reviews.** Market buyers join Customers. They get the same single "How's the hat?" email, 7 days after delivery or pickup.
 6. **Reorder.** When a hat drops below its buffer of 5, use Reorder from RoyalBacks. When the box lands, use Received, add to stock.
+
+## Before launch: cleanup
+- [ ] Delete the **Test Shop** (slug `test-shop`) and its test orders. It is kept as status `approved` and only shows where `SHOP_SHOW_TEST_SHOPS=true` (preview), but remove it before ordering opens:
+  ```sql
+  begin;
+  delete from shop_payouts where order_id in (select distinct order_id from shop_order_items where seller_id = (select id from shop_sellers where slug = 'test-shop'));
+  delete from shop_orders where id in (select distinct order_id from shop_order_items where seller_id = (select id from shop_sellers where slug = 'test-shop'));
+  delete from shop_sellers where slug = 'test-shop';  -- cascades its products
+  commit;
+  ```
+- [ ] Big Red Moving was reset on 10-09 (no Stripe account, no email, not joined). It onboards for real through its own join link.
+- [ ] Remove `SHOP_SHOW_TEST_SHOPS` from the preview env.
+- [ ] Stripe live mode: complete the Connect platform profile (loss-liability + compliance acknowledgements) and add the MA tax registration.
+- [ ] Optional: close the leftover test-mode probe accounts in Stripe (Connect → Accounts).
