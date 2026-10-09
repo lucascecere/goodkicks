@@ -1,5 +1,6 @@
 import 'server-only';
 import { listProducts, listSellers } from './db';
+import { isTestShop, testShopsVisible } from './config';
 import type { Product, Seller } from './types';
 
 // What the public market shows: live local businesses that have at least one
@@ -9,7 +10,10 @@ import type { Product, Seller } from './types';
 export type Stall = { seller: Seller; hats: Product[] };
 
 export async function getStalls(): Promise<Stall[]> {
-  const [sellers, products] = await Promise.all([listSellers({ liveOnly: true }), listProducts(undefined, { activeOnly: true })]);
+  const showTest = testShopsVisible();
+  const [all, products] = await Promise.all([listSellers({ liveOnly: !showTest }), listProducts(undefined, { activeOnly: true })]);
+  // Live shops everywhere; test shops (kept 'approved') only where the flag is on.
+  const sellers = all.filter((s) => (showTest && isTestShop(s.slug) ? s.status === 'approved' || s.status === 'live' : s.status === 'live'));
   const bySeller = new Map<string, Product[]>();
   for (const p of products) {
     const list = bySeller.get(p.seller_id) ?? [];

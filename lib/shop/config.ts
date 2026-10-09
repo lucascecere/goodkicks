@@ -39,6 +39,19 @@ export function marketOpen(): boolean {
   return shopStripeConfigured() && process.env.SHOP_MARKET_OPEN === 'true';
 }
 
+/**
+ * Test shops (slug starting `test-`) are kept as status 'approved' in the
+ * shared database, so the live site never shows them. Only where this flag is
+ * on (the preview/test site) are they treated as open shops.
+ */
+export function testShopsVisible(): boolean {
+  return process.env.SHOP_SHOW_TEST_SHOPS === 'true';
+}
+
+export function isTestShop(slug: string): boolean {
+  return slug.startsWith('test-');
+}
+
 export function shopIsTestMode(): boolean {
   return (process.env.SHOP_STRIPE_SECRET_KEY ?? '').startsWith('sk_test_');
 }

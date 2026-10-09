@@ -1,7 +1,7 @@
 import 'server-only';
 import type Stripe from 'stripe';
 import { db, getProductsByIds, listSellers } from './db';
-import { getShopStripe, MARKET_BASE, siteUrl } from './config';
+import { getShopStripe, isTestShop, MARKET_BASE, siteUrl, testShopsVisible } from './config';
 import { shippingCents, splitLine } from './money';
 import { applyDiscount, discountProblem, normalizeCode } from './discounts';
 import { findDiscount } from './discounts-db';
@@ -43,7 +43,8 @@ export async function startCheckout({
     // Townies' own hats still sell through Shopify; they can only go through
     // this checkout once SHOP_HOUSE_SELLING is deliberately turned on.
     const houseOff = seller?.kind === 'house' && process.env.SHOP_HOUSE_SELLING !== 'true';
-    if (!seller || houseOff || seller.status !== 'live' || p.status !== 'active' || !p.price_cents) {
+    const open = seller?.status === 'live' || (Boolean(seller) && testShopsVisible() && isTestShop(seller!.slug) && seller!.status === 'approved');
+    if (!seller || houseOff || !open || p.status !== 'active' || !p.price_cents) {
       throw new CheckoutError(`${p.title} isn't for sale right now.`);
     }
     const qty = merged.get(p.id)!;
