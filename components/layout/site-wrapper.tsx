@@ -51,7 +51,8 @@ export function SiteWrapper({
         <main id="main-content">{children}</main>
         {/* Townies v2: the sign-up is its own band above the footer (Melin's
             "Join the family"), so the footer's own form is off for Townies. */}
-        {!isGoodKicks && <JoinBand />}
+        {/* Not on /shop (Lucas, 10-09): the shop ends on the hats. */}
+        {!isGoodKicks && pathname !== '/shop' && <JoinBand />}
         <Footer brand={brand} />
         <CartDrawer brand={brand} />
         {/* Townies only — Good Kicks has its own offer story, and mixing the two
