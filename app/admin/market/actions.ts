@@ -82,6 +82,7 @@ export async function createSellerAction(fd: FormData) {
   const name = str(fd, 'name');
   if (!name) throw new Error('Name is required.');
   const logo = file(fd, 'logo');
+  const cover = file(fd, 'cover');
   const seller = await createSeller({
     name,
     town: str(fd, 'town') || null,
@@ -95,6 +96,7 @@ export async function createSellerAction(fd: FormData) {
     invite_token: newToken(),
   });
   if (logo) await updateSeller(seller.id, { logo_url: await uploadImage(logo, `logos/${seller.id}`) });
+  if (cover) await updateSeller(seller.id, { cover_url: await uploadImage(cover, `covers/${seller.id}`) });
   revalidatePath('/admin/market');
   redirect(`/admin/market/sellers/${seller.id}`);
 }
@@ -102,6 +104,7 @@ export async function createSellerAction(fd: FormData) {
 export async function updateSellerAction(id: string, fd: FormData): Promise<ActionResult> {
   return wrap(async () => {
     const logo = file(fd, 'logo');
+    const cover = file(fd, 'cover');
     await updateSeller(id, {
       name: str(fd, 'name'),
       town: str(fd, 'town') || null,
@@ -117,6 +120,8 @@ export async function updateSellerAction(id: string, fd: FormData): Promise<Acti
       is_royalbacks_sourced: fd.get('is_royalbacks_sourced') === 'on',
       sort: parseInt(str(fd, 'sort') || '0', 10) || 0,
       ...(logo ? { logo_url: await uploadImage(logo, `logos/${id}`) } : {}),
+      ...(cover ? { cover_url: await uploadImage(cover, `covers/${id}`) } : {}),
+      ...(fd.get('remove_cover') === 'on' ? { cover_url: null } : {}),
     });
     revalidatePath(`/admin/market/sellers/${id}`);
     revalidatePath('/local');

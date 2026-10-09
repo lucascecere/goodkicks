@@ -4,7 +4,7 @@ import { getStalls, townSlug, townsOf } from '@/lib/shop/market';
 import { MARKET_BASE } from '@/lib/shop/paths';
 import { StallCard } from '@/components/market/stall-card';
 import { TownFilter } from '@/components/market/town-filter';
-import { Awning } from '@/components/market/awning';
+import { PageMasthead } from '@/components/townies/page-masthead';
 
 export const revalidate = 60;
 
@@ -28,19 +28,12 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <section className="relative border-b border-rule bg-masthead">
-        <Awning tone="forest" height={22} />
-        <div className="mx-auto max-w-7xl px-4 pb-12 pt-8 sm:px-8 sm:pb-16 sm:pt-12">
-          <p className="mb-3 font-label text-[0.625rem] font-bold uppercase tracking-[0.22em] text-masthead-contrast/70">The Local Market</p>
-          <h1 className="display mb-4 max-w-3xl text-[2.5rem] text-masthead-contrast sm:text-[3.25rem] lg:text-[4rem]">
-            Hats from the shops down the street.
-          </h1>
-          <p className="max-w-xl leading-relaxed text-masthead-contrast/80">
-            Local businesses we make custom hats for, each with their own shop here. Pick a town, browse the shops, and buy straight
-            from the business. Ship it, or pick it up at their door.
-          </p>
-        </div>
-      </section>
+      <PageMasthead
+        eyebrow="The Local Market"
+        title="Hats from the shops down the street."
+        sub="Local businesses we make custom hats for, each with their own shop here. Pick a town, browse the shops, and buy straight from the business. Ship it, or pick it up at their door."
+        pattern="topo"
+      />
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
         {payouts === 'connected' && (
@@ -58,9 +51,9 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
             <p className="mx-auto mt-3 max-w-md text-muted">The first local businesses open here soon.</p>
           </div>
         ) : (
-          <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {shown.map((s) => (
-              <StallCard key={s.seller.id} stall={s} />
+          <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-6 lg:gap-y-14">
+            {shown.map((s, i) => (
+              <StallCard key={s.seller.id} stall={s} priority={i < 3} />
             ))}
           </div>
         )}

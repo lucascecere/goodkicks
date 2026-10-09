@@ -6,7 +6,6 @@ import { AtSign, Globe, MapPin, Store } from 'lucide-react';
 import { getStall } from '@/lib/shop/market';
 import { MARKET_BASE } from '@/lib/shop/paths';
 import { dollars, WHOLESALE_LABEL } from '@/lib/shop/money';
-import { Awning, awningTone } from '@/components/market/awning';
 import { SellerMark } from '@/components/market/seller-mark';
 import { AddToBag } from '@/components/market/add-to-bag';
 
@@ -60,47 +59,51 @@ export default async function StallPage({ params }: { params: Promise<{ slug: st
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
-      <section className="border-b border-rule bg-masthead">
-        <Awning tone={awningTone(seller.slug)} height={30} />
-        <div className="mx-auto max-w-7xl px-4 pb-10 pt-6 sm:px-8 sm:pb-14 sm:pt-10">
-          <Link href={MARKET_BASE} className="font-label text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-masthead-contrast/60 hover:text-masthead-contrast">
-            ← The Local Market
-          </Link>
-          <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-center">
+      <section className="border-b border-rule">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-8 sm:py-12 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-16">
+          {seller.cover_url && (
+            // Shop photos are mostly upright phone shots, so they sit upright
+            // beside the name rather than cropped into a wide banner.
+            <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F1EEE8] lg:order-last">
+              <Image src={seller.cover_url} alt={seller.name} fill priority sizes="(max-width: 1024px) 100vw, 400px" className="object-cover" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <Link href={MARKET_BASE} className="mb-8 inline-block font-label text-[0.6875rem] font-bold uppercase tracking-[0.16em] text-muted hover:text-text">
+              ← The Local Market
+            </Link>
             <SellerMark seller={seller} size={88} />
-            <div className="min-w-0">
-              <h1 className="display text-[2.25rem] leading-none text-masthead-contrast sm:text-[3rem]">{seller.name}</h1>
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-masthead-contrast/75">
-                {seller.town && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-4 w-4" strokeWidth={1.75} /> {seller.town}
-                  </span>
-                )}
-                {seller.website && (
-                  <a href={seller.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 underline-offset-4 hover:underline">
-                    <Globe className="h-4 w-4" strokeWidth={1.75} /> Website
-                  </a>
-                )}
-                {seller.instagram && (
-                  <a href={instagramUrl(seller.instagram)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 underline-offset-4 hover:underline">
-                    <AtSign className="h-4 w-4" strokeWidth={1.75} /> Instagram
-                  </a>
-                )}
-                {seller.pickup_enabled && (
-                  <span className="flex items-center gap-1">
-                    <Store className="h-4 w-4" strokeWidth={1.75} /> Free pickup at the shop
-                  </span>
-                )}
-              </div>
+            <h1 className="display mt-5 text-[2.25rem] leading-none text-text sm:text-[3.25rem]">{seller.name}</h1>
+            {seller.blurb && <p className="mt-4 max-w-xl text-[1.0625rem] leading-relaxed text-muted">{seller.blurb}</p>}
+            <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-text">
+              {seller.town && (
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 text-muted" strokeWidth={1.75} /> {seller.town}
+                </span>
+              )}
+              {seller.pickup_enabled && (
+                <span className="flex items-center gap-1.5">
+                  <Store className="h-4 w-4 text-muted" strokeWidth={1.75} /> Free pickup at the shop
+                </span>
+              )}
+              {seller.website && (
+                <a href={seller.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 underline-offset-4 hover:underline">
+                  <Globe className="h-4 w-4 text-muted" strokeWidth={1.75} /> Website
+                </a>
+              )}
+              {seller.instagram && (
+                <a href={instagramUrl(seller.instagram)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 underline-offset-4 hover:underline">
+                  <AtSign className="h-4 w-4 text-muted" strokeWidth={1.75} /> Instagram
+                </a>
+              )}
             </div>
           </div>
-          {seller.blurb && <p className="mt-6 max-w-2xl leading-relaxed text-masthead-contrast/80">{seller.blurb}</p>}
         </div>
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
         <p className="mb-6 font-label text-[0.6875rem] font-bold uppercase tracking-[0.18em] text-muted">
-          On the table · {hats.length} hat{hats.length === 1 ? '' : 's'}
+          The hats · {hats.length} hat{hats.length === 1 ? '' : 's'}
         </p>
         <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
           {hats.map((h, i) => (

@@ -160,6 +160,21 @@ export default async function SellerAdminPage({ params }: { params: Promise<{ id
                 <label className={label} htmlFor="logo">Replace logo</label>
                 <input id="logo" name="logo" type="file" accept="image/*" className={fileInput} />
               </div>
+              <div className="sm:col-span-2">
+                <label className={label} htmlFor="cover">{seller.cover_url ? 'Replace shop photo' : 'Shop photo (storefront, crew in the hats)'}</label>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  {seller.cover_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={seller.cover_url} alt="" className="h-20 w-16 shrink-0 rounded-md object-cover" />
+                  )}
+                  <input id="cover" name="cover" type="file" accept="image/*" className={fileInput} />
+                  {seller.cover_url && (
+                    <label className="flex shrink-0 items-center gap-2 text-xs text-town-cream/60">
+                      <input type="checkbox" name="remove_cover" /> Remove
+                    </label>
+                  )}
+                </div>
+              </div>
               <label className="flex items-center gap-2 text-sm text-town-cream/80 sm:col-span-2">
                 <input type="checkbox" name="pickup_enabled" defaultChecked={seller.pickup_enabled} /> Free pickup at their place
               </label>

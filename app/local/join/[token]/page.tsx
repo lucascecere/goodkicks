@@ -5,7 +5,6 @@ import { dollars } from '@/lib/shop/money';
 import { refreshPayoutStatus } from '@/lib/shop/connect';
 import { shopStripeConfigured } from '@/lib/shop/config';
 import { JoinForm } from '@/components/market/join-form';
-import { Awning, awningTone } from '@/components/market/awning';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Set up your shop', robots: { index: false, follow: false } };
@@ -47,8 +46,7 @@ export default async function JoinPage({
   return (
     <>
       <section className="border-b border-rule bg-masthead">
-        <Awning tone={awningTone(seller.slug)} height={22} />
-        <div className="mx-auto max-w-3xl px-4 pb-10 pt-6 sm:px-8">
+        <div className="mx-auto max-w-3xl px-4 pb-10 pt-10 sm:px-8 sm:pt-14">
           <p className="mb-3 font-label text-[0.625rem] font-bold uppercase tracking-[0.22em] text-masthead-contrast/70">The Local Market</p>
           <h1 className="display text-[2.25rem] leading-none text-masthead-contrast sm:text-[3rem]">Set up {seller.name}&rsquo;s shop</h1>
           <p className="mt-4 max-w-xl leading-relaxed text-masthead-contrast/80">

@@ -27,6 +27,10 @@ export default function NewSellerPage() {
             <input id="logo" name="logo" type="file" accept="image/*" className={`${field} file:mr-3 file:border-0 file:bg-town-cream file:px-2 file:py-1 file:text-xs file:text-town-navy`} />
           </div>
           <div className="sm:col-span-2">
+            <label className={label} htmlFor="cover">Shop photo (storefront, crew in the hats). Big on the market page.</label>
+            <input id="cover" name="cover" type="file" accept="image/*" className={`${field} file:mr-3 file:border-0 file:bg-town-cream file:px-2 file:py-1 file:text-xs file:text-town-navy`} />
+          </div>
+          <div className="sm:col-span-2">
             <label className={label} htmlFor="blurb">One or two lines about them</label>
             <textarea id="blurb" name="blurb" rows={2} className={field} />
           </div>
