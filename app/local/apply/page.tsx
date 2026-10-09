@@ -3,7 +3,7 @@ import { PageMasthead } from '@/components/townies/page-masthead';
 import { ApplyForm } from '@/components/market/apply-form';
 import { MARKET_BASE } from '@/lib/shop/paths';
 
-const TITLE = 'Get a Stall at the Townies Local Market';
+const TITLE = 'Sell Your Hats at the Townies Local Market';
 const DESCRIPTION =
   'Sell custom hats for your Massachusetts business on Townies. We design, stitch, stock and ship them. You set the price and get your share of every sale.';
 
@@ -18,8 +18,8 @@ export default function ApplyPage() {
     <>
       <PageMasthead
         eyebrow="The Local Market"
-        title="Get a stall."
-        sub="Your logo on our hats, sold from your own stall on Townies. We design and stitch them, keep them in stock, ship every order and handle returns. You set the price and keep everything above our cost."
+        title="Join the market."
+        sub="Your logo on our hats, sold from your own shop on Townies. We design and stitch them, keep them in stock, ship every order and handle returns. You set the price and keep everything above our cost."
         pattern="pine"
       />
       <div className="mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1fr_360px]">
@@ -31,7 +31,7 @@ export default function ApplyPage() {
               <li>Tell us about your business. We reply within a few days.</li>
               <li>We design your hats with you and stitch a small first run.</li>
               <li>You set your prices and connect where you want to get paid.</li>
-              <li>Your stall opens. We ship every order, or drop it at your door for pickup.</li>
+              <li>Your shop opens. We ship every order, or drop it at your door for pickup.</li>
             </ol>
           </div>
           <div>

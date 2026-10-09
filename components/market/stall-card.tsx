@@ -49,7 +49,7 @@ export function StallCard({ stall }: { stall: Stall }) {
             {hats.length} hat{hats.length === 1 ? '' : 's'} · from {dollars(from)}
           </span>
           <span className="font-label text-[0.6875rem] font-bold uppercase tracking-[0.14em] text-text group-hover:underline underline-offset-4">
-            Visit stall →
+            Visit shop →
           </span>
         </div>
       </div>

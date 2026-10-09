@@ -39,7 +39,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
     icon: 'market',
     mobile: true,
     children: [
-      { href: '/admin/market', label: 'Stalls' },
+      { href: '/admin/market', label: 'Businesses' },
       { href: '/admin/market/payouts', label: 'Payouts' },
       { href: '/admin/market/reorders', label: 'Reorders' },
     ],

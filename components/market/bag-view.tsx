@@ -107,7 +107,7 @@ export function BagView() {
             <span>
               <span className="block font-semibold text-text">Pick it up free</span>
               <span className="text-sm text-muted">
-                {canPickup ? `At ${lines[0].sellerName}. We email you when it's there.` : sellers.length > 1 ? 'Only when every hat is from one stall.' : "This stall doesn't do pickup."}
+                {canPickup ? `At ${lines[0].sellerName}. We email you when it's there.` : sellers.length > 1 ? 'Only when every hat is from one shop.' : "This shop doesn't do pickup."}
               </span>
             </span>
           </label>

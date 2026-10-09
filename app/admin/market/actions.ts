@@ -134,7 +134,7 @@ export async function setSellerStatusAction(id: string, status: SellerStatus): P
     revalidatePath(`/admin/market/sellers/${id}`);
     revalidatePath('/admin/market');
     revalidatePath('/local');
-    return status === 'live' ? 'The stall is open.' : `Marked ${status}.`;
+    return status === 'live' ? 'The shop is open.' : `Marked ${status}.`;
   });
 }
 

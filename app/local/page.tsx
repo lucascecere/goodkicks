@@ -10,7 +10,7 @@ export const revalidate = 60;
 
 const TITLE = 'The Local Market: Hats From Massachusetts Businesses';
 const DESCRIPTION =
-  'Custom embroidered hats from local Massachusetts businesses, made by Townies. Browse by town, buy straight from their stall, ship it or pick it up.';
+  'Custom embroidered hats from local Massachusetts businesses, made by Townies. Browse by town, buy straight from the business, ship it or pick it up.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -36,7 +36,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
             Hats from the shops down the street.
           </h1>
           <p className="max-w-xl leading-relaxed text-masthead-contrast/80">
-            Local businesses we make custom hats for, each with their own stall. Pick a town, wander the stalls, and buy straight
+            Local businesses we make custom hats for, each with their own shop here. Pick a town, browse the shops, and buy straight
             from the business. Ship it, or pick it up at their door.
           </p>
         </div>
@@ -54,7 +54,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
 
         {shown.length === 0 ? (
           <div className="border border-dashed border-rule px-6 py-16 text-center">
-            <p className="display text-2xl text-text">The stalls are setting up.</p>
+            <p className="display text-2xl text-text">The first shops are setting up.</p>
             <p className="mx-auto mt-3 max-w-md text-muted">The first local businesses open here soon.</p>
           </div>
         ) : (
@@ -77,7 +77,7 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
             href={`${MARKET_BASE}/apply`}
             className="inline-flex items-center justify-center bg-accent px-6 py-3.5 font-label text-xs font-bold uppercase tracking-[0.16em] text-accent-contrast"
           >
-            Get a stall
+            Join the market
           </Link>
         </div>
       </div>

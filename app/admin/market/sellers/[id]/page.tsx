@@ -51,7 +51,7 @@ export default async function SellerAdminPage({ params }: { params: Promise<{ id
             <Badge tone={STATUS_TONE[seller.status]}>{SELLER_STATUS_LABEL[seller.status]}</Badge>
             {seller.status === 'live' && (
               <a href={`${MARKET_BASE}/${seller.slug}`} target="_blank" className={btn.ghost}>
-                View stall <ExternalLink className="h-3.5 w-3.5" />
+                View shop <ExternalLink className="h-3.5 w-3.5" />
               </a>
             )}
           </>
@@ -196,7 +196,7 @@ export default async function SellerAdminPage({ params }: { params: Promise<{ id
             </div>
           </Card>
 
-          <Card title="Open the stall">
+          <Card title="Open the shop">
             <div className="space-y-4 px-4 py-4 sm:px-5">
               <ol className="space-y-1.5 text-sm">
                 <li className={seller.invited_at || seller.joined_at ? 'text-town-cream' : 'text-town-cream/50'}>
@@ -219,12 +219,12 @@ export default async function SellerAdminPage({ params }: { params: Promise<{ id
               )}
               <div className="flex flex-wrap gap-2 border-t border-town-cream/10 pt-4">
                 {seller.status === 'live' ? (
-                  <ActionButton action={setSellerStatusAction.bind(null, seller.id, 'paused')} confirm="Hide this stall from the market?">
-                    Pause stall
+                  <ActionButton action={setSellerStatusAction.bind(null, seller.id, 'paused')} confirm="Hide this shop from the market?">
+                    Pause shop
                   </ActionButton>
                 ) : seller.status === 'approved' || seller.status === 'paused' ? (
                   <ActionButton look="primary" action={setSellerStatusAction.bind(null, seller.id, 'live')}>
-                    {seller.status === 'paused' ? 'Reopen stall' : 'Open stall'}
+                    {seller.status === 'paused' ? 'Reopen shop' : 'Open shop'}
                   </ActionButton>
                 ) : null}
               </div>

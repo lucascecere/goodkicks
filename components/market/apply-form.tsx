@@ -90,7 +90,7 @@ export function ApplyForm() {
           disabled={state === 'sending'}
           className="bg-accent px-6 py-4 font-label text-xs font-bold uppercase tracking-[0.16em] text-accent-contrast disabled:opacity-50"
         >
-          {state === 'sending' ? 'Sending…' : 'Apply for a stall'}
+          {state === 'sending' ? 'Sending…' : 'Apply to join'}
         </button>
       </div>
     </form>

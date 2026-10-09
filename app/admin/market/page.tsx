@@ -67,7 +67,7 @@ export default async function MarketAdminPage() {
       ) : null}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Open stalls" value={live.length} sub={`${sellers.length} businesses total`} />
+        <Stat label="Live shops" value={live.length} sub={`${sellers.length} businesses total`} />
         <Stat label="Applications" value={applied.length} sub={applied.length ? 'waiting on you' : 'none waiting'} />
         <Stat label="Owed to businesses" value={dollars(owed)} sub={`${payouts.length} payout${payouts.length === 1 ? '' : 's'} on hold`} href="/admin/market/payouts" />
         <Stat label="Below buffer" value={low.length} sub="hats to reorder" href="#low" />

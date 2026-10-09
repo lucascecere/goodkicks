@@ -217,7 +217,7 @@ export function JoinForm({
             disabled={saving || !pricesOk || (info.pickup_enabled && !info.pickup_address.trim())}
             className="bg-accent px-6 py-3.5 font-label text-xs font-bold uppercase tracking-[0.16em] text-accent-contrast transition-opacity hover:opacity-90 disabled:opacity-40"
           >
-            {saving ? 'Saving…' : 'Save my stall'}
+            {saving ? 'Saving…' : 'Save my shop'}
           </button>
           {saved && (
             <span className="flex items-center gap-1.5 text-sm text-band">
@@ -252,7 +252,7 @@ export function JoinForm({
 
       {saved && payoutsReady && seller.status !== 'live' && (
         <p className="border border-band/40 bg-band/5 px-5 py-4 text-text">
-          All set. We&rsquo;ll give your stall a last look and open it, usually the same day.
+          All set. We&rsquo;ll give your shop a last look and open it, usually the same day.
         </p>
       )}
     </div>

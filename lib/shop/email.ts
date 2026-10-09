@@ -147,7 +147,7 @@ export async function sendAdminApplication(s: Seller) {
     to: notifyEmail(),
     subject: `Market application: ${s.name}${s.town ? ` (${s.town})` : ''}`,
     html: layout({
-      heading: `${esc(s.name)} wants a stall.`,
+      heading: `${esc(s.name)} wants to join the market.`,
       body: `<p style="margin:0 0 12px 0;">${esc(s.contact_name)} · ${esc(s.contact_email)}${s.contact_phone ? ` · ${esc(s.contact_phone)}` : ''}</p>
         <p style="margin:0 0 12px 0;color:#5C6168;">${esc(String(s.application?.about ?? s.blurb ?? ''))}</p>`,
       cta: { href: `${siteUrl()}/admin/market/sellers/${s.id}`, label: 'Review' },
@@ -165,12 +165,12 @@ export async function sendSellerInvite(s: Seller) {
     from: SHOP_FROM,
     replyTo: SHOP_REPLY_TO,
     to: s.contact_email,
-    subject: `Your hats on Townies: set up ${s.name}'s stall`,
+    subject: `Your hats on Townies: set up ${s.name}'s shop`,
     html: layout({
-      heading: `${esc(first)}, your stall is ready to set up.`,
+      heading: `${esc(first)}, your shop is ready to set up.`,
       body: `<p style="margin:0 0 12px 0;">We'd love to put <strong>${esc(s.name)}</strong>'s hats in the Townies local market, alongside other businesses from around Massachusetts.</p>
         <p style="margin:0 0 12px 0;">It takes about five minutes: check your info, pick which hats to sell, set your price, and connect where you want to get paid. We hold the stock, ship every order, and handle refunds. You get your share of every hat sold.</p>`,
-      cta: { href: link, label: 'Set up my stall' },
+      cta: { href: link, label: 'Set up my shop' },
     }),
   });
 }
