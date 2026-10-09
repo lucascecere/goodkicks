@@ -13,7 +13,7 @@ export function CartIconButton() {
   return (
     <button
       onClick={openCart}
-      aria-label={`Open cart${itemCount > 0 ? `, ${itemCount} items` : ''}`}
+      aria-label={`Open cart${itemCount > 0 ? `, ${itemCount} ${itemCount === 1 ? 'item' : 'items'}` : ''}`}
       className="relative p-2 text-chrome-contrast/85 hover:text-chrome-contrast transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chrome-contrast focus-visible:ring-offset-2 focus-visible:ring-offset-chrome rounded"
     >
       <ShoppingBag size={19} />

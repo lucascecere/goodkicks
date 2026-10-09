@@ -44,14 +44,14 @@ export function GoodKicksPromoBand({ shopPath }: { shopPath: string }) {
               premium materials. properly weighted. made to last.
             </h2>
             <p className="mx-auto lg:mx-0 max-w-md text-sm leading-relaxed text-white/80">
-              32 panels, hand-stitched, filled right — rounder and more forgiving than the flat
+              32 panels, hand-stitched, filled right: rounder and more forgiving than the flat
               bags in a discount bin. Made by the same crew that&apos;s been doing it for 30+ years.
             </p>
             <p className="mx-auto lg:mx-0 mt-4 max-w-md text-sm leading-relaxed text-white/80">
               <span className="inline-block rounded-full bg-accent px-2.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-accent-contrast mr-2 align-middle">
                 Limited time
               </span>
-              Buy one, get one free — add any two colorways and use code{' '}
+              Buy one, get one free. Add any two colorways and use code{' '}
               <span className="font-mono font-bold tracking-widest text-white">BOGOKICKS</span> at checkout.
             </p>
             <Link

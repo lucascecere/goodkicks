@@ -19,7 +19,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!stall) return {};
   const { seller } = stall;
   const title = `${seller.name} Hats${seller.town ? `, ${seller.town}` : ''}`;
-  const description = seller.blurb ?? `Custom embroidered ${seller.name} hats, made by Townies.`;
+  // Blurbs can be one short line, so the description always says what the page is.
+  const description = `${seller.name}${seller.town ? ` in ${seller.town}` : ''} hats, embroidered by Townies. ${seller.blurb ?? ''}`.trim().slice(0, 160);
   return {
     title,
     description,

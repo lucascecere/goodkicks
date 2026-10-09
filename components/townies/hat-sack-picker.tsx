@@ -227,8 +227,12 @@ function Summary({
         <span className="font-label text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-text">Total</span>
         <span className="text-[1.5rem] font-medium text-text">{priced ? formatUsd(bundleCents) : `From ${formatUsd(bundleCents)}`}</span>
       </div>
-      {separately !== null && (
-        <p className="mt-1 text-right text-[0.75rem] text-muted">Separately {formatUsd(separately)} plus shipping</p>
+      {/* Bought apart, the hat pays standard shipping ($5.95 for one hat; the
+          sack ships free), so compare like for like. Only shown when the
+          bundle is actually cheaper (2026-10-09 audit: "$40 vs separately
+          $39.98" read as the worse deal). */}
+      {separately !== null && separately + 595 > bundleCents && (
+        <p className="mt-1 text-right text-[0.75rem] text-muted">Separately {formatUsd(separately + 595)} with shipping</p>
       )}
       <button
         type="button"

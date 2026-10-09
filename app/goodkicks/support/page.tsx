@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Questions about an order, a foot bag, shipping or returns. A real person reads these.',
   alternates: { canonical: gkCanonical('support') },
   openGraph: {
-    title: 'Support — Good Kicks',
+    title: 'Support | Good Kicks',
     description: 'Order questions, foot bag questions, anything else. A real person reads these.',
     url: gkCanonical('support'),
   },

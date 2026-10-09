@@ -17,7 +17,12 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: { canonical: MARKET_BASE },
-  openGraph: { title: `${TITLE} | Townies`, description: DESCRIPTION, url: MARKET_BASE },
+  openGraph: {
+    title: `${TITLE} | Townies`,
+    description: DESCRIPTION,
+    url: MARKET_BASE,
+    images: [{ url: '/opengraph-image.jpg', width: 1200, height: 630 }],
+  },
 };
 
 export default async function MarketPage({ searchParams }: { searchParams: Promise<{ town?: string; payouts?: string }> }) {

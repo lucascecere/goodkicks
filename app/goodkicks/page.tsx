@@ -16,9 +16,9 @@ import { gkCanonical } from '@/lib/seo/site';
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: { absolute: 'Good Kicks — The Best Foot Bag (Hacky Sack) for Your Circle' },
+  title: { absolute: 'Good Kicks: The Best Foot Bag (Hacky Sack) for Your Circle' },
   description:
-    'Premium foot bags — what everyone calls hacky sacks — built for dorm circles, campus quads, and every backpack that needs one. Pick your colorway, in stock, free shipping.',
+    'Premium foot bags (what everyone calls hacky sacks) for dorm circles, campus quads and every backpack. Pick your colorway, in stock, free shipping.',
   alternates: { canonical: gkCanonical('') },
 };
 
@@ -104,9 +104,9 @@ export default async function GoodKicksHome() {
         id="ambassadors"
         eyebrow="Ambassador program"
         title="run a school sack account? we'll back you."
-        body="We partner with high school and college hacky sack accounts — your own code, a cut of every sale, and a free starter sack to kick things off."
+        body="We partner with high school and college hacky sack accounts: your own code, a cut of every sale, and a free starter sack to kick things off."
         steps={[
-          { n: '01', title: 'Your own code', body: 'A custom code that gives your followers 20% off — tied to your school or account.' },
+          { n: '01', title: 'Your own code', body: 'A custom code that gives your followers 20% off, tied to your school or account.' },
           { n: '02', title: '8–10% commission', body: 'Earn on every order placed through your code. Paid out monthly.' },
           { n: '03', title: 'Free starter sack', body: 'One sack shipped to you on approval, so you post with the real thing in hand.' },
         ]}

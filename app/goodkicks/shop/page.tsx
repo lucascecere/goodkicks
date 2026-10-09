@@ -53,7 +53,7 @@ export default async function GoodKicksShopPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {products.length === 0 ? (
           <div className="text-center py-10">
-            <p className="text-muted text-sm mb-6">The collection is on its way — check back soon.</p>
+            <p className="text-muted text-sm mb-6">The collection is on its way. Check back soon.</p>
             <Link
               href={GOODKICKS.supportPath}
               className="inline-flex items-center bg-ink text-ink-contrast px-7 py-3.5 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent hover:text-accent-contrast transition-colors"

@@ -7,14 +7,14 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: {
     template: '%s | Good Kicks',
-    default: 'Good Kicks — Premium Foot Bags for Your Circle',
+    default: 'Good Kicks | Premium Foot Bags for Your Circle',
   },
   description:
-    'Premium foot bags — what everyone calls hacky sacks — built for dorm circles, campus quads, and every backpack that needs one.',
+    'Premium foot bags (what everyone calls hacky sacks), built for dorm circles, campus quads, and every backpack that needs one.',
   openGraph: {
     siteName: 'Good Kicks',
     type: 'website',
-    title: 'Good Kicks — Premium Foot Bags for Your Circle',
+    title: 'Good Kicks | Premium Foot Bags for Your Circle',
     description: 'Premium foot bags built for dorm circles and campus quads. Pick your colorway.',
   },
 };

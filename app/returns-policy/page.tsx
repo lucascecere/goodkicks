@@ -51,7 +51,7 @@ export default function ReturnsPolicyPage() {
           heading: 'Damaged or wrong items',
           body: (
             <p>
-              If your order arrives damaged, defective or wrong, reach out within <strong>7 days</strong> of delivery
+              If your order arrives damaged, defective or wrong, reach out within <strong>7 days</strong>{' '}of delivery
               with a photo and your order number and we&apos;ll make it right.
             </p>
           ),
