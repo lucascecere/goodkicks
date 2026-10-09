@@ -4,6 +4,7 @@ import { MARKET_BASE } from '@/lib/shop/paths';
 import { dollars } from '@/lib/shop/money';
 import type { Stall } from '@/lib/shop/market';
 import { SellerMark } from './seller-mark';
+import { Awning, awningTone } from './awning';
 
 // One shop on the market page, modelled on Goodee's makers grid: a single big
 // picture, then the name and a quiet line of facts. The picture is the shop's
@@ -18,6 +19,7 @@ export function StallCard({ stall, priority = false }: { stall: Stall; priority?
   return (
     <Link href={`${MARKET_BASE}/${seller.slug}`} className="group block">
       <div className="relative aspect-[4/5] overflow-hidden bg-[#F1EEE8]">
+        <Awning tone={awningTone(seller.slug)} className="absolute inset-x-0 top-0 z-10" />
         {seller.cover_url ? (
           <Image
             src={seller.cover_url}

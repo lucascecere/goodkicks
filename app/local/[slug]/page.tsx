@@ -8,6 +8,7 @@ import { MARKET_BASE } from '@/lib/shop/paths';
 import { dollars, WHOLESALE_LABEL } from '@/lib/shop/money';
 import { SellerMark } from '@/components/market/seller-mark';
 import { AddToBag } from '@/components/market/add-to-bag';
+import { Awning, awningTone } from '@/components/market/awning';
 
 export const revalidate = 60;
 
@@ -65,6 +66,7 @@ export default async function StallPage({ params }: { params: Promise<{ slug: st
             // Shop photos are mostly upright phone shots, so they sit upright
             // beside the name rather than cropped into a wide banner.
             <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F1EEE8] lg:order-last">
+              <Awning tone={awningTone(seller.slug)} band={10} stripe={18} className="absolute inset-x-0 top-0 z-10" />
               <Image src={seller.cover_url} alt={seller.name} fill priority sizes="(max-width: 1024px) 100vw, 400px" className="object-cover" />
             </div>
           )}
