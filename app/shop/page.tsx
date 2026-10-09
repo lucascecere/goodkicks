@@ -6,9 +6,7 @@ import { RequestTownBand } from '@/components/townies/request-town-band';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
 import { HAT_SACK_LIVE } from '@/lib/townies/hat-sack';
-import { ShopHero } from '@/components/townies/v2/shop-hero';
-import { NOT_A_TOWN } from '@/lib/townies/town-facts';
-import { HatSackBanner } from '@/components/townies/v2/hat-sack-banner';
+import { HatSackCard } from '@/components/townies/v2/hat-sack-card';
 import { getHatSackFromCents } from '@/lib/shopify/hat-sack-offer';
 import { getReviewSummaries } from '@/lib/reviews/server';
 
@@ -65,10 +63,13 @@ export default async function ShopPage({
           ),
         }}
       />
-      <ShopHero hatCount={items.length} townCount={towns.filter((t) => !NOT_A_TOWN.has(t.slug)).length} />
-      {hatSack !== null && <HatSackBanner fromCents={hatSack} />}
 
-      <div id="hats" className="relative max-w-7xl mx-auto scroll-mt-24 px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
+
+      <div id="hats" className="relative max-w-7xl mx-auto scroll-mt-24 px-4 sm:px-8 pt-8 sm:pt-12 pb-20">
+        {/* No section up top (Lucas, 10-09): one quiet title line, then the cards. */}
+        <h1 className="mb-6 font-label text-[0.75rem] font-semibold uppercase tracking-[0.2em] text-text/60">
+          Shop all hats{items.length > 0 ? ` · ${items.length}` : ''}
+        </h1>
         {items.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-muted text-sm mb-6">
@@ -94,6 +95,7 @@ export default async function ShopPage({
             initialTown={town}
             initialRegion={region}
             initialStyle={style}
+            promo={hatSack !== null ? <HatSackCard fromCents={hatSack} /> : undefined}
           />
         )}
       </div>
