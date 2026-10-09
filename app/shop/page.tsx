@@ -7,6 +7,7 @@ import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
 import { HAT_SACK_LIVE } from '@/lib/townies/hat-sack';
 import { ShopHero } from '@/components/townies/v2/shop-hero';
+import { NOT_A_TOWN } from '@/lib/townies/town-facts';
 import { HatSackBanner } from '@/components/townies/v2/hat-sack-banner';
 import { getHatSackFromCents } from '@/lib/shopify/hat-sack-offer';
 import { getReviewSummaries } from '@/lib/reviews/server';
@@ -64,7 +65,7 @@ export default async function ShopPage({
           ),
         }}
       />
-      <ShopHero hatCount={items.length} townCount={towns.length} regions={regions} />
+      <ShopHero hatCount={items.length} townCount={towns.filter((t) => !NOT_A_TOWN.has(t.slug)).length} />
       {hatSack !== null && <HatSackBanner fromCents={hatSack} />}
 
       <div id="hats" className="relative max-w-7xl mx-auto scroll-mt-24 px-4 sm:px-8 pt-12 sm:pt-16 pb-20">

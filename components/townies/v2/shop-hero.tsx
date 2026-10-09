@@ -1,19 +1,10 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
 // The head of /shop. It used to be a line of text on a flat ground; now it's
 // the shop's own front window: the headline and counts on one side, a collage
 // of three approved photos on the other (the clover scene, Milton on the curb,
 // and the real pile of Braintree hats). Lucas, 10-09.
-export function ShopHero({
-  hatCount,
-  townCount,
-  regions,
-}: {
-  hatCount: number;
-  townCount: number;
-  regions: { slug: string; label: string }[];
-}) {
+export function ShopHero({ hatCount, townCount }: { hatCount: number; townCount: number }) {
   return (
     <section className="border-b border-rule bg-[#F1EEE8]">
       <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-10 sm:px-8 sm:py-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14 lg:py-16">
@@ -22,23 +13,9 @@ export function ShopHero({
           <h1 className="display text-[2.75rem] leading-[0.95] text-text sm:text-[3.75rem] lg:text-[4.5rem]">Every town.</h1>
           <p className="mt-4 max-w-md text-[1.0625rem] leading-relaxed text-text/75">
             {hatCount > 0
-              ? `${hatCount} hats across ${townCount} Massachusetts towns, embroidered and shipped from home. Find yours below.`
+              ? `${hatCount} hats across ${townCount} Massachusetts towns. Find yours below.`
               : 'The first drop lands soon.'}
           </p>
-          {regions.length > 1 && (
-            <div className="mt-6 flex flex-wrap gap-2">
-              {regions.map((r) => (
-                <Link
-                  key={r.slug}
-                  href={`/shop?region=${r.slug}#hats`}
-                  scroll={false}
-                  className="rounded-full border border-text/20 px-4 py-2 font-label text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-text transition-colors hover:border-text hover:bg-text hover:text-white"
-                >
-                  {r.label}
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Collage: one tall image and two stacked, so it reads as a window
