@@ -1,6 +1,7 @@
 import 'server-only';
 import { db, getOrder, getOrderItems, listPayouts, updatePayout } from './db';
-import { getShopStripe, royalbacksAccountId } from './config';
+import { getShopStripe } from './config';
+import { royalbacksAccountId } from './royalbacks';
 import { releaseAt } from './money';
 import type { Order, OrderItem, Payout, Seller } from './types';
 
@@ -34,7 +35,7 @@ export async function createHeldPayouts(order: Order, items: OrderItem[], seller
       stripe_account_id: sellers.get(sellerId)?.stripe_account_id ?? null,
     }));
   if (royalbacks > 0) {
-    rows.push({ order_id: order.id, recipient: 'royalbacks', seller_id: null, amount_cents: royalbacks, stripe_account_id: royalbacksAccountId() });
+    rows.push({ order_id: order.id, recipient: 'royalbacks', seller_id: null, amount_cents: royalbacks, stripe_account_id: await royalbacksAccountId() });
   }
 
   // A webhook retry must not double the queue: insert only what isn't there.
@@ -62,7 +63,8 @@ export async function transferPayout(p: Payout, order?: Order | null): Promise<s
   if (o.status !== 'paid' && o.status !== 'partially_refunded') return `order is ${o.status}`;
 
   let destination = p.stripe_account_id;
-  if (p.recipient === 'royalbacks') destination ??= royalbacksAccountId();
+  // Dylan may connect after the sale, so always read his current account.
+  if (p.recipient === 'royalbacks') destination = await royalbacksAccountId();
   if (p.recipient === 'seller' && p.seller_id) {
     const { data: s } = await db().from('shop_sellers').select('stripe_account_id, payouts_enabled').eq('id', p.seller_id).single();
     destination = s?.stripe_account_id ?? null;

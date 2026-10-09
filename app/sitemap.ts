@@ -5,6 +5,8 @@ import { townHref, townPages } from '@/lib/townies/towns';
 import { SITE_URL, GK_HOST_LIVE, gkCanonical } from '@/lib/seo/site';
 import { customTownHref, customTowns } from '@/lib/townies/custom-hats';
 import { isGoodKicksHost } from '@/lib/seo/hosts';
+import { getStalls } from '@/lib/shop/market';
+import { MARKET_BASE } from '@/lib/shop/paths';
 
 // Each domain lists only its own URLs. A sitemap on townies.shop that also
 // lists goodkicks.co pages is ignored for those entries and blurs which site is
@@ -14,10 +16,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = SITE_URL;
   const gkHost = GK_HOST_LIVE && isGoodKicksHost((await headers()).get('host'));
 
-  const [towns, goodKicks] = await Promise.all([
+  const [towns, goodKicks, stalls] = await Promise.all([
     getTownieProducts().catch(() => []),
     getGoodKicksProducts().catch(() => []),
+    getStalls().catch(() => []),
   ]);
+
+  // The local market: only open stalls with something to sell (getStalls
+  // already drops the rest), so the sitemap never lists an empty stall.
+  const marketRoutes: MetadataRoute.Sitemap = stalls.length
+    ? [
+        { url: `${siteUrl}${MARKET_BASE}`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
+        ...stalls.map((s) => ({
+          url: `${siteUrl}${MARKET_BASE}/${s.seller.slug}`,
+          lastModified: new Date(s.seller.updated_at),
+          changeFrequency: 'weekly' as const,
+          priority: 0.7,
+        })),
+        { url: `${siteUrl}${MARKET_BASE}/apply`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.4 },
+      ]
+    : [];
 
   const townRoutes: MetadataRoute.Sitemap = towns.map((p) => ({
     url: `${siteUrl}/products/${p.handle}`,
@@ -82,6 +100,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...townPageRoutes,
     ...customTownRoutes,
     ...townRoutes,
+    ...marketRoutes,
   ];
   // Before the cutover the GK pages live on townies.shop, so they belong here.
   return GK_HOST_LIVE ? towniesPages : [...towniesPages, ...goodKicksPages];

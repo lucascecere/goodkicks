@@ -4,6 +4,7 @@ import { adjustStock, db, getOrder, getOrderItems, getProductsByIds, getSellerBy
 import { getShopStripe } from './config';
 import { createHeldPayouts, unwindPayouts } from './payouts';
 import { sendAdminNewOrder, sendOrderReceipt, sendSellerSale } from './email';
+import { upsertContact } from '@/lib/supabase/upsert-contact';
 import type { Order, Seller, ShippingAddress } from './types';
 
 // Stripe events for the shop's own account. Every handler is idempotent:
@@ -82,6 +83,12 @@ export async function markOrderPaid(sessionId: string) {
   const final: Order = short.length ? await updateOrder(order.id, { fulfillment: 'needs_production' }) : paid;
 
   await createHeldPayouts(final, items, sellers);
+
+  // Market buyers join the same Customers list as Shopify buyers, so
+  // campaigns and the review emails can reach them.
+  if (final.buyer_email) {
+    await quietly('contact upsert', () => upsertContact({ email: final.buyer_email!, name: final.buyer_name, source: 'order', brand: 'townies' }));
+  }
 
   const pickupAt = final.pickup_seller_id ? (sellers.get(final.pickup_seller_id) ?? null) : null;
   await quietly('receipt email', () => sendOrderReceipt(final, items, pickupAt));

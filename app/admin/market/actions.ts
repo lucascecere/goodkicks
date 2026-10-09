@@ -22,7 +22,8 @@ import { refreshPayoutStatus, expressDashboardLink } from '@/lib/shop/connect';
 import { sendReadyForPickupEmail, sendReorderRequest, sendSellerInvite, sendShippedEmail } from '@/lib/shop/email';
 import { minPriceCents, WHOLESALE_CENTS, type WholesaleType } from '@/lib/shop/money';
 import { startPayoutClock, transferPayout } from '@/lib/shop/payouts';
-import { buyLabel } from '@/lib/shop/shippo';
+import { buyLabel, registerTracking, shippoConfigured } from '@/lib/shop/shippo';
+import { queueMarketReview } from '@/lib/shop/reviews';
 import type { SellerStatus } from '@/lib/shop/types';
 
 // Every admin write for the market and our own orders. Middleware already
@@ -304,6 +305,17 @@ export async function markShippedAction(orderId: string, fd: FormData): Promise<
       carrier: o.carrier ?? (tracking ? 'USPS' : null),
     });
     await startPayoutClock(o.id, now);
+    // A label bought through Shippo is already tracked; a hand-entered number
+    // has to be registered so the "delivered" update still arrives.
+    if (tracking && !o.shippo_transaction_id && shippoConfigured()) {
+      try {
+        await registerTracking('usps', tracking);
+      } catch (err) {
+        console.error('[shop] tracking register', err);
+      }
+    }
+    // No tracking means no delivery scan: ask for the review on a timer.
+    if (!tracking) await queueMarketReview(updated, 'no-scan', now);
     try {
       await sendShippedEmail(updated);
     } catch (err) {
@@ -321,7 +333,10 @@ export async function setFulfillmentAction(orderId: string, step: 'unfulfilled' 
     const patch: Parameters<typeof updateOrder>[1] = { fulfillment: step };
     if (step === 'picked_up') patch.handed_over_at = new Date().toISOString();
     const updated = await updateOrder(o.id, patch);
-    if (step === 'picked_up') await startPayoutClock(o.id);
+    if (step === 'picked_up') {
+      await startPayoutClock(o.id);
+      await queueMarketReview(updated, 'picked_up');
+    }
     if (step === 'ready_for_pickup' && o.pickup_seller_id) {
       const s = await getSeller(o.pickup_seller_id);
       if (s) {

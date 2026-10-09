@@ -120,6 +120,7 @@ export const TOWNIES: BrandConfig = {
           { href: '/boston', label: 'Boston' },
           { href: '/south-east', label: 'Southeastern Mass' },
           { href: '/north-shore', label: 'North Shore' },
+          { href: '/local', label: 'Local Market' },
           { href: '/goodkicks', label: 'Good Kicks' },
         ],
       },

@@ -37,8 +37,29 @@ export default async function StallPage({ params }: { params: Promise<{ slug: st
   if (!stall) notFound();
   const { seller, hats } = stall;
 
+  // Product + Offer markup so each hat can show in Google with its price.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': hats.map((h) => ({
+      '@type': 'Product',
+      name: `${seller.name} ${h.title}`,
+      description: h.description ?? `${seller.name} embroidered snapback, made by Townies.`,
+      image: h.image_url?.startsWith('http') ? h.image_url : undefined,
+      brand: { '@type': 'Brand', name: seller.name },
+      offers: {
+        '@type': 'Offer',
+        price: (h.price_cents! / 100).toFixed(2),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `https://townies.shop${MARKET_BASE}/${seller.slug}`,
+        seller: { '@type': 'Organization', name: 'Townies' },
+      },
+    })),
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       <section className="border-b border-rule bg-masthead">
         <Awning tone={awningTone(seller.slug)} height={30} />
         <div className="mx-auto max-w-7xl px-4 pb-10 pt-6 sm:px-8 sm:pb-14 sm:pt-10">

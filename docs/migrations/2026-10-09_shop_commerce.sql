@@ -178,3 +178,12 @@ on conflict (slug) do nothing;
 insert into storage.buckets (id, name, public)
 values ('shop', 'shop', true)
 on conflict (id) do nothing;
+
+-- Added 2026-10-09 (applied as migration `shop_settings`): small key/value
+-- store for shop-wide settings, e.g. RoyalBacks' Stripe account id.
+create table if not exists shop_settings (
+  key text primary key,
+  value text,
+  updated_at timestamptz not null default now()
+);
+alter table shop_settings enable row level security;

@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   openGraph: { title: `${TITLE} | Townies`, description: DESCRIPTION, url: MARKET_BASE },
 };
 
-export default async function MarketPage({ searchParams }: { searchParams: Promise<{ town?: string }> }) {
-  const { town } = await searchParams;
+export default async function MarketPage({ searchParams }: { searchParams: Promise<{ town?: string; payouts?: string }> }) {
+  const { town, payouts } = await searchParams;
   const stalls = await getStalls();
   const towns = townsOf(stalls);
   const active = town && towns.some((t) => townSlug(t) === town) ? town : null;
@@ -43,6 +43,9 @@ export default async function MarketPage({ searchParams }: { searchParams: Promi
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
+        {payouts === 'connected' && (
+          <p className="mb-8 border border-band/40 bg-band/5 px-5 py-4 text-text">You&rsquo;re connected. Payouts will land in the account you just set up.</p>
+        )}
         {towns.length > 1 && (
           <div className="mb-8">
             <TownFilter towns={towns} active={active} />

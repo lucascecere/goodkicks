@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getSellerByToken, listProducts } from '@/lib/shop/db';
+import { getSellerByToken, listPayouts, listProducts, db } from '@/lib/shop/db';
+import { dollars } from '@/lib/shop/money';
 import { refreshPayoutStatus } from '@/lib/shop/connect';
 import { shopStripeConfigured } from '@/lib/shop/config';
 import { JoinForm } from '@/components/market/join-form';
@@ -34,6 +35,15 @@ export default async function JoinPage({
 
   const hats = (await listProducts(seller.id)).filter((p) => p.status !== 'archived');
 
+  // Their sales so far, so the link doubles as a tiny dashboard.
+  const [payouts, { data: sold }] = await Promise.all([
+    listPayouts({ sellerId: seller.id }),
+    db().from('shop_order_items').select('qty, shop_orders!inner(status)').eq('seller_id', seller.id).in('shop_orders.status', ['paid', 'partially_refunded']),
+  ]);
+  const hatsSold = (sold ?? []).reduce((n: number, r: { qty: number }) => n + r.qty, 0);
+  const paidOut = payouts.filter((p) => p.status === 'transferred').reduce((n, p) => n + p.amount_cents, 0);
+  const coming = payouts.filter((p) => p.status === 'held' || p.status === 'due').reduce((n, p) => n + p.amount_cents, 0);
+
   return (
     <>
       <section className="border-b border-rule bg-masthead">
@@ -48,6 +58,20 @@ export default async function JoinPage({
         </div>
       </section>
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-8 sm:py-14">
+        {hatsSold > 0 && (
+          <div className="mb-10 grid grid-cols-3 border border-rule">
+            {[
+              ['Hats sold', String(hatsSold)],
+              ['Paid to you', dollars(paidOut)],
+              ['On the way', dollars(coming)],
+            ].map(([k, v]) => (
+              <div key={k} className="border-r border-rule px-4 py-4 last:border-r-0">
+                <p className="font-label text-[0.625rem] font-bold uppercase tracking-[0.16em] text-muted">{k}</p>
+                <p className="display mt-1 text-2xl text-text">{v}</p>
+              </div>
+            ))}
+          </div>
+        )}
         <JoinForm
           token={token}
           seller={{

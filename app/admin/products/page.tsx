@@ -3,7 +3,9 @@ import { ExternalLink } from 'lucide-react';
 import { getAdminBrand } from '@/lib/admin/brand-server';
 import { money } from '@/lib/admin/format';
 import { listShopifyProducts, type AdminProduct } from '@/lib/admin/products';
-import { Badge, EmptyState, PageHeader, field } from '@/components/admin/ui';
+import { Badge, Card, EmptyState, PageHeader, field } from '@/components/admin/ui';
+import { listProducts, listSellers } from '@/lib/shop/db';
+import { dollars } from '@/lib/shop/money';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,7 +58,15 @@ export default async function ProductsPage({
   const q = (sp.q ?? '').trim().toLowerCase();
 
   const brand = await getAdminBrand();
-  const { products, configured, error } = await listShopifyProducts();
+  const [{ products, configured, error }, marketHats, sellers] = await Promise.all([
+    listShopifyProducts(),
+    brand === 'goodkicks' ? Promise.resolve([]) : listProducts().catch(() => []),
+    brand === 'goodkicks' ? Promise.resolve([]) : listSellers().catch(() => []),
+  ]);
+  const sellerName = new Map(sellers.map((x) => [x.id, x.name]));
+  const market = marketHats
+    .filter((h) => h.status !== 'archived' && sellerName.has(h.seller_id))
+    .filter((h) => !q || `${h.title} ${sellerName.get(h.seller_id)}`.toLowerCase().includes(q));
   const scoped = products.filter((p) => brand === 'all' || p.brand === brand);
   const counts = Object.fromEntries(VIEWS.map((v) => [v.id, scoped.filter((p) => inView(p, v.id)).length]));
   const shown = scoped.filter((p) => inView(p, view) && (!q || `${p.title} ${p.tags.join(' ')}`.toLowerCase().includes(q)));
@@ -74,7 +84,7 @@ export default async function ProductsPage({
       <PageHeader
         eyebrow="Products"
         title="Products"
-        description="Town hats and Good Kicks are still managed in Shopify; tap one to edit it there. Marketplace hats are managed under Market."
+        description="Town hats and Good Kicks are still managed in Shopify; tap one to edit it there. Market hats are listed at the bottom and edited on each business's page."
       />
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -140,6 +150,35 @@ export default async function ProductsPage({
             ))}
           </ul>
         </div>
+      )}
+
+      {market.length > 0 && (
+        <Card title={`Market hats · ${market.length}`} className="mt-8">
+          <ul className="divide-y divide-town-cream/[0.07]">
+            {market.map((h) => (
+              <li key={h.id}>
+                <Link href={`/admin/market/sellers/${h.seller_id}`} className="flex items-center gap-4 px-4 py-3 hover:bg-town-cream/[0.04] sm:px-5">
+                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-town-cream">
+                    {h.image_url && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={h.image_url} alt="" className="h-full w-full object-contain mix-blend-multiply" loading="lazy" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-town-cream">
+                      {h.title} <span className="font-normal text-town-cream/50">· {sellerName.get(h.seller_id)}</span>
+                    </p>
+                    <p className={`mt-0.5 text-xs ${h.on_hand < h.stock_buffer ? 'text-amber-300' : 'text-town-cream/60'}`}>
+                      {h.on_hand} on hand · buffer {h.stock_buffer}
+                    </p>
+                  </div>
+                  {h.status !== 'active' && <Badge tone="warn">Not selling</Badge>}
+                  <p className="w-24 shrink-0 text-right text-sm tabular-nums text-town-cream/80">{h.price_cents ? dollars(h.price_cents) : 'No price'}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Card>
       )}
     </div>
   );

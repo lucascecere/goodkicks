@@ -43,9 +43,9 @@ The local market lives at `townies.shop/local`. Each local business gets a stall
    - `SHIPPO_API_KEY`
    - `SHOP_SHIP_FROM`: JSON, e.g. `{"name":"Townies","street1":"…","city":"Milton","state":"MA","zip":"02186","phone":"…"}`
    - `SHOP_ROYALBACKS_EMAIL`: where reorder requests go.
-   - `SHOP_ROYALBACKS_ACCOUNT_ID`: Dylan's `acct_…`, once he onboards.
+   - `SHIPPO_WEBHOOK_TOKEN`: any long random string. In Shippo, add a `track_updated` webhook to `https://townies.shop/api/shop/shippo?token=<it>`. This is how orders get marked delivered and the review email gets queued.
    - `SHOP_NOTIFY_EMAIL` (optional): defaults to info@townies.shop.
-3. **Dylan:** add him as a business (no hats) to get a join link. After he connects payouts, copy the `acct_…` from his stall page into `SHOP_ROYALBACKS_ACCOUNT_ID`.
+3. **Dylan:** go to Admin › Market › Payouts › Copy Dylan's link and text it to him. Once he finishes, his $5 a hat goes out with every payout. The account id is saved in `shop_settings`; `SHOP_ROYALBACKS_ACCOUNT_ID` is only an override.
 
 ## Day to day
 1. **Add a business.** In Admin › Market › Add business, then add their hat designs (photo, everyday or lifestyle, on hand).
@@ -54,4 +54,5 @@ The local market lives at `townies.shop/local`. Each local business gets a stall
 4. **Ship orders.** An order emails "Print & ship" to info@townies.shop.
    - Shipping: open the order, Buy USPS label, print it, then Mark shipped.
    - Pickup: Dropped at the shop, then Buyer picked it up.
-5. **Reorder.** When a hat drops below its buffer of 5, use Reorder from RoyalBacks. When the box lands, use Received, add to stock.
+5. **Reviews.** Market buyers join Customers. They get the same single "How's the hat?" email, 7 days after delivery or pickup.
+6. **Reorder.** When a hat drops below its buffer of 5, use Reorder from RoyalBacks. When the box lands, use Received, add to stock.

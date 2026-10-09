@@ -10,12 +10,11 @@ import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 //
 //   SHOP_STRIPE_SECRET_KEY        the Townies Local Stripe account (sk_test_… while building)
 //   SHOP_STRIPE_WEBHOOK_SECRET    whsec_ for /api/shop/webhook
-//   SHOP_ROYALBACKS_ACCOUNT_ID    Dylan's Express account (acct_…)
+//   SHOP_ROYALBACKS_ACCOUNT_ID    optional override; normally set by connecting Dylan in Admin › Market
 //   SHIPPO_API_KEY                labels
 //   SHOP_SHIP_FROM                JSON ship-from address for labels
 //   SHOP_NOTIFY_EMAIL             where "print & ship" alerts go (default info@townies.shop)
 //   SHOP_ROYALBACKS_EMAIL         where reorder requests go
-//   SHOP_ORDER_MODE               'auto' (default) or 'approve'
 
 let stripe: Stripe | null = null;
 
@@ -45,12 +44,9 @@ export function royalbacksEmail(): string | null {
   return process.env.SHOP_ROYALBACKS_EMAIL || null;
 }
 
-export function royalbacksAccountId(): string | null {
+/** Env override only; the normal source is shop_settings (see royalbacks.ts). */
+export function royalbacksAccountEnv(): string | null {
   return process.env.SHOP_ROYALBACKS_ACCOUNT_ID || null;
-}
-
-export function orderMode(): 'auto' | 'approve' {
-  return process.env.SHOP_ORDER_MODE === 'approve' ? 'approve' : 'auto';
 }
 
 /** Absolute site URL for links in emails and Stripe redirects. */

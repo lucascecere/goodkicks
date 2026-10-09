@@ -142,3 +142,16 @@ export async function buyLabel({
     costCents: Math.round(parseFloat(rate.amount) * 100),
   };
 }
+
+/**
+ * Ask Shippo to watch a tracking number we didn't buy through Shippo (a hat
+ * shipped by hand), so the "delivered" webhook still fires for it.
+ */
+export async function registerTracking(carrier: string, trackingNumber: string): Promise<void> {
+  await shippo('/tracks/', { carrier: carrier.toLowerCase(), tracking_number: trackingNumber });
+}
+
+/** Shippo's tracking status → whether the parcel has arrived. */
+export function isDelivered(status: string | null | undefined): boolean {
+  return (status ?? '').toUpperCase() === 'DELIVERED';
+}
