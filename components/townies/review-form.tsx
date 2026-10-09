@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+/** Townies Google Business Profile, "Ask for reviews" link (verified 2026-10-08). */
+const GOOGLE_REVIEW_URL = 'https://g.page/r/CdJt1JoFmcnqEAI/review';
+
 /**
  * The review box.
  *
@@ -32,6 +35,7 @@ export function ReviewForm({
   const [hover, setHover] = useState(0);
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [quote, setQuote] = useState('');
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -60,6 +64,7 @@ export function ReviewForm({
         setState('idle');
         return;
       }
+      setQuote(String(form.get('quote') ?? '').trim());
       setState('done');
     } catch {
       setError('Could not reach the server. Try again in a minute.');
@@ -74,6 +79,28 @@ export function ReviewForm({
         <p className="mt-3 text-sm leading-relaxed text-muted">
           We read every one. If it's going on the site you'll see it there shortly.
         </p>
+        {/* Offered after every rating, never only the good ones: Google bans review gating. */}
+        {brand === 'townies' && (
+          <div className="mt-6 border-t border-rule pt-6">
+            <p className="text-sm leading-relaxed text-text">
+              One more favour? Post it on Google too. It's how people find a small brand like us.
+            </p>
+            <a
+              href={GOOGLE_REVIEW_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => {
+                if (quote) navigator.clipboard?.writeText(quote).catch(() => {});
+              }}
+              className="mt-4 inline-block bg-text px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-bg"
+            >
+              Post it on Google
+            </a>
+            {quote && (
+              <p className="mt-3 text-xs text-muted">We'll copy what you wrote, so you can just paste it.</p>
+            )}
+          </div>
+        )}
       </div>
     );
   }
