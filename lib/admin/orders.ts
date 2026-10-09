@@ -17,7 +17,7 @@ import {
 export type OrderSource = 'shopify' | 'market';
 
 export type PaymentState = 'paid' | 'pending' | 'refunded' | 'partially_refunded' | 'voided' | 'disputed' | 'other';
-export type ShipState = 'unfulfilled' | 'partial' | 'fulfilled' | 'cancelled';
+export type ShipState = 'unfulfilled' | 'partial' | 'fulfilled' | 'cancelled' | 'archived';
 
 export type AdminOrderLine = {
   title: string;
@@ -80,6 +80,9 @@ function payment(o: ShopifyOrder): PaymentState {
 
 function ship(o: ShopifyOrder): ShipState {
   if (o.cancelled_at) return 'cancelled';
+  // Archived in Shopify without being shipped (old Good Kicks orders, free
+  // ambassador packages): done as far as the To ship pile is concerned.
+  if (o.closed_at && o.fulfillment_status !== 'fulfilled') return 'archived';
   if (o.fulfillment_status === 'fulfilled') return 'fulfilled';
   if (o.fulfillment_status === 'partial') return 'partial';
   return 'unfulfilled';
@@ -265,4 +268,5 @@ export const SHIP_LABEL: Record<ShipState, string> = {
   partial: 'Part shipped',
   fulfilled: 'Shipped',
   cancelled: 'Cancelled',
+  archived: 'Archived',
 };

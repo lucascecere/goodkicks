@@ -54,6 +54,8 @@ export type ShopifyOrder = {
   created_at: string;
   financial_status: string;
   cancelled_at?: string | null;
+  /** Set when the order is archived in Shopify. */
+  closed_at?: string | null;
   discount_codes: { code: string; amount?: string; type?: string }[];
   line_items: ShopifyLineItem[];
   // The admin order views read these too. The REST orders payload always

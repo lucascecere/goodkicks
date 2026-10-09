@@ -36,6 +36,7 @@ const SHIP_TONE: Record<ShipState, BadgeTone> = {
   partial: 'info',
   fulfilled: 'good',
   cancelled: 'neutral',
+  archived: 'neutral',
 };
 
 function inView(o: AdminOrderRow, view: View): boolean {
