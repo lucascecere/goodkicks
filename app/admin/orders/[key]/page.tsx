@@ -3,6 +3,7 @@ import { ExternalLink } from 'lucide-react';
 import { fmtDateTime, money } from '@/lib/admin/format';
 import { getAdminOrder, PAYMENT_LABEL, SHIP_LABEL } from '@/lib/admin/orders';
 import { Badge, Card, PageHeader, Row, btn } from '@/components/admin/ui';
+import { MarketActions } from './market-actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ ke
         right={
           <>
             <Badge tone={order.ship === 'fulfilled' ? 'good' : order.ship === 'cancelled' ? 'neutral' : 'warn'}>
-              {SHIP_LABEL[order.ship]}
+              {order.shipLabel ?? SHIP_LABEL[order.ship]}
             </Badge>
             <Badge tone={order.payment === 'paid' ? 'good' : order.payment === 'refunded' ? 'bad' : 'warn'}>
               {PAYMENT_LABEL[order.payment]}
@@ -85,6 +86,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ ke
         </div>
 
         <div className="space-y-5">
+          {order.market && <MarketActions row={order} />}
           <Card title="Customer">
             <div className="px-4 py-3 sm:px-5">
               <p className="text-sm font-semibold text-town-cream">{order.customer}</p>
@@ -96,7 +98,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ ke
             </div>
           </Card>
 
-          <Card title="Ship to">
+          <Card title={order.market?.order.delivery === 'pickup' ? 'Pickup' : 'Ship to'}>
             <div className="px-4 py-3 text-sm leading-relaxed text-town-cream/80 sm:px-5">
               {order.address ? (
                 <>
@@ -107,7 +109,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ ke
                   {order.address.phone && <p className="mt-1 text-town-cream/50">{order.address.phone}</p>}
                 </>
               ) : (
-                <p className="text-town-cream/50">No shipping address (pickup or digital).</p>
+                <p className="text-town-cream/50">No shipping address.</p>
               )}
             </div>
           </Card>

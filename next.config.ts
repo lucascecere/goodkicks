@@ -42,6 +42,12 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.shopify.com',
         pathname: '/**',
       },
+      // Local market logos and hat photos (Supabase Storage, bucket `shop`).
+      {
+        protocol: 'https',
+        hostname: 'blarfozjonigyqvlbejz.supabase.co',
+        pathname: '/storage/v1/object/public/shop/**',
+      },
       {
         protocol: 'https',
         hostname: '*.cdninstagram.com',

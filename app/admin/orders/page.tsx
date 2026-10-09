@@ -28,6 +28,7 @@ const PAY_TONE: Record<PaymentState, BadgeTone> = {
   refunded: 'bad',
   partially_refunded: 'warn',
   voided: 'neutral',
+  disputed: 'bad',
   other: 'neutral',
 };
 const SHIP_TONE: Record<ShipState, BadgeTone> = {
@@ -93,7 +94,7 @@ export default async function OrdersPage({
       <PageHeader
         eyebrow="Orders"
         title="Orders"
-        description="Every order in one list. Shopify orders still ship and refund in Shopify for now; open one to jump there."
+        description="Every order in one list. Market orders ship and refund right here; Shopify orders still ship in Shopify for now."
       />
 
       {/* View tabs + search */}
@@ -146,6 +147,7 @@ export default async function OrdersPage({
                       <Link href={`/admin/orders/${o.key}`} className="font-semibold text-town-cream hover:underline">
                         {o.number}
                       </Link>
+                      {o.source === 'market' && <span className="ml-2"><Badge tone="info">Market</Badge></span>}
                     </td>
                     <td className="px-4 py-3 text-town-cream/60">{fmtDate(o.createdAt)}</td>
                     <td className="max-w-[180px] truncate px-4 py-3 text-town-cream">{o.customer}</td>
@@ -154,7 +156,7 @@ export default async function OrdersPage({
                       <Badge tone={PAY_TONE[o.payment]}>{PAYMENT_LABEL[o.payment]}</Badge>
                     </td>
                     <td className="px-4 py-3">
-                      <Badge tone={SHIP_TONE[o.ship]}>{SHIP_LABEL[o.ship]}</Badge>
+                      <Badge tone={SHIP_TONE[o.ship]}>{o.shipLabel ?? SHIP_LABEL[o.ship]}</Badge>
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-town-cream">{money(o.total)}</td>
                   </tr>
@@ -175,13 +177,14 @@ export default async function OrdersPage({
                   <div className="min-w-0">
                     <p className="font-semibold text-town-cream">
                       {o.number} <span className="font-normal text-town-cream/50">· {o.customer}</span>
+                      {o.source === 'market' && <span className="ml-2 align-middle"><Badge tone="info">Market</Badge></span>}
                     </p>
                     <p className="mt-0.5 truncate text-xs text-town-cream/55">{itemsSummary(o)}</p>
                   </div>
                   <p className="shrink-0 tabular-nums text-town-cream">{money(o.total)}</p>
                 </div>
                 <div className="mt-3 flex items-center gap-2">
-                  <Badge tone={SHIP_TONE[o.ship]}>{SHIP_LABEL[o.ship]}</Badge>
+                  <Badge tone={SHIP_TONE[o.ship]}>{o.shipLabel ?? SHIP_LABEL[o.ship]}</Badge>
                   <Badge tone={PAY_TONE[o.payment]}>{PAYMENT_LABEL[o.payment]}</Badge>
                   <span className="ml-auto text-xs text-town-cream/40">{fmtDate(o.createdAt)}</span>
                 </div>

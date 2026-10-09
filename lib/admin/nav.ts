@@ -33,7 +33,17 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: '/admin', label: 'Home', icon: 'home', mobile: true },
   { href: '/admin/orders', label: 'Orders', icon: 'orders', mobile: true },
   { href: '/admin/products', label: 'Products', icon: 'products', mobile: true },
-  { href: '/admin/market', label: 'Market', icon: 'market', mobile: true },
+  {
+    href: '/admin/market',
+    label: 'Market',
+    icon: 'market',
+    mobile: true,
+    children: [
+      { href: '/admin/market', label: 'Stalls' },
+      { href: '/admin/market/payouts', label: 'Payouts' },
+      { href: '/admin/market/reorders', label: 'Reorders' },
+    ],
+  },
   { href: '/admin/contacts', label: 'Customers', icon: 'customers' },
   {
     href: '/admin/campaigns',

@@ -15,7 +15,7 @@ function buildText({ headline, bodyText, ctaText, ctaUrl, chrome }: {
   return lines.join('\n');
 }
 
-export function buildCampaignHtml({ headline, bodyText, ctaText, ctaUrl, preheader, brand }: {
+function buildCampaignHtml({ headline, bodyText, ctaText, ctaUrl, preheader, brand }: {
   headline: string; bodyText: string; ctaText?: string; ctaUrl?: string; preheader?: string; brand?: string;
 }): string {
   const chrome = chromeFor(brand);
