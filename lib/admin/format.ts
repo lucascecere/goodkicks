@@ -9,10 +9,16 @@
 
 const TZ_NOTE = 'en-US';
 
+/** The business runs on Massachusetts time. Without this, dates rendered on
+ *  the server came out in UTC (an evening order read as the next day) and then
+ *  differed from the browser's render, a hydration error (2026-10-09 audit). */
+const TZ = 'America/New_York';
+
 /** "Aug 23, 2026" — the dominant admin date. */
 export function fmtDate(iso: string | null | undefined, fallback = '—'): string {
   if (!iso) return fallback;
   return new Date(iso).toLocaleDateString(TZ_NOTE, {
+    timeZone: TZ,
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -22,13 +28,15 @@ export function fmtDate(iso: string | null | undefined, fallback = '—'): strin
 /** "Aug 23" — no year. Dashboard lists, where the year is noise. */
 export function fmtDateShort(iso: string | null | undefined, fallback = '—'): string {
   if (!iso) return fallback;
-  return new Date(iso).toLocaleDateString(TZ_NOTE, { month: 'short', day: 'numeric' });
+  return new Date(iso).toLocaleDateString(TZ_NOTE, {
+    timeZone: TZ, month: 'short', day: 'numeric' });
 }
 
 /** "Saturday, August 23, 2026" — the rep detail header. */
 export function fmtDateLong(iso: string | null | undefined, fallback = '—'): string {
   if (!iso) return fallback;
   return new Date(iso).toLocaleDateString(TZ_NOTE, {
+    timeZone: TZ,
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -47,6 +55,7 @@ export function fmtDateTime(
 ): string {
   if (!iso) return fallback;
   return new Date(iso).toLocaleString(TZ_NOTE, {
+    timeZone: TZ,
     month: 'short',
     day: 'numeric',
     ...(year ? { year: 'numeric' as const } : {}),

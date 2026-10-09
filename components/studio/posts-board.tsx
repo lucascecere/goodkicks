@@ -35,6 +35,7 @@ function formatWhen(iso: string | null): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return 'Unscheduled';
   return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
     weekday: 'short',
     month: 'short',
     day: 'numeric',

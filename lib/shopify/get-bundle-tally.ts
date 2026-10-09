@@ -23,12 +23,14 @@ type ShopifyOrder = {
 async function fetchAllOrders(token: string, domain: string): Promise<ShopifyOrder[]> {
   const all: ShopifyOrder[] = [];
   let url: string | null =
-    `https://${domain}/admin/api/2024-10/orders.json?status=any&limit=250`;
+    // Only orders still to ship: this tally is what's left to pack, so a
+    // fulfilled or cancelled 3-Pack must not count (2026-10-09 audit).
+    `https://${domain}/admin/api/2024-10/orders.json?status=open&fulfillment_status=unshipped&limit=250`;
 
   while (url) {
     const res: Response = await fetch(url, {
       headers: { 'X-Shopify-Access-Token': token },
-      cache: 'no-store',
+      next: { revalidate: 300 },
     });
     if (!res.ok) break;
     const json = await res.json() as { orders?: ShopifyOrder[] };

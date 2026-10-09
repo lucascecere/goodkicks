@@ -19,7 +19,9 @@ export async function GET(req: NextRequest) {
     .update(message)
     .digest('hex');
 
-  if (digest !== hmac) {
+  const given = Buffer.from(String(hmac ?? ''));
+  const want = Buffer.from(digest);
+  if (given.length !== want.length || !crypto.timingSafeEqual(given, want)) {
     return NextResponse.json({ error: 'invalid hmac' }, { status: 401 });
   }
 

@@ -75,7 +75,7 @@ export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
             <Badge>Unverified · open form</Badge>
           )}
           {r.product_title && <span>{r.product_title}</span>}
-          <span className="ml-auto">{new Date(r.created_at).toLocaleDateString()}</span>
+          <span className="ml-auto">{new Date(r.created_at).toLocaleDateString('en-US', { timeZone: 'America/New_York' })}</span>
         </div>
 
         {editable ? (
