@@ -120,21 +120,26 @@ export async function releaseDuePayouts(now = new Date()) {
 }
 
 /**
- * The order was refunded or disputed. Cancel what hasn't gone out; reverse
- * what has. `fraction` < 1 for a partial refund scales the clawback.
+ * The order was refunded or disputed. Moves each business's share from the
+ * `from` fraction already unwound to the `to` fraction (0..1 of the original
+ * payout). Held money is reduced or canceled; money already sent is reversed.
  */
-export async function unwindPayouts(orderId: string, fraction = 1) {
+export async function unwindPayouts(orderId: string, from: number, to: number) {
+  if (to <= from) return;
   const payouts = await listPayouts({ orderId });
   const stripe = getShopStripe();
   for (const p of payouts) {
     if (p.status === 'held' || p.status === 'due') {
-      if (fraction >= 1) await updatePayout(p.id, { status: 'canceled' });
-      else await updatePayout(p.id, { amount_cents: Math.round(p.amount_cents * (1 - fraction)) });
+      // A held row has already been reduced to original * (1 - from).
+      if (to >= 1) await updatePayout(p.id, { status: 'canceled' });
+      else await updatePayout(p.id, { amount_cents: Math.round((p.amount_cents * (1 - to)) / (1 - from)) });
     } else if (p.status === 'transferred' && p.stripe_transfer_id) {
+      // A sent row keeps its original amount; reverse just this slice.
+      const amount = Math.round(p.amount_cents * (to - from));
+      if (amount <= 0) continue;
       try {
-        const amount = Math.round(p.amount_cents * Math.min(1, fraction));
-        await stripe.transfers.createReversal(p.stripe_transfer_id, { amount }, { idempotencyKey: `reverse_${p.id}_${amount}` });
-        if (fraction >= 1) await updatePayout(p.id, { status: 'reversed' });
+        await stripe.transfers.createReversal(p.stripe_transfer_id, { amount }, { idempotencyKey: `reverse_${p.id}_${Math.round(to * 10000)}` });
+        if (to >= 1) await updatePayout(p.id, { status: 'reversed' });
       } catch (err) {
         await updatePayout(p.id, { error: `reversal failed: ${err instanceof Error ? err.message : err}` });
       }

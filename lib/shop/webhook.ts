@@ -32,59 +32,88 @@ export async function markOrderPaid(sessionId: string) {
   const orderId = session.metadata?.order_id;
   if (!orderId) return;
   const order = await getOrder(orderId);
-  // Only a pending order moves to paid. A retry, or a session for an order we
-  // already canceled, stops here.
-  if (!order || order.status !== 'pending') return;
+  if (!order) return;
+  // A canceled or refunded order never comes back to life.
+  if (order.status !== 'pending' && order.status !== 'paid') return;
 
-  const pi = session.payment_intent as Stripe.PaymentIntent | null;
-  const chargeId = typeof pi?.latest_charge === 'string' ? pi.latest_charge : (pi?.latest_charge?.id ?? null);
-  const shipping =
-    (session as unknown as { collected_information?: { shipping_details?: { name?: string; address?: Stripe.Address } } })
-      .collected_information?.shipping_details ??
-    (session as unknown as { shipping_details?: { name?: string; address?: Stripe.Address } }).shipping_details ??
-    null;
+  let paid: Order = order;
+  if (order.status === 'pending') {
+    const pi = session.payment_intent as Stripe.PaymentIntent | null;
+    const chargeId = typeof pi?.latest_charge === 'string' ? pi.latest_charge : (pi?.latest_charge?.id ?? null);
+    const shipping =
+      (session as unknown as { collected_information?: { shipping_details?: { name?: string; address?: Stripe.Address } } })
+        .collected_information?.shipping_details ??
+      (session as unknown as { shipping_details?: { name?: string; address?: Stripe.Address } }).shipping_details ??
+      null;
 
-  // Conditional on still being pending, so two deliveries racing each other
-  // can't both get past this line.
-  const { data: claimed, error } = await db()
+    // Conditional on still being pending, so two deliveries racing each other
+    // can't both flip it.
+    const { data: claimed, error } = await db()
+      .from('shop_orders')
+      .update({
+        updated_at: new Date().toISOString(),
+        status: 'paid',
+        paid_at: new Date().toISOString(),
+        buyer_name: session.customer_details?.name ?? shipping?.name ?? null,
+        buyer_email: session.customer_details?.email ?? null,
+        buyer_phone: session.customer_details?.phone ?? null,
+        shipping_address: order.delivery === 'ship' ? addressFrom(shipping?.address, shipping?.name) : null,
+        tax_cents: session.total_details?.amount_tax ?? 0,
+        shipping_cents: session.shipping_cost?.amount_total ?? order.shipping_cents,
+        total_cents: session.amount_total ?? order.total_cents,
+        stripe_payment_intent_id: pi?.id ?? null,
+        stripe_charge_id: chargeId,
+      })
+      .eq('id', order.id)
+      .eq('status', 'pending')
+      .select('*')
+      .maybeSingle();
+    if (error) throw new Error(`mark paid: ${error.message}`);
+    paid = (claimed as Order | null) ?? ((await getOrder(order.id)) as Order);
+    if (paid.status !== 'paid') return;
+  }
+
+  // Everything below runs on every delivery of this event, and each step is
+  // safe to repeat: stock and notifications are claimed once with a
+  // timestamp, payouts only insert what's missing. So if Stripe retries after
+  // a step failed, only the unfinished steps run (2026-10-09 review).
+  await finishPaidOrder(paid);
+}
+
+/** Claim a one-time step on an order; true only for the first caller. */
+async function claimStep(orderId: string, column: 'stock_taken_at' | 'notified_at'): Promise<boolean> {
+  const { data, error } = await db()
     .from('shop_orders')
-    .update({
-      updated_at: new Date().toISOString(),
-    status: 'paid',
-    paid_at: new Date().toISOString(),
-    buyer_name: session.customer_details?.name ?? shipping?.name ?? null,
-    buyer_email: session.customer_details?.email ?? null,
-    buyer_phone: session.customer_details?.phone ?? null,
-    shipping_address: order.delivery === 'ship' ? addressFrom(shipping?.address, shipping?.name) : null,
-    tax_cents: session.total_details?.amount_tax ?? 0,
-    shipping_cents: session.shipping_cost?.amount_total ?? order.shipping_cents,
-    total_cents: session.amount_total ?? order.total_cents,
-    stripe_payment_intent_id: pi?.id ?? null,
-    stripe_charge_id: chargeId,
-    })
-    .eq('id', order.id)
-    .eq('status', 'pending')
-    .select('*')
+    .update({ [column]: new Date().toISOString() })
+    .eq('id', orderId)
+    .is(column, null)
+    .select('id')
     .maybeSingle();
-  if (error) throw new Error(`mark paid: ${error.message}`);
-  if (!claimed) return;
-  const paid = claimed as Order;
+  if (error) throw new Error(`claim ${column}: ${error.message}`);
+  return Boolean(data);
+}
 
-  const items = await getOrderItems(order.id);
+async function finishPaidOrder(paid: Order) {
+  const items = await getOrderItems(paid.id);
   const sellers = new Map<string, Seller>((await listSellers({ includeHouse: true })).map((s) => [s.id, s]));
 
-  // Take the hats off the shelf. Anything that goes below zero is made to
-  // order: the sale stands and the admin is told to order from RoyalBacks.
+  // Take the hats off the shelf, once. Anything that goes below zero is made
+  // to order: the sale stands and the admin is told to order from RoyalBacks.
   const short: string[] = [];
-  for (const i of items) {
-    if (!i.product_id) continue;
-    const left = await adjustStock(i.product_id, -i.qty);
-    if (left !== null && left < 0) short.push(i.title);
+  let final: Order = paid;
+  if (await claimStep(paid.id, 'stock_taken_at')) {
+    for (const i of items) {
+      if (!i.product_id) continue;
+      const left = await adjustStock(i.product_id, -i.qty);
+      if (left !== null && left < 0) short.push(i.title);
+    }
+    if (short.length) final = await updateOrder(paid.id, { fulfillment: 'needs_production' });
+    if (final.discount_code) await quietly('discount count', () => markDiscountUsed(final.discount_code!));
   }
-  const final: Order = short.length ? await updateOrder(order.id, { fulfillment: 'needs_production' }) : paid;
 
   await createHeldPayouts(final, items, sellers);
-  if (final.discount_code) await quietly('discount count', () => markDiscountUsed(final.discount_code!));
+
+  if (!(await claimStep(paid.id, 'notified_at'))) return;
 
   // Market buyers join the same Customers list as Shopify buyers, so
   // campaigns and the review emails can reach them.
@@ -118,9 +147,17 @@ export async function handleRefund(charge: Stripe.Charge) {
     status: full ? 'refunded' : 'partially_refunded',
     ...(full && !['shipped', 'delivered', 'picked_up'].includes(order.fulfillment) ? { fulfillment: 'canceled' as const } : {}),
   });
-  // Only the hat price is shared with businesses; scale by the share of the
-  // charge refunded.
-  await unwindPayouts(order.id, full ? 1 : charge.amount_refunded / charge.amount);
+  // Businesses only share in the hats. A refund is treated as coming out of
+  // shipping and tax first, then the hats, and `amount_refunded` is a running
+  // total, so we compute the cumulative share of hat value refunded and unwind
+  // only the part not already unwound (2026-10-09 review).
+  const hats = Math.max(1, order.subtotal_cents - (order.discount_cents ?? 0));
+  const target = full ? 1 : Math.min(1, Math.max(0, (charge.amount_refunded - order.shipping_cents - order.tax_cents) / hats));
+  const already = Number(order.payout_unwound_fraction ?? 0);
+  if (target > already) {
+    await unwindPayouts(order.id, already, target);
+    await updateOrder(order.id, { payout_unwound_fraction: target });
+  }
   if (full && !['shipped', 'delivered', 'picked_up'].includes(order.fulfillment)) {
     // Never left the shelf: put the hats back.
     const items = await getOrderItems(order.id);
@@ -135,7 +172,11 @@ export async function handleDispute(dispute: Stripe.Dispute) {
   const order = await orderForCharge(charge);
   if (!order) return;
   await updateOrder(order.id, { status: 'disputed' });
-  await unwindPayouts(order.id, 1);
+  const already = Number(order.payout_unwound_fraction ?? 0);
+  if (already < 1) {
+    await unwindPayouts(order.id, already, 1);
+    await updateOrder(order.id, { payout_unwound_fraction: 1 });
+  }
 }
 
 export async function handleSessionExpired(session: Stripe.Checkout.Session) {
@@ -159,6 +200,8 @@ export async function handleShopEvent(event: Stripe.Event) {
     case 'checkout.session.async_payment_succeeded':
       return markOrderPaid((event.data.object as Stripe.Checkout.Session).id);
     case 'checkout.session.expired':
+    case 'checkout.session.async_payment_failed':
+      // Either way no money arrived: the pending order is canceled.
       return handleSessionExpired(event.data.object as Stripe.Checkout.Session);
     case 'charge.refunded':
       return handleRefund(event.data.object as Stripe.Charge);

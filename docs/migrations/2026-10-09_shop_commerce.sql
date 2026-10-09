@@ -248,3 +248,12 @@ revoke execute on function shop_use_discount(text) from public, anon, authentica
 alter table shop_discounts
   add column if not exists scope text not null default 'all' check (scope in ('all', 'hats', 'foot_bags')),
   add column if not exists shopify_discount_id text unique;
+
+-- Added 2026-10-09 (migration `shop_orders_idempotent_steps`): each side
+-- effect of a paid order is claimed once (a Stripe retry after a partial
+-- failure re-runs only what didn't happen), and partial refunds unwind
+-- business payouts by the cumulative share actually refunded.
+alter table shop_orders
+  add column if not exists stock_taken_at timestamptz,
+  add column if not exists notified_at timestamptz,
+  add column if not exists payout_unwound_fraction numeric not null default 0;

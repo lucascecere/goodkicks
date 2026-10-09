@@ -115,6 +115,9 @@ export type Order = {
   paid_at: string | null;
   handed_over_at: string | null;
   delivered_at: string | null;
+  stock_taken_at: string | null;
+  notified_at: string | null;
+  payout_unwound_fraction: number;
   created_at: string;
   updated_at: string;
 };
