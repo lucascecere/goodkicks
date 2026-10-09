@@ -18,8 +18,9 @@ type Graded = { score: number; correct: Record<string, boolean>; prize: { label:
 const SNOOZE_DAYS = { dismissed: 14, claimed: 365 } as const;
 const VIEWS = 'townies_welcome_views';
 const BLOCKED = ['/admin', '/checkout', '/cart', '/goodkicks', '/stick'];
-/** Never auto-open over a product page: it covers the buy box (2026-10-08 audit). */
-const NO_AUTO_OPEN = ['/products/'];
+/** Never auto-open over a product page: it covers the buy box (2026-10-08 audit).
+ *  /shop has its own Hat & Sack pop-up (10-09), so trivia stays off it too. */
+const NO_AUTO_OPEN = ['/products/', '/shop'];
 /** Second-view trigger: half the page scrolled, or this long on it, whichever is first. */
 const SECOND_VIEW_SCROLL = 0.5;
 const SECOND_VIEW_MS = 12_000;

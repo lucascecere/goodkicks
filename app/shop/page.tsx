@@ -6,7 +6,7 @@ import { RequestTownBand } from '@/components/townies/request-town-band';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
 import { HAT_SACK_LIVE } from '@/lib/townies/hat-sack';
-import { HatSackCard } from '@/components/townies/v2/hat-sack-card';
+import { HatSackPopup } from '@/components/townies/v2/hat-sack-popup';
 import { getHatSackFromCents } from '@/lib/shopify/hat-sack-offer';
 import { getReviewSummaries } from '@/lib/reviews/server';
 
@@ -95,12 +95,12 @@ export default async function ShopPage({
             initialTown={town}
             initialRegion={region}
             initialStyle={style}
-            promo={hatSack !== null ? <HatSackCard fromCents={hatSack} /> : undefined}
           />
         )}
       </div>
 
       <RequestTownBand />
+      {hatSack !== null && <HatSackPopup fromCents={hatSack} />}
     </div>
   );
 }

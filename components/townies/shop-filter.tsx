@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ProductCard } from './product-card';
 import { stockTier } from '@/lib/townies/stock-tier';
 import type { CollectionProduct } from '@/lib/shopify/collections';
@@ -57,12 +57,7 @@ export function ShopFilter({
   initialRegion,
   initialStyle,
   ratings = {},
-  promo,
-  promoAt = 3,
 }: {
-  /** A card dropped into the grid (the Hat & Sack offer), after `promoAt` hats. */
-  promo?: React.ReactNode;
-  promoAt?: number;
   /** Approved-review summaries by product handle. */
   ratings?: Record<string, { count: number; average: number }>;
   items: ShopItem[];
@@ -206,12 +201,8 @@ export function ShopFilter({
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {shown.map((i, idx) => (
-            <Fragment key={i.product.id}>
-              {promo && idx === Math.min(promoAt, shown.length) ? promo : null}
-              <ProductCard product={i.product} priority={idx < 4} rating={ratings[i.product.handle]} />
-            </Fragment>
+            <ProductCard key={i.product.id} product={i.product} priority={idx < 4} rating={ratings[i.product.handle]} />
           ))}
-          {promo && shown.length <= promoAt ? promo : null}
         </div>
       )}
     </div>
