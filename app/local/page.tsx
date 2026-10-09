@@ -11,7 +11,7 @@ export const revalidate = 60;
 
 const TITLE = 'The Local Market: Hats From Massachusetts Businesses';
 const DESCRIPTION =
-  'Custom embroidered hats from local Massachusetts businesses, made by Townies. Browse by town, buy straight from the business, ship it or pick it up.';
+  'Custom embroidered hats from local Massachusetts businesses, made by Townies. Browse the shops by town. Online ordering opens soon.';
 
 export const metadata: Metadata = {
   title: TITLE,

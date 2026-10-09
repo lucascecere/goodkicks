@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createSeller } from '@/lib/shop/db';
+import { createSeller, db } from '@/lib/shop/db';
 import { sendAdminApplication } from '@/lib/shop/email';
 import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
 
@@ -30,6 +30,15 @@ export async function POST(req: Request) {
   }
   const b = parsed.data;
   if (b.company) return NextResponse.json({ ok: true });
+
+  // One application per email per day; the in-memory limiter resets per
+  // server instance, so this is the limit that actually holds.
+  const { count } = await db()
+    .from('shop_sellers')
+    .select('id', { count: 'exact', head: true })
+    .eq('contact_email', b.contact_email.toLowerCase())
+    .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+  if ((count ?? 0) > 0) return NextResponse.json({ ok: true });
 
   const seller = await createSeller({
     name: b.name,

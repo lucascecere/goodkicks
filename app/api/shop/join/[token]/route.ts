@@ -11,8 +11,10 @@ import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
 const Body = z.object({
   blurb: z.string().trim().max(400).optional().default(''),
   town: z.string().trim().max(60).optional().default(''),
-  website: z.string().trim().max(200).optional().default(''),
-  instagram: z.string().trim().max(100).optional().default(''),
+  // Shown as links on the public shop page, so only real web links and
+  // plain handles get through.
+  website: z.union([z.literal(''), z.string().trim().max(200).regex(/^https?:\/\/[^\s]+$/i, 'Website must start with http:// or https://')]).optional().default(''),
+  instagram: z.union([z.literal(''), z.string().trim().max(60).regex(/^@?[A-Za-z0-9._]{1,30}$/)]).optional().default(''),
   contact_phone: z.string().trim().max(40).optional().default(''),
   pickup_enabled: z.boolean(),
   pickup_address: z.string().trim().max(200).optional().default(''),
@@ -31,7 +33,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
   if (!seller || seller.status === 'rejected') return NextResponse.json({ error: 'This link has expired.' }, { status: 404 });
 
   const parsed = Body.safeParse(await req.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: 'Something in the form looks off.' }, { status: 400 });
+  if (!parsed.success) {
+    const path = parsed.error.issues[0]?.path[0];
+    const msg = path === 'website' ? 'Your website needs to start with https://' : path === 'instagram' ? 'Instagram should be just your handle, like @yourshop.' : 'Something in the form looks off.';
+    return NextResponse.json({ error: msg }, { status: 400 });
+  }
   const b = parsed.data;
 
   if (b.pickup_enabled && !b.pickup_address) {

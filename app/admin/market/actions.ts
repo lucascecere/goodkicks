@@ -105,6 +105,7 @@ export async function updateSellerAction(id: string, fd: FormData): Promise<Acti
   return wrap(async () => {
     const logo = file(fd, 'logo');
     const cover = file(fd, 'cover');
+    if (!str(fd, 'name')) throw new Error('The business needs a name.');
     await updateSeller(id, {
       name: str(fd, 'name'),
       town: str(fd, 'town') || null,
@@ -216,8 +217,8 @@ export async function updateProductAction(id: string, fd: FormData): Promise<Act
       wholesale_cents: wholesale,
       price_cents: price,
       status,
-      on_hand: parseInt(str(fd, 'on_hand') || String(p.on_hand), 10),
-      stock_buffer: parseInt(str(fd, 'stock_buffer') || String(p.stock_buffer), 10),
+      on_hand: Number.isFinite(parseInt(str(fd, 'on_hand'), 10)) ? parseInt(str(fd, 'on_hand'), 10) : p.on_hand,
+      stock_buffer: Math.max(0, Number.isFinite(parseInt(str(fd, 'stock_buffer'), 10)) ? parseInt(str(fd, 'stock_buffer'), 10) : p.stock_buffer),
       ...(image ? { image_url: await uploadImage(image, `hats/${p.seller_id}`) } : {}),
     });
     revalidatePath(`/admin/market/sellers/${p.seller_id}`);
