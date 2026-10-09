@@ -2,6 +2,7 @@ import 'server-only';
 import { db, getOrder, getOrderItems, listPayouts, updatePayout } from './db';
 import { getShopStripe } from './config';
 import { royalbacksAccountId } from './royalbacks';
+import { canReceiveTransfers } from './connect';
 import { releaseAt } from './money';
 import type { Order, OrderItem, Payout, Seller } from './types';
 
@@ -68,7 +69,14 @@ export async function transferPayout(p: Payout, order?: Order | null): Promise<s
   if (p.recipient === 'seller' && p.seller_id) {
     const { data: s } = await db().from('shop_sellers').select('stripe_account_id, payouts_enabled').eq('id', p.seller_id).single();
     destination = s?.stripe_account_id ?? null;
-    if (!s?.payouts_enabled) {
+    // The saved flag can lag (v2 accounts don't send the v1 account.updated
+    // event we listen for), so ask Stripe before giving up.
+    let ready = Boolean(s?.payouts_enabled);
+    if (!ready && destination) {
+      ready = await canReceiveTransfers(destination).catch(() => false);
+      if (ready) await db().from('shop_sellers').update({ payouts_enabled: true }).eq('id', p.seller_id);
+    }
+    if (!ready) {
       await updatePayout(p.id, { status: 'due', error: 'Business has not finished connecting payouts.' });
       return 'payouts not enabled';
     }

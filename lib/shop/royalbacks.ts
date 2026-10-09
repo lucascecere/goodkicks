@@ -1,6 +1,7 @@
 import 'server-only';
 import { db } from './db';
-import { getShopStripe, royalbacksAccountEnv } from './config';
+import { royalbacksAccountEnv } from './config';
+import { canReceiveTransfers, createRecipientAccount } from './connect';
 
 // RoyalBacks (Dylan) gets $5 a hat for the businesses that came through him.
 // His Stripe Express account lives in shop_settings, connected from
@@ -18,27 +19,21 @@ export async function royalbacksAccountId(): Promise<string | null> {
 export async function ensureRoyalbacksAccount(email: string | null): Promise<string> {
   const existing = await royalbacksAccountId();
   if (existing) return existing;
-  const account = await getShopStripe().accounts.create(
-    {
-      type: 'express',
-      country: 'US',
-      email: email ?? undefined,
-      capabilities: { transfers: { requested: true } },
-      business_profile: { name: 'Royal Backs', product_description: 'Hat production partner for the Townies local market.', mcc: '5699' },
-      metadata: { role: 'royalbacks' },
-    },
-    { idempotencyKey: 'royalbacks_express_v1' },
-  );
-  await db().from('shop_settings').upsert({ key: KEY, value: account.id, updated_at: new Date().toISOString() });
-  return account.id;
+  const id = await createRecipientAccount({
+    email,
+    name: 'Royal Backs',
+    metadata: { role: 'royalbacks' },
+    idempotencyKey: 'royalbacks_recipient_v2',
+  });
+  await db().from('shop_settings').upsert({ key: KEY, value: id, updated_at: new Date().toISOString() });
+  return id;
 }
 
 export async function royalbacksStatus(): Promise<{ accountId: string | null; ready: boolean }> {
   const accountId = await royalbacksAccountId();
   if (!accountId) return { accountId: null, ready: false };
   try {
-    const a = await getShopStripe().accounts.retrieve(accountId);
-    return { accountId, ready: a.capabilities?.transfers === 'active' && Boolean(a.details_submitted) };
+    return { accountId, ready: await canReceiveTransfers(accountId) };
   } catch {
     return { accountId, ready: false };
   }
