@@ -1,6 +1,7 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { getAdminBrand } from '@/lib/admin/brand-server';
 import { ContactsClient } from './contacts-client';
+import { PageHeader } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,9 +23,9 @@ export default async function AdminContactsPage() {
 
   if (error) {
     return (
-      <div className="p-8 max-w-3xl">
-        <h1 className="font-display text-3xl text-white mb-4">Contacts</h1>
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-red-300 text-sm">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
+        <PageHeader eyebrow="People" title="Contacts" />
+        <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-6 text-sm text-red-300">
           Could not load contacts. Supabase may not be connected yet.
         </div>
       </div>

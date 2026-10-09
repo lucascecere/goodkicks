@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { btn } from '@/components/admin/ui';
 
 export function SyncShopifyButton() {
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
@@ -27,7 +28,7 @@ export function SyncShopifyButton() {
     <button
       onClick={handleSync}
       disabled={state === 'loading'}
-      className="text-xs px-3 py-1.5 rounded-lg bg-white/10 text-white/70 hover:bg-white/20 hover:text-white transition-colors disabled:opacity-40"
+      className={btn.secondary}
     >
       {state === 'loading' && 'syncing…'}
       {state === 'done' && `✓ synced ${synced} orders`}

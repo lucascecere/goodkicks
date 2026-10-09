@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { btn, field } from '@/components/admin/ui';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -31,43 +31,41 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-ink flex items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-town-navy px-4 font-body text-town-cream">
       <div className="w-full max-w-sm">
-        <div className="flex justify-center mb-8">
-          <Image src="/brand/logo.png" alt="Good Kicks" width={72} height={72} style={{ height: '72px', width: 'auto' }} />
+        <div className="mb-8 flex flex-col items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logos/townies-script-natural.svg" alt="Townies" className="h-16 w-auto" />
+          <span className="admin-eyebrow">Admin</span>
         </div>
-        <div className="bg-brand-cream rounded-2xl p-8 shadow-xl">
-          <h1 className="font-display text-2xl text-brand-ink mb-1">admin login</h1>
-          <p className="text-brand-muted text-sm mb-6">good kicks internal dashboard</p>
+        <div className="rounded-2xl border border-town-cream/10 bg-town-cream/[0.04] p-6 sm:p-8">
+          <h1 className="mb-1 font-block text-3xl font-bold leading-none text-town-cream">Sign in</h1>
+          <p className="mb-6 text-sm text-town-cream/55">Townies back office</p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-brand-ink mb-1.5 uppercase tracking-wide">email</label>
+              <label className="admin-eyebrow mb-1.5 block">email</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-brand-rule rounded-lg px-4 py-3 text-brand-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-rust/40 bg-white"
-                placeholder="you@goodkicks.co"
+                className={field}
+                placeholder="you@townies.shop"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-brand-ink mb-1.5 uppercase tracking-wide">password</label>
+              <label className="admin-eyebrow mb-1.5 block">password</label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-brand-rule rounded-lg px-4 py-3 text-brand-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-rust/40 bg-white"
+                className={field}
                 placeholder="••••••••"
               />
             </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-brand-ink text-white py-3 rounded-lg font-medium hover:bg-brand-ink/90 transition-colors disabled:opacity-60"
-            >
+            {error && <p className="text-sm text-red-300">{error}</p>}
+            <button type="submit" disabled={loading} className={`${btn.primary} w-full py-3`}>
               {loading ? 'signing in…' : 'sign in →'}
             </button>
           </form>

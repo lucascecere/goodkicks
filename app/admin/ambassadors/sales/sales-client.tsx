@@ -6,6 +6,7 @@ import { BrandBadge } from '@/components/admin/brand-badge';
 import { RepTabs } from '../rep-tabs';
 import type { AdminBrand, RealBrand } from '@/lib/admin/brand';
 import { money, fmtDate } from '@/lib/admin/format';
+import { EmptyState, PageHeader, Stat, field } from '@/components/admin/ui';
 
 export type SalesRow = {
   id: string;
@@ -80,67 +81,61 @@ export function SalesClient({
   ];
 
   return (
-    <div className="min-h-full">
-      <div className="px-4 sm:px-6 pt-5 pb-4">
-        <h1 className="font-display text-2xl text-white mb-0.5">Rep Sales</h1>
-        <p className="text-white/40 text-xs">
-          Revenue driven by each rep&apos;s discount code. Commission is a percentage of what
-          customers actually paid, for that rep&apos;s brand only. Updates every 5 minutes.
-        </p>
-      </div>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
+      <PageHeader
+        eyebrow="Reps"
+        title="Rep Sales"
+        description={
+          <>
+            Revenue driven by each rep&apos;s discount code. Commission is a percentage of what
+            customers actually paid, for that rep&apos;s brand only. Updates every 5 minutes.
+          </>
+        }
+      />
 
-      <div className="px-4 sm:px-6">
-        <RepTabs active="sales" />
-      </div>
+      <RepTabs active="sales" />
 
       {partnerPanel}
 
       {!shopifyConfigured && (
-        <div className="mx-4 sm:mx-6 mb-4 rounded-xl bg-amber-500/10 border border-amber-500/30 px-4 py-3">
-          <p className="text-amber-200 text-xs">
+        <div className="mb-4 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3">
+          <p className="text-xs text-amber-200">
             Shopify Admin API isn&apos;t configured (SHOPIFY_ADMIN_API_TOKEN / SHOPIFY_STORE_DOMAIN),
             so every total below reads zero.
           </p>
         </div>
       )}
       {truncated && (
-        <div className="mx-4 sm:mx-6 mb-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
-          <p className="text-white/50 text-xs">
+        <div className="mb-4 rounded-xl border border-town-cream/10 bg-town-cream/[0.04] px-4 py-3">
+          <p className="text-xs text-town-cream/55">
             Order history hit the page limit — totals cover the most recent 5,000 orders.
           </p>
         </div>
       )}
 
       {/* Totals */}
-      <div className="px-4 sm:px-6 grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-        {[
-          { label: 'Reps with codes', value: String(filtered.length) },
-          { label: 'Orders driven', value: String(totals.orders) },
-          { label: 'Revenue driven', value: money(totals.revenue) },
-          { label: 'Commission owed', value: money(totals.commission) },
-        ].map((s) => (
-          <div key={s.label} className="bg-white/5 border border-white/10 rounded-xl p-4">
-            <p className="text-[10px] uppercase tracking-wider text-white/40 mb-1">{s.label}</p>
-            <p className="text-white text-xl font-semibold">{s.value}</p>
-          </div>
-        ))}
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat label="Reps with codes" value={String(filtered.length)} />
+        <Stat label="Orders driven" value={String(totals.orders)} />
+        <Stat label="Revenue driven" value={money(totals.revenue)} />
+        <Stat label="Commission owed" value={money(totals.commission)} />
       </div>
 
       {/* Controls */}
-      <div className="px-4 sm:px-6 flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="search name, email, code…"
-          className="flex-1 bg-white/8 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/30"
+          className={`${field} sm:flex-1`}
         />
-        <div className="flex gap-1.5 overflow-x-auto">
+        <div className="-mx-4 flex gap-1.5 overflow-x-auto px-4 sm:mx-0 sm:px-0">
           {SORTS.map((s) => (
             <button
               key={s.key}
               onClick={() => setSort(s.key)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
-                sort === s.key ? 'bg-white text-[#1A1A1A]' : 'bg-white/8 text-white/50 hover:text-white hover:bg-white/12'
+              className={`whitespace-nowrap rounded-full px-3.5 py-2 font-label text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
+                sort === s.key ? 'bg-town-cream text-town-navy' : 'border border-town-cream/15 text-town-cream/60 hover:text-town-cream'
               }`}
             >
               {s.label}
@@ -150,89 +145,91 @@ export function SalesClient({
       </div>
 
       {/* Table */}
-      <div className="px-4 sm:px-6 pb-8">
-        {filtered.length === 0 ? (
-          <div className="bg-white/5 border border-white/10 rounded-xl p-10 text-center">
-            <p className="text-white/50 text-sm">
-              {rows.length === 0
-                ? `No approved ${brand === 'townies' ? 'Town Reps' : 'reps'} with a discount code yet.`
-                : 'No results.'}
-            </p>
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl overflow-hidden">
-            {/* Desktop table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-brand-rule text-left">
-                    {['Rep', 'Code', 'Off / Earns', 'Orders', 'Revenue', 'Commission', 'Last order', ''].map((h) => (
-                      <th key={h} className="px-4 py-3 text-[10px] uppercase tracking-wider text-brand-muted font-medium">
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-brand-rule">
-                  {filtered.map((r) => (
-                    <tr key={r.id} className="hover:bg-brand-rule/20 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="min-w-0">
-                            <p className="text-brand-ink font-medium truncate">{r.name}</p>
-                            <p className="text-brand-muted text-xs truncate">{r.email}</p>
-                          </div>
-                          {brand === 'all' && <BrandBadge brand={r.brand} />}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 font-mono text-xs text-brand-ink">{r.discountCode}</td>
-                      <td className="px-4 py-3 text-brand-muted text-xs whitespace-nowrap">
-                        {r.discountPct}% off / {r.commissionPct}%
-                      </td>
-                      <td className="px-4 py-3 text-brand-ink">{r.orders}</td>
-                      <td className="px-4 py-3 text-brand-ink">{money(r.revenue)}</td>
-                      <td className="px-4 py-3 text-brand-ink font-semibold">{money(r.commission)}</td>
-                      <td className="px-4 py-3 text-brand-muted text-xs whitespace-nowrap">{fmtDate(r.lastOrderAt)}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <Link href={`/admin/ambassadors/${r.id}`} className="text-xs text-brand-rust hover:underline">
-                          manage
-                        </Link>
-                      </td>
-                    </tr>
+      {filtered.length === 0 ? (
+        <EmptyState
+          title={
+            rows.length === 0
+              ? `No approved ${brand === 'townies' ? 'Town Reps' : 'reps'} with a discount code yet.`
+              : 'No results.'
+          }
+        />
+      ) : (
+        <>
+          {/* Desktop table */}
+          <div className="hidden overflow-x-auto rounded-xl border border-town-cream/10 md:block">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-town-cream/10 bg-town-cream/[0.03] text-left">
+                  {['Rep', 'Code', 'Off / Earns', 'Orders', 'Revenue', 'Commission', 'Last order', ''].map((h) => (
+                    <th key={h} className="admin-eyebrow px-4 py-3 font-bold">
+                      {h}
+                    </th>
                   ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile cards */}
-            <div className="md:hidden divide-y divide-brand-rule">
-              {filtered.map((r) => (
-                <Link key={r.id} href={`/admin/ambassadors/${r.id}`} className="block px-4 py-3.5">
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <div className="min-w-0">
-                      <p className="text-brand-ink font-medium text-sm truncate">{r.name}</p>
-                      <p className="font-mono text-[11px] text-brand-muted">{r.discountCode}</p>
-                    </div>
-                    {brand === 'all' && <BrandBadge brand={r.brand} />}
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    {[
-                      { label: 'Orders', value: String(r.orders) },
-                      { label: 'Revenue', value: money(r.revenue) },
-                      { label: 'Owed', value: money(r.commission) },
-                    ].map((s) => (
-                      <div key={s.label} className="bg-brand-rule/30 rounded-lg py-2">
-                        <p className="text-[9px] uppercase tracking-wider text-brand-muted">{s.label}</p>
-                        <p className="text-brand-ink text-sm font-semibold">{s.value}</p>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((r) => (
+                  <tr key={r.id} className="border-b border-town-cream/[0.07] transition-colors last:border-0 hover:bg-town-cream/[0.04]">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="min-w-0">
+                          <p className="truncate font-semibold text-town-cream">{r.name}</p>
+                          <p className="truncate text-xs text-town-cream/50">{r.email}</p>
+                        </div>
+                        {brand === 'all' && <BrandBadge brand={r.brand} />}
                       </div>
-                    ))}
-                  </div>
-                </Link>
-              ))}
-            </div>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs text-town-cream">{r.discountCode}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-xs text-town-cream/55">
+                      {r.discountPct}% off / {r.commissionPct}%
+                    </td>
+                    <td className="px-4 py-3 text-town-cream tabular-nums">{r.orders}</td>
+                    <td className="px-4 py-3 text-town-cream tabular-nums">{money(r.revenue)}</td>
+                    <td className="px-4 py-3 font-semibold text-town-cream tabular-nums">{money(r.commission)}</td>
+                    <td className="whitespace-nowrap px-4 py-3 text-xs text-town-cream/55">{fmtDate(r.lastOrderAt)}</td>
+                    <td className="whitespace-nowrap px-4 py-3">
+                      <Link href={`/admin/ambassadors/${r.id}`} className="text-xs font-semibold text-town-cream hover:underline">
+                        manage
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {/* Mobile cards */}
+          <div className="space-y-2 md:hidden">
+            {filtered.map((r) => (
+              <Link
+                key={r.id}
+                href={`/admin/ambassadors/${r.id}`}
+                className="block rounded-xl border border-town-cream/10 bg-town-cream/[0.04] px-4 py-3.5"
+              >
+                <div className="mb-2 flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-town-cream">{r.name}</p>
+                    <p className="font-mono text-[11px] text-town-cream/50">{r.discountCode}</p>
+                  </div>
+                  {brand === 'all' && <BrandBadge brand={r.brand} />}
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  {[
+                    { label: 'Orders', value: String(r.orders) },
+                    { label: 'Revenue', value: money(r.revenue) },
+                    { label: 'Owed', value: money(r.commission) },
+                  ].map((s) => (
+                    <div key={s.label} className="rounded-lg border border-town-cream/[0.07] py-2">
+                      <p className="text-[9px] uppercase tracking-wider text-town-cream/45">{s.label}</p>
+                      <p className="text-sm font-semibold text-town-cream tabular-nums">{s.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

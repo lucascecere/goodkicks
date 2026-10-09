@@ -8,6 +8,7 @@ import { greetingName, slugifyCode } from '@/lib/reps/naming';
 import { fmtDateTime } from '@/lib/admin/format';
 import { MAX_PCT, clampPct } from '@/lib/reps/pct';
 import { approveRep } from '@/lib/reps/approve-client';
+import { btn, field } from '@/components/admin/ui';
 
 /** This panel keeps the year — a welcome email sent last season should not read as this week. */
 const fmtDateTimeWithYear = (iso: string) => fmtDateTime(iso, { year: true });
@@ -42,11 +43,11 @@ function Step({ n, label, done }: { n: number; label: string; done?: boolean }) 
   return (
     <div className="flex items-center gap-3">
       <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-        done ? 'bg-green-500 text-white' : 'bg-brand-rule text-brand-muted'
+        done ? 'bg-emerald-400 text-town-navy' : 'border border-town-cream/20 text-town-cream/50'
       }`}>
         {done ? '✓' : n}
       </div>
-      <span className={`text-sm ${done ? 'text-brand-muted line-through' : 'text-brand-ink font-medium'}`}>{label}</span>
+      <span className={`text-sm ${done ? 'text-town-cream/45 line-through' : 'font-semibold text-town-cream'}`}>{label}</span>
     </div>
   );
 }
@@ -64,7 +65,7 @@ function PctField({
 }) {
   return (
     <div>
-      <label className="text-xs text-brand-muted block mb-1">{label}</label>
+      <label className="mb-1.5 block text-xs text-town-cream/55">{label}</label>
       <div className="relative">
         <input
           type="number"
@@ -75,11 +76,11 @@ function PctField({
             const n = Number(e.target.value);
             onChange(clampPct(n));
           }}
-          className="w-full border border-brand-rule rounded-lg px-3 py-2 pr-7 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+          className={`${field} pr-7`}
         />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-brand-muted pointer-events-none">%</span>
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-town-cream/45">%</span>
       </div>
-      <p className="text-[10px] text-brand-muted mt-1">{hint}</p>
+      <p className="mt-1 text-[10px] text-town-cream/45">{hint}</p>
     </div>
   );
 }
@@ -175,8 +176,8 @@ export function OnboardingPanel({ app }: { app: App }) {
       : null;
 
     return (
-      <div className="bg-white rounded-xl p-6 space-y-5">
-        <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Onboarding Status</h2>
+      <div className="min-w-0 space-y-5 rounded-xl border border-town-cream/10 bg-town-cream/[0.04] p-4 sm:p-6">
+        <h2 className="admin-eyebrow">Onboarding Status</h2>
 
         <div className="space-y-3">
           <Step n={1} label="Discount code created in Shopify" done={Boolean(app.shopify_discount_gid)} />
@@ -185,8 +186,8 @@ export function OnboardingPanel({ app }: { app: App }) {
         </div>
 
         {!app.shopify_discount_gid && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-            <p className="text-[11px] text-amber-800 leading-relaxed">
+          <div className="rounded-lg border border-amber-400/30 bg-amber-400/10 p-3">
+            <p className="text-[11px] leading-relaxed text-amber-200">
               This rep is approved but their code isn&apos;t linked to a Shopify discount — it was
               either created by hand or the API call was skipped. Changing the discount % here will
               not update Shopify. Link or recreate it from the roster panel.
@@ -195,28 +196,28 @@ export function OnboardingPanel({ app }: { app: App }) {
         )}
 
         {/* Email delivery status */}
-        <div className="border border-brand-rule rounded-lg p-4 space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs text-brand-muted uppercase tracking-wide mb-0.5">Welcome Email</p>
+        <div className="space-y-3 rounded-lg border border-town-cream/15 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="admin-eyebrow mb-1">Welcome Email</p>
               {app.welcome_email_sent_at ? (
-                <p className="text-sm text-green-700 font-medium">
+                <p className="text-sm font-semibold text-emerald-300">
                   sent {fmtDateTimeWithYear(app.welcome_email_sent_at)}
                 </p>
               ) : (
-                <p className="text-sm text-amber-600 font-medium">no send record found</p>
+                <p className="text-sm font-semibold text-amber-300">no send record found</p>
               )}
             </div>
             <button
               onClick={handleResend}
               disabled={resending}
-              className="shrink-0 text-xs border border-brand-rule rounded-lg px-3 py-1.5 text-brand-ink hover:bg-brand-rule/30 transition-colors disabled:opacity-50"
+              className={`${btn.secondary} shrink-0`}
             >
               {resending ? 'sending…' : 'resend email'}
             </button>
           </div>
           {resendMsg && (
-            <p className={`text-xs font-medium ${resendMsg.includes('failed') ? 'text-red-500' : 'text-green-600'}`}>
+            <p className={`text-xs font-medium ${resendMsg.includes('failed') ? 'text-red-300' : 'text-emerald-300'}`}>
               {resendMsg}
             </p>
           )}
@@ -227,16 +228,16 @@ export function OnboardingPanel({ app }: { app: App }) {
           <div>
             <button
               onClick={() => setShowPreview((v) => !v)}
-              className="text-xs text-brand-rust hover:underline"
+              className="text-xs font-semibold text-town-cream hover:underline"
             >
               {showPreview ? 'hide email preview ↑' : 'preview email ↓'}
             </button>
             {showPreview && (
-              <div className="mt-3 bg-brand-rule/20 rounded-lg p-4 border border-brand-rule">
-                <p className="text-xs text-brand-muted uppercase tracking-wide mb-2">
+              <div className="mt-3 rounded-lg border border-town-cream/10 bg-town-navy/60 p-4">
+                <p className="mb-2 break-words text-xs uppercase tracking-wide text-town-cream/45">
                   To: {app.email} · Subject: {repWelcomeSubject(firstName)}
                 </p>
-                <pre className="text-xs text-brand-ink whitespace-pre-wrap font-mono leading-relaxed max-h-80 overflow-y-auto">
+                <pre className="max-h-80 overflow-y-auto whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-town-cream/85">
                   {emailText}
                 </pre>
               </div>
@@ -244,15 +245,15 @@ export function OnboardingPanel({ app }: { app: App }) {
           </div>
         )}
 
-        <div className="border-t border-brand-rule pt-4 space-y-3">
+        <div className="space-y-3 border-t border-town-cream/10 pt-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-brand-muted uppercase tracking-wide">Discount Code</p>
-              <p className="font-mono text-lg font-bold text-brand-ink">{app.discount_code ?? '—'}</p>
+              <p className="admin-eyebrow">Discount Code</p>
+              <p className="break-all font-mono text-lg font-bold text-town-cream">{app.discount_code ?? '—'}</p>
             </div>
             <div>
-              <p className="text-xs text-brand-muted uppercase tracking-wide">Off / Earns</p>
-              <p className="text-lg font-bold text-brand-ink">
+              <p className="admin-eyebrow">Off / Earns</p>
+              <p className="text-lg font-bold text-town-cream">
                 {app.discount_pct}% / {app.commission_pct}%
               </p>
             </div>
@@ -262,7 +263,7 @@ export function OnboardingPanel({ app }: { app: App }) {
               href={`/ambassador/${app.discount_code.toLowerCase()}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-brand-rust hover:underline"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-town-cream hover:underline"
             >
               view stats page →
             </a>
@@ -274,19 +275,19 @@ export function OnboardingPanel({ app }: { app: App }) {
 
   if (isRejected) {
     return (
-      <div className="bg-white rounded-xl p-6">
-        <div className="flex items-center gap-2 text-red-600">
+      <div className="min-w-0 rounded-xl border border-town-cream/10 bg-town-cream/[0.04] p-4 sm:p-6">
+        <div className="flex items-center gap-2 text-red-300">
           <span className="text-lg">✕</span>
           <p className="font-medium">Application rejected</p>
         </div>
-        <p className="text-brand-muted text-sm mt-2">This application was rejected. No email was sent.</p>
+        <p className="mt-2 text-sm text-town-cream/50">This application was rejected. No email was sent.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 space-y-6">
-      <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Onboarding Checklist</h2>
+    <div className="min-w-0 space-y-6 rounded-xl border border-town-cream/10 bg-town-cream/[0.04] p-4 sm:p-6">
+      <h2 className="admin-eyebrow">Onboarding Checklist</h2>
 
       <div className="space-y-3">
         <Step n={1} label="Set the discount + commission rates" />
@@ -294,7 +295,7 @@ export function OnboardingPanel({ app }: { app: App }) {
         <Step n={3} label="Send the welcome email" />
       </div>
 
-      <div className="border-t border-brand-rule pt-5 space-y-4">
+      <div className="space-y-4 border-t border-town-cream/10 pt-5">
         <div className="grid grid-cols-2 gap-3">
           <PctField
             label="Customer discount"
@@ -311,45 +312,45 @@ export function OnboardingPanel({ app }: { app: App }) {
         </div>
 
         <div>
-          <label className="text-xs text-brand-muted block mb-1">Discount code</label>
+          <label className="mb-1.5 block text-xs text-town-cream/55">Discount code</label>
           <input
             value={code}
             onChange={(e) => { setCodeTouched(true); setCode(e.target.value.toUpperCase()); }}
             placeholder={suggested || 'e.g. MILTON15'}
-            className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+            className={`${field} font-mono`}
           />
-          <p className="text-[11px] text-brand-muted mt-1">
+          <p className="mt-1 text-[11px] text-town-cream/45">
             Created in Shopify limited to the {isTownies ? 'Townies' : 'Good Kicks'} collection, so it
             can&apos;t discount the other brand&apos;s products.
           </p>
         </div>
 
         {scopeErr && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
-            <p className="text-[11px] text-amber-800 leading-relaxed">{scopeErr}</p>
+          <div className="space-y-2 rounded-lg border border-amber-400/30 bg-amber-400/10 p-3">
+            <p className="text-[11px] leading-relaxed text-amber-200">{scopeErr}</p>
             <button
               onClick={() => handleApprove(false)}
               disabled={step === 'loading' || !code.trim()}
-              className="w-full border border-amber-300 text-amber-800 rounded-lg px-3 py-2 text-xs font-medium hover:bg-amber-100 transition-colors disabled:opacity-50"
+              className="w-full rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold text-amber-200 transition-colors hover:bg-amber-400/10 disabled:opacity-50"
             >
               approve with this code anyway (create it in Shopify by hand)
             </button>
           </div>
         )}
-        {err && <p className="text-sm text-red-500">{err}</p>}
+        {err && <p className="text-sm text-red-300">{err}</p>}
 
         <div className="flex gap-3 pt-1">
           <button
             onClick={() => handleApprove(true)}
             disabled={step === 'loading'}
-            className="flex-1 bg-brand-rust text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-brand-rust/90 transition-colors disabled:opacity-50"
+            className={`${btn.primary} flex-1`}
           >
             {step === 'loading' ? 'working…' : 'create code, approve & send welcome'}
           </button>
           <button
             onClick={handleReject}
             disabled={rejecting}
-            className="px-4 py-2.5 text-sm text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-lg border border-red-400/30 px-4 py-2.5 font-label text-xs font-bold uppercase tracking-[0.14em] text-red-300 transition-colors hover:bg-red-400/10 disabled:opacity-50"
           >
             {rejecting ? '…' : 'reject'}
           </button>

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import type { RealBrand } from '@/lib/admin/brand';
 import { fmtDate } from '@/lib/admin/format';
+import { Badge, Card, EmptyState } from '@/components/admin/ui';
 
 interface Campaign {
   id: string;
@@ -42,43 +43,39 @@ function CampaignRow({ campaign, onDelete }: { campaign: Campaign; onDelete: (id
   }
 
   return (
-    <div className="flex items-center gap-4 px-5 py-4 hover:bg-[#FAF7F2] transition-colors group">
+    <div className="group flex flex-col gap-2 px-4 py-4 transition-colors hover:bg-town-cream/[0.04] sm:flex-row sm:items-center sm:gap-4 sm:px-5">
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 mb-0.5">
+        <div className="mb-1 flex min-w-0 flex-wrap items-center gap-2">
           <BrandBadge brand={campaign.brand ?? 'townies'} />
-          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 ${
-            campaign.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
-          }`}>
-            {campaign.status}
-          </span>
-          <p className="text-sm font-medium text-brand-ink truncate">{campaign.name}</p>
+          <Badge tone={campaign.status === 'sent' ? 'good' : 'warn'}>{campaign.status}</Badge>
+          <p className="min-w-0 truncate text-sm font-semibold text-town-cream">{campaign.name}</p>
         </div>
-        <p className="text-xs text-brand-muted truncate">{campaign.subject || <span className="italic">no subject</span>}</p>
-        <p className="text-xs text-brand-muted mt-0.5">
+        <p className="truncate text-xs text-town-cream/60">{campaign.subject || <span className="italic">no subject</span>}</p>
+        <p className="mt-0.5 text-xs text-town-cream/45">
           {campaign.status === 'sent' && campaign.sent_at
             ? `Sent ${fmtDate(campaign.sent_at)} · ${campaign.sent_count ?? 0} contacts`
             : `Updated ${fmtRelative(campaign.updated_at)}`}
         </p>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="-ml-2 flex flex-shrink-0 items-center gap-2 sm:ml-0">
         <Link href={`/admin/campaigns/${campaign.id}`}
-          className="text-xs text-brand-rust hover:underline font-medium px-2 py-1">
+          className="px-2 py-1 font-label text-[11px] font-semibold uppercase tracking-[0.12em] text-town-cream hover:underline">
           {campaign.status === 'draft' ? 'Edit' : 'View'}
         </Link>
         {!confirming ? (
           <button onClick={() => setConfirming(true)}
-            className="text-xs text-brand-muted hover:text-red-500 transition-colors px-2 py-1">
+            className="px-2 py-1 font-label text-[11px] font-semibold uppercase tracking-[0.12em] text-town-cream/50 transition-colors hover:text-red-300">
             Delete
           </button>
         ) : (
           <div className="flex items-center gap-1">
-            <span className="text-xs text-brand-muted">Sure?</span>
+            <span className="text-xs text-town-cream/50">Sure?</span>
             <button onClick={handleDelete} disabled={deleting}
-              className="text-xs text-red-500 hover:text-red-600 font-medium px-1">
+              className="px-1 text-xs font-semibold text-red-300 hover:text-red-200">
               {deleting ? '…' : 'Yes'}
             </button>
-            <button onClick={() => setConfirming(false)} className="text-xs text-brand-muted hover:text-brand-ink px-1">No</button>
+            <button onClick={() => setConfirming(false)} className="px-1 text-xs text-town-cream/50 hover:text-town-cream">No</button>
           </div>
         )}
       </div>
@@ -99,31 +96,23 @@ export function CampaignsList({ initialCampaigns }: { initialCampaigns: Campaign
   return (
     <div className="space-y-6">
       {campaigns.length === 0 && (
-        <div className="bg-white rounded-xl border border-brand-rule px-5 py-12 text-center">
-          <p className="text-brand-muted text-sm">No campaigns yet. Create your first one above.</p>
-        </div>
+        <EmptyState title="No campaigns yet" body="Create your first one above." />
       )}
 
       {drafts.length > 0 && (
-        <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
-          <div className="px-5 py-3 border-b border-brand-rule bg-[#FAF7F2]">
-            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium">Drafts</p>
-          </div>
-          <div className="divide-y divide-brand-rule">
+        <Card title="Drafts" className="overflow-hidden">
+          <div className="divide-y divide-town-cream/[0.07]">
             {drafts.map((c) => <CampaignRow key={c.id} campaign={c} onDelete={handleDelete} />)}
           </div>
-        </div>
+        </Card>
       )}
 
       {sent.length > 0 && (
-        <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
-          <div className="px-5 py-3 border-b border-brand-rule bg-[#FAF7F2]">
-            <p className="text-xs uppercase tracking-widest text-brand-muted font-medium">Sent</p>
-          </div>
-          <div className="divide-y divide-brand-rule">
+        <Card title="Sent" className="overflow-hidden">
+          <div className="divide-y divide-town-cream/[0.07]">
             {sent.map((c) => <CampaignRow key={c.id} campaign={c} onDelete={handleDelete} />)}
           </div>
-        </div>
+        </Card>
       )}
     </div>
   );

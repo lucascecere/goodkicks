@@ -4,6 +4,7 @@ import { CATEGORY_LABELS } from '@/lib/studio/types';
 import { listPosts, type ContentPost } from '@/lib/studio/posts';
 import { PostsBoard } from '@/components/studio/posts-board';
 import { BatchPanel } from '@/components/studio/batch-panel';
+import { PageHeader } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,17 +28,16 @@ export default async function StudioPage() {
   }
 
   return (
-    <div className="p-6 sm:p-8 max-w-5xl">
-      <div className="mb-7">
-        <h1 className="text-xl font-semibold text-white">Content Studio</h1>
-        <p className="text-white/40 text-sm mt-1">
-          Templated graphics for Townies Nation. {total} template{total === 1 ? '' : 's'} ready.
-        </p>
-      </div>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
+      <PageHeader
+        eyebrow="Marketing"
+        title="Content Studio"
+        description={`Templated graphics for Townies Nation. ${total} template${total === 1 ? '' : 's'} ready.`}
+      />
 
-      <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)] gap-5 mb-9">
+      <div className="mb-9 grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
         {postsError ? (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-5 text-red-300 text-sm">
+          <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-5 text-sm text-red-300">
             {postsError}
           </div>
         ) : (
@@ -49,10 +49,10 @@ export default async function StudioPage() {
       <div className="space-y-9">
         {groups.map((group) => (
           <div key={group.category}>
-            <p className="text-[10px] uppercase tracking-[0.22em] text-white/30 mb-3 pb-2 border-b border-white/10">
+            <p className="admin-eyebrow mb-3 border-b border-town-cream/10 pb-2">
               {CATEGORY_LABELS[group.category]}
             </p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {group.templates.map((t) => {
                 const { width, height } = t.canvas;
                 const shape = width === height ? 'Square' : height > width ? 'Portrait' : 'Landscape';
@@ -60,13 +60,13 @@ export default async function StudioPage() {
                   <Link
                     key={t.id}
                     href={`/admin/studio/new/${t.id}`}
-                    className="group bg-white/[0.03] border border-white/10 hover:border-brand-rust/50 rounded-xl p-5 transition-colors"
+                    className="group rounded-xl border border-town-cream/10 bg-town-cream/[0.04] p-5 transition-colors hover:border-town-cream/30"
                   >
-                    <p className="text-white font-medium group-hover:text-brand-rust transition-colors">
+                    <p className="font-block text-lg font-bold text-town-cream transition-colors group-hover:underline">
                       {t.name}
                     </p>
-                    <p className="text-white/40 text-xs mt-1.5 leading-relaxed">{t.description}</p>
-                    <p className="text-white/25 text-[10px] uppercase tracking-[0.16em] mt-3">
+                    <p className="mt-1.5 text-xs leading-relaxed text-town-cream/50">{t.description}</p>
+                    <p className="mt-3 font-label text-[10px] uppercase tracking-[0.16em] text-town-cream/35">
                       {width}×{height} · {shape}
                     </p>
                   </Link>

@@ -5,6 +5,7 @@ import { OnboardingPanel } from './onboarding-panel';
 import { AccountDetailsEditor } from './account-details-editor';
 import { fmtDateLong } from '@/lib/admin/format';
 import { ACCOUNT_TYPE_LABELS, FOLLOWER_LABELS } from '@/lib/reps/labels';
+import { Badge, PageHeader, type BadgeTone } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,8 +13,8 @@ function DetailRow({ label, value }: { label: string; value: string | null | und
   if (!value) return null;
   return (
     <div className="flex flex-col gap-0.5">
-      <p className="text-xs text-brand-muted uppercase tracking-wide">{label}</p>
-      <p className="text-sm text-brand-ink">{value}</p>
+      <p className="admin-eyebrow">{label}</p>
+      <p className="text-sm text-town-cream">{value}</p>
     </div>
   );
 }
@@ -31,40 +32,33 @@ export default async function AmbassadorDetailPage({ params }: { params: Promise
 
   const brand: 'townies' | 'goodkicks' = app.brand === 'townies' ? 'townies' : 'goodkicks';
 
-  const statusBadge = app.approved
-    ? { label: 'approved', cls: 'bg-green-100 text-green-700' }
+  const statusBadge: { label: string; tone: BadgeTone } = app.approved
+    ? { label: 'approved', tone: 'good' }
     : app.status === 'rejected'
-    ? { label: 'rejected', cls: 'bg-red-100 text-red-600' }
-    : { label: 'pending review', cls: 'bg-amber-100 text-amber-700' };
+    ? { label: 'rejected', tone: 'bad' }
+    : { label: 'pending review', tone: 'warn' };
 
   return (
-    <div className="p-8 max-w-5xl">
-      <Link
-        href="/admin/ambassadors"
-        className="text-sm text-white/50 hover:text-white mb-6 inline-flex items-center gap-1 transition-colors"
-      >
-        ← ambassadors
-      </Link>
-
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-8 mt-4">
-        <div>
-          <h1 className="font-display text-3xl text-white">{app.name}</h1>
-          <a href={`mailto:${app.email}`} className="text-white/50 text-sm hover:text-white/80 transition-colors">
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
+      <PageHeader
+        back={{ href: '/admin/ambassadors', label: 'ambassadors' }}
+        eyebrow="Rep"
+        title={app.name}
+        description={
+          <a href={`mailto:${app.email}`} className="break-all transition-colors hover:text-town-cream">
             {app.email}
           </a>
-        </div>
-        <span className={`text-xs font-medium px-3 py-1.5 rounded-full self-start ${statusBadge.cls}`}>
-          {statusBadge.label}
-        </span>
-      </div>
+        }
+        right={<Badge tone={statusBadge.tone}>{statusBadge.label}</Badge>}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Account details */}
-        <div className="bg-white rounded-xl border border-brand-rule p-6 space-y-5">
-          <div className="flex flex-col gap-0.5">
-            <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Account Details</h2>
+        <div className="min-w-0 space-y-5 rounded-xl border border-town-cream/10 bg-town-cream/[0.04] p-4 sm:p-6">
+          <div className="flex flex-col gap-1">
+            <h2 className="admin-eyebrow">Account Details</h2>
             {app.created_at && (
-              <p className="text-xs text-brand-muted">Applied {fmtDateLong(app.created_at)}</p>
+              <p className="text-xs text-town-cream/45">Applied {fmtDateLong(app.created_at)}</p>
             )}
           </div>
           <AccountDetailsEditor

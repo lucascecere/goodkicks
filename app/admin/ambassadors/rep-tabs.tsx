@@ -11,15 +11,15 @@ const TABS = [
 
 export function RepTabs({ active }: { active: 'roster' | 'sales' }) {
   return (
-    <div className="flex gap-1.5 pb-3">
+    <div className="mb-5 flex gap-1.5">
       {TABS.map((tab) => (
         <Link
           key={tab.key}
           href={tab.href}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`whitespace-nowrap rounded-full px-3.5 py-2 font-label text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
             active === tab.key
-              ? 'bg-white text-[#1A1A1A]'
-              : 'bg-white/8 text-white/50 hover:text-white hover:bg-white/12'
+              ? 'bg-town-cream text-town-navy'
+              : 'border border-town-cream/15 text-town-cream/60 hover:text-town-cream'
           }`}
         >
           {tab.label}

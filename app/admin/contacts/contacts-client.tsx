@@ -5,6 +5,7 @@ import { SyncShopifyButton } from './sync-button';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import { BRAND_LABELS, type AdminBrand, type RealBrand } from '@/lib/admin/brand';
 import { fmtDate } from '@/lib/admin/format';
+import { Badge, EmptyState, PageHeader, btn, field, type BadgeTone } from '@/components/admin/ui';
 
 export type Contact = {
   id: string;
@@ -16,12 +17,12 @@ export type Contact = {
   created_at: string;
 };
 
-const SOURCE_BADGE: Record<string, { label: string; cls: string }> = {
-  ambassador: { label: 'ambassador', cls: 'bg-amber-100 text-amber-700' },
-  discount:   { label: 'discount',   cls: 'bg-purple-100 text-purple-700' },
-  newsletter: { label: 'newsletter', cls: 'bg-blue-100 text-blue-700' },
-  contact:    { label: 'contact',    cls: 'bg-gray-100 text-gray-600' },
-  order:      { label: 'order',      cls: 'bg-green-100 text-green-700' },
+const SOURCE_BADGE: Record<string, { label: string; tone: BadgeTone }> = {
+  ambassador: { label: 'ambassador', tone: 'warn' },
+  discount:   { label: 'discount',   tone: 'info' },
+  newsletter: { label: 'newsletter', tone: 'info' },
+  contact:    { label: 'contact',    tone: 'neutral' },
+  order:      { label: 'order',      tone: 'good' },
 };
 
 const ALL_SOURCES = ['ambassador', 'discount', 'newsletter', 'contact', 'order'];
@@ -152,18 +153,19 @@ export function ContactsClient({
     }
   }
 
+  const chip = (on: boolean) =>
+    `whitespace-nowrap rounded-full px-3.5 py-2 font-label text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
+      on ? 'bg-town-cream text-town-navy' : 'border border-town-cream/15 text-town-cream/60 hover:text-town-cream'
+    }`;
+
   return (
-    <div className="p-8 max-w-3xl">
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-3xl text-white">Contacts</h1>
-          <p className="text-white/50 text-sm mt-1">
-            {contacts.length} total · {filtered.length} shown
-          </p>
-        </div>
-        <SyncShopifyButton />
-      </div>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
+      <PageHeader
+        eyebrow="People"
+        title="Contacts"
+        description={`${contacts.length} total · ${filtered.length} shown`}
+        right={<SyncShopifyButton />}
+      />
 
       {/* Search */}
       <input
@@ -171,26 +173,19 @@ export function ContactsClient({
         placeholder="search by name or email…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/40 mb-4"
+        className={`${field} mb-4`}
       />
 
       {/* Source filter pills */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <button
-          onClick={() => setSourceFilter(null)}
-          className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
-            sourceFilter === null ? 'bg-white text-brand-ink' : 'bg-white/10 text-white/60 hover:bg-white/20'
-          }`}
-        >
+      <div className="mb-6 flex flex-wrap gap-2">
+        <button onClick={() => setSourceFilter(null)} className={chip(sourceFilter === null)}>
           all ({contacts.length})
         </button>
         {ALL_SOURCES.filter((s) => sourceCounts[s]).map((s) => (
           <button
             key={s}
             onClick={() => setSourceFilter(sourceFilter === s ? null : s)}
-            className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
-              sourceFilter === s ? 'bg-white text-brand-ink' : 'bg-white/10 text-white/60 hover:bg-white/20'
-            }`}
+            className={chip(sourceFilter === s)}
           >
             {s} ({sourceCounts[s]})
           </button>
@@ -202,11 +197,11 @@ export function ContactsClient({
         {brand === 'all' && untaggedCount > 0 && (
           <button
             onClick={() => setShowUntagged((v) => !v)}
-            className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${
+            className={
               showUntagged
-                ? 'bg-white text-brand-ink'
-                : 'bg-amber-500/20 text-amber-200 hover:bg-amber-500/30'
-            }`}
+                ? chip(true)
+                : 'whitespace-nowrap rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-2 font-label text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-300 transition-colors hover:bg-amber-400/20'
+            }
           >
             untagged ({untaggedCount})
           </button>
@@ -215,9 +210,7 @@ export function ContactsClient({
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-12 text-center text-white/40 text-sm">
-          no contacts match.
-        </div>
+        <EmptyState title="No contacts match" body="Try another filter or search." />
       ) : (
         <div className="space-y-2">
           {filtered.map((contact) => {
@@ -227,52 +220,52 @@ export function ContactsClient({
             return (
               <div
                 key={contact.id}
-                className="bg-white rounded-xl border border-brand-rule overflow-hidden"
+                className="overflow-hidden rounded-xl border border-town-cream/10 bg-town-cream/[0.04]"
               >
                 {isEditing ? (
                   /* Edit mode */
-                  <div className="px-5 py-4 space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-3 px-4 py-4 sm:px-5">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
-                        <label className="text-xs text-brand-muted mb-1 block">Name</label>
+                        <label className="admin-eyebrow mb-1.5 block">Name</label>
                         <input
                           type="text"
                           value={editFields.name}
                           onChange={(e) => setEditFields((f) => ({ ...f, name: e.target.value }))}
-                          className="w-full text-sm bg-[#FAF8F3] border border-brand-rule rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-ink"
+                          className={field}
                           placeholder="Full name"
                         />
                       </div>
                       <div>
-                        <label className="text-xs text-brand-muted mb-1 block">Email</label>
+                        <label className="admin-eyebrow mb-1.5 block">Email</label>
                         <input
                           type="email"
                           value={editFields.email}
                           onChange={(e) => setEditFields((f) => ({ ...f, email: e.target.value }))}
-                          className="w-full text-sm bg-[#FAF8F3] border border-brand-rule rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-ink"
+                          className={field}
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs text-brand-muted mb-1 block">Notes</label>
+                      <label className="admin-eyebrow mb-1.5 block">Notes</label>
                       <textarea
                         value={editFields.notes}
                         onChange={(e) => setEditFields((f) => ({ ...f, notes: e.target.value }))}
                         rows={2}
-                        className="w-full text-sm bg-[#FAF8F3] border border-brand-rule rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-ink resize-none"
+                        className={`${field} resize-none`}
                         placeholder="Internal notes…"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-brand-muted mb-1 block">Brands</label>
+                      <label className="admin-eyebrow mb-1.5 block">Brands</label>
                       <div className="flex gap-4">
                         {ALL_BRANDS.map((b) => (
-                          <label key={b} className="flex items-center gap-2 text-sm cursor-pointer">
+                          <label key={b} className="flex cursor-pointer items-center gap-2 text-sm text-town-cream">
                             <input
                               type="checkbox"
                               checked={editFields.brands.includes(b)}
                               onChange={() => toggleEditBrand(b)}
-                              className="accent-brand-ink"
+                              className="accent-town-cream"
                             />
                             {BRAND_LABELS[b]}
                           </label>
@@ -280,64 +273,56 @@ export function ContactsClient({
                       </div>
                       {/* The capture paths can only ever ADD a brand — this is
                           the only place a wrong one comes off. */}
-                      <p className="text-[11px] text-brand-muted mt-1">
+                      <p className="mt-1 text-[11px] text-town-cream/45">
                         Unchecking both clears the tag.
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => saveEdit(contact.id)}
-                        disabled={saving}
-                        className="bg-brand-ink text-white text-xs px-4 py-2 rounded-lg font-medium disabled:opacity-40 hover:opacity-90 transition-opacity"
-                      >
+                      <button onClick={() => saveEdit(contact.id)} disabled={saving} className={btn.primary}>
                         {saving ? 'saving…' : 'save'}
                       </button>
-                      <button
-                        onClick={cancelEdit}
-                        className="text-brand-muted text-xs px-4 py-2 rounded-lg border border-brand-rule hover:border-brand-ink transition-colors"
-                      >
+                      <button onClick={cancelEdit} className={btn.secondary}>
                         cancel
                       </button>
                     </div>
                   </div>
                 ) : isConfirmingDelete ? (
                   /* Delete confirm */
-                  <div className="px-5 py-4 flex items-center justify-between gap-3">
-                    <p className="text-sm text-brand-ink">Delete <strong>{contact.email}</strong>? This can&apos;t be undone.</p>
-                    <div className="flex gap-2 shrink-0">
+                  <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                    <p className="min-w-0 break-words text-sm text-town-cream">
+                      Delete <strong>{contact.email}</strong>? This can&apos;t be undone.
+                    </p>
+                    <div className="flex shrink-0 gap-2">
                       <button
                         onClick={() => deleteContact(contact.id)}
                         disabled={deletingId === contact.id}
-                        className="bg-red-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium disabled:opacity-40 hover:bg-red-600 transition-colors"
+                        className="inline-flex items-center justify-center rounded-lg bg-red-500 px-4 py-2.5 font-label text-xs font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-red-600 disabled:opacity-40"
                       >
                         {deletingId === contact.id ? 'deleting…' : 'delete'}
                       </button>
-                      <button
-                        onClick={() => setConfirmDeleteId(null)}
-                        className="text-brand-muted text-xs px-3 py-1.5 rounded-lg border border-brand-rule hover:border-brand-ink transition-colors"
-                      >
+                      <button onClick={() => setConfirmDeleteId(null)} className={btn.secondary}>
                         cancel
                       </button>
                     </div>
                   </div>
                 ) : (
                   /* View mode */
-                  <div className="px-5 py-4 flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-3 px-4 py-4 sm:gap-4 sm:px-5">
                     <div className="min-w-0">
-                      <p className="font-medium text-brand-ink text-sm">
-                        {contact.name ?? <span className="text-brand-muted italic font-normal">no name</span>}
+                      <p className="text-sm font-semibold text-town-cream">
+                        {contact.name ?? <span className="font-normal italic text-town-cream/45">no name</span>}
                       </p>
-                      <p className="text-brand-rust text-xs mt-0.5">{contact.email}</p>
+                      <p className="mt-0.5 break-all text-xs text-town-cream/60">{contact.email}</p>
                       {contact.notes && (
-                        <p className="text-brand-muted text-xs mt-1 line-clamp-1">{contact.notes}</p>
+                        <p className="mt-1 line-clamp-1 text-xs text-town-cream/45">{contact.notes}</p>
                       )}
-                      <div className="flex flex-wrap gap-1.5 mt-2">
+                      <div className="mt-2 flex flex-wrap gap-1.5">
                         {(contact.sources ?? []).map((s) => {
-                          const badge = SOURCE_BADGE[s] ?? { label: s, cls: 'bg-gray-100 text-gray-500' };
+                          const badge = SOURCE_BADGE[s] ?? { label: s, tone: 'neutral' as BadgeTone };
                           return (
-                            <span key={s} className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>
+                            <Badge key={s} tone={badge.tone}>
                               {badge.label}
-                            </span>
+                            </Badge>
                           );
                         })}
                         {(contact.brands ?? []).map((b) => (
@@ -345,30 +330,32 @@ export function ContactsClient({
                         ))}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs text-brand-muted">{fmtDate(contact.created_at)}</span>
-                      <button
-                        onClick={() => startEdit(contact)}
-                        className="text-brand-muted hover:text-brand-ink transition-colors p-1.5 rounded-lg hover:bg-[#FAF8F3]"
-                        aria-label="Edit contact"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => setConfirmDeleteId(contact.id)}
-                        className="text-brand-muted hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50"
-                        aria-label="Delete contact"
-                      >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="3 6 5 6 21 6"/>
-                          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                          <path d="M10 11v6M14 11v6"/>
-                          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                        </svg>
-                      </button>
+                    <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-2">
+                      <span className="text-xs text-town-cream/45">{fmtDate(contact.created_at)}</span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => startEdit(contact)}
+                          className="rounded-lg p-1.5 text-town-cream/50 transition-colors hover:bg-town-cream/[0.08] hover:text-town-cream"
+                          aria-label="Edit contact"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(contact.id)}
+                          className="rounded-lg p-1.5 text-town-cream/50 transition-colors hover:bg-red-400/10 hover:text-red-300"
+                          aria-label="Delete contact"
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                            <path d="M10 11v6M14 11v6"/>
+                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

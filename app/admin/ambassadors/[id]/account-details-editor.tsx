@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { accountTypesFor, FOLLOWER_RANGES, repFieldLabels } from '@/lib/reps/labels';
+import { btn, field } from '@/components/admin/ui';
 
 type Props = {
   appId: string;
@@ -67,8 +68,8 @@ export function AccountDetailsEditor({ appId, brand, initialData }: Props) {
     }
   }
 
-  const inputCls = 'w-full text-sm text-brand-ink bg-[#FAF8F3] border border-brand-rule rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-ink';
-  const labelCls = 'text-xs text-brand-muted uppercase tracking-wide';
+  const inputCls = `${field} [&>option]:bg-town-navy`;
+  const labelCls = 'admin-eyebrow';
 
   return (
     <div className="space-y-4">
@@ -112,7 +113,7 @@ export function AccountDetailsEditor({ appId, brand, initialData }: Props) {
           </select>
         </div>
         <div className="space-y-1">
-          <p className={labelCls}>Age {fields.age !== '' && parseInt(fields.age, 10) < 18 && <span className="text-amber-600 normal-case">(minor — credit only)</span>}</p>
+          <p className={labelCls}>Age {fields.age !== '' && parseInt(fields.age, 10) < 18 && <span className="normal-case tracking-normal text-amber-300">(minor — credit only)</span>}</p>
           <input className={inputCls} type="number" min="13" max="100" value={fields.age} onChange={(e) => set('age', e.target.value)} />
         </div>
         <div className="space-y-1">
@@ -149,7 +150,7 @@ export function AccountDetailsEditor({ appId, brand, initialData }: Props) {
           href={`https://instagram.com/${fields.instagram.replace('@', '')}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm text-brand-rust hover:underline"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-town-cream hover:underline"
         >
           view Instagram profile →
         </a>
@@ -159,11 +160,11 @@ export function AccountDetailsEditor({ appId, brand, initialData }: Props) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-brand-ink text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+          className={btn.primary}
         >
           {saving ? 'saving…' : 'save changes'}
         </button>
-        {saved && <span className="text-xs text-green-600">saved</span>}
+        {saved && <span className="text-xs text-emerald-300">saved</span>}
       </div>
     </div>
   );

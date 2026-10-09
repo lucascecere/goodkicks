@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { CampaignsList } from './campaigns-list';
+import { PageHeader, btn } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,19 +13,17 @@ export default async function CampaignsPage() {
     .order('updated_at', { ascending: false });
 
   return (
-    <div className="p-6 sm:p-8 max-w-4xl space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-white">Campaigns</h1>
-          <p className="text-white/40 text-sm mt-1">drafts and sent history</p>
-        </div>
-        <Link
-          href="/admin/campaigns/new"
-          className="bg-brand-rust text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-brand-rust/90 transition-colors"
-        >
-          + New Campaign
-        </Link>
-      </div>
+    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">
+      <PageHeader
+        eyebrow="Marketing"
+        title="Campaigns"
+        description="drafts and sent history"
+        right={
+          <Link href="/admin/campaigns/new" className={btn.primary}>
+            + New Campaign
+          </Link>
+        }
+      />
 
       <CampaignsList initialCampaigns={data ?? []} />
     </div>

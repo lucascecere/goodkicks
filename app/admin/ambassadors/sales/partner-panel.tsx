@@ -26,20 +26,20 @@ export async function PartnerPanel({ brand }: { brand: AdminBrand }) {
   );
 
   return (
-    <div className="px-4 sm:px-6 mb-6">
-      <div className="flex items-baseline justify-between mb-2.5">
-        <h2 className="text-white/80 text-sm font-medium">Brand partners</h2>
-        <p className="text-white/30 text-[11px]">Revenue is net of the partner discount</p>
+    <div className="mb-6">
+      <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <h2 className="admin-eyebrow">Brand partners</h2>
+        <p className="text-[11px] text-town-cream/40">Revenue is net of the partner discount</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         {rows.map(({ partner, stats }) => (
           <div
             key={partner.id}
-            className="bg-white/5 border border-white/10 rounded-xl p-4 flex gap-4"
+            className="flex gap-4 rounded-xl border border-town-cream/10 bg-town-cream/[0.04] p-4"
           >
             {partner.logo ? (
-              <div className="shrink-0 w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-town-cream/10">
                 <Image
                   src={partner.logo}
                   alt=""
@@ -52,35 +52,35 @@ export async function PartnerPanel({ brand }: { brand: AdminBrand }) {
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-white text-sm font-medium truncate">{partner.name}</p>
+                <p className="truncate text-sm font-semibold text-town-cream">{partner.name}</p>
                 <span className="font-mono text-[11px] text-emerald-300 bg-emerald-400/10 border border-emerald-400/20 rounded px-1.5 py-0.5">
                   {partner.code}
                 </span>
-                <span className="text-white/40 text-[11px]">{partner.discountPct}% off</span>
+                <span className="text-[11px] text-town-cream/45">{partner.discountPct}% off</span>
               </div>
 
               <div className="mt-3 grid grid-cols-3 gap-3">
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-white/35">Revenue</p>
-                  <p className="text-white text-base font-semibold">
+                  <p className="admin-eyebrow">Revenue</p>
+                  <p className="font-block text-lg font-bold text-town-cream tabular-nums">
                     {money(stats.totalRevenue)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-white/35">Orders</p>
-                  <p className="text-white text-base font-semibold">{stats.totalOrders}</p>
+                  <p className="admin-eyebrow">Orders</p>
+                  <p className="font-block text-lg font-bold text-town-cream tabular-nums">{stats.totalOrders}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-wider text-white/35">
+                  <p className="admin-eyebrow">
                     {partner.commissionPct > 0 ? `Owed (${partner.commissionPct}%)` : 'Owed'}
                   </p>
-                  <p className="text-white text-base font-semibold">
+                  <p className="font-block text-lg font-bold text-town-cream tabular-nums">
                     {partner.commissionPct > 0 ? money(stats.commissionEarned) : '—'}
                   </p>
                 </div>
               </div>
 
-              <p className="mt-2.5 text-white/35 text-[11px]">
+              <p className="mt-2.5 text-[11px] text-town-cream/40">
                 Last order: {fmtDate(stats.lastOrderAt, 'No orders yet')}
               </p>
             </div>

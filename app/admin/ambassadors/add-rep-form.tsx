@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { AdminBrand, RealBrand } from '@/lib/admin/brand';
+import { btn, field } from '@/components/admin/ui';
 
 // Adding a rep who never filled out the public form — signed up in person or
 // over DM. Everything downstream (code creation, welcome email, sales tracking)
@@ -72,23 +73,22 @@ export function AddRepForm({
     onCreated(json.rep as NewRep);
   }
 
-  const inputCls =
-    'w-full border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30';
-  const labelCls = 'text-xs text-brand-muted block mb-1';
+  const inputCls = field;
+  const labelCls = 'admin-eyebrow mb-1.5 block';
 
   return (
     <form onSubmit={handleSubmit} className="p-5 space-y-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-xl text-brand-ink leading-tight">Add a rep</h2>
-          <p className="text-xs text-brand-muted mt-0.5">
+          <h2 className="font-block text-2xl font-bold leading-tight text-town-cream">Add a rep</h2>
+          <p className="mt-0.5 text-xs text-town-cream/50">
             For someone who never filled out the form.
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="text-brand-muted hover:text-brand-ink p-1 rounded-lg transition-colors"
+          className="rounded-lg p-1 text-town-cream/50 transition-colors hover:text-town-cream"
           aria-label="Close"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -106,10 +106,10 @@ export function AddRepForm({
                 key={b}
                 type="button"
                 onClick={() => setRepBrand(b)}
-                className={`flex-1 text-xs py-2 rounded-lg border transition-colors ${
+                className={`flex-1 rounded-full border py-2 font-label text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
                   repBrand === b
-                    ? 'bg-brand-ink text-white border-brand-ink'
-                    : 'border-brand-rule text-brand-muted hover:border-brand-ink'
+                    ? 'border-town-cream bg-town-cream text-town-navy'
+                    : 'border-town-cream/15 text-town-cream/60 hover:text-town-cream'
                 }`}
               >
                 {b === 'townies' ? 'Townies' : 'Good Kicks'}
@@ -119,7 +119,7 @@ export function AddRepForm({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label className={labelCls}>Name *</label>
           <input required value={form.name} onChange={(e) => set('name', e.target.value)} placeholder="Alex Smith" className={inputCls} />
@@ -163,7 +163,7 @@ export function AddRepForm({
             placeholder="Milton, Weymouth"
             className={inputCls}
           />
-          <p className="text-[11px] text-brand-muted mt-1">
+          <p className="mt-1 text-[11px] text-town-cream/45">
             Separate with commas if they cover more than one — a page run by two people counts as
             one rep. Their code comes from their handle, not their town.
           </p>
@@ -180,11 +180,11 @@ export function AddRepForm({
           type="checkbox"
           checked={hatDelivered}
           onChange={(e) => setHatDelivered(e.target.checked)}
-          className="mt-0.5 shrink-0"
+          className="mt-0.5 shrink-0 accent-town-cream"
         />
-        <span className="text-xs text-brand-ink leading-relaxed">
+        <span className="text-xs leading-relaxed text-town-cream">
           They already have their hat
-          <span className="text-brand-muted">
+          <span className="text-town-cream/50">
             {' '}— their welcome email will say so instead of promising one is on the way.
           </span>
         </span>
@@ -201,25 +201,25 @@ export function AddRepForm({
         />
       </div>
 
-      {err && <p className="text-xs text-red-500">{err}</p>}
+      {err && <p className="text-xs text-red-300">{err}</p>}
 
       <div className="flex gap-2 pt-1">
         <button
           type="submit"
           disabled={saving}
-          className="flex-1 bg-brand-rust text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-brand-rust/90 transition-colors disabled:opacity-50"
+          className={`${btn.primary} flex-1`}
         >
           {saving ? 'adding…' : 'add rep'}
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2.5 text-sm text-brand-muted border border-brand-rule rounded-lg hover:text-brand-ink hover:border-brand-ink transition-colors"
+          className={btn.secondary}
         >
           cancel
         </button>
       </div>
-      <p className="text-[11px] text-brand-muted text-center">
+      <p className="text-center text-[11px] text-town-cream/45">
         Next step: set their rates and send the welcome email.
       </p>
     </form>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Badge, EmptyState, PageHeader, btn, field as fieldCls } from '@/components/admin/ui';
 
 export type AdminReview = {
   id: string;
@@ -19,8 +20,7 @@ export type AdminReview = {
   source: 'form' | 'request';
 };
 
-const CARD = 'rounded-lg border border-white/10 bg-white/[0.03] p-5';
-const BTN = 'rounded px-3 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors';
+const CARD = 'rounded-xl border border-town-cream/10 bg-town-cream/[0.04] p-4 sm:p-5';
 
 export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
   const router = useRouter();
@@ -66,17 +66,13 @@ export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
   function Row({ r, editable }: { r: AdminReview; editable: boolean }) {
     return (
       <div className={CARD}>
-        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-white/50">
-          <span className="text-amber-400">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
-          <span className="rounded bg-white/10 px-2 py-0.5 uppercase tracking-wider">{r.brand}</span>
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-town-cream/50">
+          <span className="text-amber-300">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+          <Badge>{r.brand}</Badge>
           {r.verified ? (
-            <span className="rounded bg-emerald-500/20 px-2 py-0.5 uppercase tracking-wider text-emerald-300">
-              Verified order
-            </span>
+            <Badge tone="good">Verified order</Badge>
           ) : (
-            <span className="rounded bg-white/10 px-2 py-0.5 uppercase tracking-wider">
-              Unverified · open form
-            </span>
+            <Badge>Unverified · open form</Badge>
           )}
           {r.product_title && <span>{r.product_title}</span>}
           <span className="ml-auto">{new Date(r.created_at).toLocaleDateString()}</span>
@@ -88,46 +84,46 @@ export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
               value={field(r, 'quote')}
               onChange={(e) => setField(r, 'quote', e.target.value)}
               rows={4}
-              className="w-full rounded border border-white/15 bg-black/30 p-3 text-sm text-white"
+              className={fieldCls}
             />
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
               <input
                 value={field(r, 'name')}
                 onChange={(e) => setField(r, 'name', e.target.value)}
                 placeholder="Name"
-                className="rounded border border-white/15 bg-black/30 p-2 text-sm text-white"
+                className={fieldCls}
               />
               <input
                 value={field(r, 'town')}
                 onChange={(e) => setField(r, 'town', e.target.value)}
                 placeholder="Town"
-                className="rounded border border-white/15 bg-black/30 p-2 text-sm text-white"
+                className={fieldCls}
               />
             </div>
             {/* Trim a surname to an initial, fix a typo, cut a rambling third
                 paragraph. Not for changing what somebody meant. */}
-            <p className="mt-2 text-[11px] text-white/40">
+            <p className="mt-2 text-[11px] text-town-cream/40">
               Light edits only — trim a surname, fix a typo. Don't rewrite it.
             </p>
           </>
         ) : (
           <>
-            <p className="text-sm leading-relaxed text-white/90">“{r.quote}”</p>
-            <p className="mt-2 text-xs text-white/50">
+            <p className="text-sm leading-relaxed text-town-cream/90">“{r.quote}”</p>
+            <p className="mt-2 text-xs text-town-cream/50">
               {r.name}
               {r.town ? ` · ${r.town}` : ''}
             </p>
           </>
         )}
 
-        {r.email && <p className="mt-2 text-[11px] text-white/30">{r.email}</p>}
+        {r.email && <p className="mt-2 break-all text-[11px] text-town-cream/35">{r.email}</p>}
 
-        <div className="mt-4 flex gap-2">
+        <div className="mt-4 flex flex-wrap gap-2">
           {r.status !== 'approved' && (
             <button
               disabled={busy === r.id}
               onClick={() => act(r, 'approve')}
-              className={`${BTN} bg-emerald-500 text-black hover:bg-emerald-400 disabled:opacity-50`}
+              className={btn.primary}
             >
               {busy === r.id ? '…' : 'Approve'}
             </button>
@@ -136,7 +132,7 @@ export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
             <button
               disabled={busy === r.id}
               onClick={() => act(r, 'reject')}
-              className={`${BTN} bg-white/10 text-white hover:bg-white/20 disabled:opacity-50`}
+              className={btn.secondary}
             >
               {r.status === 'approved' ? 'Unpublish' : 'Reject'}
             </button>
@@ -144,7 +140,7 @@ export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
           <button
             disabled={busy === r.id}
             onClick={() => act(r, 'delete')}
-            className={`${BTN} ml-auto text-red-400 hover:bg-red-500/10 disabled:opacity-50`}
+            className={`${btn.ghost} ml-auto text-red-300/80 hover:bg-red-400/10 hover:text-red-300 disabled:opacity-50`}
           >
             Delete
           </button>
@@ -154,21 +150,24 @@ export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
   }
 
   return (
-    <div className="space-y-10">
-      <div>
-        <h1 className="text-2xl font-semibold text-white">Reviews</h1>
-        <p className="mt-1 text-sm text-white/50">
-          Customers write these at <code className="text-white/70">/review</code>. Nothing reaches
-          the homepage until you approve it.
-        </p>
-      </div>
+    <div className="mx-auto max-w-6xl space-y-10 px-4 py-6 sm:px-8 sm:py-10">
+      <PageHeader
+        eyebrow="Marketing"
+        title="Reviews"
+        description={
+          <>
+            Customers write these at <code className="text-town-cream/75">/review</code>. Nothing reaches
+            the homepage until you approve it.
+          </>
+        }
+      />
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/60">
+        <h2 className="admin-eyebrow mb-3">
           Waiting on you ({pending.length})
         </h2>
         {pending.length === 0 ? (
-          <p className="text-sm text-white/40">Nothing in the queue.</p>
+          <EmptyState title="Nothing in the queue." />
         ) : (
           <div className="space-y-4">
             {pending.map((r) => (
@@ -179,11 +178,11 @@ export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/60">
+        <h2 className="admin-eyebrow mb-3">
           Live on the site ({approved.length})
         </h2>
         {approved.length === 0 ? (
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-town-cream/40">
             None yet — the homepage section stays hidden until there is at least one.
           </p>
         ) : (
@@ -197,7 +196,7 @@ export function ReviewsClient({ initial }: { initial: AdminReview[] }) {
 
       {rejected.length > 0 && (
         <section>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-white/60">
+          <h2 className="admin-eyebrow mb-3">
             Rejected ({rejected.length})
           </h2>
           <div className="space-y-4">

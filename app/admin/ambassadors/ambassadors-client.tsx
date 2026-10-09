@@ -14,6 +14,7 @@ import { fmtDate, fmtDateTime } from '@/lib/admin/format';
 import { MAX_PCT, clampPct } from '@/lib/reps/pct';
 import { accountTypeLabel, followerLabel, repFieldLabels } from '@/lib/reps/labels';
 import { approveRep, createRepCode } from '@/lib/reps/approve-client';
+import { Badge, PageHeader, btn, field } from '@/components/admin/ui';
 
 type Ambassador = {
   id: string;
@@ -68,17 +69,17 @@ function repSuggestions(app: Ambassador, discountPct: number) {
 }
 
 function StatusBadge({ app }: { app: Ambassador }) {
-  if (app.approved) return <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 text-green-700">approved</span>;
-  if (app.status === 'rejected') return <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-red-100 text-red-600">rejected</span>;
-  return <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">pending</span>;
+  if (app.approved) return <Badge tone="good">approved</Badge>;
+  if (app.status === 'rejected') return <Badge tone="bad">rejected</Badge>;
+  return <Badge tone="warn">pending</Badge>;
 }
 
 function DetailRow({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wider text-brand-muted mb-0.5">{label}</p>
-      <p className="text-sm text-brand-ink">{value}</p>
+      <p className="admin-eyebrow mb-1">{label}</p>
+      <p className="break-words text-sm text-town-cream">{value}</p>
     </div>
   );
 }
@@ -97,9 +98,9 @@ function PctInput({
 }) {
   return (
     <div>
-      <label className="text-xs text-brand-muted block mb-1">
+      <label className="mb-1.5 block text-xs text-town-cream/55">
         {label}
-        {hint && <span className="text-brand-muted/70"> · {hint}</span>}
+        {hint && <span className="text-town-cream/40"> · {hint}</span>}
       </label>
       <div className="relative">
         <input
@@ -111,9 +112,9 @@ function PctInput({
             const n = Number(e.target.value);
             onChange(clampPct(n));
           }}
-          className="w-full border border-brand-rule rounded-lg px-3 py-2 pr-7 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+          className={`${field} pr-7`}
         />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-brand-muted pointer-events-none">%</span>
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-town-cream/45">%</span>
       </div>
     </div>
   );
@@ -306,19 +307,19 @@ function RightPanel({
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Header */}
-      <div className="p-5 border-b border-brand-rule">
+      <div className="border-b p-4 sm:p-5 border-town-cream/10">
         <div className="flex items-start justify-between gap-3 mb-1">
           <div className="min-w-0 flex-1">
-            <h2 className="font-display text-xl text-brand-ink leading-tight">{app.name}</h2>
-            <a href={`mailto:${app.email}`} className="text-xs text-brand-muted hover:text-brand-rust transition-colors truncate block">{app.email}</a>
+            <h2 className="font-block text-2xl font-bold leading-tight text-town-cream">{app.name}</h2>
+            <a href={`mailto:${app.email}`} className="block truncate text-xs text-town-cream/55 transition-colors hover:text-town-cream">{app.email}</a>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
             <BrandBadge brand={brand} />
             <StatusBadge app={app} />
             {onClose && (
               <button
                 onClick={onClose}
-                className="lg:hidden text-brand-muted hover:text-brand-ink p-1 rounded-lg transition-colors"
+                className="rounded-lg p-1 text-town-cream/50 transition-colors hover:text-town-cream lg:hidden"
                 aria-label="Close"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -333,7 +334,7 @@ function RightPanel({
             href={`https://instagram.com/${app.instagram.replace('@', '')}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-brand-rust hover:underline"
+            className="text-xs font-semibold text-town-cream hover:underline"
           >
             {app.instagram} ↗
           </a>
@@ -341,13 +342,13 @@ function RightPanel({
       </div>
 
       {/* Rates — the two numbers that drive everything else */}
-      <div className="p-5 border-b border-brand-rule space-y-3">
-        <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Rates</p>
+      <div className="border-b p-4 sm:p-5 border-town-cream/10 space-y-3">
+        <p className="admin-eyebrow">Rates</p>
         <div className="grid grid-cols-2 gap-3">
           <PctInput label="Customer discount" hint="off" value={discountPct} onChange={setDiscountPct} />
           <PctInput label="Rep commission" hint="of revenue" value={commissionPct} onChange={setCommissionPct} />
         </div>
-        <p className="text-[11px] text-brand-muted leading-relaxed">
+        <p className="text-[11px] leading-relaxed text-town-cream/45">
           Followers save {discountPct}% on {isTownies ? 'Townies hats' : 'Good Kicks gear'}; the rep earns{' '}
           {commissionPct}% of what those orders actually bring in. Max {MAX_PCT}% either way.
         </p>
@@ -355,17 +356,17 @@ function RightPanel({
 
       {/* Approve flow */}
       {!app.approved && app.status !== 'rejected' && (
-        <div className="p-5 border-b border-brand-rule space-y-3">
-          <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">
+        <div className="border-b p-4 sm:p-5 border-town-cream/10 space-y-3">
+          <p className="admin-eyebrow">
             Approve {isTownies ? 'Town Rep' : 'Ambassador'}
           </p>
           <div>
-            <label className="text-xs text-brand-muted block mb-1">Discount code</label>
+            <label className="mb-1.5 block text-xs text-town-cream/55">Discount code</label>
             <input
               value={approveCode}
               onChange={(e) => { setCodeTouched(true); setApproveCode(e.target.value.toUpperCase()); }}
               placeholder={suggested || 'e.g. SOUTHSHOREGUYS15'}
-              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+              className={`${field} font-mono`}
             />
             {suggestions.length > 1 && (
               <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -374,10 +375,10 @@ function RightPanel({
                     key={s.code}
                     type="button"
                     onClick={() => { setCodeTouched(true); setApproveCode(s.code); }}
-                    className={`font-mono text-[10px] px-2 py-1 rounded border transition-colors ${
+                    className={`rounded border px-2 py-1 font-mono text-[10px] transition-colors ${
                       approveCode === s.code
-                        ? 'bg-brand-ink text-white border-brand-ink'
-                        : 'border-brand-rule text-brand-muted hover:border-brand-ink hover:text-brand-ink'
+                        ? 'border-town-cream bg-town-cream text-town-navy'
+                        : 'border-town-cream/15 text-town-cream/55 hover:border-town-cream/50 hover:text-town-cream'
                     }`}
                   >
                     {s.code}
@@ -386,7 +387,7 @@ function RightPanel({
                 ))}
               </div>
             )}
-            <p className="text-[11px] text-brand-muted mt-1.5">
+            <p className="mt-1.5 text-[11px] text-town-cream/45">
               Built from their handle, not their town — type anything you like. Created in Shopify
               scoped to the {isTownies ? 'Townies' : 'Good Kicks'} collection only.
             </p>
@@ -405,19 +406,19 @@ function RightPanel({
                     body: JSON.stringify({ applicationId: app.id, hat_delivered }),
                   });
                 }}
-                className="mt-0.5 shrink-0"
+                className="mt-0.5 shrink-0 accent-town-cream"
               />
-              <span className="text-[11px] text-brand-ink leading-relaxed">
+              <span className="text-[11px] leading-relaxed text-town-cream">
                 They already have their hat
-                <span className="text-brand-muted"> — changes what the welcome email says.</span>
+                <span className="text-town-cream/50"> — changes what the welcome email says.</span>
               </span>
             </label>
           )}
           {/* Known up front, so the by-hand route is the primary flow rather
               than something discovered by failing once per rep. */}
           {!discounts.ready && !scopeErr && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
-              <p className="text-[11px] text-amber-800 leading-relaxed">
+            <div className="space-y-2 rounded-lg border border-amber-400/30 bg-amber-400/10 p-3">
+              <p className="text-[11px] leading-relaxed text-amber-200">
                 {discounts.reason} Create <strong className="font-mono">{approveCode || suggested}</strong> in
                 Shopify first, set to <strong>{discountPct}% off</strong> the{' '}
                 {isTownies ? 'Townies' : 'Good Kicks'} collection, then approve below.
@@ -426,27 +427,27 @@ function RightPanel({
                 href={discounts.discountsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center border border-amber-300 text-amber-800 rounded-lg px-3 py-2 text-xs font-medium hover:bg-amber-100 transition-colors"
+                className="block rounded-lg border border-amber-400/40 px-3 py-2 text-center text-xs font-semibold text-amber-200 transition-colors hover:bg-amber-400/10"
               >
                 open Shopify Discounts ↗
               </a>
             </div>
           )}
           {scopeErr && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
-              <p className="text-[11px] text-amber-800 leading-relaxed">{scopeErr}</p>
+            <div className="space-y-2 rounded-lg border border-amber-400/30 bg-amber-400/10 p-3">
+              <p className="text-[11px] leading-relaxed text-amber-200">{scopeErr}</p>
               <a
                 href={discounts.discountsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block text-center border border-amber-300 text-amber-800 rounded-lg px-3 py-2 text-xs font-medium hover:bg-amber-100 transition-colors"
+                className="block rounded-lg border border-amber-400/40 px-3 py-2 text-center text-xs font-semibold text-amber-200 transition-colors hover:bg-amber-400/10"
               >
                 open Shopify Discounts ↗
               </a>
               <button
                 onClick={() => handleApprove(false)}
                 disabled={approving || !approveCode.trim()}
-                className="w-full border border-amber-300 text-amber-800 rounded-lg px-3 py-2 text-xs font-medium hover:bg-amber-100 transition-colors disabled:opacity-50"
+                className="w-full rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold text-amber-200 transition-colors hover:bg-amber-400/10 disabled:opacity-50"
               >
                 approve with this code anyway
               </button>
@@ -459,18 +460,18 @@ function RightPanel({
               <button
                 type="button"
                 onClick={() => setShowPreview((v) => !v)}
-                className="text-xs text-brand-rust hover:underline"
+                className="text-xs font-semibold text-town-cream hover:underline"
               >
                 {showPreview ? 'hide the email they’ll get ↑' : 'read the email they’ll get ↓'}
               </button>
               {showPreview && (
-                <div className="mt-2 bg-brand-rule/20 rounded-lg p-3 border border-brand-rule">
-                  <p className="text-[10px] text-brand-muted uppercase tracking-wide mb-2 leading-relaxed">
+                <div className="mt-2 rounded-lg border border-town-cream/10 bg-town-navy/60 p-3">
+                  <p className="mb-2 break-words text-[10px] uppercase leading-relaxed tracking-wide text-town-cream/45">
                     From: Townies &lt;{TOWNIES_FROM_HINT}&gt;<br />
                     To: {app.email}<br />
                     Subject: {repWelcomeSubject(greetingName(app.name))}
                   </p>
-                  <pre className="text-[11px] text-brand-ink whitespace-pre-wrap font-mono leading-relaxed max-h-72 overflow-y-auto">
+                  <pre className="max-h-72 overflow-y-auto whitespace-pre-wrap break-words font-mono text-[11px] leading-relaxed text-town-cream/85">
                     {renderRepWelcome({
                       firstName: greetingName(app.name),
                       town: app.town ?? '',
@@ -485,11 +486,11 @@ function RightPanel({
               )}
             </div>
           )}
-          {approveErr && <p className="text-xs text-red-500">{approveErr}</p>}
+          {approveErr && <p className="text-xs text-red-300">{approveErr}</p>}
           <button
             onClick={() => handleApprove(discounts.ready)}
             disabled={approving || (!discounts.ready && !approveCode.trim())}
-            className="w-full bg-brand-rust text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-brand-rust/90 transition-colors disabled:opacity-50"
+            className={`${btn.primary} w-full`}
           >
             {approving
               ? 'working…'
@@ -501,9 +502,9 @@ function RightPanel({
       )}
 
       {/* Details */}
-      <div className="p-5 space-y-3 border-b border-brand-rule">
-        <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Profile</p>
-        <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-3 border-b p-4 sm:p-5 border-town-cream/10">
+        <p className="admin-eyebrow">Profile</p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <DetailRow label={labels.place} value={isTownies ? app.town : app.school} />
           <DetailRow label="Account Type" value={accountTypeLabel(app.account_type)} />
           <DetailRow label="Followers" value={followerLabel(app.followers)} />
@@ -520,14 +521,14 @@ function RightPanel({
       </div>
 
       {/* Email */}
-      <div className="p-5 space-y-2 border-b border-brand-rule">
-        <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Email</p>
+      <div className="space-y-2 border-b p-4 sm:p-5 border-town-cream/10">
+        <p className="admin-eyebrow">Email</p>
         <div className="flex items-center gap-2">
           <input
             value={editEmail}
             onChange={(e) => setEditEmail(e.target.value)}
             placeholder="email@example.com"
-            className="flex-1 border border-brand-rule rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+            className={`${field} min-w-0 flex-1`}
           />
           <button
             onClick={async () => {
@@ -539,7 +540,7 @@ function RightPanel({
               });
               if (res.ok) onUpdate(app.id, { email: editEmail.trim() });
             }}
-            className="shrink-0 bg-brand-ink text-white rounded-lg px-3 py-2 text-xs font-medium hover:bg-brand-ink/90 transition-colors"
+            className={`${btn.secondary} shrink-0`}
           >
             save
           </button>
@@ -548,16 +549,16 @@ function RightPanel({
 
       {/* Code + rates for approved reps */}
       {app.approved && (
-        <div className="p-5 space-y-3 border-b border-brand-rule">
-          <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Discount Code</p>
+        <div className="space-y-3 border-b p-4 sm:p-5 border-town-cream/10">
+          <p className="admin-eyebrow">Discount Code</p>
           <div>
             <input
               value={editCode}
               onChange={(e) => setEditCode(e.target.value.toUpperCase())}
               placeholder="e.g. MILTON15"
-              className="w-full border border-brand-rule rounded-lg px-3 py-2 text-sm font-mono text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-rust/30"
+              className={`${field} font-mono`}
             />
-            <p className="text-[11px] text-brand-muted mt-1">
+            <p className="mt-1 text-[11px] text-town-cream/45">
               {app.shopify_discount_gid
                 ? 'Linked to Shopify — changing the discount % above updates the live code.'
                 : 'Not linked to a Shopify discount yet.'}
@@ -567,7 +568,7 @@ function RightPanel({
             <button
               onClick={handleCreateCodeOnly}
               disabled={approving}
-              className="w-full border border-brand-rule text-brand-ink rounded-lg px-4 py-2 text-sm hover:border-brand-ink transition-colors disabled:opacity-50"
+              className={`${btn.secondary} w-full`}
             >
               {approving ? 'creating…' : 'create this code in Shopify'}
             </button>
@@ -576,12 +577,12 @@ function RightPanel({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 bg-brand-ink text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-ink/90 transition-colors disabled:opacity-50"
+              className={`${btn.primary} flex-1`}
             >
               {saving ? 'saving…' : 'save code & rates'}
             </button>
             {saveMsg && (
-              <span className={`text-xs font-medium ${saveMsg.startsWith('saved') || saveMsg.includes('sent') ? 'text-green-600' : 'text-red-500'}`}>
+              <span className={`text-xs font-semibold ${saveMsg.startsWith('saved') || saveMsg.includes('sent') ? 'text-emerald-300' : 'text-red-300'}`}>
                 {saveMsg}
               </span>
             )}
@@ -589,7 +590,7 @@ function RightPanel({
           <button
             onClick={handleResendWelcome}
             disabled={saving}
-            className="w-full border border-brand-rule text-brand-muted rounded-lg px-4 py-2 text-xs hover:text-brand-ink hover:border-brand-ink transition-colors disabled:opacity-50"
+            className={`${btn.ghost} w-full`}
           >
             resend welcome email
           </button>
@@ -598,7 +599,7 @@ function RightPanel({
               href={`/ambassador/${app.discount_code.toLowerCase()}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-brand-rust hover:underline block"
+              className="block text-xs font-semibold text-town-cream hover:underline"
             >
               view their stats page →
             </a>
@@ -607,20 +608,20 @@ function RightPanel({
       )}
 
       {/* Status controls */}
-      <div className="p-5 space-y-3 border-b border-brand-rule">
-        <p className="text-[10px] uppercase tracking-wider text-brand-muted font-medium">Change Status</p>
+      <div className="space-y-3 border-b p-4 sm:p-5 border-town-cream/10">
+        <p className="admin-eyebrow">Change Status</p>
         <div className="flex gap-2">
           <button
             onClick={() => handleStatusChange('pending')}
             disabled={!app.approved && app.status !== 'rejected'}
-            className="flex-1 text-xs py-2.5 rounded-lg border border-amber-200 text-amber-700 hover:bg-amber-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 rounded-lg border border-amber-400/30 py-2.5 font-label text-[11px] font-semibold uppercase tracking-[0.12em] text-amber-300 transition-colors hover:bg-amber-400/10 disabled:cursor-not-allowed disabled:opacity-40"
           >
             set pending
           </button>
           <button
             onClick={() => handleStatusChange('rejected')}
             disabled={app.status === 'rejected'}
-            className="flex-1 text-xs py-2.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 rounded-lg border border-red-400/30 py-2.5 font-label text-[11px] font-semibold uppercase tracking-[0.12em] text-red-300 transition-colors hover:bg-red-400/10 disabled:cursor-not-allowed disabled:opacity-40"
           >
             reject
           </button>
@@ -631,7 +632,7 @@ function RightPanel({
       <div className="p-5 space-y-3 mt-auto">
         <Link
           href={`/admin/ambassadors/${app.id}`}
-          className="block w-full text-center text-sm border border-brand-rule rounded-lg px-4 py-2.5 text-brand-muted hover:text-brand-ink hover:border-brand-ink transition-colors"
+          className={`${btn.secondary} w-full`}
         >
           open full detail page →
         </Link>
@@ -639,13 +640,13 @@ function RightPanel({
         {!confirmDelete ? (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="block w-full text-center text-xs text-red-400 hover:text-red-600 transition-colors py-1"
+            className="block w-full py-1 text-center text-xs text-red-300/80 transition-colors hover:text-red-300"
           >
             delete rep
           </button>
         ) : (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 space-y-2">
-            <p className="text-xs text-red-700 font-medium">
+          <div className="space-y-2 rounded-lg border border-red-400/30 bg-red-400/10 p-3">
+            <p className="text-xs font-semibold text-red-200">
               Permanently delete {app.name}? This cannot be undone. Their Shopify discount code is
               not removed — delete it in Shopify too if you want it dead.
             </p>
@@ -653,13 +654,13 @@ function RightPanel({
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="flex-1 bg-red-600 text-white rounded px-3 py-2 text-xs font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="flex-1 rounded-lg bg-red-500 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-red-600 disabled:opacity-50"
               >
                 {deleting ? 'deleting…' : 'yes, delete'}
               </button>
               <button
                 onClick={() => setConfirmDelete(false)}
-                className="flex-1 border border-red-200 text-red-600 rounded px-3 py-2 text-xs hover:bg-white transition-colors"
+                className="flex-1 rounded-lg border border-red-400/30 px-3 py-2 text-xs text-red-300 transition-colors hover:bg-red-400/10"
               >
                 cancel
               </button>
@@ -681,13 +682,13 @@ function EmptyPanel({ stats }: { stats: { total: number; approved: number; pendi
           { label: 'Pending', value: stats.pending },
           { label: 'Rejected', value: stats.rejected },
         ].map((s) => (
-          <div key={s.label} className="bg-brand-rule/30 rounded-xl p-4">
-            <p className="text-2xl font-bold text-brand-ink">{s.value}</p>
-            <p className="text-xs text-brand-muted mt-0.5">{s.label}</p>
+          <div key={s.label} className="rounded-xl border border-town-cream/10 bg-town-cream/[0.04] p-4">
+            <p className="font-block text-3xl font-bold leading-none text-town-cream tabular-nums">{s.value}</p>
+            <p className="admin-eyebrow mt-2">{s.label}</p>
           </div>
         ))}
       </div>
-      <p className="text-brand-muted text-sm mt-2">select a rep to manage</p>
+      <p className="mt-2 text-sm text-town-cream/45">select a rep to manage</p>
     </div>
   );
 }
@@ -793,44 +794,47 @@ export function AmbassadorsClient({
 
   return (
     <>
-      <div className="flex h-[calc(100vh-64px)] md:h-[calc(100vh-64px)] overflow-hidden gap-0">
+      <div className="flex h-[calc(100vh-64px)] gap-0 overflow-hidden md:h-screen">
         {/* Left — list */}
         <div className="flex flex-col w-full lg:w-3/5 shrink-0 overflow-hidden">
-          <div className="px-4 sm:px-6 pt-5 pb-3 shrink-0 flex items-start justify-between gap-3">
-            <div>
-              <h1 className="font-display text-2xl text-white mb-0.5">{title}</h1>
-              <p className="text-white/40 text-xs">{stats.total} total · {stats.pending} pending</p>
-            </div>
-            <button
-              onClick={() => { setAdding(true); setSelected(null); setSheetOpen(true); }}
-              className="shrink-0 bg-white text-[#1A1A1A] rounded-lg px-3 py-2 text-xs font-medium hover:bg-white/90 transition-colors"
-            >
-              + Add rep
-            </button>
+          <div className="shrink-0 px-4 pt-6 sm:px-8 sm:pt-10">
+            <PageHeader
+              eyebrow="Reps"
+              title={title}
+              description={`${stats.total} total · ${stats.pending} pending`}
+              right={
+                <button
+                  onClick={() => { setAdding(true); setSelected(null); setSheetOpen(true); }}
+                  className={btn.primary}
+                >
+                  + Add rep
+                </button>
+              }
+            />
           </div>
 
-          <div className="px-4 sm:px-6 shrink-0">
+          <div className="shrink-0 px-4 sm:px-8">
             <RepTabs active="roster" />
           </div>
 
-          <div className="px-4 sm:px-6 pb-3 shrink-0">
+          <div className="shrink-0 px-4 pb-3 sm:px-8">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="search name, email, instagram, town, code…"
-              className="w-full bg-white/8 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/30"
+              className={field}
             />
           </div>
 
-          <div className="px-4 sm:px-6 pb-3 flex gap-1.5 shrink-0 overflow-x-auto">
+          <div className="flex shrink-0 gap-1.5 overflow-x-auto px-4 pb-3 sm:px-8">
             {TABS.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap ${
+                className={`whitespace-nowrap rounded-full px-3.5 py-2 font-label text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${
                   filter === tab.key
-                    ? 'bg-white text-brand-ink'
-                    : 'bg-white/8 text-white/50 hover:text-white hover:bg-white/12'
+                    ? 'bg-town-cream text-town-navy'
+                    : 'border border-town-cream/15 text-town-cream/60 hover:text-town-cream'
                 }`}
               >
                 {tab.label} <span className="opacity-60">{tab.count}</span>
@@ -838,38 +842,38 @@ export function AmbassadorsClient({
             ))}
           </div>
 
-          <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-6 space-y-2">
+          <div className="flex-1 space-y-2 overflow-y-auto px-4 pb-6 sm:px-8">
             {filtered.length === 0 ? (
-              <p className="text-white/30 text-sm pt-6 text-center">no results</p>
+              <p className="pt-6 text-center text-sm text-town-cream/40">no results</p>
             ) : (
               filtered.map((app) => (
                 <button
                   key={app.id}
                   onClick={() => handleSelect(app)}
-                  className={`w-full text-left bg-white rounded-xl border px-4 py-3.5 transition-all active:scale-[0.99] ${
+                  className={`w-full rounded-xl border px-4 py-3.5 text-left transition-all active:scale-[0.99] ${
                     selected?.id === app.id
-                      ? 'border-brand-rust shadow-sm'
-                      : 'border-brand-rule hover:border-brand-rust/40 hover:shadow-sm'
+                      ? 'border-town-cream/50 bg-town-cream/[0.08]'
+                      : 'border-town-cream/10 bg-town-cream/[0.04] hover:border-town-cream/25'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-medium text-brand-ink text-sm truncate">{app.name}</p>
-                      <p className="text-brand-muted text-xs mt-0.5 truncate">
+                      <p className="truncate text-sm font-semibold text-town-cream">{app.name}</p>
+                      <p className="mt-0.5 truncate text-xs text-town-cream/50">
                         {app.instagram} · {(repBrand(app) === 'townies' ? app.town : app.school) ?? app.email}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {brand === 'all' && <BrandBadge brand={repBrand(app)} />}
                       {app.discount_code && (
-                        <span className="font-mono text-[10px] bg-brand-rule px-1.5 py-0.5 rounded text-brand-muted hidden sm:block">
+                        <span className="hidden rounded border border-town-cream/15 px-1.5 py-0.5 font-mono text-[10px] text-town-cream/70 sm:block">
                           {app.discount_code}
                         </span>
                       )}
                       <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                        app.approved ? 'bg-green-500' : app.status === 'rejected' ? 'bg-red-400' : 'bg-amber-400'
+                        app.approved ? 'bg-emerald-400' : app.status === 'rejected' ? 'bg-red-400' : 'bg-amber-400'
                       }`} />
-                      <svg className="lg:hidden text-brand-muted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg className="text-town-cream/40 lg:hidden" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="9 18 15 12 9 6"/>
                       </svg>
                     </div>
@@ -881,8 +885,8 @@ export function AmbassadorsClient({
         </div>
 
         {/* Right panel — desktop only */}
-        <div className="hidden lg:flex lg:w-2/5 shrink-0 overflow-hidden border-l border-white/10">
-          <div className="flex-1 bg-white rounded-xl m-4 overflow-y-auto shadow-sm">
+        <div className="hidden shrink-0 overflow-hidden border-l border-town-cream/10 lg:flex lg:w-2/5">
+          <div className="m-4 flex-1 overflow-y-auto rounded-xl border border-town-cream/10 bg-town-cream/[0.04]">
             {adding ? (
               <AddRepForm brand={brand} onCreated={handleCreated} onClose={() => setAdding(false)} />
             ) : selected ? (
@@ -899,18 +903,18 @@ export function AmbassadorsClient({
         <>
           {/* Backdrop */}
           <div
-            className="lg:hidden fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 z-40 bg-black/60 lg:hidden"
             onClick={() => { setAdding(false); closeSheet(); }}
           />
           {/* Sheet */}
           <div
             ref={sheetRef}
-            className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl"
+            className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl border-t border-town-cream/15 bg-[#0A1520] shadow-2xl lg:hidden"
             style={{ maxHeight: '90dvh', display: 'flex', flexDirection: 'column' }}
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1 shrink-0">
-              <div className="w-10 h-1 bg-brand-rule rounded-full" />
+              <div className="h-1 w-10 rounded-full bg-town-cream/20" />
             </div>
             <div className="flex-1 overflow-y-auto">
               {adding ? (

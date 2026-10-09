@@ -4,7 +4,7 @@ import type { RealBrand } from '@/lib/admin/brand';
 type BadgeBrand = RealBrand | 'mixed';
 
 const STYLES: Record<BadgeBrand, { label: string; cls: string }> = {
-  townies: { label: 'Townies', cls: 'bg-[#0D1B2A] text-white' },
+  townies: { label: 'Townies', cls: 'border border-town-cream/30 text-town-cream/80' },
   goodkicks: { label: 'Good Kicks', cls: 'bg-[#C66A3D] text-white' },
   mixed: { label: 'Both', cls: 'bg-[#6B6B6B] text-white' },
 };
