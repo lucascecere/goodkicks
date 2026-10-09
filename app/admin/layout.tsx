@@ -1,25 +1,29 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { LogOut, X } from 'lucide-react';
 import { BrandSwitcher } from '@/components/admin/brand-switcher';
+import { NavIcon } from '@/components/admin/nav-icon';
+import { ADMIN_NAV, activeChild, isActive } from '@/lib/admin/nav';
 
-const navItems = [
-  { href: '/admin', label: 'Dashboard' },
-  { href: '/admin/contacts', label: 'Contacts' },
-  { href: '/admin/ambassadors', label: 'Ambassadors' },
-  { href: '/admin/campaigns', label: 'Campaigns' },
-  { href: '/admin/reviews', label: 'Reviews' },
-  { href: '/admin/studio', label: 'Studio' },
-  { href: '/admin/integrations', label: 'Integrations' },
-  { href: '/admin/settings', label: 'Settings' },
-];
+// The Townies back office.
+//
+// Desktop: a navy sidebar with the eight sections; a section with children
+// opens while you're inside it. Phones: a slim top bar and a bottom tab bar
+// (Home · Orders · Products · Market · More), because thumbs live at the bottom
+// of the screen and almost all of the day-to-day work is orders.
 
-const mobileNavItems = navItems.filter((i) => i.href !== '/admin/settings');
+const LOGO = '/brand/logos/townies-script-natural.svg';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  // Close the More sheet whenever the page changes.
+  useEffect(() => setMoreOpen(false), [pathname]);
 
   if (pathname === '/admin/login') return <>{children}</>;
 
@@ -28,96 +32,192 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push('/admin/login');
   }
 
+  const mobileTabs = ADMIN_NAV.filter((i) => i.mobile);
+  const moreItems = ADMIN_NAV.filter((i) => !i.mobile);
+  const moreActive = moreItems.some((i) => isActive(i, pathname));
+  const section = ADMIN_NAV.find((i) => isActive(i, pathname));
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#1A1A1A]" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
-      {/* Mobile top bar */}
-      <div className="md:hidden bg-[#F0EAD9] border-b border-[#D9D2C2]">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div>
-            <p className="text-[#1A1A1A] text-base font-bold tracking-tight leading-none">Store Admin</p>
-            <p className="text-[#6B6B6B] text-[9px] mt-1 uppercase tracking-[0.18em]">Townies · Good Kicks</p>
-          </div>
-          <div className="flex items-center gap-1">
-            <Link
-              href="/admin/settings"
-              className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/admin/settings') ? 'bg-[#1A1A1A] text-white' : 'text-[#6B6B6B] hover:text-[#1A1A1A]'}`}
-              aria-label="Settings"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-              </svg>
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="px-3 py-1.5 rounded-lg text-xs text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors"
-            >
-              Log out
-            </button>
+    <div className="min-h-screen bg-town-navy font-body text-town-cream">
+      {/* ── Phone top bar ─────────────────────────────────────────────── */}
+      <div className="sticky top-0 z-30 border-b border-town-cream/10 bg-[#0A1520]/95 backdrop-blur md:hidden">
+        <div className="flex items-center justify-between px-4 py-2.5">
+          <Link href="/admin" className="flex items-center gap-2.5" aria-label="Admin home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={LOGO} alt="Townies" className="h-8 w-auto" />
+            <span className="admin-eyebrow">Admin</span>
+          </Link>
+          <div className="w-44">
+            <BrandSwitcher />
           </div>
         </div>
-        <div className="flex border-t border-[#D9D2C2]">
-          {mobileNavItems.map((item) => {
-            const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex-1 text-center py-2.5 text-xs font-medium transition-colors ${
-                  active ? 'bg-[#1A1A1A] text-white' : 'text-[#1A1A1A]/60 hover:text-[#1A1A1A]'
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-        <div className="px-4 py-2 border-t border-[#D9D2C2]">
-          <BrandSwitcher />
-        </div>
+        {/* A section's own sub-pages, as a scrollable strip under the bar. */}
+        {section?.children && (
+          <div className="flex gap-1 overflow-x-auto border-t border-town-cream/10 px-3 py-2">
+            {section.children.map((c) => {
+              const on = activeChild(section, pathname) === c.href;
+              return (
+                <Link
+                  key={c.href}
+                  href={c.href}
+                  className={`whitespace-nowrap rounded-full px-3 py-1.5 font-label text-[11px] font-semibold uppercase tracking-[0.12em] ${
+                    on ? 'bg-town-cream text-town-navy' : 'text-town-cream/55'
+                  }`}
+                >
+                  {c.label}
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* Desktop layout */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="hidden md:flex w-56 bg-[#F0EAD9] flex-col flex-shrink-0">
-          <div className="px-5 py-6 border-b border-[#D9D2C2]">
-            <p className="text-[#1A1A1A] text-lg font-bold tracking-tight leading-none">Store Admin</p>
-            <p className="text-[#6B6B6B] text-[10px] mt-1.5 uppercase tracking-[0.2em]">Townies · Good Kicks</p>
+      <div className="flex">
+        {/* ── Desktop sidebar ────────────────────────────────────────── */}
+        <aside className="sticky top-0 hidden h-screen w-60 flex-shrink-0 flex-col border-r border-town-cream/10 bg-[#0A1520] md:flex">
+          <div className="border-b border-town-cream/10 px-5 pb-5 pt-6">
+            <Link href="/admin" className="block" aria-label="Admin home">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={LOGO} alt="Townies" className="h-11 w-auto" />
+            </Link>
+            <p className="admin-eyebrow mt-2">Back office</p>
             <div className="mt-4">
               <BrandSwitcher />
             </div>
           </div>
-          <nav className="flex-1 px-3 py-4 space-y-1">
-            {navItems.map((item) => {
-              const active = item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
+
+          <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4">
+            {ADMIN_NAV.map((item) => {
+              const on = isActive(item, pathname);
+              const child = on ? activeChild(item, pathname) : null;
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                    active ? 'bg-[#1A1A1A] text-white' : 'text-[#1A1A1A]/60 hover:text-[#1A1A1A] hover:bg-[#1A1A1A]/10'
-                  }`}
-                >
-                  {item.label}
-                </Link>
+                <div key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-label text-[13px] font-semibold tracking-wide transition-colors ${
+                      on
+                        ? 'bg-town-cream text-town-navy'
+                        : 'text-town-cream/60 hover:bg-town-cream/[0.06] hover:text-town-cream'
+                    }`}
+                  >
+                    <NavIcon name={item.icon} />
+                    {item.label}
+                  </Link>
+                  {on && item.children && (
+                    <div className="mb-1 ml-[22px] mt-1 space-y-0.5 border-l border-town-cream/15 pl-3">
+                      {item.children.map((c) => (
+                        <Link
+                          key={c.href}
+                          href={c.href}
+                          className={`block rounded-md px-2 py-1.5 text-[13px] transition-colors ${
+                            child === c.href ? 'text-town-cream' : 'text-town-cream/45 hover:text-town-cream'
+                          }`}
+                        >
+                          {c.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </nav>
-          <div className="px-3 py-4 border-t border-[#D9D2C2]">
+
+          <div className="border-t border-town-cream/10 px-3 py-3">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#6B6B6B] hover:text-[#1A1A1A] hover:bg-[#1A1A1A]/10 transition-colors"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-label text-[13px] font-semibold text-town-cream/50 transition-colors hover:bg-town-cream/[0.06] hover:text-town-cream"
             >
-              <span>→</span> Log out
+              <LogOut className="h-[18px] w-[18px]" strokeWidth={1.75} /> Log out
             </button>
           </div>
         </aside>
 
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        {/* ── Page ───────────────────────────────────────────────────── */}
+        <main className="min-w-0 flex-1 pb-24 md:pb-0">{children}</main>
       </div>
+
+      {/* ── Phone bottom tabs ────────────────────────────────────────── */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-town-cream/10 bg-[#0A1520]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+        aria-label="Admin sections"
+      >
+        {mobileTabs.map((item) => {
+          const on = isActive(item, pathname);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center gap-1 py-2.5 font-label text-[10px] font-semibold uppercase tracking-[0.1em] ${
+                on ? 'text-town-cream' : 'text-town-cream/45'
+              }`}
+            >
+              <NavIcon name={item.icon} className="h-5 w-5" />
+              {item.label}
+            </Link>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => setMoreOpen(true)}
+          className={`flex flex-col items-center gap-1 py-2.5 font-label text-[10px] font-semibold uppercase tracking-[0.1em] ${
+            moreActive ? 'text-town-cream' : 'text-town-cream/45'
+          }`}
+        >
+          <NavIcon name="more" className="h-5 w-5" />
+          More
+        </button>
+      </nav>
+
+      {/* ── Phone "More" sheet ───────────────────────────────────────── */}
+      {moreOpen && (
+        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/60"
+            aria-label="Close menu"
+            onClick={() => setMoreOpen(false)}
+          />
+          <div className="absolute inset-x-0 bottom-0 rounded-t-2xl border-t border-town-cream/10 bg-[#0A1520] px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="admin-eyebrow">More</p>
+              <button type="button" onClick={() => setMoreOpen(false)} aria-label="Close" className="p-1 text-town-cream/60">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="space-y-1">
+              {moreItems.map((item) => (
+                <div key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-3 font-label text-sm font-semibold ${
+                      isActive(item, pathname) ? 'bg-town-cream text-town-navy' : 'text-town-cream/80'
+                    }`}
+                  >
+                    <NavIcon name={item.icon} />
+                    {item.label}
+                  </Link>
+                  {item.children && (
+                    <div className="ml-11 flex flex-wrap gap-x-4 gap-y-1 pb-1">
+                      {item.children.map((c) => (
+                        <Link key={c.href} href={c.href} className="py-1 text-xs text-town-cream/50">
+                          {c.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-label text-sm font-semibold text-town-cream/50"
+              >
+                <LogOut className="h-[18px] w-[18px]" strokeWidth={1.75} /> Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

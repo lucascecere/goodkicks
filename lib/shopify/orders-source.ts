@@ -19,6 +19,29 @@ export type ShopifyLineItem = {
   /** Per-line share of every order discount, including the rep's own code. */
   discount_allocations?: { amount: string }[];
   properties?: LineItemProperty[];
+  variant_title?: string | null;
+  sku?: string | null;
+  product_id?: number | null;
+};
+
+export type ShopifyAddress = {
+  name?: string | null;
+  address1?: string | null;
+  address2?: string | null;
+  city?: string | null;
+  province_code?: string | null;
+  zip?: string | null;
+  country_code?: string | null;
+  phone?: string | null;
+};
+
+export type ShopifyFulfillment = {
+  created_at: string;
+  status?: string | null;
+  shipment_status?: string | null;
+  tracking_company?: string | null;
+  tracking_number?: string | null;
+  tracking_url?: string | null;
 };
 
 export type ShopifyOrder = {
@@ -33,6 +56,16 @@ export type ShopifyOrder = {
   cancelled_at?: string | null;
   discount_codes: { code: string; amount?: string; type?: string }[];
   line_items: ShopifyLineItem[];
+  // The admin order views read these too. The REST orders payload always
+  // carries them; they're optional only because older fixtures don't.
+  fulfillment_status?: string | null;
+  subtotal_price?: string;
+  total_tax?: string;
+  total_shipping_price_set?: { shop_money?: { amount: string } };
+  shipping_address?: ShopifyAddress | null;
+  fulfillments?: ShopifyFulfillment[];
+  note?: string | null;
+  tags?: string;
 };
 
 /** Orders are cached this long; also the freshness promised on the rep dashboard. */

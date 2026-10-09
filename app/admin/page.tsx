@@ -1,11 +1,12 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
-import { getOrderSummary } from '@/lib/shopify/get-orders';
 import { getBundleTally } from '@/lib/shopify/get-bundle-tally';
 import { BRAND_LABELS, type AdminBrand, type RealBrand } from '@/lib/admin/brand';
 import { getAdminBrand } from '@/lib/admin/brand-server';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import Link from 'next/link';
 import { fmtDateShort, money } from '@/lib/admin/format';
+import { listAdminOrders, needsShipping } from '@/lib/admin/orders';
+import { Badge, Card, PageHeader, Stat } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,17 +66,6 @@ async function fetchContactSubmissions(
   return brand === 'all' ? normalized : normalized.filter((r) => r.brand === brand);
 }
 
-function StatCard({ label, value, sub, href }: { label: string; value: number; sub: string; href?: string }) {
-  const inner = (
-    <div className="bg-white/8 border border-white/10 rounded-xl p-5 hover:border-white/20 transition-colors">
-      <p className="text-xs text-white/40 uppercase tracking-wider mb-2">{label}</p>
-      <p className="text-4xl font-bold text-white mb-1">{value}</p>
-      <p className="text-white/40 text-xs leading-relaxed">{sub}</p>
-    </div>
-  );
-  return href ? <Link href={href}>{inner}</Link> : inner;
-}
-
 export default async function AdminDashboardPage() {
   const brand = await getAdminBrand();
   const supabase = createSupabaseServiceClient();
@@ -83,7 +73,6 @@ export default async function AdminDashboardPage() {
   // Both brands run a rep program now, so ambassadors are filtered by brand
   // rather than hidden. Bundles remain a Good Kicks product — skip the Shopify
   // bundle fetch entirely when scoped to Townies.
-  const showAmbassadors = true;
   const showBundles = brand !== 'townies';
 
   const ambassadorQuery = supabase
@@ -91,10 +80,10 @@ export default async function AdminDashboardPage() {
     .select('id, name, email, instagram, status, approved, created_at')
     .order('created_at', { ascending: false });
 
-  const [{ data: apps }, contactSubs, orderSummary, bundleTallies] = await Promise.all([
+  const [{ data: apps }, contactSubs, { orders }, bundleTallies] = await Promise.all([
     brand === 'all' ? ambassadorQuery : ambassadorQuery.eq('brand', brand),
     fetchContactSubmissions(supabase, brand),
-    getOrderSummary(brand),
+    listAdminOrders(brand),
     showBundles ? getBundleTally() : Promise.resolve([]),
   ]);
 
@@ -127,221 +116,134 @@ export default async function AdminDashboardPage() {
     },
   ];
 
+  const since = Date.now() - 30 * 24 * 60 * 60 * 1000;
+  const recent30 = orders.filter((o) => Date.parse(o.createdAt) >= since && o.payment !== 'voided');
+  const revenue30 = recent30.reduce((sum, o) => sum + o.total, 0);
+  const toShip = orders.filter(needsShipping);
+
   return (
-    <div className="p-8 max-w-5xl space-y-10">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-semibold text-white">Dashboard</h1>
-        <p className="text-white/40 text-sm mt-1">{brandLabel.toLowerCase()} overview</p>
+    <div className="mx-auto max-w-6xl space-y-8 px-4 py-6 sm:px-8 sm:py-10">
+      <PageHeader eyebrow={brandLabel} title="Home" />
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Stat label="To ship" value={toShip.length} sub={toShip.length ? 'paid, not shipped yet' : 'all caught up'} href="/admin/orders" />
+        <Stat label="Orders · 30 days" value={recent30.length} href="/admin/orders?view=all" />
+        <Stat label="Sales · 30 days" value={money(revenue30, { decimals: 0 })} sub="incl. shipping + tax" />
+        <Stat label="Reps to review" value={pending} sub={`${approved} active`} href="/admin/ambassadors" />
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard
-          label="Applications"
-          value={allApps.length}
-          sub={showAmbassadors ? `${pending} pending` : 'Good Kicks only'}
-          href="/admin/ambassadors"
-        />
-        <StatCard
-          label="Approved"
-          value={approved}
-          sub={showAmbassadors ? 'active ambassadors' : '—'}
-          href="/admin/ambassadors"
-        />
-        <StatCard
-          label="Pending Review"
-          value={pending}
-          sub={pending > 0 ? 'needs action' : 'all clear'}
-          href="/admin/ambassadors"
-        />
-        <StatCard
-          label="Contacts"
-          value={allContacts.length}
-          sub={brand === 'all' ? 'form submissions' : `${brandLabel} submissions`}
-          href="/admin/contacts"
-        />
-      </div>
-
-      {/* Orders */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-white uppercase tracking-wider">
-            Orders {brand !== 'all' && <span className="text-white/40 normal-case font-normal">· {brandLabel}</span>}
-          </h2>
-          <a href="https://admin.shopify.com/store/good-kicks-foot-bags-2/orders" target="_blank" rel="noopener noreferrer" className="text-xs text-white/40 hover:text-white transition-colors">manage in shopify →</a>
-        </div>
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white/8 border border-white/10 rounded-xl p-5">
-            <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Total Orders</p>
-            <p className="text-4xl font-bold text-white">{orderSummary.totalOrders}</p>
-          </div>
-          <div className="bg-white/8 border border-white/10 rounded-xl p-5">
-            <p className="text-xs text-white/40 uppercase tracking-wider mb-2">{brand === 'all' ? 'Total Revenue' : 'Brand Revenue'}</p>
-            <p className="text-4xl font-bold text-white">{money(orderSummary.totalRevenue, { decimals: 0 })}</p>
-          </div>
-          <div className="bg-white/8 border border-white/10 rounded-xl p-5">
-            <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Avg Order Value</p>
-            <p className="text-4xl font-bold text-white">{money(orderSummary.avgOrderValue, { decimals: 0 })}</p>
-          </div>
-        </div>
-        {brand !== 'all' && (
-          <p className="text-white/30 text-xs">
-            Per-brand revenue sums that brand&apos;s line items (excludes shipping &amp; order-level discounts).
-          </p>
-        )}
-      </div>
-
-      {/* Bundle Inventory Tracker — Good Kicks product */}
-      {showBundles && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Bundle Inventory <span className="text-white/40 normal-case font-normal">· Good Kicks</span></h2>
-            <a
-              href="https://admin.shopify.com/store/good-kicks-foot-bags-2/products"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-white/40 hover:text-white transition-colors"
-            >
-              update shopify inventory →
-            </a>
-          </div>
-
-          {bundleTallies.length === 0 ? (
-            <div className="bg-white/8 border border-white/10 rounded-xl p-6 text-center">
-              <p className="text-white/40 text-sm">no bundle orders yet — colorway picks will appear here.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {bundleTallies.map((bundle) => {
-                const max = bundle.colorways[0]?.units ?? 1;
-                return (
-                  <div key={bundle.bundleTitle} className="bg-white rounded-xl border border-brand-rule overflow-hidden">
-                    <div className="px-5 py-4 border-b border-brand-rule flex items-center justify-between">
-                      <div>
-                        <h3 className="text-sm font-medium text-brand-ink">{bundle.bundleTitle} — Colorway Picks</h3>
-                        <p className="text-xs text-brand-muted mt-0.5">
-                          {bundle.totalOrders} order{bundle.totalOrders !== 1 ? 's' : ''} · {bundle.totalUnits} total units to fulfill
-                        </p>
-                      </div>
-                      <span className="text-xs bg-amber-100 text-amber-700 font-medium px-2.5 py-1 rounded-full">
-                        deduct from shopify
-                      </span>
-                    </div>
-                    <div className="px-5 py-4 space-y-3">
-                      {bundle.colorways.map((cw) => {
-                        const pct = Math.round((cw.units / max) * 100);
-                        return (
-                          <div key={cw.name} className="flex items-center gap-4">
-                            <span className="text-sm text-brand-ink capitalize w-28 shrink-0 font-medium">{cw.name}</span>
-                            <div className="flex-1 h-2 bg-brand-rule rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-brand-rust rounded-full transition-all"
-                                style={{ width: `${pct}%` }}
-                              />
-                            </div>
-                            <span className="text-sm font-bold text-brand-ink w-6 text-right shrink-0">{cw.units}</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Contacts + Ambassadors panels */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent contacts */}
-        <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
-          <div className="px-5 py-4 border-b border-brand-rule flex items-center justify-between">
-            <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Contacts</h2>
-            <Link href="/admin/contacts" className="text-xs text-brand-rust hover:underline">view all →</Link>
-          </div>
-          {recentContacts.length === 0 ? (
-            <p className="px-5 py-8 text-brand-muted text-sm text-center">no submissions yet.</p>
-          ) : (
-            <div className="divide-y divide-brand-rule">
-              {recentContacts.map((c) => (
-                <Link
-                  key={c.id}
-                  href="/admin/contacts"
-                  className="flex items-start justify-between px-5 py-3.5 hover:bg-[#FAF7F2] transition-colors group gap-3"
-                >
+      <Card title="To ship" action={<Link href="/admin/orders" className="text-xs text-town-cream/50 hover:text-town-cream">All orders →</Link>}>
+        {toShip.length === 0 ? (
+          <p className="px-5 py-8 text-center text-sm text-town-cream/45">Nothing waiting. Every paid order has gone out.</p>
+        ) : (
+          <ul className="divide-y divide-town-cream/[0.07]">
+            {toShip.slice(0, 6).map((o) => (
+              <li key={o.key}>
+                <Link href={`/admin/orders/${o.key}`} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-town-cream/[0.04] sm:px-5">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-brand-ink group-hover:text-brand-rust transition-colors">{c.name}</p>
-                    <p className="text-xs text-brand-muted truncate max-w-xs">
-                      {c.message ? c.message.slice(0, 55) + (c.message.length > 55 ? '…' : '') : c.email}
+                    <p className="text-sm font-semibold text-town-cream">
+                      {o.number} <span className="font-normal text-town-cream/50">· {o.customer}</span>
+                    </p>
+                    <p className="truncate text-xs text-town-cream/50">
+                      {o.lines.map((l) => `${l.title}${l.quantity > 1 ? ` ×${l.quantity}` : ''}`).join(', ')}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 ml-3 shrink-0">
-                    {brand === 'all' && <BrandBadge brand={c.brand} />}
-                    <span className="text-xs text-brand-muted">{fmtDateShort(c.created_at)}</span>
-                  </div>
+                  <span className="shrink-0 text-xs text-town-cream/40">{fmtDateShort(o.createdAt)}</span>
                 </Link>
-              ))}
-            </div>
-          )}
-        </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
 
-        {/* Recent ambassadors */}
-        <div className="bg-white rounded-xl border border-brand-rule overflow-hidden">
-          <div className="px-5 py-4 border-b border-brand-rule flex items-center justify-between">
-            <h2 className="text-sm font-medium text-brand-ink uppercase tracking-wide">Ambassadors</h2>
-            <Link href="/admin/ambassadors" className="text-xs text-brand-rust hover:underline">view all →</Link>
+      {showBundles && bundleTallies.length > 0 && (
+        <Card title="Good Kicks bundle picks">
+          <div className="space-y-5 px-4 py-4 sm:px-5">
+            {bundleTallies.map((bundle) => {
+              const max = bundle.colorways[0]?.units ?? 1;
+              return (
+                <div key={bundle.bundleTitle}>
+                  <p className="text-sm text-town-cream">{bundle.bundleTitle}</p>
+                  <p className="mb-3 text-xs text-town-cream/45">
+                    {bundle.totalOrders} order{bundle.totalOrders !== 1 ? 's' : ''} · {bundle.totalUnits} units to fulfill
+                  </p>
+                  <div className="space-y-2">
+                    {bundle.colorways.map((cw) => (
+                      <div key={cw.name} className="flex items-center gap-3">
+                        <span className="w-24 shrink-0 text-sm capitalize text-town-cream/80">{cw.name}</span>
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-town-cream/10">
+                          <div className="h-full rounded-full bg-town-cream" style={{ width: `${Math.round((cw.units / max) * 100)}%` }} />
+                        </div>
+                        <span className="w-6 shrink-0 text-right text-sm tabular-nums text-town-cream">{cw.units}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          {recentApps.length === 0 ? (
-            <p className="px-5 py-8 text-brand-muted text-sm text-center">
-              {brand === 'townies' ? 'ambassadors are Good Kicks-only for now.' : 'no applications yet.'}
-            </p>
+        </Card>
+      )}
+
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Card title="Messages" action={<Link href="/admin/contacts" className="text-xs text-town-cream/50 hover:text-town-cream">View all →</Link>}>
+          {recentContacts.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-town-cream/45">No messages yet.</p>
           ) : (
-            <div className="divide-y divide-brand-rule">
-              {recentApps.map((a) => {
-                const badge = a.approved
-                  ? { label: 'approved', cls: 'bg-green-100 text-green-700' }
-                  : a.status === 'rejected'
-                  ? { label: 'rejected', cls: 'bg-red-100 text-red-600' }
-                  : { label: 'pending', cls: 'bg-amber-100 text-amber-700' };
-                return (
-                  <Link
-                    key={a.id}
-                    href={`/admin/ambassadors/${a.id}`}
-                    className="flex items-center justify-between px-5 py-3.5 hover:bg-[#FAF7F2] transition-colors group"
-                  >
+            <ul className="divide-y divide-town-cream/[0.07]">
+              {recentContacts.map((c) => (
+                <li key={c.id}>
+                  <Link href="/admin/contacts" className="flex items-start justify-between gap-3 px-4 py-3 hover:bg-town-cream/[0.04] sm:px-5">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-brand-ink group-hover:text-brand-rust transition-colors">{a.name}</p>
-                      <p className="text-xs text-brand-muted">{a.instagram}</p>
+                      <p className="text-sm text-town-cream">{c.name}</p>
+                      <p className="truncate text-xs text-town-cream/50">{c.message ? c.message.slice(0, 70) : c.email}</p>
                     </div>
-                    <div className="flex items-center gap-3 ml-3 shrink-0">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${badge.cls}`}>{badge.label}</span>
-                      <span className="text-xs text-brand-muted">{fmtDateShort(a.created_at)}</span>
+                    <div className="flex shrink-0 items-center gap-2">
+                      {brand === 'all' && <BrandBadge brand={c.brand} />}
+                      <span className="text-xs text-town-cream/40">{fmtDateShort(c.created_at)}</span>
                     </div>
                   </Link>
-                );
-              })}
-            </div>
+                </li>
+              ))}
+            </ul>
           )}
-        </div>
+        </Card>
+
+        <Card title="Reps" action={<Link href="/admin/ambassadors" className="text-xs text-town-cream/50 hover:text-town-cream">View all →</Link>}>
+          {recentApps.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-town-cream/45">No applications yet.</p>
+          ) : (
+            <ul className="divide-y divide-town-cream/[0.07]">
+              {recentApps.map((a) => (
+                <li key={a.id}>
+                  <Link href={`/admin/ambassadors/${a.id}`} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-town-cream/[0.04] sm:px-5">
+                    <div className="min-w-0">
+                      <p className="text-sm text-town-cream">{a.name}</p>
+                      <p className="truncate text-xs text-town-cream/50">{a.instagram}</p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      {a.approved ? <Badge tone="good">Approved</Badge> : a.status === 'rejected' ? <Badge tone="bad">Rejected</Badge> : <Badge tone="warn">Pending</Badge>}
+                      <span className="text-xs text-town-cream/40">{fmtDateShort(a.created_at)}</span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
       </div>
 
-      {/* External links */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {externalLinks.map((l) => (
           <a
             key={l.label}
             href={l.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-4 py-3.5 transition-colors group"
+            className="rounded-xl border border-town-cream/10 px-4 py-3 transition-colors hover:border-town-cream/30"
           >
-            <div>
-              <p className="text-white text-sm font-medium">{l.label}</p>
-              <p className="text-white/40 text-xs mt-0.5">{l.desc}</p>
-            </div>
-            <span className="text-white/30 group-hover:text-white/70 transition-colors text-sm">→</span>
+            <p className="text-sm text-town-cream">{l.label}</p>
+            <p className="mt-0.5 text-xs text-town-cream/40">{l.desc}</p>
           </a>
         ))}
       </div>

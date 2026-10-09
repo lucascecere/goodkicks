@@ -35,7 +35,7 @@ export function BrandSwitcher() {
   }
 
   return (
-    <div className="flex rounded-lg bg-[#1A1A1A]/5 border border-[#1A1A1A]/10 p-0.5">
+    <div className="flex rounded-lg border border-town-cream/15 bg-town-cream/[0.04] p-0.5">
       {OPTIONS.map((option) => {
         const active = option === brand;
         return (
@@ -45,8 +45,8 @@ export function BrandSwitcher() {
             onClick={() => pick(option)}
             className={`flex-1 whitespace-nowrap rounded-md px-2 py-1.5 text-[11px] font-semibold transition-colors ${
               active
-                ? 'bg-[#1A1A1A] text-white shadow-sm'
-                : 'text-[#1A1A1A]/50 hover:text-[#1A1A1A]'
+                ? 'bg-town-cream text-town-navy'
+                : 'text-town-cream/50 hover:text-town-cream'
             }`}
           >
             {option === 'all' ? 'All' : BRAND_LABELS[option]}
