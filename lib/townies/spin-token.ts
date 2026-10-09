@@ -61,7 +61,9 @@ async function sign(payload: string, key: string): Promise<string> {
     false,
     ['sign'],
   );
-  const signature = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(payload));
+  // Labelled so a spin token can never be a valid admin session even when the
+  // two share a key (see lib/admin/session.ts).
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode('townies-spin-v2:' + payload));
   return base64urlFromBytes(new Uint8Array(signature));
 }
 

@@ -46,6 +46,15 @@ function base64urlDecode(text: string): string {
   return new TextDecoder().decode(bytes);
 }
 
+/**
+ * Every admin signature covers this label as well as the payload. Other tokens
+ * in the app (the spin wheel's prize token) used to be signed the same way with
+ * the same key, so a public spin token passed as an admin session (2026-10-09
+ * audit). The label makes the two signatures different even under one key, and
+ * the payload must also say typ 'admin'.
+ */
+const CONTEXT = 'townies-admin-session-v2:';
+
 async function sign(payload: string, key: string): Promise<string> {
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
@@ -54,7 +63,7 @@ async function sign(payload: string, key: string): Promise<string> {
     false,
     ['sign']
   );
-  const signature = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(payload));
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(CONTEXT + payload));
   return base64urlFromBytes(new Uint8Array(signature));
 }
 
@@ -70,7 +79,7 @@ export async function createSessionToken(): Promise<string> {
   const key = secret();
   if (!key) throw new Error('Cannot create a session: no ADMIN_SESSION_SECRET or ADMIN_PASSWORD');
   const now = Math.floor(Date.now() / 1000);
-  const payload = base64urlEncode(JSON.stringify({ iat: now, exp: now + SESSION_MAX_AGE_SECONDS }));
+  const payload = base64urlEncode(JSON.stringify({ typ: 'admin', iat: now, exp: now + SESSION_MAX_AGE_SECONDS }));
   return `${payload}.${await sign(payload, key)}`;
 }
 
@@ -104,8 +113,8 @@ export async function verifySessionToken(token: string | undefined | null): Prom
   // Signature is valid, so the payload is ours and can be trusted — but it can
   // still be past its expiry.
   try {
-    const data = JSON.parse(base64urlDecode(payload)) as { exp?: unknown };
-    if (typeof data.exp !== 'number') return false;
+    const data = JSON.parse(base64urlDecode(payload)) as { typ?: unknown; exp?: unknown };
+    if (data.typ !== 'admin' || typeof data.exp !== 'number') return false;
     return Math.floor(Date.now() / 1000) < data.exp;
   } catch {
     return false;

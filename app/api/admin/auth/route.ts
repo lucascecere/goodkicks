@@ -4,6 +4,16 @@ import {
   SESSION_MAX_AGE_SECONDS,
   createSessionToken,
 } from '@/lib/admin/session';
+import { timingSafeEqual } from 'node:crypto';
+import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
+
+/** Constant-time string compare; an unset env value never matches. */
+function same(given: unknown, want: string | undefined): boolean {
+  if (typeof given !== 'string' || !want) return false;
+  const a = Buffer.from(given);
+  const b = Buffer.from(want);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 /** Registrable domains this app serves. Longest-suffix match wins. */
 const SITE_DOMAINS = ['townies.shop', 'goodkicks.co'];
@@ -28,12 +38,15 @@ function cookieDomain(host: string | null): string | undefined {
 }
 
 export async function POST(req: NextRequest) {
-  const { email, password } = await req.json();
+  // 10 tries per 15 minutes per IP (2026-10-09 audit: there was no limit).
+  if (!rateLimit(`admin-login:${callerIp(req.headers)}`, 10, 15 * 60_000)) {
+    return NextResponse.json({ error: 'Too many attempts. Try again in a few minutes.' }, { status: 429 });
+  }
+  const { email, password } = (await req.json().catch(() => ({}))) as { email?: unknown; password?: unknown };
 
-  if (
-    email !== process.env.ADMIN_EMAIL ||
-    password !== process.env.ADMIN_PASSWORD
-  ) {
+  const emailOk = typeof email === 'string' && same(email.trim().toLowerCase(), process.env.ADMIN_EMAIL?.trim().toLowerCase());
+  const passwordOk = same(password, process.env.ADMIN_PASSWORD);
+  if (!emailOk || !passwordOk) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
   }
 
