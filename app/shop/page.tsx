@@ -5,7 +5,9 @@ import { hatStyle, regionForProduct, regionLabel, townKey } from '@/lib/townies/
 import { RequestTownBand } from '@/components/townies/request-town-band';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
-import { HAT_SACK_LIVE, HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
+import { HAT_SACK_LIVE } from '@/lib/townies/hat-sack';
+import { ShopHero } from '@/components/townies/v2/shop-hero';
+import { HatSackBanner } from '@/components/townies/v2/hat-sack-banner';
 import { getHatSackFromCents } from '@/lib/shopify/hat-sack-offer';
 import { getReviewSummaries } from '@/lib/reviews/server';
 
@@ -62,31 +64,10 @@ export default async function ShopPage({
           ),
         }}
       />
-      {/* v2 (2026-10): a Melin-style collection head, light and left-aligned,
-          straight into the filters. The navy band, ticker and pattern are gone. */}
-      <section className="border-b border-rule bg-[#F1EEE8]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-10 sm:py-14">
-          <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60 mb-3">
-            The shop
-          </p>
-          <h1 className="display text-[2.5rem] sm:text-[3.25rem] text-text">Every town.</h1>
-          <p className="mt-3 max-w-lg text-text/75 leading-relaxed">
-            {items.length > 0
-              ? `${items.length} ${items.length === 1 ? 'hat' : 'hats'} across ${towns.length} ${towns.length === 1 ? 'town' : 'towns'}. Filter by region, town or style.`
-              : 'The first drop lands soon.'}
-          </p>
-          {hatSack !== null && (
-            <Link
-              href={HAT_SACK_PATH}
-              className="mt-5 inline-block text-[0.875rem] underline underline-offset-4 text-text/80 hover:text-text"
-            >
-              Hat &amp; Sack: any hat plus a Good Kicks foot bag, from {formatUsd(hatSack)} shipped
-            </Link>
-          )}
-        </div>
-      </section>
+      <ShopHero hatCount={items.length} townCount={towns.length} regions={regions} />
+      {hatSack !== null && <HatSackBanner fromCents={hatSack} />}
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
+      <div id="hats" className="relative max-w-7xl mx-auto scroll-mt-24 px-4 sm:px-8 pt-12 sm:pt-16 pb-20">
         {items.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-muted text-sm mb-6">
@@ -102,6 +83,9 @@ export default async function ShopPage({
           </div>
         ) : (
           <ShopFilter
+            // Remount when the URL filters change (the hero's region links),
+            // since the filter only reads them as its starting state.
+            key={`${town ?? ''}|${region ?? ''}|${style ?? ''}`}
             ratings={await getReviewSummaries()}
             items={items}
             towns={towns}

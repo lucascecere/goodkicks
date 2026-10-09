@@ -97,7 +97,6 @@ export const TOWNIES: BrandConfig = {
   logoClass: 'h-11 sm:h-[3.25rem] w-auto translate-y-[3px] sm:translate-y-[4px]',
   nav: [
     { href: '/shop', label: 'Shop' },
-    { href: '/hat-and-sack', label: 'Hat & Sack' },
     // Lucas, 10-07: two different jobs. Custom Hats = THEIR logo on our blanks
     // (businesses, teams, events). Wholesale = OUR town hats bought in volume
     // at a wholesale price (shops, town events, fundraisers).
