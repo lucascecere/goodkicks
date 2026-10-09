@@ -187,3 +187,64 @@ create table if not exists shop_settings (
   updated_at timestamptz not null default now()
 );
 alter table shop_settings enable row level security;
+
+-- Added 2026-10-09 (applied as migration `shop_catalog_and_discounts`):
+-- what the town hats need to move over from Shopify, and our own discount
+-- codes. Codes only ever discount Townies' own hats, never a local business's
+-- hat, so a promo can't eat into what we owe a business.
+alter table shop_products
+  add column if not exists kind text not null default 'hat' check (kind in ('hat', 'foot_bag', 'bundle', 'internal')),
+  add column if not exists images jsonb not null default '[]'::jsonb,
+  add column if not exists tags text[] not null default '{}',
+  add column if not exists preorder boolean not null default false,
+  add column if not exists region text,
+  add column if not exists town text,
+  add column if not exists compare_at_cents int,
+  add column if not exists shopify_product_id text unique,
+  add column if not exists shopify_variant_id text;
+
+create table if not exists shop_discounts (
+  id uuid primary key default gen_random_uuid(),
+  code text not null,
+  kind text not null check (kind in ('percent', 'fixed', 'free_shipping')),
+  value int not null default 0 check (value >= 0),
+  min_subtotal_cents int not null default 0,
+  starts_at timestamptz,
+  ends_at timestamptz,
+  usage_limit int,
+  used_count int not null default 0,
+  once_per_email boolean not null default false,
+  source text not null default 'manual' check (source in ('manual', 'rep', 'partner', 'quiz', 'welcome', 'shopify_import')),
+  rep_id uuid,
+  partner text,
+  active boolean not null default true,
+  note text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create unique index if not exists shop_discounts_code_ci on shop_discounts (lower(code));
+alter table shop_discounts enable row level security;
+
+alter table shop_orders
+  add column if not exists discount_code text,
+  add column if not exists discount_cents int not null default 0;
+
+alter table shop_order_items
+  add column if not exists discount_cents int not null default 0;
+
+create or replace function shop_use_discount(p_code text)
+returns void
+language sql
+security invoker
+set search_path = public
+as $$
+  update shop_discounts set used_count = used_count + 1, updated_at = now() where lower(code) = lower(p_code);
+$$;
+revoke execute on function shop_use_discount(text) from public, anon, authenticated;
+
+-- Added 2026-10-09 (migration `shop_discount_scope`): what a code works on,
+-- mirroring Shopify's collection-scoped codes (Good Kicks ambassador codes
+-- only discount foot bags; rep codes only town hats).
+alter table shop_discounts
+  add column if not exists scope text not null default 'all' check (scope in ('all', 'hats', 'foot_bags')),
+  add column if not exists shopify_discount_id text unique;

@@ -71,13 +71,17 @@ export function splitLine({
   };
 }
 
+/** The promise in the Townies announcement bar: free shipping over $75. */
+export const FREE_SHIPPING_OVER_CENTS = 7500;
+
 /**
  * Shipping by hat count, matching the Townies Shopify profile
  * ("Hats — Standard Shipping": ≤0.5 lb $5.95, ≤1 lb $8.95, over $12.95).
- * Pickup is free.
+ * Pickup is free, and so is any order whose hats come to $75 or more.
  */
-export function shippingCents(hatCount: number, delivery: 'ship' | 'pickup'): number {
+export function shippingCents(hatCount: number, delivery: 'ship' | 'pickup', subtotalCents = 0): number {
   if (delivery === 'pickup' || hatCount <= 0) return 0;
+  if (subtotalCents >= FREE_SHIPPING_OVER_CENTS) return 0;
   if (hatCount === 1) return 595;
   if (hatCount === 2) return 895;
   return 1295;

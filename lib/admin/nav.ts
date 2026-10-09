@@ -49,11 +49,12 @@ export const ADMIN_NAV: AdminNavItem[] = [
     href: '/admin/campaigns',
     label: 'Marketing',
     icon: 'marketing',
-    match: ['/admin/campaigns', '/admin/reviews', '/admin/studio'],
+    match: ['/admin/campaigns', '/admin/reviews', '/admin/studio', '/admin/codes'],
     children: [
       { href: '/admin/campaigns', label: 'Campaigns' },
       { href: '/admin/reviews', label: 'Reviews' },
       { href: '/admin/studio', label: 'Studio' },
+      { href: '/admin/codes', label: 'Discount codes' },
     ],
   },
   {

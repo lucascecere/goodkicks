@@ -10,6 +10,7 @@ const Body = z.object({
     .array(z.object({ productId: z.string().uuid(), qty: z.number().int().min(1).max(20) }))
     .min(1)
     .max(30),
+  code: z.string().trim().max(40).optional().nullable(),
 });
 
 export async function POST(req: Request) {

@@ -6,13 +6,14 @@ import Link from 'next/link';
 import { Minus, Plus, X } from 'lucide-react';
 import { bagCount, removeFromBag, setQty, useBag } from '@/lib/shop/bag';
 import { MARKET_BASE } from '@/lib/shop/paths';
-import { dollars, shippingCents } from '@/lib/shop/money';
+import { dollars, FREE_SHIPPING_OVER_CENTS, shippingCents } from '@/lib/shop/money';
 
 export function BagView() {
   const lines = useBag();
   const [delivery, setDelivery] = useState<'ship' | 'pickup'>('ship');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [code, setCode] = useState('');
 
   const sellers = useMemo(() => [...new Set(lines.map((l) => l.sellerId))], [lines]);
   // Pickup is at one business, so it's offered only when every hat comes from
@@ -22,7 +23,10 @@ export function BagView() {
 
   const count = bagCount(lines);
   const subtotal = lines.reduce((n, l) => n + l.priceCents * l.qty, 0);
-  const shipping = shippingCents(count, mode);
+  const shipping = shippingCents(count, mode, subtotal);
+  const toFree = FREE_SHIPPING_OVER_CENTS - subtotal;
+  // Codes only discount Townies' own hats, so the box only shows when there is one.
+  const codesApply = lines.some((l) => l.house);
 
   async function checkout() {
     setBusy(true);
@@ -31,7 +35,11 @@ export function BagView() {
       const res = await fetch('/api/shop/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ delivery: mode, lines: lines.map((l) => ({ productId: l.productId, qty: l.qty })) }),
+        body: JSON.stringify({
+          delivery: mode,
+          code: codesApply && code.trim() ? code.trim() : null,
+          lines: lines.map((l) => ({ productId: l.productId, qty: l.qty })),
+        }),
       });
       const json = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
       if (!res.ok || !json.url) throw new Error(json.error || 'Checkout failed. Try again.');
@@ -97,7 +105,10 @@ export function BagView() {
             <input type="radio" name="delivery" className="mt-1" checked={mode === 'ship'} onChange={() => setDelivery('ship')} />
             <span>
               <span className="block font-semibold text-text">Ship it</span>
-              <span className="text-sm text-muted">{dollars(shippingCents(count, 'ship'))} · USPS, 3 to 7 business days</span>
+              <span className="text-sm text-muted">
+                {shippingCents(count, 'ship', subtotal) ? dollars(shippingCents(count, 'ship', subtotal)) : 'Free'} · USPS, 3 to 7 business days
+              </span>
+              {toFree > 0 && <span className="mt-1 block text-xs text-muted">{dollars(toFree)} more for free shipping</span>}
             </span>
           </label>
           <label
@@ -113,6 +124,22 @@ export function BagView() {
           </label>
         </div>
       </fieldset>
+
+      {codesApply && (
+        <div>
+          <label htmlFor="code" className="mb-1.5 block font-label text-[0.6875rem] font-bold uppercase tracking-[0.18em] text-muted">
+            Discount code
+          </label>
+          <input
+            id="code"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            autoCapitalize="characters"
+            className="w-full border border-rule bg-white px-3 py-2.5 text-[0.9375rem] uppercase text-text focus:border-text focus:outline-none sm:w-64"
+          />
+          <p className="mt-1 text-xs text-muted">Applied at checkout. Works on Townies hats.</p>
+        </div>
+      )}
 
       <div className="space-y-2 border-t border-rule pt-6 text-sm">
         <div className="flex justify-between text-muted">

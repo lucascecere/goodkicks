@@ -52,6 +52,15 @@ export type Product = {
   on_hand: number;
   stock_buffer: number;
   sort: number;
+  kind: 'hat' | 'foot_bag' | 'bundle' | 'internal';
+  images: string[];
+  tags: string[];
+  preorder: boolean;
+  region: string | null;
+  town: string | null;
+  compare_at_cents: number | null;
+  shopify_product_id: string | null;
+  shopify_variant_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -91,6 +100,8 @@ export type Order = {
   shipping_cents: number;
   tax_cents: number;
   total_cents: number;
+  discount_code: string | null;
+  discount_cents: number;
   stripe_session_id: string | null;
   stripe_payment_intent_id: string | null;
   stripe_charge_id: string | null;
@@ -121,6 +132,7 @@ export type OrderItem = {
   seller_payout_cents: number;
   royalbacks_fee_cents: number;
   our_cut_cents: number;
+  discount_cents: number;
 };
 
 export type PayoutStatus = 'held' | 'due' | 'transferred' | 'reversed' | 'canceled';

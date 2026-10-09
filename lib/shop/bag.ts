@@ -17,6 +17,8 @@ export type BagLine = {
   sellerSlug: string;
   sellerId: string;
   pickup: boolean;
+  /** A Townies hat (codes apply) rather than a local shop's. */
+  house?: boolean;
   priceCents: number;
   image: string | null;
 };

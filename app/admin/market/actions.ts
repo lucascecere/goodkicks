@@ -24,6 +24,7 @@ import { minPriceCents, WHOLESALE_CENTS, type WholesaleType } from '@/lib/shop/m
 import { startPayoutClock, transferPayout } from '@/lib/shop/payouts';
 import { buyLabel, registerTracking, shippoConfigured } from '@/lib/shop/shippo';
 import { queueMarketReview } from '@/lib/shop/reviews';
+import { importShopifyCatalog } from '@/lib/shop/import-shopify';
 import type { SellerStatus } from '@/lib/shop/types';
 
 // Every admin write for the market and our own orders. Middleware already
@@ -376,5 +377,15 @@ export async function transferNowAction(payoutId: string): Promise<ActionResult>
     revalidatePath('/admin/market/payouts');
     if (err) throw new Error(err);
     return 'Sent.';
+  });
+}
+
+// ── Catalog ────────────────────────────────────────────────────────────────
+
+export async function importShopifyAction(): Promise<ActionResult> {
+  return wrap(async () => {
+    const r = await importShopifyCatalog();
+    revalidatePath('/admin/products');
+    return `Copied from Shopify: ${r.created} new, ${r.updated} refreshed${r.skipped.length ? `, skipped ${r.skipped.join(', ')}` : ''}. Nothing in Shopify changed.`;
   });
 }

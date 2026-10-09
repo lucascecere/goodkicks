@@ -5,6 +5,7 @@ import { getShopStripe } from './config';
 import { createHeldPayouts, unwindPayouts } from './payouts';
 import { sendAdminNewOrder, sendOrderReceipt, sendSellerSale } from './email';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
+import { markDiscountUsed } from './discounts-db';
 import type { Order, Seller, ShippingAddress } from './types';
 
 // Stripe events for the shop's own account. Every handler is idempotent:
@@ -83,6 +84,7 @@ export async function markOrderPaid(sessionId: string) {
   const final: Order = short.length ? await updateOrder(order.id, { fulfillment: 'needs_production' }) : paid;
 
   await createHeldPayouts(final, items, sellers);
+  if (final.discount_code) await quietly('discount count', () => markDiscountUsed(final.discount_code!));
 
   // Market buyers join the same Customers list as Shopify buyers, so
   // campaigns and the review emails can reach them.

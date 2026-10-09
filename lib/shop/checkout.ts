@@ -3,6 +3,8 @@ import type Stripe from 'stripe';
 import { db, getProductsByIds, listSellers } from './db';
 import { getShopStripe, MARKET_BASE, siteUrl } from './config';
 import { shippingCents, splitLine } from './money';
+import { applyDiscount, discountProblem, normalizeCode } from './discounts';
+import { findDiscount } from './discounts-db';
 import type { Seller } from './types';
 
 // Start a checkout: price the cart from the DATABASE (never from the
@@ -19,9 +21,11 @@ const CLOTHING_TAX_CODE = 'txcd_30011000';
 export async function startCheckout({
   lines,
   delivery,
+  code,
 }: {
   lines: CartLine[];
   delivery: 'ship' | 'pickup';
+  code?: string | null;
 }): Promise<{ url: string; orderId: string }> {
   const merged = new Map<string, number>();
   for (const l of lines) merged.set(l.productId, (merged.get(l.productId) ?? 0) + l.qty);
@@ -63,7 +67,21 @@ export async function startCheckout({
 
   const hatCount = items.reduce((n, i) => n + i.qty, 0);
   const subtotal = items.reduce((n, i) => n + i.product.price_cents! * i.qty, 0);
-  const shipping = shippingCents(hatCount, delivery);
+
+  // A code discounts Townies' own hats only (see discounts.ts).
+  const priced = items.map((i) => ({ key: i.product.id, house: i.seller.kind === 'house', kind: i.product.kind, unitPriceCents: i.product.price_cents!, qty: i.qty }));
+  let discount = { itemsCents: 0, perLine: {} as Record<string, number>, freeShipping: false };
+  let discountCode: string | null = null;
+  if (code && code.trim()) {
+    const d = await findDiscount(code);
+    if (!d) throw new CheckoutError("That code isn't valid.");
+    const problem = discountProblem(d, priced);
+    if (problem) throw new CheckoutError(problem);
+    discount = applyDiscount(d, priced);
+    discountCode = normalizeCode(d.code);
+  }
+  const afterDiscount = subtotal - discount.itemsCents;
+  const shipping = discount.freeShipping ? 0 : shippingCents(hatCount, delivery, afterDiscount);
 
   const { data: order, error } = await db()
     .from('shop_orders')
@@ -73,7 +91,9 @@ export async function startCheckout({
       pickup_seller_id: pickupSeller?.id ?? null,
       subtotal_cents: subtotal,
       shipping_cents: shipping,
-      total_cents: subtotal + shipping,
+      discount_code: discountCode,
+      discount_cents: discount.itemsCents,
+      total_cents: afterDiscount + shipping,
     })
     .select('id, number')
     .single();
@@ -93,7 +113,9 @@ export async function startCheckout({
         wholesale_cents: i.product.wholesale_cents,
         seller_payout_cents: i.split.sellerPayoutCents,
         royalbacks_fee_cents: i.split.royalbacksFeeCents,
-        our_cut_cents: i.split.ourCutCents,
+        // Discounts only land on our own hats, so they only ever come out of our cut.
+        discount_cents: discount.perLine[i.product.id] ?? 0,
+        our_cut_cents: i.split.ourCutCents - (discount.perLine[i.product.id] ?? 0),
       })),
     );
   if (itemsErr) throw new Error(`create order items: ${itemsErr.message}`);
@@ -124,6 +146,24 @@ export async function startCheckout({
       },
     })),
     automatic_tax: { enabled: true },
+    ...(discount.itemsCents > 0
+      ? {
+          discounts: [
+            {
+              coupon: (
+                await getShopStripe().coupons.create({
+                  amount_off: discount.itemsCents,
+                  currency: 'usd',
+                  duration: 'once',
+                  max_redemptions: 1,
+                  name: discountCode!,
+                  redeem_by: Math.floor(Date.now() / 1000) + 2 * 60 * 60,
+                })
+              ).id,
+            },
+          ],
+        }
+      : {}),
     phone_number_collection: { enabled: true },
     success_url: `${base}${MARKET_BASE}/order/${order.id}?thanks=1`,
     cancel_url: `${base}${MARKET_BASE}/bag`,
@@ -136,7 +176,7 @@ export async function startCheckout({
       {
         shipping_rate_data: {
           type: 'fixed_amount',
-          display_name: 'USPS Ground Advantage',
+          display_name: shipping === 0 ? 'Free shipping (USPS Ground Advantage)' : 'USPS Ground Advantage',
           fixed_amount: { amount: shipping, currency: 'usd' },
           tax_behavior: 'exclusive',
           delivery_estimate: { minimum: { unit: 'business_day', value: 3 }, maximum: { unit: 'business_day', value: 7 } },

@@ -6,6 +6,8 @@ import { listShopifyProducts, type AdminProduct } from '@/lib/admin/products';
 import { Badge, Card, EmptyState, PageHeader, field } from '@/components/admin/ui';
 import { listProducts, listSellers } from '@/lib/shop/db';
 import { dollars } from '@/lib/shop/money';
+import { ActionButton } from '@/components/admin/action';
+import { importShopifyAction } from '@/app/admin/market/actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,11 +63,14 @@ export default async function ProductsPage({
   const [{ products, configured, error }, marketHats, sellers] = await Promise.all([
     listShopifyProducts(),
     brand === 'goodkicks' ? Promise.resolve([]) : listProducts().catch(() => []),
-    brand === 'goodkicks' ? Promise.resolve([]) : listSellers().catch(() => []),
+    brand === 'goodkicks' ? Promise.resolve([]) : listSellers({ includeHouse: true }).catch(() => []),
   ]);
+  const houseId = sellers.find((x) => x.kind === 'house')?.id;
+  const copied = marketHats.filter((h) => h.seller_id === houseId);
+  const lastCopy = copied.reduce((m, h) => (h.updated_at > m ? h.updated_at : m), '');
   const sellerName = new Map(sellers.map((x) => [x.id, x.name]));
   const market = marketHats
-    .filter((h) => h.status !== 'archived' && sellerName.has(h.seller_id))
+    .filter((h) => h.status !== 'archived' && sellerName.has(h.seller_id) && h.seller_id !== houseId)
     .filter((h) => !q || `${h.title} ${sellerName.get(h.seller_id)}`.toLowerCase().includes(q));
   const scoped = products.filter((p) => brand === 'all' || p.brand === brand);
   const counts = Object.fromEntries(VIEWS.map((v) => [v.id, scoped.filter((p) => inView(p, v.id)).length]));
@@ -150,6 +155,19 @@ export default async function ProductsPage({
             ))}
           </ul>
         </div>
+      )}
+
+      {brand !== 'goodkicks' && (
+        <Card title="Moving off Shopify" className="mt-8">
+          <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <p className="text-sm text-town-cream/70">
+              {copied.length
+                ? `${copied.length} products copied into our own system as hidden drafts${lastCopy ? `, last refreshed ${new Date(lastCopy).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}` : ''}. Shopify is still what sells them.`
+                : 'Copy your Shopify products into our own system as hidden drafts. Nothing in Shopify changes and nothing new shows on the site.'}
+            </p>
+            <ActionButton action={importShopifyAction}>{copied.length ? 'Refresh from Shopify' : 'Copy from Shopify'}</ActionButton>
+          </div>
+        </Card>
       )}
 
       {market.length > 0 && (
