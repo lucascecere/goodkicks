@@ -80,6 +80,7 @@ export default async function JoinPage({
             website: seller.website ?? '',
             instagram: seller.instagram ?? '',
             contact_phone: seller.contact_phone ?? '',
+            contact_email: seller.contact_email ?? '',
             pickup_enabled: seller.pickup_enabled,
             pickup_address: seller.pickup_address ?? '',
             pickup_notes: seller.pickup_notes ?? '',

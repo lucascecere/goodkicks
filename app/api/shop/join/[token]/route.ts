@@ -16,6 +16,8 @@ const Body = z.object({
   website: z.union([z.literal(''), z.string().trim().max(200).regex(/^https?:\/\/[^\s]+$/i, 'Website must start with http:// or https://')]).optional().default(''),
   instagram: z.union([z.literal(''), z.string().trim().max(60).regex(/^@?[A-Za-z0-9._]{1,30}$/)]).optional().default(''),
   contact_phone: z.string().trim().max(40).optional().default(''),
+  // Stripe needs an email on every payout account.
+  contact_email: z.union([z.literal(''), z.string().trim().email().max(120)]).optional().default(''),
   pickup_enabled: z.boolean(),
   pickup_address: z.string().trim().max(200).optional().default(''),
   pickup_notes: z.string().trim().max(300).optional().default(''),
@@ -35,7 +37,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     const path = parsed.error.issues[0]?.path[0];
-    const msg = path === 'website' ? 'Your website needs to start with https://' : path === 'instagram' ? 'Instagram should be just your handle, like @yourshop.' : 'Something in the form looks off.';
+    const msg = path === 'website' ? 'Your website needs to start with https://' : path === 'instagram' ? 'Instagram should be just your handle, like @yourshop.' : path === 'contact_email' ? 'That email address looks off.' : 'Something in the form looks off.';
     return NextResponse.json({ error: msg }, { status: 400 });
   }
   const b = parsed.data;
@@ -68,6 +70,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
     website: b.website || null,
     instagram: b.instagram || null,
     contact_phone: b.contact_phone || null,
+    contact_email: b.contact_email ? b.contact_email.toLowerCase() : seller.contact_email,
     pickup_enabled: b.pickup_enabled,
     pickup_address: b.pickup_address || null,
     pickup_notes: b.pickup_notes || null,

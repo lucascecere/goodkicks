@@ -23,6 +23,7 @@ type SellerInfo = {
   website: string;
   instagram: string;
   contact_phone: string;
+  contact_email: string;
   pickup_enabled: boolean;
   pickup_address: string;
   pickup_notes: string;
@@ -121,6 +122,10 @@ export function JoinForm({
           <div>
             <label className={label} htmlFor="town">Town</label>
             <input id="town" className={input} value={info.town} onChange={(e) => set('town', e.target.value)} />
+          </div>
+          <div className="sm:col-span-2">
+            <label className={label} htmlFor="email">Email (for sales alerts and payouts)</label>
+            <input id="email" type="email" className={input} value={info.contact_email} onChange={(e) => set('contact_email', e.target.value)} placeholder="you@yourshop.com" />
           </div>
           <div>
             <label className={label} htmlFor="phone">Phone</label>
@@ -240,12 +245,16 @@ export function JoinForm({
               Payouts go through Stripe. You&rsquo;ll confirm a few details and add the bank account where you want your share sent.
               It takes about three minutes.
             </p>
+            {!info.contact_email.trim() || !saved ? (
+              <p className="text-sm text-muted">Add your email in step 1 and save your shop first, then connect payouts here.</p>
+            ) : (
             <a
               href={`/api/shop/connect/${token}`}
               className="inline-block bg-accent px-6 py-3.5 font-label text-xs font-bold uppercase tracking-[0.16em] text-accent-contrast"
             >
               {seller.hasStripe ? 'Finish connecting payouts' : 'Connect payouts'}
             </a>
+            )}
           </>
         )}
       </Step>

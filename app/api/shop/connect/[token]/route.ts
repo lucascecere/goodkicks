@@ -22,6 +22,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
   if (!shopStripeConfigured()) return problem('Payouts are not open yet. We will email you when they are.', 503);
 
   const join = `${siteUrl()}${MARKET_BASE}/join/${token}`;
+  if (!seller.contact_email) {
+    return problem('Add your email in step 1 of your shop setup and save it first. Stripe needs it to set up your payouts.', 400, join);
+  }
   try {
     const account = await ensureExpressAccount(seller);
     const url = await onboardingLink(account, `${join}?connected=1`, `${siteUrl()}/api/shop/connect/${token}`);
