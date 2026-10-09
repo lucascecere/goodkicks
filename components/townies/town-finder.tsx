@@ -186,7 +186,7 @@ export function TownFinder() {
             </div>
 
             <div className="border-t border-rule px-5 py-3 flex items-center justify-between text-[0.625rem] uppercase tracking-[0.18em] text-muted">
-              <span>{towns ? `${towns.length} towns live` : ''}</span>
+              <span>{towns ? `${towns.filter((t) => t.slug !== 'titletown').length} towns live` : ''}</span>
               <Link href="/shop" onClick={() => setOpen(false)} className="underline underline-offset-4 hover:text-text">
                 Browse all
               </Link>

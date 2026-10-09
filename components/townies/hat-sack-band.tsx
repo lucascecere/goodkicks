@@ -51,7 +51,7 @@ export async function HatSackBand() {
             <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">Townies × Good Kicks</p>
             <h2 className="display mt-3 text-[2rem] text-text sm:text-[2.75rem]">Hat &amp; Sack. From {formatUsd(priceCents)} shipped.</h2>
             <p className="mt-3 max-w-md text-[1rem] leading-relaxed text-text/75">
-              Any hat on the shelf plus any Good Kicks foot bag. Shipping included, one box.
+              Any hat on the shelf plus any Good Kicks foot bag. Shipping included.
             </p>
             <span className="mt-6 inline-flex bg-text px-7 py-3.5 font-label text-[0.75rem] font-semibold uppercase tracking-[0.16em] text-white transition-colors group-hover:bg-black">
               Build your bundle

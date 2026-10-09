@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const price = `from ${formatUsd(await getHatSackFromCents())}`;
   return {
     title: { absolute: `Hat & Sack, ${price} With Shipping | Townies × Good Kicks` },
-    description: `Any Townies hat in stock plus any Good Kicks foot bag in stock, ${price} with shipping included. Shipped together in one box.`,
+    description: `Any Townies hat in stock plus any Good Kicks foot bag in stock, ${price} with shipping included. They ship together.`,
     alternates: { canonical: HAT_SACK_PATH },
   };
 }
@@ -83,7 +83,7 @@ export default async function HatAndSackPage() {
           <p className="mb-3 font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">Townies × Good Kicks</p>
           <h1 className="display text-[2.5rem] text-text sm:text-[3.25rem]">Hat &amp; Sack.</h1>
           <p className="mt-3 max-w-lg leading-relaxed text-text/75">
-            Any hat on the shelf, any foot bag on the shelf. From {from} for both, shipping included, packed in one box.
+            Any hat on the shelf, any foot bag on the shelf. From {from} for both, shipping included.
           </p>
         </div>
       </section>
