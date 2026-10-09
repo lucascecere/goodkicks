@@ -134,7 +134,7 @@ export function TheBlanks() {
         const colours = models.reduce((n, m) => n + m.colorways.length, 0);
         return {
           kicker: brand,
-          title: `${models.length} blanks, ${colours} colourways.`,
+          title: `${models.length} blanks, ${colours} colorways.`,
           body: models.map((m) => `${m.model}`).join(' · ') + '. ' + (brand === 'Weld'
             ? 'The two-tone Workhorse is the blank on most of our own town hats.'
             : brand === 'Richardson'

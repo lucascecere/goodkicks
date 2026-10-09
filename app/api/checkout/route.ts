@@ -41,12 +41,30 @@ type CheckoutItem = {
 };
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const items: CheckoutItem[] = body?.items ?? [];
-  const discountCode: string | undefined = body?.discountCode;
+  const body = await req.json().catch(() => null);
+  const items: CheckoutItem[] = Array.isArray(body?.items) ? body.items : [];
+  const discountCode: string | undefined = typeof body?.discountCode === 'string' ? body.discountCode : undefined;
 
   if (!items.length) {
     return NextResponse.json({ error: 'cart is empty' }, { status: 400 });
+  }
+  // A malformed line (no variant id, zero or fractional quantity) is the
+  // caller's mistake, not ours: say so with a 400 rather than letting Shopify
+  // throw and surfacing it as a 500.
+  const bad = items.findIndex(
+    (i) =>
+      !i ||
+      typeof i.variantId !== 'string' ||
+      !i.variantId.trim() ||
+      !Number.isInteger(i.quantity) ||
+      i.quantity <= 0 ||
+      (i.customAttributes !== undefined && !Array.isArray(i.customAttributes)),
+  );
+  if (bad !== -1) {
+    return NextResponse.json(
+      { error: `Item ${bad + 1} needs a variantId string and a whole-number quantity above 0.` },
+      { status: 400 },
+    );
   }
 
   let checked: CheckoutItem[] | null;

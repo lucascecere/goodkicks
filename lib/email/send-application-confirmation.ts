@@ -42,7 +42,7 @@ export async function sendApplicationConfirmation({
   await sendEmail({
     from: isTownies ? TOWNIES_FROM : 'Good Kicks <info@goodkicks.co>',
     to: safeEmail(email),
-    replyTo: 'info@goodkicks.co',
+    replyTo: isTownies ? 'info@townies.shop' : 'info@goodkicks.co',
     subject: isTownies ? 'got your Town Rep application.' : 'we got your application. ✌️',
     text,
   });

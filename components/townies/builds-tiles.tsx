@@ -18,7 +18,7 @@ import type { CollectionProduct } from '@/lib/shopify/collections';
  */
 const BUILDS: Array<{ key: HatStyle; name: string; line: string }> = [
   { key: 'lifestyle', name: 'The Lifestyle', line: 'Two-tone twill, slightly structured, pre-curved brim.' },
-  { key: 'everyday', name: 'The Everyday', line: 'Solid colour, low-profile crown, flat brim.' },
+  { key: 'everyday', name: 'The Everyday', line: 'Solid color, low-profile crown, flat brim.' },
 ];
 
 function priceLabel(p: CollectionProduct): string | null {

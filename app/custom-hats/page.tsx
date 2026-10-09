@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { regionLabel } from '@/lib/townies/towns';
+import { sortByStock } from '@/lib/townies/stock-tier';
 import {
   CUSTOM_BUILDER,
   CUSTOM_HUB,
@@ -64,7 +65,7 @@ const FAQS: Faq[] = [
   },
   {
     q: 'Which hats can I choose from?',
-    a: 'Blanks from Weld, Richardson and Yupoong: two-tone and solid 5-panel snapbacks, rope caps, flat-bill snapbacks and the classic truckers (Richardson 112, Yupoong 6006). The builder shows every colourway each maker sells.',
+    a: 'Blanks from Weld, Richardson and Yupoong: two-tone and solid 5-panel snapbacks, rope caps, flat-bill snapbacks and the classic truckers (Richardson 112, Yupoong 6006). The builder shows every colorway each maker sells.',
   },
   {
     q: 'Is the logo printed or embroidered?',
@@ -87,7 +88,8 @@ const FAQS: Faq[] = [
 export default async function CustomHatsPage() {
   const products = await getTownieProducts().catch(() => []);
   const towns = customTowns(products);
-  const shelf = products.slice(0, 4);
+  // In-stock hats first, sold-out last, so the rail never leads with a dead end.
+  const shelf = sortByStock(products).slice(0, 4);
 
   // Towns grouped by region, for the "serving businesses across Massachusetts" list.
   const byRegion = new Map<string, typeof towns>();
@@ -151,7 +153,7 @@ export default async function CustomHatsPage() {
       <WhatGoesOn />
 
       <Section ground>
-        <SectionHead label="The hats" title="Weld, Richardson, Yupoong." sub="The makers we embroider on, in the colourways they actually sell." />
+        <SectionHead label="The hats" title="Weld, Richardson, Yupoong." sub="The makers we embroider on, in the colorways they actually sell." />
         <TheBlanks />
       </Section>
 

@@ -9,7 +9,7 @@
 import type { NextRequest } from 'next/server';
 import { wedgeAt, wedgeById } from '@/lib/townies/spin-prizes';
 import { verifySpinToken } from '@/lib/townies/spin-token';
-import { callerIp, hashIp, rateLimit } from '@/lib/townies/spin-ratelimit';
+import { callerIp, hashIp, rateLimit, underDailyClaimLimit } from '@/lib/townies/spin-ratelimit';
 import { mintSpinCode, ShopifyNotConfiguredError, ShopifyScopeError } from '@/lib/shopify/create-spin-code';
 import { sendSpinCodeEmail } from '@/lib/email/send-spin-code';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
@@ -96,6 +96,16 @@ export async function POST(req: NextRequest) {
         alreadyClaimed: true,
       });
     }
+  }
+
+  // Durable per-IP cap on NEW codes (the in-memory limit above resets on every
+  // cold start). Checked after the email lookup so a returning visitor still
+  // gets their original code back.
+  if (supabase && !(await underDailyClaimLimit(supabase, await hashIp(ip)))) {
+    return Response.json(
+      { error: 'That’s the limit for codes from here today. Try again tomorrow.' },
+      { status: 429 },
+    );
   }
 
   let minted;

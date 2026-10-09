@@ -79,11 +79,14 @@ export function HatSackPicker({
   hats,
   sacks,
   tiers,
+  fromCents,
 }: {
   hats: CollectionProduct[];
   sacks: CollectionProduct[];
   /** Live from Shopify; shipping is included in every tier. */
   tiers: HatSackOffer['tiers'];
+  /** Cheapest tier purchasable with today's shelf (bundleFromCents). */
+  fromCents: number;
 }) {
   const { addItem, openCart } = useCart();
   const [hatHandle, setHatHandle] = useState<string | null>(null);
@@ -93,7 +96,6 @@ export function HatSackPicker({
   const separately = hat && sack ? (priceCents(hat) ?? 0) + (priceCents(sack) ?? 0) : null;
   // Price follows the picks (see bundleTier); before both are picked, show "from".
   const tier = hat && sack ? tiers[bundleTier(priceCents(hat), priceCents(sack))] : null;
-  const fromCents = Math.min(...Object.values(tiers).map((t) => t.cents));
   const bundleCents = tier?.cents ?? fromCents;
   const canAdd = Boolean(hat && sack && tier?.id);
 

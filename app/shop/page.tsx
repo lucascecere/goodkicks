@@ -6,7 +6,7 @@ import { RequestTownBand } from '@/components/townies/request-town-band';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/components/townies/shop-filter';
 import { HAT_SACK_LIVE, HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
-import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
+import { getHatSackFromCents } from '@/lib/shopify/hat-sack-offer';
 import { getReviewSummaries } from '@/lib/reviews/server';
 
 export const revalidate = 60;
@@ -32,7 +32,7 @@ export default async function ShopPage({
   const { town, region, style } = await searchParams;
   const [products, hatSack] = await Promise.all([
     getTownieProducts(),
-    HAT_SACK_LIVE ? getHatSackOffer() : null,
+    HAT_SACK_LIVE ? getHatSackFromCents() : null,
   ]);
 
   const items: ShopItem[] = products.map((p) => {
@@ -75,12 +75,12 @@ export default async function ShopPage({
               ? `${items.length} ${items.length === 1 ? 'hat' : 'hats'} across ${towns.length} ${towns.length === 1 ? 'town' : 'towns'}. Filter by region, town or style.`
               : 'The first drop lands soon.'}
           </p>
-          {hatSack && (
+          {hatSack !== null && (
             <Link
               href={HAT_SACK_PATH}
               className="mt-5 inline-block text-[0.875rem] underline underline-offset-4 text-text/80 hover:text-text"
             >
-              Hat &amp; Sack: any hat plus a Good Kicks foot bag, from {formatUsd(Math.min(hatSack.tiers.everyday.cents, hatSack.tiers.standard.cents, hatSack.tiers.titletown.cents))} shipped
+              Hat &amp; Sack: any hat plus a Good Kicks foot bag, from {formatUsd(hatSack)} shipped
             </Link>
           )}
         </div>

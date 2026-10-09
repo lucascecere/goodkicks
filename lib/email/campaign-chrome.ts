@@ -40,11 +40,9 @@ export const CAMPAIGN_CHROME: Record<RealBrand, CampaignChrome> = {
     name: 'Townies',
     site: 'townies.shop',
     url: 'https://townies.shop',
-    // Deliberately the Good Kicks mailbox: townies.shop is not a verified
-    // Resend sending domain yet, and Resend rejects unverified senders. The
-    // send route resolves the real From via TOWNIES_FROM, which flips over on
-    // its own once TOWNIES_FROM_EMAIL is set. See lib/email/send-rep-welcome.ts.
-    email: 'info@goodkicks.co',
+    // Reply-to and unsubscribe mailbox only. The From is resolved separately
+    // via TOWNIES_FROM (TOWNIES_FROM_EMAIL), see lib/email/send-rep-welcome.ts.
+    email: 'info@townies.shop',
   },
   goodkicks: {
     header: '#C0541A',

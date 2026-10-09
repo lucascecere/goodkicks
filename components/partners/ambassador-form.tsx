@@ -184,7 +184,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
 
       <div>
         <label className={labelClass}>
-          {isTownies ? 'tell us how you rep your town' : 'tell us about your account'}
+          {isTownies ? 'tell us how you wear your town' : 'tell us about your account'}
         </label>
         <textarea
           required
@@ -253,7 +253,7 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
       {state === 'error' && (
         <p className="text-red-500 text-sm">
           something went wrong. Try again or email us at{' '}
-          {isTownies ? 'hello@townies.shop' : 'info@goodkicks.co'}
+          {isTownies ? 'info@townies.shop' : 'info@goodkicks.co'}
         </p>
       )}
 

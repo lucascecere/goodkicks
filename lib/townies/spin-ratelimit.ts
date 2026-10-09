@@ -1,4 +1,5 @@
 import 'server-only';
+import type { createSupabaseServiceClient } from '@/lib/supabase/client';
 
 // Best-effort per-IP throttle for the spin endpoints.
 //
@@ -55,4 +56,33 @@ export async function hashIp(ip: string): Promise<string> {
     .slice(0, 16)
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
+}
+
+/** New codes one IP can mint per rolling day. Repeat claims by email don't count. */
+export const CLAIMS_PER_IP_PER_DAY = 3;
+
+/**
+ * The DURABLE limit, unlike rateLimit() above: counts this IP's rows in
+ * spin_claims over the last 24h, so it holds across cold starts and instances.
+ * Stops one person farming codes with burner addresses. Fails OPEN on a
+ * database error: a real visitor losing their prize to a blip is the worse
+ * outcome, and every code is still single-use in Shopify.
+ */
+export async function underDailyClaimLimit(
+  supabase: ReturnType<typeof createSupabaseServiceClient>,
+  ipHash: string,
+): Promise<boolean> {
+  try {
+    const since = new Date(Date.now() - 864e5).toISOString();
+    const { count, error } = await supabase
+      .from('spin_claims')
+      .select('id', { count: 'exact', head: true })
+      .eq('ip_hash', ipHash)
+      .gte('created_at', since);
+    if (error) throw error;
+    return (count ?? 0) < CLAIMS_PER_IP_PER_DAY;
+  } catch (err) {
+    console.error('[spin-ratelimit] daily claim count failed:', err);
+    return true;
+  }
 }

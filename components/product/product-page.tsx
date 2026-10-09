@@ -26,7 +26,8 @@ import {
   formatUsd,
 } from '@/lib/townies/hat-sack';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
-import { bundleTier } from '@/lib/townies/hat-sack';
+import { bundleTier, eligibleSacks, priceCents } from '@/lib/townies/hat-sack';
+import { sortByStock } from '@/lib/townies/stock-tier';
 import { getProductReviews } from '@/lib/reviews/server';
 import { ProductReviews } from '@/components/townies/v2/product-reviews';
 import { Stars } from '@/components/townies/v2/stars';
@@ -194,7 +195,20 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
 
   // Cross-sell within the same brand.
   const hatSack = gk || !HAT_SACK_LIVE ? null : await getHatSackOffer();
-  const townCross = gk ? [] : (await getTownieProducts()).filter((p) => p.handle !== handle).slice(0, 4);
+  // "Make it $X": the cheapest purchasable tier for THIS hat over the bags on
+  // the shelf right now (same rule as the picker), not an assumed $9.99 bag.
+  const hatSackCents = hatSack
+    ? await (async () => {
+        const hatCents = variants[0].priceInCents;
+        const live = eligibleSacks(await getGoodKicksProducts())
+          .map((s) => hatSack.tiers[bundleTier(hatCents, priceCents(s))])
+          .filter((t) => t.id)
+          .map((t) => t.cents);
+        return live.length ? Math.min(...live) : hatSack.tiers[bundleTier(hatCents, 999)].cents;
+      })()
+    : 0;
+  // Available hats lead the rail; sold-out towns go last (or off the end).
+  const townCross = gk ? [] : sortByStock((await getTownieProducts()).filter((p) => p.handle !== handle)).slice(0, 4);
   const gkCross = gk ? (await getGoodKicksProducts()).filter((p) => p.handle !== handle).slice(0, 4) : [];
 
   // Real approved reviews for this hat (Townies only).
@@ -392,7 +406,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                   <span className="text-[0.8125rem] leading-snug text-text">
                     <span className="font-semibold">
                       {/* Same tier rule as the picker: this hat with a state bag. */}
-                      Make it {formatUsd(hatSack.tiers[bundleTier(variants[0].priceInCents, 999)].cents)}
+                      Make it {formatUsd(hatSackCents)}
                     </span>
                     <span className="text-muted">: add any Good Kicks foot bag, shipping included</span>
                   </span>

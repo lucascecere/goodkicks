@@ -96,7 +96,7 @@ function BlankPicker({ value, onChange }: { value: string; onChange: (id: string
               <span className="flex items-baseline justify-between gap-2">
                 <span className="text-[0.9375rem] font-semibold text-text">{m.brand} {m.model}</span>
                 <span className="font-label text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-muted">
-                  {m.colorways.length} colours
+                  {m.colorways.length} colors
                 </span>
               </span>
               <span className="mt-1 block text-[0.8125rem] leading-snug text-muted">{m.short}</span>
@@ -123,7 +123,7 @@ function ColorwayPicker({
       <p className="font-label mb-2 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-muted">
         Selected <span className="ml-1 normal-case tracking-normal text-text">{value}</span>
       </p>
-      <div role="radiogroup" aria-label="Colourway" className="flex max-h-[232px] flex-wrap gap-2 overflow-y-auto p-1">
+      <div role="radiogroup" aria-label="Colorway" className="flex max-h-[232px] flex-wrap gap-2 overflow-y-auto p-1">
         {list.map((c) => {
           const checked = c.name === value;
           return (
@@ -467,7 +467,7 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
 
   const caption = () => [
     `${hatLine} · ${colourLine}`,
-    'Mockup for a quote. Colours are approximate; thread colours and stitch count confirmed with your price.',
+    'Mockup for a quote. Colors are approximate; thread colors and stitch count confirmed with your price.',
   ];
 
   async function makeMockup() {
@@ -624,8 +624,8 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
 
             <Step
               n="02"
-              title="Colourway"
-              hint={`${blank.colorways.length} colourways, as ${blank.brand} makes them. Colours on screen are approximate; we confirm the exact blank with your quote.`}
+              title="Colorway"
+              hint={`${blank.colorways.length} colorways, as ${blank.brand} makes them. Colors on screen are approximate; we confirm the exact blank with your quote.`}
             >
               <ColorwayPicker
                 list={blank.colorways}
@@ -637,7 +637,7 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
             <Step
               n="03"
               title="Your logo"
-              hint="PNG, JPG or SVG, up to 5MB. A logo on a transparent background works best. Direct embroidery: we'll confirm stitch count and thread colours."
+              hint="PNG, JPG or SVG, up to 5MB. A logo on a transparent background works best. Direct embroidery: we'll confirm stitch count and thread colors."
             >
               <div className="space-y-5">
                 <FilePick
@@ -865,12 +865,12 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
                     rows={4}
                     maxLength={2000}
                     className={fieldClass}
-                    placeholder="Thread colours you have in mind, a split of styles, or anything the mockup can't show."
+                    placeholder="Thread colors you have in mind, a split of styles, or anything the mockup can't show."
                   />
                 </div>
 
                 <p className="text-[0.8125rem] text-muted">
-                  Direct embroidery. We&rsquo;ll confirm stitch count and thread colours.
+                  Direct embroidery. We&rsquo;ll confirm stitch count and thread colors.
                   {!logo && ' No logo yet? Send the form anyway and reply with it later.'}
                 </p>
 

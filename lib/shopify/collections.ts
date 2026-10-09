@@ -7,7 +7,7 @@
 // every read degrades to [] so the build/runtime never depends on a collection
 // existing yet.
 
-import { getVariantStock } from './stock';
+import { getVariantStock, getVariantStockStrict } from './stock';
 
 export type CollectionProduct = {
   id: string;
@@ -100,6 +100,67 @@ function fixtureProducts(handle: string): CollectionProduct[] {
   }
 }
 
+async function readCollection(
+  domain: string,
+  token: string,
+  handle: string,
+  first: number,
+  fresh: boolean,
+): Promise<CollectionProduct[]> {
+  const res = await fetch(`https://${domain}/api/2026-04/graphql.json`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': token,
+    },
+    body: JSON.stringify({
+      query: COLLECTION_PRODUCTS_QUERY,
+      variables: { handle, first },
+    }),
+    signal: AbortSignal.timeout(8000),
+    // Short window so newly-added Shopify products appear within ~a minute.
+    // (Vercel's data cache persists across deployments — a redeploy alone will
+    // NOT refresh this, so keep the window short rather than relying on deploys.)
+    // The retry after a failure skips the cache so a bad answer isn't reused.
+    ...(fresh ? { cache: 'no-store' as const } : { next: { revalidate: 60, tags: ['shopify-collections'] } }),
+  });
+  if (!res.ok) throw new Error(`Storefront ${res.status}`);
+  const json = await res.json();
+  if (json?.errors) throw new Error(JSON.stringify(json.errors));
+  const edges = json?.data?.collection?.products?.edges;
+  if (!Array.isArray(edges)) throw new Error(`collection "${handle}" returned no products field`);
+  return edges.map((e: { node: CollectionProduct }) => e.node);
+}
+
+/**
+ * Like getProductsByCollection, but retries once and then THROWS instead of
+ * degrading to []. For pages that must not mistake "Shopify didn't answer" for
+ * "nothing in stock" (the Hat & Sack picker). Stock counts are required too.
+ */
+export async function getProductsByCollectionStrict(
+  handle: string,
+  first = 100,
+): Promise<CollectionProduct[]> {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+  const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+  if (!domain || !token) return fixtureProducts(handle);
+
+  let products: CollectionProduct[];
+  try {
+    products = await readCollection(domain, token, handle, first, false);
+  } catch (err) {
+    console.error('[collections] read failed, retrying:', err);
+    products = await readCollection(domain, token, handle, first, true);
+  }
+  const stock = await getVariantStockStrict(
+    products.map((p) => p.variants.edges[0]?.node.id).filter((id): id is string => Boolean(id)),
+  );
+  return products.map((p) => {
+    const vid = p.variants.edges[0]?.node.id;
+    return { ...p, stock: vid ? (stock[vid]?.quantity ?? null) : null };
+  });
+}
+
 export async function getProductsByCollection(
   handle: string,
   first = 100,
@@ -109,29 +170,13 @@ export async function getProductsByCollection(
   if (!domain || !token) return fixtureProducts(handle);
 
   try {
-    const res = await fetch(`https://${domain}/api/2026-04/graphql.json`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': token,
-      },
-      body: JSON.stringify({
-        query: COLLECTION_PRODUCTS_QUERY,
-        variables: { handle, first },
-      }),
-      // Short window so newly-added Shopify products appear within ~a minute.
-      // (Vercel's data cache persists across deployments — a redeploy alone will
-      // NOT refresh this, so keep the window short rather than relying on deploys.)
-      next: { revalidate: 60, tags: ['shopify-collections'] },
-    });
-    const json = await res.json();
-    if (json?.errors) {
-      console.error('[collections]', JSON.stringify(json.errors));
-      return [];
+    let products: CollectionProduct[];
+    try {
+      products = await readCollection(domain, token, handle, first, false);
+    } catch (err) {
+      console.error('[collections] read failed, retrying:', err);
+      products = await readCollection(domain, token, handle, first, true);
     }
-    const edges = json?.data?.collection?.products?.edges;
-    if (!Array.isArray(edges)) return [];
-    const products: CollectionProduct[] = edges.map((e: { node: CollectionProduct }) => e.node);
     // Best-effort real counts so the shop can say "in stock" from data, not a tag.
     const stock = await getVariantStock(
       products.map((p) => p.variants.edges[0]?.node.id).filter((id): id is string => Boolean(id)),

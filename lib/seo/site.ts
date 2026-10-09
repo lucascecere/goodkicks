@@ -40,7 +40,7 @@ export const BUSINESS = {
   ogImage: `${SITE_URL}/opengraph-image.jpg`,
   description:
     'Embroidered snapback hats for Massachusetts towns, and custom embroidered hats for local businesses, teams and schools.',
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'hello@townies.shop',
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? 'info@townies.shop',
   // Set once confirmed for the Google Business Profile (kept blank until then
   // rather than guessed — a wrong number is worse than none for NAP).
   phone: process.env.NEXT_PUBLIC_BUSINESS_PHONE ?? '',

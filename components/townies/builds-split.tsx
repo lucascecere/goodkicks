@@ -25,7 +25,7 @@ const BUILDS: Array<{ key: HatStyle; name: string; line: string; specs: string[]
   {
     key: 'everyday',
     name: 'Everyday Hat',
-    line: 'Solid colour. Sits closer to the head.',
+    line: 'Solid color. Sits closer to the head.',
     specs: ['Low-profile unstructured crown', 'Flat brim', '60/40 cotton-poly, soft hand'],
   },
 ];

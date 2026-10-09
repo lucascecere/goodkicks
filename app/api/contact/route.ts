@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { sendEmail } from '@/lib/email/resend-client';
+import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 
 // brand-scopes every submission so Townies + Good Kicks data don't collide.
 const brand = z.enum(['townies', 'goodkicks']).default('townies');
@@ -195,7 +196,8 @@ export async function POST(request: Request) {
     if (process.env.RESEND_API_KEY) {
       try {
         await sendEmail({
-          from: 'Townies <info@goodkicks.co>',
+          // Townies mail goes out as Townies (TOWNIES_FROM_EMAIL); GK unchanged.
+          from: data.brand === 'townies' ? TOWNIES_FROM : 'Townies <info@goodkicks.co>',
           // Townies inquiries (wholesale, support, town requests) land in the
           // Townies inbox (Lucas, 10-08); Good Kicks keeps its own.
           to:

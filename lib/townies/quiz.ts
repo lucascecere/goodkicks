@@ -44,16 +44,17 @@ export function drawQuiz() {
 }
 
 /** Score picks by question id. Requires QUIZ_LENGTH distinct, known questions. */
-export function gradeQuiz(picks: Record<string, string>): { score: number; correct: Record<string, string> } | null {
+/** `correct` is right/wrong per question, never the answer itself. */
+export function gradeQuiz(picks: Record<string, string>): { score: number; correct: Record<string, boolean> } | null {
   const ids = Object.keys(picks);
   if (ids.length !== QUIZ_LENGTH) return null;
-  const correct: Record<string, string> = {};
+  const correct: Record<string, boolean> = {};
   let score = 0;
   for (const id of ids) {
     const q = QUESTIONS.find((x) => x.id === id);
     if (!q) return null;
-    correct[id] = q.answer;
-    if (picks[id] === q.answer) score++;
+    correct[id] = picks[id] === q.answer;
+    if (correct[id]) score++;
   }
   return { score, correct };
 }

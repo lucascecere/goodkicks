@@ -43,27 +43,43 @@ const QUERY = `
 async function fetchStock(ids: string[]): Promise<Record<string, VariantStock>> {
   const out: Record<string, VariantStock> = {};
   if (!ids.length || !isShopifyAdminConfigured()) return out;
+  // One retry, then THROW: unstable_cache does not store a thrown result, so a
+  // throttled or timed-out read is retried on the next request instead of an
+  // empty map being cached for a minute (which read as "every hat sold out").
+  let data: { nodes: VariantNode[] };
   try {
-    const data = await shopifyAdminGraphQL<{ nodes: VariantNode[] }>(QUERY, { ids });
-    for (const n of data.nodes) {
-      if (!n) continue;
-      const meaningful =
-        n.inventoryItem?.tracked === true &&
-        n.inventoryPolicy === 'DENY' &&
-        typeof n.inventoryQuantity === 'number';
-      out[n.id] = { quantity: meaningful ? Math.max(0, n.inventoryQuantity as number) : null };
-    }
+    data = await shopifyAdminGraphQL<{ nodes: VariantNode[] }>(QUERY, { ids });
   } catch (err) {
-    console.error('[stock] admin read failed:', err);
+    console.error('[stock] admin read failed, retrying:', err);
+    data = await shopifyAdminGraphQL<{ nodes: VariantNode[] }>(QUERY, { ids });
+  }
+  for (const n of data.nodes) {
+    if (!n) continue;
+    const meaningful =
+      n.inventoryItem?.tracked === true &&
+      n.inventoryPolicy === 'DENY' &&
+      typeof n.inventoryQuantity === 'number';
+    out[n.id] = { quantity: meaningful ? Math.max(0, n.inventoryQuantity as number) : null };
   }
   return out;
 }
 
 /**
  * Stock for a set of variant GIDs. Cached for a minute, same window as the
- * collection reads, so a sale shows up on the site within ~60s.
+ * collection reads, so a sale shows up on the site within ~60s. Throws when
+ * Shopify can't be read, for callers that must tell "sold out" from "unknown".
  */
-export const getVariantStock = unstable_cache(fetchStock, ['shopify-variant-stock'], {
+export const getVariantStockStrict = unstable_cache(fetchStock, ['shopify-variant-stock'], {
   revalidate: 60,
   tags: ['shopify-stock'],
 });
+
+/** Best-effort version: an unreadable count degrades to "unknown" ({}). */
+export async function getVariantStock(ids: string[]): Promise<Record<string, VariantStock>> {
+  try {
+    return await getVariantStockStrict(ids);
+  } catch (err) {
+    console.error('[stock] admin read failed:', err);
+    return {};
+  }
+}

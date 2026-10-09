@@ -11,3 +11,11 @@ export function stockTier(p: CollectionProduct): number {
   const available = p.variants.edges[0]?.node.availableForSale ?? false;
   return available && typeof p.stock === 'number' && p.stock > 0 ? 0 : 2;
 }
+
+/** Stable sort: in stock first, then pre-order, sold out last. For rails. */
+export function sortByStock<T extends CollectionProduct>(list: T[]): T[] {
+  return list
+    .map((p, i) => ({ p, i }))
+    .sort((a, b) => stockTier(a.p) - stockTier(b.p) || a.i - b.i)
+    .map(({ p }) => p);
+}

@@ -25,7 +25,7 @@ export function PrivacyContent({ supportHref }: Props) {
       <Section title="What We Collect">
         <p>
           When you place an order, we collect your name, email, shipping address, and payment
-          information. Payment is processed securely through Shopify — we never store your card
+          information. Payment is processed securely through Shopify. We never store your card
           details.
         </p>
         <p>
@@ -33,7 +33,7 @@ export function PrivacyContent({ supportHref }: Props) {
           (and phone, if you give it) along with anything else you choose to share.
         </p>
         <p>
-          We use analytics to understand how visitors use the site — anonymized data like page
+          We use analytics to understand how visitors use the site, using anonymized data like page
           views, session length, and general location. No personally identifiable information is
           collected through analytics.
         </p>
@@ -48,7 +48,7 @@ export function PrivacyContent({ supportHref }: Props) {
         </p>
         <p>
           If you opt into our list, we may send you new drops, restocks, and the occasional
-          members-only offer — by email and text. You can unsubscribe anytime.
+          members-only offer by email and text. You can unsubscribe anytime.
         </p>
         <p>
           We do not sell, trade, or share your personal information with third parties for their
@@ -78,7 +78,7 @@ export function PrivacyContent({ supportHref }: Props) {
           monitor settings.
         </p>
         <p>
-          Townies Apparel Co. — which also operates Good Kicks — is not liable for any indirect,
+          Townies Apparel Co., which also operates Good Kicks, is not liable for any indirect,
           incidental, or consequential damages arising from use of our products or site.
         </p>
         <p>These terms are governed by the laws of the Commonwealth of Massachusetts.</p>

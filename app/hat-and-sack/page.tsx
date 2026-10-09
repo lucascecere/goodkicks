@@ -1,18 +1,36 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getTownieProducts, getGoodKicksProducts } from '@/lib/shopify/collections';
+import { getProductsByCollectionStrict, GOODKICKS_COLLECTION, TOWNIES_COLLECTION } from '@/lib/shopify/collections';
 import { breadcrumbSchema } from '@/lib/seo/site';
 import { HatSackPicker } from '@/components/townies/hat-sack-picker';
-import { HAT_SACK_LIVE, HAT_SACK_PATH, eligibleHats, eligibleSacks, formatUsd } from '@/lib/townies/hat-sack';
-import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
+import { HAT_SACK_LIVE, HAT_SACK_PATH, bundleFromCents, eligibleHats, eligibleSacks, formatUsd } from '@/lib/townies/hat-sack';
+import { getHatSackFromCents, getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
+import { ReloadButton } from './reload-button';
 
-export const revalidate = 60;
+// Rendered per request (the Shopify reads underneath are still cached for 60s).
+// Under ISR a single failed Shopify read froze "between restocks" into the page
+// for a full minute; now a failure costs one request and a reload fixes it.
+export const dynamic = 'force-dynamic';
+
+/** Strict reads: a Shopify failure throws instead of looking like an empty shelf. */
+async function loadBundle() {
+  try {
+    const [townies, goodkicks, offer] = await Promise.all([
+      getProductsByCollectionStrict(TOWNIES_COLLECTION),
+      getProductsByCollectionStrict(GOODKICKS_COLLECTION),
+      getHatSackOffer({ strict: true }),
+    ]);
+    return { ok: true as const, hats: eligibleHats(townies), sacks: eligibleSacks(goodkicks), offer };
+  } catch (err) {
+    console.error('[hat-and-sack] Shopify read failed:', err);
+    return { ok: false as const };
+  }
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   if (!HAT_SACK_LIVE) return { title: 'Not Found', robots: { index: false, follow: false } };
-  const offer = await getHatSackOffer();
-  const price = `from ${formatUsd(Math.min(...Object.values(offer.tiers).map((t) => t.cents)))}`;
+  const price = `from ${formatUsd(await getHatSackFromCents())}`;
   return {
     title: { absolute: `Hat & Sack, ${price} With Shipping | Townies × Good Kicks` },
     description: `Any Townies hat in stock plus any Good Kicks foot bag in stock, ${price} with shipping included. Shipped together in one box.`,
@@ -27,12 +45,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HatAndSackPage() {
   if (!HAT_SACK_LIVE) notFound();
 
-  const [townies, goodkicks, offer] = await Promise.all([getTownieProducts(), getGoodKicksProducts(), getHatSackOffer()]);
-  const hats = eligibleHats(townies);
-  const sacks = eligibleSacks(goodkicks);
+  const data = await loadBundle();
+  if (!data.ok) return <BundleUnavailable />;
+  const { hats, sacks, offer } = data;
   const t = offer.tiers;
-  const from = formatUsd(Math.min(t.everyday.cents, t.standard.cents, t.titletown.cents));
-  const price = from;
+  // Cheapest tier that is actually purchasable with today's shelf.
+  const fromCents = bundleFromCents(t, hats, sacks);
+  const from = formatUsd(fromCents);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -43,7 +62,7 @@ export default async function HatAndSackPage() {
     brand: { '@type': 'Brand', name: 'Townies' },
     offers: {
       '@type': 'Offer',
-      price: (Math.min(t.everyday.cents, t.standard.cents, t.titletown.cents) / 100).toFixed(2),
+      price: (fromCents / 100).toFixed(2),
       priceCurrency: 'USD',
       itemCondition: 'https://schema.org/NewCondition',
       availability: hats.length && sacks.length && t.standard.id ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
@@ -70,6 +89,8 @@ export default async function HatAndSackPage() {
       </section>
 
       <div className="mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-8 sm:pt-14">
+        {/* Only a genuinely empty shelf (Shopify answered, nothing eligible)
+            reaches this; a failed read renders BundleUnavailable instead. */}
         {hats.length === 0 || sacks.length === 0 || !t.standard.id ? (
           <div className="py-10 text-center">
             <p className="mb-6 text-muted">The bundle is between restocks. Check back soon.</p>
@@ -78,7 +99,7 @@ export default async function HatAndSackPage() {
             </Link>
           </div>
         ) : (
-          <HatSackPicker hats={hats} sacks={sacks} tiers={t} />
+          <HatSackPicker hats={hats} sacks={sacks} tiers={t} fromCents={fromCents} />
         )}
 
         <div className="mt-16 border-t border-rule pt-10 sm:mt-20">
@@ -97,6 +118,24 @@ export default async function HatAndSackPage() {
             ))}
           </dl>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Shopify didn't answer. Not "between restocks": the shelf may be full. */
+function BundleUnavailable() {
+  return (
+    <div className="bg-bg">
+      <section className="border-b border-rule bg-[#F1EEE8]">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14">
+          <p className="mb-3 font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60">Townies × Good Kicks</p>
+          <h1 className="display text-[2.5rem] text-text sm:text-[3.25rem]">Hat &amp; Sack.</h1>
+        </div>
+      </section>
+      <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-8">
+        <p className="mb-6 text-muted">We couldn&apos;t load the shelf just now. Give it another try.</p>
+        <ReloadButton />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { HAT_SACK_LIVE, HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
-import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
+import { getHatSackShelf } from '@/lib/shopify/hat-sack-offer';
 
 /**
  * The Hat & Sack push.
@@ -17,12 +17,17 @@ import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
  *
  * The hat shown is Weymouth because it is the cleanest cutout, not because the
  * bundle is Weymouth-only — the caption and CTA both say the town is the choice.
+ * When Weymouth is sold out it swaps for an in-stock hat (2026-10-08 audit).
  */
 export async function HatSackBand() {
   if (!HAT_SACK_LIVE) return null;
 
-  const { tiers } = await getHatSackOffer();
-  const priceCents = Math.min(tiers.everyday.cents, tiers.standard.cents, tiers.titletown.cents);
+  const { fromCents: priceCents, hats } = await getHatSackShelf();
+  // Never picture a hat you can't put in the bundle. Weymouth's cutout while
+  // Weymouth is on the shelf; otherwise the first in-stock hat's own Shopify
+  // shot (white ground, multiplied onto the cream like the picker tiles).
+  const weymouthIn = hats.some((h) => h.handle.startsWith('weymouth'));
+  const shelfHat = weymouthIn ? null : hats.find((h) => h.featuredImage?.url) ?? null;
 
   // v2 (2026-10-08): studio ground, any in-stock hat + any in-stock bag, shipped.
   return (
@@ -31,7 +36,11 @@ export async function HatSackBand() {
         <Link href={HAT_SACK_PATH} className="group grid items-center gap-6 bg-[#F1EEE8] p-6 sm:p-10 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:p-14">
           <div className="flex items-center justify-center gap-3 sm:gap-6">
             <div className="relative aspect-[900/641] w-[58%] max-w-[360px] transition-transform duration-500 group-hover:-rotate-2">
-              <Image src="/brand/product/wey-cutout.webp" alt="A Townies hat" fill sizes="(max-width: 1024px) 55vw, 360px" className="object-contain" />
+              {shelfHat ? (
+                <Image src={shelfHat.featuredImage!.url} alt={shelfHat.title} fill sizes="(max-width: 1024px) 55vw, 360px" className="object-contain mix-blend-multiply" />
+              ) : (
+                <Image src="/brand/product/wey-cutout.webp" alt="A Townies hat" fill sizes="(max-width: 1024px) 55vw, 360px" className="object-contain" />
+              )}
             </div>
             <span className="display text-[2rem] text-text/40" aria-hidden>+</span>
             <div className="relative aspect-square w-[24%] max-w-[140px] transition-transform duration-500 group-hover:rotate-6">

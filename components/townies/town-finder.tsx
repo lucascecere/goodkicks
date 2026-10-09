@@ -21,6 +21,29 @@ import { MaMark } from '@/components/brand/wordmark';
  */
 type Town = { slug: string; name: string; region: string; regionLabel: string; href: string };
 
+/** Edit distance, for typo matching ("hingam" → Hingham). Town names are short. */
+function levenshtein(a: string, b: string): number {
+  const row = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = row[0];
+    row[0] = i;
+    for (let j = 1; j <= b.length; j++) {
+      const tmp = row[j];
+      row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+      prev = tmp;
+    }
+  }
+  return row[b.length];
+}
+
+/** Close enough to be a typo: within 2 edits (1 for short queries) of the
+ *  whole name, or of its first letters while the name is still being typed. */
+function isNear(query: string, name: string): boolean {
+  if (query.length < 3) return false;
+  const max = query.length < 5 ? 1 : 2;
+  return levenshtein(query, name) <= max || levenshtein(query, name.slice(0, query.length)) <= max;
+}
+
 export function TownFinder() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
@@ -57,7 +80,11 @@ export function TownFinder() {
     const contains = towns.filter(
       (t) => !t.name.toLowerCase().startsWith(query) && t.name.toLowerCase().includes(query),
     );
-    return [...starts, ...contains];
+    if (starts.length || contains.length) return [...starts, ...contains];
+    // No literal match: try typos before offering "Request" for a town we have.
+    return towns
+      .filter((t) => isNear(query, t.name.toLowerCase()))
+      .sort((a, b) => levenshtein(query, a.name.toLowerCase()) - levenshtein(query, b.name.toLowerCase()));
   }, [towns, query]);
 
   const requestHref = `/request-a-town${query ? `?town=${encodeURIComponent(q.trim())}` : ''}`;

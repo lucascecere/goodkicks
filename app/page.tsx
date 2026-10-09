@@ -40,12 +40,13 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const [products, ratings] = await Promise.all([getTownieProducts(), getReviewSummaries()]);
 
-  // The hero wheel: one hat per town, Milton (the first town) leading, then
-  // whatever is buyable today. Eight stops keeps the pinned scroll short.
+  // The hero wheel: one hat per town, Milton (the first town) leading when it
+  // is in stock, then whatever is buyable today. Sold-out hats sort to the back
+  // so they never lead. Eight stops keeps the pinned scroll short.
   const ranked = [...products].sort((a, b) => stockTier(a) - stockTier(b));
   const seen = new Set<string>();
   const wheelProducts = [
-    ...ranked.filter((p) => townKey(p).slug === 'milton' && hatStyle(p.title) === 'lifestyle'),
+    ...ranked.filter((p) => townKey(p).slug === 'milton' && hatStyle(p.title) === 'lifestyle' && stockTier(p) === 0),
     ...ranked,
   ].filter((p) => {
     const slug = townKey(p).slug;
@@ -61,7 +62,8 @@ export default async function HomePage() {
     price: price(p),
     href: `/products/${p.handle}`,
   }));
-  const townCount = new Set(products.map((p) => townKey(p).slug)).size;
+  // Titletown is a Boston nickname hat, not a town, so it isn't counted.
+  const townCount = new Set(products.map((p) => townKey(p).slug).filter((slug) => slug !== 'titletown')).size;
 
   return (
     <>

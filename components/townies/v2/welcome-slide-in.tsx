@@ -5,18 +5,24 @@ import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 
 /**
- * Mass trivia (Lucas, 2026-10-07): a full centred pop-up that opens on the
- * visitor's second page or at 60% scroll (no timer, no exit-intent). Two
+ * Mass trivia (Lucas, 2026-10-07): a full centred pop-up that opens at 60%
+ * scroll on a first page, or on a later page at 50% scroll or 12s, whichever
+ * comes first (no exit-intent). Never auto-opens on product pages. Two
  * crazy-easy questions; the score picks the prize, and
  * everyone wins at least $5 off. Graded on the server (/api/quiz/grade), the
  * code is minted through the same /api/spin/claim path as the old rotary.
  */
 const KEY = 'townies_welcome_v1';
 type Q = { id: string; q: string; options: string[] };
-type Graded = { score: number; correct: Record<string, string>; prize: { label: string; terms: string }; token: string };
+type Graded = { score: number; correct: Record<string, boolean>; prize: { label: string; terms: string }; token: string };
 const SNOOZE_DAYS = { dismissed: 14, claimed: 365 } as const;
 const VIEWS = 'townies_welcome_views';
 const BLOCKED = ['/admin', '/checkout', '/cart', '/goodkicks', '/stick'];
+/** Never auto-open over a product page: it covers the buy box (2026-10-08 audit). */
+const NO_AUTO_OPEN = ['/products/'];
+/** Second-view trigger: half the page scrolled, or this long on it, whichever is first. */
+const SECOND_VIEW_SCROLL = 0.5;
+const SECOND_VIEW_MS = 12_000;
 
 function snoozedUntil(): number {
   try {
@@ -57,19 +63,30 @@ export function WelcomeSlideIn() {
       views = Number(sessionStorage.getItem(VIEWS) ?? 0) + 1;
       sessionStorage.setItem(VIEWS, String(views));
     } catch {}
-    if (params.get('welcome') === '1' || views >= 2) {
+    if (params.get('welcome') === '1') {
       const t = setTimeout(() => setOpen(true), 1500);
       return () => clearTimeout(t);
     }
+    // Product pages still count as a view, they just never open it.
+    if (NO_AUTO_OPEN.some((p) => pathname.startsWith(p))) return;
+    const second = views >= 2;
+    const threshold = second ? SECOND_VIEW_SCROLL : 0.6;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const show = () => {
+      setOpen(true);
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+    };
     const onScroll = () => {
       const h = document.documentElement;
-      if ((h.scrollTop + h.clientHeight) / h.scrollHeight >= 0.6) {
-        setOpen(true);
-        window.removeEventListener('scroll', onScroll);
-      }
+      if ((h.scrollTop + h.clientHeight) / h.scrollHeight >= threshold) show();
     };
+    if (second) timer = setTimeout(show, SECOND_VIEW_MS);
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, [pathname]);
 
   function close() {

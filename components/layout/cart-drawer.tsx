@@ -51,6 +51,37 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
   const [checkoutError, setCheckoutError] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
 
+  // Townies hats can't be stepped past the shelf: live on-hand counts for the
+  // Townies lines (Good Kicks unchanged), fetched whenever the drawer opens or
+  // the lines change. null = no cap (pre-orders, untracked variants).
+  const [stockCap, setStockCap] = useState<Record<string, number | null>>({});
+  const townieIds = items
+    .filter((i) => i.customAttributes?.some((a) => a.key === '_brand' && a.value === 'townies'))
+    .filter((i) => !i.customAttributes?.some((a) => a.key === 'Fulfillment' && /pre-order/i.test(a.value)))
+    .map((i) => i.variantId);
+  const idsKey = [...new Set(townieIds)].sort().join(',');
+  useEffect(() => {
+    if (!cartOpen || !idsKey) return;
+    let live = true;
+    fetch(`/api/stock?ids=${encodeURIComponent(idsKey)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => live && j?.stock && setStockCap(j.stock))
+      .catch(() => {});
+    return () => { live = false; };
+  }, [cartOpen, idsKey]);
+  const capFor = (variantId: string): number | undefined => {
+    const n = townieIds.includes(variantId) ? stockCap[variantId] : null;
+    return typeof n === 'number' && n > 0 ? n : undefined;
+  };
+  // A line already over the shelf (added before the count was known) comes down to it.
+  useEffect(() => {
+    for (const i of items) {
+      const cap = capFor(i.variantId);
+      if (cap !== undefined && i.quantity > cap) updateQuantity(i.cartKey ?? i.variantId, cap);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stockCap, items]);
+
   useEffect(() => {
     if (cartOpen) {
       document.body.style.overflow = 'hidden';
@@ -157,13 +188,17 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                         <div className="flex items-center justify-between mt-2">
                           <QuantityStepper
                             quantity={item.quantity}
+                            max={capFor(item.variantId)}
                             onDecrement={() => updateQuantity(itemKey, item.quantity - 1)}
-                            onIncrement={() => updateQuantity(itemKey, item.quantity + 1)}
+                            onIncrement={() => updateQuantity(itemKey, Math.min(item.quantity + 1, capFor(item.variantId) ?? Infinity))}
                           />
                           <button onClick={() => removeItem(itemKey)} aria-label={`Remove ${item.productTitle} from bag`} className="text-muted hover:text-text transition-colors text-xs p-1">
                             <X size={14} />
                           </button>
                         </div>
+                        {capFor(item.variantId) !== undefined && item.quantity >= capFor(item.variantId)! && (
+                          <p className="mt-1 text-[0.6875rem] text-muted">Only {capFor(item.variantId)} left</p>
+                        )}
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="text-sm text-text">{formatCents(item.priceInCents * item.quantity)}</p>

@@ -35,7 +35,7 @@ const THEME = {
     panelText: 'text-text',
     divide: 'divide-rule',
     label: 'townie',
-    contact: 'hello@townies.shop',
+    contact: 'info@townies.shop',
     rounded: 'rounded-sm',
   },
   goodkicks: {
@@ -162,7 +162,7 @@ export default async function RepStatsPage({ params }: { params: Promise<{ code:
           <div className={`${t.panel} border ${t.rounded} p-10 text-center space-y-2`}>
             <p className={`${t.heading} text-xl`}>no orders yet.</p>
             <p className={`${t.sub} text-sm`}>
-              {isTownies ? 'get your code out there and rep your town.' : 'share your code and make the circle bigger.'}
+              {isTownies ? 'get your code out to the people in your town.' : 'share your code and make the circle bigger.'}
             </p>
           </div>
         )}

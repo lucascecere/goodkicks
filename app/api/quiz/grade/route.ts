@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
   return Response.json(
     {
       score: result.score,
+      // Right/wrong per question only. Returning the answers let anyone farm
+      // the bank and script a perfect score.
       correct: result.correct,
       prize: { label: prize.label, terms: prize.terms },
       token: await createSpinToken(QUIZ_BASE + tier),

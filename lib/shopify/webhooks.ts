@@ -40,7 +40,10 @@ import { SITE_URL } from '@/lib/seo/site';
 /** The subscriptions this app requires. Add a topic here and it self-installs. */
 export const REQUIRED_WEBHOOKS = [
   { topic: 'ORDERS_CREATE', path: '/api/webhooks/shopify/orders' },
-  { topic: 'FULFILLMENTS_CREATE', path: '/api/webhooks/shopify/fulfillments' },
+  // FULFILLMENTS_CREATE removed (2026-10-08): Shopify refuses that topic for
+  // this app ("You cannot create a webhook subscription with the specified
+  // topic"), so every cron run logged a failure. The review queue reads
+  // delivered orders through the delivery sync instead.
 ] as const;
 
 /**

@@ -29,6 +29,33 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
+/**
+ * GA4 ecommerce `add_to_cart`, Townies lines only (Good Kicks unchanged), and
+ * only when the gtag snippet is on the page. Purchase is Shopify checkout's job.
+ */
+function trackAddToCart(item: Omit<CartItem, 'quantity'>) {
+  if (!item.customAttributes?.some((a) => a.key === '_brand' && a.value === 'townies')) return;
+  const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+  if (typeof gtag !== 'function') return;
+  try {
+    const value = item.priceInCents / 100;
+    gtag('event', 'add_to_cart', {
+      currency: 'USD',
+      value,
+      items: [
+        {
+          item_id: item.variantId.split('/').pop(),
+          item_name: item.productTitle,
+          item_variant: item.variantName,
+          item_brand: 'Townies',
+          price: value,
+          quantity: 1,
+        },
+      ],
+    });
+  } catch {}
+}
+
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -55,6 +82,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = useCallback((item: Omit<CartItem, 'quantity'>) => {
     const key = item.cartKey ?? item.variantId;
+    trackAddToCart(item);
     setItems((prev) => {
       const existing = prev.find((i) => (i.cartKey ?? i.variantId) === key);
       if (existing) {

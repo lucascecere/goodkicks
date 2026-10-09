@@ -181,6 +181,28 @@ export function eligibleSacks(products: CollectionProduct[]): CollectionProduct[
     .sort((a, b) => (priceCents(a) ?? 0) - (priceCents(b) ?? 0) || a.title.localeCompare(b.title));
 }
 
+/**
+ * The honest "From $X": the cheapest tier a customer can actually buy right now,
+ * over every in-stock hat × in-stock bag pairing (same bundleTier() rule as the
+ * picker and checkout). Quoting the bottom tier when no Everyday hat is on the
+ * shelf would advertise a price nobody can get. Falls back to the lowest tier
+ * price when the stock lists are empty or unreadable.
+ */
+export function bundleFromCents(
+  tiers: Record<BundleTier, { id: string | null; cents: number }>,
+  hats: CollectionProduct[],
+  sacks: CollectionProduct[],
+): number {
+  let best: number | null = null;
+  for (const h of hats) {
+    for (const s of sacks) {
+      const t = tiers[bundleTier(priceCents(h), priceCents(s))];
+      if (t.id && (best === null || t.cents < best)) best = t.cents;
+    }
+  }
+  return best ?? Math.min(...Object.values(tiers).map((t) => t.cents));
+}
+
 /** "Good Kicks — Montana" / "Good Kicks Pro — Miami Vice" → "Montana" / "Miami Vice (Pro)". */
 export function sackName(p: CollectionProduct): string {
   const [head, tail] = p.title.split(/\s+[—-]\s+/);

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { preload } from 'react-dom';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   motion,
   useMotionValue,
@@ -138,6 +139,11 @@ export function HatWheelHero({
   const pos = useTransform([pagePos, extraSmooth], ([a, b]: number[]) => a + b);
   const [current, setCurrent] = useState(0);
   useMotionValueEvent(pos, 'change', (v) => setCurrent((((Math.round(v) % n) + n) % n)));
+  // Tapping the hat in the centre opens it (phones had no way in). A ref so the
+  // listener below doesn't re-bind on every turn of the wheel.
+  const router = useRouter();
+  const currentHref = useRef<string | null>(null);
+  currentHref.current = hats[current]?.href ?? null;
 
   useEffect(() => {
     const el = stage.current;
@@ -166,7 +172,10 @@ export function HatWheelHero({
     let startX = 0;
     let startExtra = 0;
     let lastDx = 0;
+    // Set by a swipe so the click that follows it doesn't also open the hat.
+    let dragged = false;
     const onDown = (e: PointerEvent) => {
+      dragged = false;
       if (e.pointerType === 'mouse') return;
       startX = e.clientX;
       startExtra = extra.get();
@@ -174,6 +183,7 @@ export function HatWheelHero({
     const onMove = (e: PointerEvent) => {
       if (e.pointerType === 'mouse' || !startX) return;
       lastDx = e.clientX - startX;
+      if (Math.abs(lastDx) > 8) dragged = true;
       extra.set(startExtra - lastDx / 120);
     };
     const onUp = () => {
@@ -182,7 +192,12 @@ export function HatWheelHero({
       snap(Math.abs(lastDx) > 24 ? -Math.sign(lastDx) : 0);
       lastDx = 0;
     };
+    const onClick = () => {
+      if (dragged || !currentHref.current) return;
+      router.push(currentHref.current);
+    };
     el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener('click', onClick);
     el.addEventListener('pointerdown', onDown);
     el.addEventListener('pointermove', onMove);
     el.addEventListener('pointerup', onUp);
@@ -190,12 +205,13 @@ export function HatWheelHero({
     return () => {
       clearTimeout(settle);
       el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('click', onClick);
       el.removeEventListener('pointerdown', onDown);
       el.removeEventListener('pointermove', onMove);
       el.removeEventListener('pointerup', onUp);
       el.removeEventListener('pointercancel', onUp);
     };
-  }, [extra, pagePos, n]);
+  }, [extra, pagePos, n, router]);
 
   const hat = hats[current];
   if (!hats.length) return null;
@@ -206,6 +222,13 @@ export function HatWheelHero({
         <div className="mx-auto grid h-full max-w-[1320px] grid-rows-[1fr_auto] px-4 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:grid-rows-1 lg:gap-8">
           {/* Phones: wheel on top, copy underneath (Lucas, 10-08). Desktop: side by side. */}
           <div className="order-2 self-center pb-6 lg:order-1 lg:pb-0">
+            {/* Phones: the centre hat's name and price, right under the wheel. */}
+            {hat && (
+              <Link href={hat.href} className="mb-4 flex items-baseline gap-2 text-[0.8125rem] lg:hidden">
+                <span className="truncate font-semibold text-text underline-offset-4">{hat.title}</span>
+                <span className="shrink-0 text-text/70">{hat.price}</span>
+              </Link>
+            )}
             <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/70">{eyebrow}</p>
             <h1 className="display mt-2 text-[2.5rem] sm:text-[4rem] lg:mt-3 lg:text-[5rem] text-text">{headline}</h1>
             <p className="mt-3 max-w-md text-[0.9375rem] sm:text-[1.0625rem] leading-relaxed text-text/75 lg:mt-4">{sub}</p>
@@ -239,7 +262,7 @@ export function HatWheelHero({
           </div>
           <div
             ref={stage}
-            className="relative order-1 min-h-0 touch-pan-y overflow-hidden lg:order-2 lg:overflow-visible"
+            className="relative order-1 min-h-0 cursor-pointer touch-pan-y overflow-hidden lg:order-2 lg:overflow-visible"
           >
             {hats.slice(0, n).map((h, i) =>
               i === 0 || rest ? (

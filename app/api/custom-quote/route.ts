@@ -117,7 +117,7 @@ export async function POST(request: Request) {
       d.neededBy ? `Needed by: ${d.neededBy}` : null,
       '',
       `Hat: ${d.style || '(not given)'}`,
-      `Colours: ${d.colours || '(not given)'}`,
+      `Colors: ${d.colours || '(not given)'}`,
       `Front logo: ${d.frontLogo || 'No logo uploaded'}`,
       `Side panel: ${d.sidePlacement || 'None'}`,
       d.logoResized === 'yes' ? 'Note: the original logo was over 3MB, so the attached copy was resized in the browser. Ask for the original if you need it.' : null,

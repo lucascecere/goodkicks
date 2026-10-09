@@ -4,7 +4,7 @@ import { HowItWorks } from '@/components/townies/v2/custom/how-it-works';
 
 const TITLE = 'Custom Embroidered Hats for Massachusetts Businesses | Townies';
 const DESCRIPTION =
-  'Put your logo on a Townies hat. Pick a Weld, Richardson or Yupoong blank in a real colourway, build a mockup, and get a price for 25 to 200 embroidered hats within two business days.';
+  'Put your logo on a Townies hat. Pick a Weld, Richardson or Yupoong blank in a real colorway, build a mockup, and get a price for 25 to 200 embroidered hats within two business days.';
 
 export const metadata: Metadata = {
   title: TITLE,

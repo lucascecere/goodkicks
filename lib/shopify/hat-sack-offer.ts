@@ -17,8 +17,11 @@ import {
   HAT_SACK_VARIANT_TITLE,
   SACK_POOL,
   SACK_VALUE_FALLBACK_CENTS,
+  bundleFromCents,
+  eligibleHats,
+  eligibleSacks,
 } from '@/lib/townies/hat-sack';
-import { getProductsByCollection, GOODKICKS_COLLECTION } from './collections';
+import { getProductsByCollection, getTownieProducts, GOODKICKS_COLLECTION, type CollectionProduct } from './collections';
 
 export type TierVariant = { id: string | null; cents: number };
 
@@ -65,7 +68,12 @@ function toCents(amount: string | undefined): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-export async function getHatSackOffer(): Promise<HatSackOffer> {
+/**
+ * `strict` (the /hat-and-sack page): retry once, then THROW rather than return
+ * the fallback, whose tiers carry no variant ids and would read as "between
+ * restocks". Everyone else gets the quiet fallback.
+ */
+export async function getHatSackOffer(opts: { strict?: boolean } = {}): Promise<HatSackOffer> {
   const fallback: HatSackOffer = {
     priceCents: HAT_SACK_PRICE_FALLBACK_CENTS,
     tiers: {
@@ -83,7 +91,7 @@ export async function getHatSackOffer(): Promise<HatSackOffer> {
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
   if (!domain || !token) return fallback;
 
-  try {
+  const read = async (fresh: boolean): Promise<HatSackOffer> => {
     const res = await fetch(`https://${domain}/api/2026-04/graphql.json`, {
       method: 'POST',
       headers: {
@@ -91,15 +99,15 @@ export async function getHatSackOffer(): Promise<HatSackOffer> {
         'X-Shopify-Storefront-Access-Token': token,
       },
       body: JSON.stringify({ query: OFFER_QUERY, variables: { handle: HAT_SACK_HANDLE } }),
-      next: { revalidate: 60, tags: ['shopify-collections'] },
+      signal: AbortSignal.timeout(8000),
+      // The retry skips the data cache so a failed answer isn't served again.
+      ...(fresh ? { cache: 'no-store' as const } : { next: { revalidate: 60, tags: ['shopify-collections'] } }),
     });
+    if (!res.ok) throw new Error(`Storefront ${res.status}`);
     const json = await res.json();
-    if (json?.errors) {
-      console.error('[hat-sack-offer]', JSON.stringify(json.errors));
-      return fallback;
-    }
+    if (json?.errors) throw new Error(JSON.stringify(json.errors));
     const product = json?.data?.product;
-    if (!product) return fallback;
+    if (!product) throw new Error('hat-and-sack product not returned');
 
     const nodes: VariantNode[] =
       product.variants?.edges?.map((e: { node: VariantNode }) => e.node) ?? [];
@@ -130,10 +138,40 @@ export async function getHatSackOffer(): Promise<HatSackOffer> {
       preorderId: preorder?.availableForSale ? preorder.id : null,
       imageUrl: product.featuredImage?.url ?? null,
     };
+  };
+
+  try {
+    try {
+      return await read(false);
+    } catch (err) {
+      console.error('[hat-sack-offer] read failed, retrying:', err);
+      return await read(true);
+    }
   } catch (err) {
     console.error('[hat-sack-offer] threw:', err);
+    if (opts.strict) throw err;
     return fallback;
   }
+}
+
+/**
+ * The "From $X" every promo surface prints: the cheapest tier that is really
+ * purchasable over today's in-stock hats × bags (see bundleFromCents). Best
+ * effort; an unreadable shelf falls back to the lowest tier price. Also hands
+ * back the eligible hats, so a promo can picture one that's actually in stock.
+ */
+export async function getHatSackShelf(offer?: HatSackOffer): Promise<{ fromCents: number; hats: CollectionProduct[] }> {
+  const [o, townies, gk] = await Promise.all([
+    offer ?? getHatSackOffer(),
+    getTownieProducts(),
+    getProductsByCollection(GOODKICKS_COLLECTION),
+  ]);
+  const hats = eligibleHats(townies);
+  return { fromCents: bundleFromCents(o.tiers, hats, eligibleSacks(gk)), hats };
+}
+
+export async function getHatSackFromCents(offer?: HatSackOffer): Promise<number> {
+  return (await getHatSackShelf(offer)).fromCents;
 }
 
 /** Cheapest bag in the pool, from the live Good Kicks collection. */

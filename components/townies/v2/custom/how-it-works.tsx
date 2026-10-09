@@ -1,5 +1,5 @@
 const STEPS = [
-  { n: '01', title: 'Build a mockup.', body: 'Pick the hat and colours, drop your logo on the front. It takes a couple of minutes.' },
+  { n: '01', title: 'Build a mockup.', body: 'Pick the hat and colors, drop your logo on the front. It takes a couple of minutes.' },
   { n: '02', title: 'We send a price.', body: 'Within two business days, for the quantity you asked about.' },
   { n: '03', title: 'Approve and we embroider.', body: 'Nothing is made until you say yes. Then your logo goes on the hats.' },
 ];
