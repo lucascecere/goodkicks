@@ -1,5 +1,6 @@
 import 'server-only';
 import type { ShippingAddress } from './types';
+import { shopIsTestMode } from './config';
 
 // Shipping labels through Shippo's REST API (no SDK: two calls is all we use).
 //
@@ -11,6 +12,26 @@ const API = 'https://api.goshippo.com';
 
 export function shippoConfigured(): boolean {
   return Boolean(process.env.SHIPPO_API_KEY);
+}
+
+/**
+ * Real labels cost real money, so a live Shippo key may only buy one on the
+ * production site taking live payments. A preview, or a test-mode Stripe
+ * order, refuses. The reverse is refused too: a test label on a real order
+ * can't be shipped. Returns the reason, or null when buying is allowed.
+ */
+export function labelGuard(): string | null {
+  const key = process.env.SHIPPO_API_KEY ?? '';
+  const shippoLive = Boolean(key) && !key.startsWith('shippo_test_');
+  const prod = process.env.VERCEL_ENV === 'production';
+  const paymentsLive = !shopIsTestMode();
+  if (shippoLive && (!prod || !paymentsLive)) {
+    return 'Refusing to buy a real (paid) label here: this is a test site or a test-mode order. Use a shippo_test_ key outside production.';
+  }
+  if (!shippoLive && prod && paymentsLive) {
+    return 'Shippo is on a test key, so this label could not be shipped. Set the live Shippo key in production.';
+  }
+  return null;
 }
 
 type ShippoAddress = {
@@ -91,6 +112,8 @@ export async function buyLabel({
   hatCount: number;
   orderNumber: number;
 }): Promise<Label> {
+  const blocked = labelGuard();
+  if (blocked) throw new Error(blocked);
   if (!to.line1 || !to.city || !to.state || !to.postal_code) {
     throw new Error('This order has no complete shipping address.');
   }

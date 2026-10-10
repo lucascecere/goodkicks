@@ -3,7 +3,7 @@ import { ActionButton, ActionForm } from '@/components/admin/action';
 import { Badge, Card, Row, btn, field } from '@/components/admin/ui';
 import { dollars } from '@/lib/shop/money';
 import { listPayouts } from '@/lib/shop/db';
-import { shippoConfigured } from '@/lib/shop/shippo';
+import { labelGuard, shippoConfigured } from '@/lib/shop/shippo';
 import { fmtDate } from '@/lib/admin/format';
 import type { AdminOrderRow } from '@/lib/admin/orders';
 import {
@@ -42,6 +42,8 @@ export async function MarketActions({ row }: { row: AdminOrderRow }) {
                 <a href={o.label_url} target="_blank" rel="noopener noreferrer" className={`${btn.primary} w-full`}>
                   <Printer className="h-4 w-4" /> Print label
                 </a>
+              ) : shippoConfigured() && labelGuard() ? (
+                <p className="text-xs text-amber-200">{labelGuard()}</p>
               ) : shippoConfigured() ? (
                 <ActionButton look="primary" className="w-full" action={buyLabelAction.bind(null, o.id)}>
                   <Printer className="h-4 w-4" /> Buy USPS label

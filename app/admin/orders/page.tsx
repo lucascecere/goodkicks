@@ -16,6 +16,7 @@ export const dynamic = 'force-dynamic';
 
 const VIEWS = [
   { id: 'to-ship', label: 'To ship' },
+  { id: 'market', label: 'Market' },
   { id: 'all', label: 'All' },
   { id: 'shipped', label: 'Shipped' },
   { id: 'refunded', label: 'Refunded' },
@@ -43,6 +44,10 @@ function inView(o: AdminOrderRow, view: View): boolean {
   switch (view) {
     case 'to-ship':
       return needsShipping(o);
+    // Every order from our own checkout, whatever its state, so a shipped one
+    // can still be found to refund (they drop out of To ship once shipped).
+    case 'market':
+      return o.source === 'market';
     case 'shipped':
       return o.ship === 'fulfilled';
     case 'refunded':

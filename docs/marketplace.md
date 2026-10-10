@@ -58,7 +58,7 @@ The local market lives at `townies.shop/local`. Each local business gets a stall
 6. **Reorder.** When a hat drops below its buffer of 5, use Reorder from RoyalBacks. When the box lands, use Received, add to stock.
 
 ## Before launch: cleanup
-- [ ] Delete the **Test Shop** (slug `test-shop`) and its test orders. It is kept as status `approved` and only shows where `SHOP_SHOW_TEST_SHOPS=true` (preview), but remove it before ordering opens:
+- [ ] Delete the **Test Shop** (slug `test-shop`) and its test orders. As of 10-09 that includes test order **L1005** (bought, shipped without a label, $8.00 paid out, refunded and reversed in Stripe test mode). It is kept as status `approved` and only shows where `SHOP_SHOW_TEST_SHOPS=true` (preview), but remove it before ordering opens:
   ```sql
   begin;
   delete from shop_payouts where order_id in (select distinct order_id from shop_order_items where seller_id = (select id from shop_sellers where slug = 'test-shop'));
@@ -68,5 +68,17 @@ The local market lives at `townies.shop/local`. Each local business gets a stall
   ```
 - [ ] Big Red Moving was reset on 10-09 (no Stripe account, no email, not joined). It onboards for real through its own join link.
 - [ ] Remove `SHOP_SHOW_TEST_SHOPS` from the preview env.
-- [ ] Stripe live mode: complete the Connect platform profile (loss-liability + compliance acknowledgements) and add the MA tax registration.
+- [ ] Stripe live mode (Townies account `acct_1UOiHOF0AfMGvrCm`):
+  - Settings → Business → **Public details**: public business name **Townies**, support email info@townies.shop. While this is blank, Connect onboarding falls back to the legal name (Tetra Media LLC).
+  - Settings → **Branding**: Townies icon and logo, navy `#0D1B2A`, forest accent `#2F4F3A`. Connect onboarding and Checkout use these.
+  - Connect → **Platform profile** (live): complete the loss-liability and compliance acknowledgements, as was done in test.
+  - Tax → **Registrations**: add Massachusetts. The origin address is set (29 Brookmill Road, Stow).
+  - Developers → **Webhooks** (live): endpoint `https://townies.shop/api/shop/webhook` with `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, `charge.refunded`, `charge.dispute.created`.
+- [ ] Production env: `SHOP_STRIPE_SECRET_KEY` (sk_live), `SHOP_STRIPE_WEBHOOK_SECRET` (the live endpoint's whsec), `SHIPPO_API_KEY` (live, `shippo_live_…`), `SHOP_SHIP_FROM`, `SHOP_ROYALBACKS_EMAIL`, `SHIPPO_WEBHOOK_TOKEN`, then `SHOP_MARKET_OPEN=true` last. `SHOP_SHOW_TEST_SHOPS` must stay unset. Production's join pages say "Payouts open soon" until `SHOP_STRIPE_SECRET_KEY` is set (`shopStripeConfigured()`).
+- [ ] Every real business connects payouts once live keys are in. The test-mode Test Shop account doesn't carry over to live mode.
 - [ ] Optional: close the leftover test-mode probe accounts in Stripe (Connect → Accounts).
+
+## Safety rails (in code)
+- Real labels: `labelGuard()` in `lib/shop/shippo.ts` refuses a live Shippo key outside production or on test-mode payments, and refuses a test Shippo key on live production orders.
+- Test shops: `test-*` slugs stay `approved` and only open where `SHOP_SHOW_TEST_SHOPS=true` (preview).
+- Preview redirects: `siteUrl()` uses `VERCEL_BRANCH_URL` on previews, so Stripe returns never land on townies.shop.
