@@ -1,6 +1,6 @@
 import 'server-only';
 import { sendEmail } from '@/lib/email/resend-client';
-import { MARKET_BASE, notifyEmail, royalbacksEmail, SHOP_FROM, SHOP_REPLY_TO, siteUrl } from './config';
+import { absoluteUrl, MARKET_BASE, notifyEmail, royalbacksEmail, SHOP_FROM, SHOP_REPLY_TO, siteUrl } from './config';
 import { dollars } from './money';
 import type { Order, OrderItem, Product, Seller } from './types';
 
@@ -208,7 +208,7 @@ export async function sendReorderRequest(p: Product, s: Seller, qty: number, not
     html: layout({
       heading: `Reorder: ${qty} hats`,
       body: `<p style="margin:0 0 12px 0;"><strong>${esc(s.name)}</strong> · ${esc(p.title)} (${p.wholesale_type})</p>
-        ${p.image_url ? `<p style="margin:0 0 12px 0;"><img src="${p.image_url}" alt="" width="220" style="max-width:220px;border-radius:2px;"></p>` : ''}
+        ${p.image_url ? `<p style="margin:0 0 12px 0;"><img src="${absoluteUrl(p.image_url)}" alt="" width="220" style="max-width:220px;border-radius:2px;"></p>` : ''}
         <p style="margin:0 0 12px 0;">Quantity: <strong>${qty}</strong></p>
         ${note ? `<p style="margin:0 0 12px 0;color:#5C6168;">${esc(note)}</p>` : ''}`,
     }),

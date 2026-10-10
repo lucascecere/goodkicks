@@ -74,7 +74,17 @@ export function royalbacksAccountEnv(): string | null {
 
 /** Absolute site URL for links in emails and Stripe redirects. */
 export function siteUrl(): string {
+  // On a Vercel preview, stay on the preview: otherwise Stripe sends people
+  // back to the live site after onboarding or paying.
+  if (process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_BRANCH_URL) {
+    return `https://${process.env.VERCEL_BRANCH_URL}`;
+  }
   return (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_TOWNIES_URL || 'https://townies.shop').replace(/\/$/, '');
+}
+
+/** Stripe and email clients need full URLs; product images are often stored as /paths. */
+export function absoluteUrl(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : `${siteUrl()}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
 export { MARKET_BASE } from './paths';

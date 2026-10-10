@@ -1,7 +1,7 @@
 import 'server-only';
 import type Stripe from 'stripe';
 import { db, getProductsByIds, listSellers } from './db';
-import { getShopStripe, isTestShop, MARKET_BASE, siteUrl, testShopsVisible } from './config';
+import { absoluteUrl, getShopStripe, isTestShop, MARKET_BASE, siteUrl, testShopsVisible } from './config';
 import { shippingCents, splitLine } from './money';
 import { applyDiscount, discountProblem, normalizeCode } from './discounts';
 import { findDiscount } from './discounts-db';
@@ -144,7 +144,7 @@ export async function startCheckout({
         product_data: {
           name: i.product.title,
           description: i.seller.kind === 'house' ? undefined : `From ${i.seller.name}${i.seller.town ? `, ${i.seller.town}` : ''}`,
-          images: i.product.image_url ? [i.product.image_url] : undefined,
+          images: i.product.image_url ? [absoluteUrl(i.product.image_url)] : undefined,
           tax_code: CLOTHING_TAX_CODE,
         },
       },
