@@ -50,7 +50,7 @@ export function HatRow({ hat }: { hat: Product }) {
               </select>
             </div>
             <div>
-              <label className={label}>Price (theirs to set)</label>
+              <label className={label}>Price (agreed with them)</label>
               <input name="price" inputMode="decimal" defaultValue={hat.price_cents ? (hat.price_cents / 100).toFixed(2) : ''} className={field} />
             </div>
             <div>

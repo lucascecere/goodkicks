@@ -34,6 +34,8 @@ export default async function SellerAdminPage({ params }: { params: Promise<{ id
   const [hats, payouts] = await Promise.all([listProducts(seller.id), listPayouts({ sellerId: seller.id })]);
 
   const joinUrl = seller.invite_token ? `${siteUrl()}${MARKET_BASE}/join/${seller.invite_token}` : null;
+  // A stable link that mints a fresh Stripe onboarding page each time (Stripe's own links expire in minutes).
+  const payoutUrl = seller.invite_token ? `${siteUrl()}/api/shop/connect/${seller.invite_token}` : null;
   const selling = hats.filter((h) => h.status === 'active' && h.price_cents);
   const earned = payouts.filter((p) => p.status === 'transferred').reduce((n, p) => n + p.amount_cents, 0);
   const pending = payouts.filter((p) => p.status === 'held' || p.status === 'due').reduce((n, p) => n + p.amount_cents, 0);
@@ -211,27 +213,58 @@ export default async function SellerAdminPage({ params }: { params: Promise<{ id
             </div>
           </Card>
 
-          <Card title="Open the shop">
+          <Card title="Onboarding">
             <div className="space-y-4 px-4 py-4 sm:px-5">
               <ol className="space-y-1.5 text-sm">
-                <li className={seller.invited_at || seller.joined_at ? 'text-town-cream' : 'text-town-cream/50'}>
-                  {seller.invited_at || seller.joined_at ? '✓' : '1.'} Invite sent{seller.invited_at ? ` ${fmtDate(seller.invited_at)}` : ''}
+                <li className={seller.contact_email ? 'text-town-cream' : 'text-town-cream/50'}>
+                  {seller.contact_email ? '✓' : '1.'} Owner email {seller.contact_email ? '' : '(add it under Details)'}
                 </li>
                 <li className={selling.length ? 'text-town-cream' : 'text-town-cream/50'}>
-                  {selling.length ? '✓' : '2.'} Hats priced ({selling.length})
+                  {selling.length ? '✓' : '2.'} Hats priced and selling ({selling.length})
                 </li>
                 <li className={seller.payouts_enabled ? 'text-town-cream' : 'text-town-cream/50'}>
                   {seller.payouts_enabled ? '✓' : '3.'} Payouts connected
                 </li>
+                <li className={seller.status === 'live' ? 'text-town-cream' : 'text-town-cream/50'}>
+                  {seller.status === 'live' ? '✓' : '4.'} Shop open
+                </li>
               </ol>
+
               {seller.status !== 'applied' && seller.status !== 'rejected' && (
-                <div className="flex flex-wrap gap-2">
-                  <ActionButton look={seller.invited_at ? 'secondary' : 'primary'} action={sendInviteAction.bind(null, seller.id)}>
-                    {seller.invited_at ? 'Resend invite' : 'Send invite'}
-                  </ActionButton>
-                  {joinUrl && <CopyLink url={joinUrl} />}
-                </div>
+                <>
+                  <div className="space-y-2 border-t border-town-cream/10 pt-4">
+                    <p className="admin-eyebrow">They set it up</p>
+                    <p className="text-xs text-town-cream/50">Their link: they add their info, set prices and connect payouts.</p>
+                    <div className="flex flex-wrap gap-2">
+                      <ActionButton look={seller.invited_at ? 'secondary' : 'primary'} action={sendInviteAction.bind(null, seller.id)}>
+                        {seller.invited_at ? 'Resend invite email' : 'Email invite'}
+                      </ActionButton>
+                      {joinUrl && <CopyLink url={joinUrl} label="Copy their link" />}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 border-t border-town-cream/10 pt-4">
+                    <p className="admin-eyebrow">You set it up for them</p>
+                    <p className="text-xs text-town-cream/50">
+                      Fill in Details and their hats (with their prices) yourself. The one step only the owner can do is payouts, since it
+                      has their bank and ID: text them the payout link, or open it here while they&rsquo;re with you.
+                    </p>
+                    {!seller.contact_email ? (
+                      <p className="text-xs text-amber-200">Add the owner&rsquo;s email under Details first. Stripe needs it.</p>
+                    ) : payoutUrl && !seller.payouts_enabled ? (
+                      <div className="flex flex-wrap gap-2">
+                        <CopyLink url={payoutUrl} label="Copy payout link" />
+                        <a href={payoutUrl} target="_blank" rel="noopener noreferrer" className={btn.secondary}>
+                          Open payout setup
+                        </a>
+                      </div>
+                    ) : seller.payouts_enabled ? (
+                      <p className="text-xs text-emerald-300">Payouts are connected.</p>
+                    ) : null}
+                  </div>
+                </>
               )}
+
               <div className="flex flex-wrap gap-2 border-t border-town-cream/10 pt-4">
                 {seller.status === 'live' ? (
                   <ActionButton action={setSellerStatusAction.bind(null, seller.id, 'paused')} confirm="Hide this shop from the market?">
