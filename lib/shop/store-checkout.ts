@@ -210,6 +210,9 @@ export async function startStoreCheckout({
         },
       },
     })),
+    // The account logo is navy, which disappears on the navy header; show the
+    // white script wordmark instead.
+    branding_settings: { logo: { type: 'url', url: absoluteUrl('/brand/logos/script-word-white.png') } },
     automatic_tax: { enabled: automaticTaxOn() },
     phone_number_collection: { enabled: true },
     shipping_address_collection: { allowed_countries: ['US'] },

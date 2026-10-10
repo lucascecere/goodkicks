@@ -152,6 +152,7 @@ export async function startCheckout({
       },
     })),
     // Off unless a tax registration exists; see automaticTaxOn() in config.ts.
+    branding_settings: { logo: { type: 'url', url: absoluteUrl('/brand/logos/script-word-white.png') } },
     automatic_tax: { enabled: automaticTaxOn() },
     ...(discount.itemsCents > 0
       ? {
