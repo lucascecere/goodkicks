@@ -15,7 +15,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: 'Shop Massachusetts Town Hats',
   description:
-    'Every Townies hat in one place. Embroidered snapbacks for Massachusetts towns, filterable by town: Milton, Weymouth, Hingham, Braintree and more.',
+    'Every Townies hat in one place. Embroidered snapbacks for Massachusetts towns, filterable by town: Milton, Weymouth, Braintree, Dorchester and more.',
   alternates: { canonical: '/shop' },
   openGraph: {
     title: 'Shop Massachusetts Town Hats',

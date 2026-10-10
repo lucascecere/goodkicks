@@ -25,6 +25,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { sendReviewRequestEmail } from '@/lib/email/send-review-request';
 import { reconcileWebhooks } from '@/lib/shopify/webhooks';
 import { syncDeliveredRequests } from '@/lib/reviews/delivered-sync';
+import { sweepSoldOutToPreorder } from '@/lib/townies/preorder-fallback';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -67,6 +68,15 @@ export async function GET(req: NextRequest) {
     webhooks = { ok: false, present: [], created: [], failed: [{ topic: '*', error: String(err) }] };
   }
 
+  // Backstop for the orders webhook: any hat sitting at 0 becomes a pre-order.
+  let preorder: { flipped: string[]; failed: string[] } | { error: string };
+  try {
+    preorder = await sweepSoldOutToPreorder();
+  } catch (err) {
+    console.error('[cron] pre-order fallback failed:', err);
+    preorder = { error: err instanceof Error ? err.message : String(err) };
+  }
+
   // Queue from Shopify DELIVERY dates (lib/reviews/delivered-sync.ts). Runs
   // in dry mode too: queuing is safe, only sending is gated.
   let sync: { planned: number; queued: number } | { error: string };
@@ -102,6 +112,7 @@ export async function GET(req: NextRequest) {
       ok: true,
       webhooks,
       sync,
+      preorder,
       dryRun: true,
       reason:
         process.env.REVIEW_REQUESTS_ENABLED === '1'
@@ -140,5 +151,5 @@ export async function GET(req: NextRequest) {
   }
 
   if (failures.length) console.error('[review-cron] failures:', JSON.stringify(failures));
-  return Response.json({ ok: true, webhooks, sync, due: due.length, sent, failed: failures.length });
+  return Response.json({ ok: true, webhooks, sync, preorder, due: due.length, sent, failed: failures.length });
 }

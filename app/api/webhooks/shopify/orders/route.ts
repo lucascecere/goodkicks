@@ -39,6 +39,7 @@ import { after } from 'next/server';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { markSpinCodeRedeemed } from '@/lib/townies/spin-redemption';
 import { adjustBundleStock } from '@/lib/townies/hat-sack-stock';
+import { sweepSoldOutToPreorder } from '@/lib/townies/preorder-fallback';
 import { lineBrand, type ShopifyLineItem } from '@/lib/shopify/orders-source';
 import type { RealBrand } from '@/lib/admin/brand';
 import { verifyWebhookDetailed } from '@/lib/shopify/webhooks';
@@ -99,6 +100,13 @@ export async function POST(req: NextRequest) {
       if (order.id != null) await adjustBundleStock(order.id, order.line_items ?? []);
     } catch (err) {
       console.error('[shopify-webhook] bundle stock adjust failed', err);
+    }
+
+    // A hat this order just took to 0 becomes a pre-order (print to order).
+    try {
+      await sweepSoldOutToPreorder();
+    } catch (err) {
+      console.error('[shopify-webhook] pre-order fallback failed', err);
     }
 
     const email = order.email || order.contact_email;

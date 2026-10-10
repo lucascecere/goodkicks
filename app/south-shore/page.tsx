@@ -12,7 +12,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: 'South Shore Town Hats',
   description:
-    'Embroidered snapbacks for South Shore towns: Milton, Quincy, Braintree, Weymouth, Hingham and more, from Townies Apparel Co.',
+    'Embroidered snapbacks for South Shore towns: Milton, Quincy, Braintree, Weymouth and more, from Townies Apparel Co.',
   alternates: { canonical: '/south-shore' },
 };
 
@@ -37,7 +37,7 @@ export default async function SouthShorePage() {
       <PageMasthead
         eyebrow="The first drop"
         title="The South Shore."
-        sub={`Where Townies started. Milton, Braintree, Weymouth, Hingham and the towns around them.`}
+        sub={`Where Townies started. Milton, Braintree, Weymouth and the towns around them.`}
         pattern="ma"
         align="center"
       />

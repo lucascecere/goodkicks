@@ -18,7 +18,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: { absolute: 'Townies Apparel Co. | Embroidered Hats for Massachusetts Towns' },
   description:
-    'Embroidered snapbacks for Massachusetts towns: Milton, Quincy, Braintree, Dorchester, Hingham and more. The zip, the year, the nickname only locals use.',
+    'Embroidered snapbacks for Massachusetts towns: Milton, Quincy, Braintree, Dorchester, Norwood and more. The zip, the year, the nickname only locals use.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'Townies Apparel Co. | Hats for Massachusetts towns',
