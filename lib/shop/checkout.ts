@@ -44,7 +44,9 @@ export async function startCheckout({
     // this checkout once SHOP_HOUSE_SELLING is deliberately turned on.
     const houseOff = seller?.kind === 'house' && process.env.SHOP_HOUSE_SELLING !== 'true';
     const open = seller?.status === 'live' || (Boolean(seller) && testShopsVisible() && isTestShop(seller!.slug) && seller!.status === 'approved');
-    if (!seller || houseOff || !open || p.status !== 'active' || !p.price_cents) {
+    // A local business must have payouts connected before it can sell.
+    const unpaid = seller?.kind === 'local' && !seller.payouts_enabled;
+    if (!seller || houseOff || !open || unpaid || p.status !== 'active' || !p.price_cents) {
       throw new CheckoutError(`${p.title} isn't for sale right now.`);
     }
     const qty = merged.get(p.id)!;

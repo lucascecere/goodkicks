@@ -1,6 +1,6 @@
 import 'server-only';
 import { listProducts, listSellers } from './db';
-import { isTestShop, testShopsVisible } from './config';
+import { isTestShop, marketOpen, testShopsVisible } from './config';
 import type { Product, Seller } from './types';
 
 // What the public market shows: live local businesses that have at least one
@@ -13,7 +13,13 @@ export async function getStalls(): Promise<Stall[]> {
   const showTest = testShopsVisible();
   const [all, products] = await Promise.all([listSellers({ liveOnly: !showTest }), listProducts(undefined, { activeOnly: true })]);
   // Live shops everywhere; test shops (kept 'approved') only where the flag is on.
-  const sellers = all.filter((s) => (showTest && isTestShop(s.slug) ? s.status === 'approved' || s.status === 'live' : s.status === 'live'));
+  const open = marketOpen();
+  const sellers = all
+    .filter((s) => (showTest && isTestShop(s.slug) ? s.status === 'approved' || s.status === 'live' : s.status === 'live'))
+    // Once ordering is open, only businesses that can be paid are shown: a shop
+    // still mid-onboarding stays hidden until its payouts are connected. While
+    // the market is a showcase, every live shop is on display.
+    .filter((s) => !open || s.payouts_enabled);
   const bySeller = new Map<string, Product[]>();
   for (const p of products) {
     const list = bySeller.get(p.seller_id) ?? [];
