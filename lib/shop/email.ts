@@ -55,7 +55,7 @@ function totals(o: Order): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;margin-top:6px;">
     ${line('Subtotal', o.subtotal_cents)}
     ${line(o.delivery === 'pickup' ? 'Pickup' : 'Shipping', o.shipping_cents)}
-    ${line('Tax', o.tax_cents)}
+    ${o.tax_cents ? line('Tax', o.tax_cents) : ''}
     ${line('Total', o.total_cents, true)}
   </table>`;
 }

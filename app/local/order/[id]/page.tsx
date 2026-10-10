@@ -72,7 +72,7 @@ export default async function OrderPage({
       </ul>
       <div className="mt-4 space-y-1 text-sm text-muted">
         <div className="flex justify-between"><span>{order.delivery === 'pickup' ? 'Pickup' : 'Shipping'}</span><span>{order.shipping_cents ? dollars(order.shipping_cents) : 'Free'}</span></div>
-        <div className="flex justify-between"><span>Tax</span><span>{dollars(order.tax_cents)}</span></div>
+        {order.tax_cents > 0 && <div className="flex justify-between"><span>Tax</span><span>{dollars(order.tax_cents)}</span></div>}
         <div className="flex justify-between pt-1 text-base font-semibold text-text"><span>Total</span><span>{dollars(order.total_cents)}</span></div>
       </div>
 

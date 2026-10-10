@@ -139,7 +139,11 @@ async function orderForCharge(charge: Stripe.Charge): Promise<Order | null> {
 }
 
 /** A refund made anywhere (our admin, or the Stripe dashboard). */
-export async function handleRefund(charge: Stripe.Charge) {
+export async function handleRefund(eventCharge: Stripe.Charge) {
+  // Re-read the charge with our pinned client instead of trusting the event
+  // payload: the live endpoint sends a newer API version (endive) than the
+  // client (dahlia), and this keeps the fields we use in one known shape.
+  const charge = await getShopStripe().charges.retrieve(eventCharge.id);
   const order = await orderForCharge(charge);
   if (!order) return;
   const full = charge.amount_refunded >= charge.amount;

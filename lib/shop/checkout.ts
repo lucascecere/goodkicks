@@ -1,7 +1,7 @@
 import 'server-only';
 import type Stripe from 'stripe';
 import { db, getProductsByIds, listSellers } from './db';
-import { absoluteUrl, getShopStripe, isTestShop, MARKET_BASE, siteUrl, testShopsVisible } from './config';
+import { absoluteUrl, automaticTaxOn, getShopStripe, isTestShop, MARKET_BASE, siteUrl, testShopsVisible } from './config';
 import { shippingCents, splitLine } from './money';
 import { applyDiscount, discountProblem, normalizeCode } from './discounts';
 import { findDiscount } from './discounts-db';
@@ -149,7 +149,8 @@ export async function startCheckout({
         },
       },
     })),
-    automatic_tax: { enabled: true },
+    // Off unless a tax registration exists; see automaticTaxOn() in config.ts.
+    automatic_tax: { enabled: automaticTaxOn() },
     ...(discount.itemsCents > 0
       ? {
           discounts: [

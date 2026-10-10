@@ -52,6 +52,19 @@ export function isTestShop(slug: string): boolean {
   return slug.startsWith('test-');
 }
 
+/**
+ * Sales tax at checkout. OFF by default (Lucas, 2026-10-09): Townies only
+ * sells hats under $175, which Massachusetts exempts as clothing, and the
+ * business has no sales-tax registration anywhere (Shopify tax is off for the
+ * same reason). Stripe Tax only charges its fee where you're registered, so
+ * with no registration it would calculate $0 for nothing; and if a
+ * registration were ever added by mistake it would silently start charging
+ * customers. Set SHOP_AUTOMATIC_TAX=true only once a registration exists.
+ */
+export function automaticTaxOn(): boolean {
+  return process.env.SHOP_AUTOMATIC_TAX === 'true';
+}
+
 export function shopIsTestMode(): boolean {
   return (process.env.SHOP_STRIPE_SECRET_KEY ?? '').startsWith('sk_test_');
 }

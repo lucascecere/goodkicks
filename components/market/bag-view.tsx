@@ -151,8 +151,9 @@ export function BagView() {
           <span className="tabular-nums">{shipping ? dollars(shipping) : 'Free'}</span>
         </div>
         <div className="flex justify-between text-muted">
+          {/* No sales tax: hats are clothing under $175, exempt in Massachusetts. */}
           <span>Tax</span>
-          <span>Calculated at checkout</span>
+          <span>$0.00</span>
         </div>
         <div className="flex justify-between pt-2 text-base font-semibold text-text">
           <span>Total</span>
