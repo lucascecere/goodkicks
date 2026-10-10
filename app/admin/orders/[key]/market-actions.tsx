@@ -76,7 +76,7 @@ export async function MarketActions({ row }: { row: AdminOrderRow }) {
 
           {(o.status === 'paid' || o.status === 'partially_refunded') && (
             <div className="border-t border-town-cream/10 pt-3">
-              <ActionButton look="ghost" action={refundOrderAction.bind(null, o.id)} confirm={`Refund the full ${dollars(o.total_cents)} to ${o.buyer_name ?? 'the buyer'}?`}>
+              <ActionButton look="danger" className="w-full" action={refundOrderAction.bind(null, o.id)} confirm={`Refund the full ${dollars(o.total_cents)} to ${o.buyer_name ?? 'the buyer'}?`}>
                 Refund order
               </ActionButton>
             </div>
