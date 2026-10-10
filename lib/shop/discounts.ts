@@ -5,7 +5,7 @@
 // hats. A local business's hat is never discounted by our promo, so a code
 // can't quietly shrink what we owe that business.
 
-export type DiscountKind = 'percent' | 'fixed' | 'free_shipping';
+export type DiscountKind = 'percent' | 'fixed' | 'free_shipping' | 'bogo';
 
 export type DiscountScope = 'all' | 'hats' | 'foot_bags';
 
@@ -66,6 +66,9 @@ export function discountProblem(d: Discount, lines: PricedLine[], now = new Date
     if (lines.every((l) => !l.house)) return 'Codes work on Townies hats, not on hats from local shops.';
     return d.scope === 'foot_bags' ? 'That code is for Good Kicks foot bags.' : "That code doesn't cover what's in your bag.";
   }
+  if (d.kind === 'bogo' && eligibleLines(d, lines).reduce((n, l) => n + l.qty, 0) < 2) {
+    return d.scope === 'foot_bags' ? 'Add two Good Kicks to use that code.' : 'Add two items to use that code.';
+  }
   if (eligible < d.min_subtotal_cents) {
     return `That code needs $${(d.min_subtotal_cents / 100).toFixed(2)} of Townies hats in your bag.`;
   }
@@ -76,6 +79,24 @@ export function applyDiscount(d: Discount, lines: PricedLine[]): DiscountResult 
   const eligible = eligibleLines(d, lines);
   const base = eligible.reduce((n, l) => n + l.unitPriceCents * l.qty, 0);
   if (d.kind === 'free_shipping') return { itemsCents: 0, perLine: {}, freeShipping: true };
+
+  // Buy one, get one: within the code's scope, units are paired most to least
+  // expensive and the cheaper unit of each pair is free (BOGOKICKS: any two
+  // Good Kicks, one free).
+  if (d.kind === 'bogo') {
+    const units = eligible
+      .flatMap((l) => Array.from({ length: l.qty }, () => ({ key: l.key, cents: l.unitPriceCents })))
+      .sort((a, b) => b.cents - a.cents);
+    const perLine: Record<string, number> = {};
+    let total = 0;
+    units.forEach((u, i) => {
+      if (i % 2 === 1) {
+        perLine[u.key] = (perLine[u.key] ?? 0) + u.cents;
+        total += u.cents;
+      }
+    });
+    return { itemsCents: total, perLine, freeShipping: false };
+  }
 
   const total =
     d.kind === 'percent' ? Math.floor((base * Math.min(100, d.value)) / 100) : Math.min(d.value, base);

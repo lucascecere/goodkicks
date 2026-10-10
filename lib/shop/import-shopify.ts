@@ -5,10 +5,11 @@ import { WHOLESALE_CENTS } from './money';
 
 // Copy the Shopify catalog into our own tables, as the Townies (house) seller.
 //
-// READ-ONLY on Shopify: nothing there changes. New products arrive as DRAFTS,
-// so nothing new shows anywhere. Re-running refreshes price, stock, photos,
-// tags and copy from Shopify (still the source of truth until we switch), but
-// never touches a product's status or slug, so a hat we've turned on stays on.
+// READ-ONLY on Shopify: nothing there changes. New products arrive as DRAFTS;
+// re-running refreshes price, stock, photos, copy and SEO from Shopify (the
+// source of truth until switch day) but never a product's status or slug. The
+// storefront switch (SHOP_STOREFRONT=own) treats an imported product as on sale
+// when it is ACTIVE in Shopify, so a refresh keeps the two in step.
 
 type Node = {
   id: string;
@@ -16,6 +17,8 @@ type Node = {
   handle: string;
   status: 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
   description: string;
+  descriptionHtml: string;
+  seo: { title: string | null; description: string | null };
   tags: string[];
   featuredImage: { url: string } | null;
   images: { nodes: { url: string }[] };
@@ -23,9 +26,11 @@ type Node = {
   variants: {
     nodes: {
       id: string;
+      title: string;
       price: string;
       compareAtPrice: string | null;
       inventoryQuantity: number | null;
+      inventoryPolicy: 'DENY' | 'CONTINUE';
       inventoryItem: { tracked: boolean } | null;
     }[];
   };
@@ -36,11 +41,12 @@ const QUERY = `
     products(first: 50, after: $after) {
       pageInfo { hasNextPage endCursor }
       nodes {
-        id title handle status description tags
+        id title handle status description descriptionHtml tags
+        seo { title description }
         featuredImage { url }
-        images(first: 10) { nodes { url } }
+        images(first: 20) { nodes { url } }
         collections(first: 10) { nodes { handle } }
-        variants(first: 5) { nodes { id price compareAtPrice inventoryQuantity inventoryItem { tracked } } }
+        variants(first: 10) { nodes { id title price compareAtPrice inventoryQuantity inventoryPolicy inventoryItem { tracked } } }
       }
     }
   }
@@ -71,6 +77,22 @@ function townOf(n: Node): string | null {
   return m ? m[1].trim() : null;
 }
 
+/**
+ * Hat & Sack tier prices, from the bundle product's variants (titles as in
+ * lib/townies/hat-sack.ts). Saved to shop_settings so the own-engine offer
+ * reads them without Shopify.
+ */
+async function saveHatSackTiers(n: Node) {
+  const byTitle = (t: string) => cents(n.variants.nodes.find((v) => v.title.trim().toLowerCase() === t.toLowerCase())?.price);
+  const tiers = {
+    standard: byTitle('Ships now'),
+    everyday: byTitle('Ships now · Everyday + Good Kicks'),
+    titletown: byTitle('Ships now · Titletown'),
+  };
+  if (!tiers.standard) return;
+  await db().from('shop_settings').upsert({ key: 'hat_sack_tiers', value: JSON.stringify(tiers), updated_at: new Date().toISOString() });
+}
+
 export type ImportResult = { created: number; updated: number; skipped: string[] };
 
 export async function importShopifyCatalog(): Promise<ImportResult> {
@@ -99,18 +121,28 @@ export async function importShopifyCatalog(): Promise<ImportResult> {
       result.skipped.push(n.title);
       continue;
     }
+    if (n.handle === 'hat-and-sack') await saveHatSackTiers(n);
+
     const tags = n.tags.map((t) => t.toLowerCase());
     const lifestyle = tags.includes('lifestyle') || /lifestyle|classic/i.test(n.title);
     const images = [n.featuredImage?.url, ...n.images.nodes.map((i) => i.url)].filter(
       (u, i, a): u is string => Boolean(u) && a.indexOf(u) === i,
     );
+    const goodkicks = n.collections.nodes.some((c) => c.handle === GK_COLLECTION) || kind === 'foot_bag';
+    // A count only means something when Shopify tracks it AND stops selling at
+    // zero (DENY). Pre-orders run CONTINUE, so they're untracked here too.
+    const tracked = Boolean(v.inventoryItem?.tracked) && v.inventoryPolicy === 'DENY';
     const fields = {
       title: n.title,
       description: n.description || null,
+      description_html: n.descriptionHtml || null,
+      seo_title: n.seo?.title || null,
+      seo_description: n.seo?.description || null,
       image_url: images[0] ?? null,
       images,
       tags: n.tags,
       kind,
+      brand: goodkicks ? 'goodkicks' : 'townies',
       preorder: tags.includes('preorder'),
       region: n.collections.nodes.map((c) => c.handle).find((h) => REGIONS.includes(h)) ?? tags.find((t) => REGIONS.includes(t)) ?? null,
       town: kind === 'hat' ? townOf(n) : null,
@@ -118,7 +150,8 @@ export async function importShopifyCatalog(): Promise<ImportResult> {
       compare_at_cents: cents(v.compareAtPrice),
       wholesale_type: lifestyle ? 'lifestyle' : 'everyday',
       wholesale_cents: WHOLESALE_CENTS[lifestyle ? 'lifestyle' : 'everyday'],
-      on_hand: v.inventoryItem?.tracked ? (v.inventoryQuantity ?? 0) : 0,
+      track_stock: tracked,
+      on_hand: tracked ? Math.max(0, v.inventoryQuantity ?? 0) : 0,
       shopify_variant_id: v.id,
       updated_at: new Date().toISOString(),
     };
@@ -131,10 +164,12 @@ export async function importShopifyCatalog(): Promise<ImportResult> {
     } else {
       const { error } = await db()
         .from('shop_products')
-        .insert({ ...fields, seller_id: house.id, slug: n.handle, shopify_product_id: n.id, status: 'draft' });
+        .insert({ ...fields, seller_id: house.id, slug: n.handle, shopify_product_id: n.id, status: n.status === 'ACTIVE' ? 'active' : 'draft' });
       if (error) throw new Error(`${n.title}: ${error.message}`);
       result.created++;
     }
+    // Keep sale status in step with Shopify until switch day.
+    if (id) await db().from('shop_products').update({ status: n.status === 'ACTIVE' ? 'active' : 'draft' }).eq('id', id);
   }
   return result;
 }

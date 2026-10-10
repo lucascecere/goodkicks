@@ -102,10 +102,27 @@ async function finishPaidOrder(paid: Order) {
   const short: string[] = [];
   let final: Order = paid;
   if (await claimStep(paid.id, 'stock_taken_at')) {
-    for (const i of items) {
-      if (!i.product_id) continue;
-      const left = await adjustStock(i.product_id, -i.qty);
-      if (left !== null && left < 0) short.push(i.title);
+    // Store orders say exactly which products a line uses (`_stock`: a Hat &
+    // Sack uses its hat and its bag). Only tracked, in-stock products are
+    // counted down; pre-orders and untracked items aren't "out of buffer".
+    const moves = items.flatMap((i) => {
+      const listed = (i.attributes ?? []).find((a) => a.key === '_stock')?.value;
+      if (listed) {
+        try {
+          return (JSON.parse(listed) as { id: string; qty: number }[]).map((m) => ({ ...m, title: i.title, store: true }));
+        } catch {
+          return [];
+        }
+      }
+      return i.product_id ? [{ id: i.product_id, qty: i.qty, title: i.title, store: false }] : [];
+    });
+    const info = new Map((await getProductsByIds([...new Set(moves.map((m) => m.id))])).map((p) => [p.id, p]));
+    for (const m of moves) {
+      const p = info.get(m.id);
+      if (m.store && (!p || !p.track_stock || p.preorder)) continue;
+      const left = await adjustStock(m.id, -m.qty);
+      if (!m.store && left !== null && left < 0) short.push(m.title);
+      if (m.store && left !== null && left < 0) short.push(p?.title ?? m.title);
     }
     if (short.length) final = await updateOrder(paid.id, { fulfillment: 'needs_production' });
     if (final.discount_code) await quietly('discount count', () => markDiscountUsed(final.discount_code!));
@@ -164,9 +181,27 @@ export async function handleRefund(eventCharge: Stripe.Charge) {
   }
   if (full && !['shipped', 'delivered', 'picked_up'].includes(order.fulfillment)) {
     // Never left the shelf: put the hats back.
-    const items = await getOrderItems(order.id);
-    const products = await getProductsByIds(items.map((i) => i.product_id).filter((x): x is string => Boolean(x)));
-    for (const i of items) if (i.product_id && products.some((p) => p.id === i.product_id)) await adjustStock(i.product_id, i.qty);
+    // Only if stock was actually taken for this order, and only what was taken.
+    if (order.stock_taken_at) {
+      const items = await getOrderItems(order.id);
+      const moves = items.flatMap((i) => {
+        const listed = (i.attributes ?? []).find((a) => a.key === '_stock')?.value;
+        if (listed) {
+          try {
+            return (JSON.parse(listed) as { id: string; qty: number }[]).map((m) => ({ ...m, store: true }));
+          } catch {
+            return [];
+          }
+        }
+        return i.product_id ? [{ id: i.product_id, qty: i.qty, store: false }] : [];
+      });
+      const info = new Map((await getProductsByIds([...new Set(moves.map((m) => m.id))])).map((p) => [p.id, p]));
+      for (const m of moves) {
+        const p = info.get(m.id);
+        if (!p || (m.store && (!p.track_stock || p.preorder))) continue;
+        await adjustStock(m.id, m.qty);
+      }
+    }
   }
 }
 

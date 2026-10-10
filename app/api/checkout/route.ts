@@ -3,6 +3,9 @@ import { createShopifyCart } from '@/lib/shopify/service';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 import { shopifyAdminGraphQL } from '@/lib/shopify/admin-graphql';
 import { bundleTier } from '@/lib/townies/hat-sack';
+import { storefrontOwn } from '@/lib/shop/catalog';
+import { startStoreCheckout, StoreCheckoutError } from '@/lib/shop/store-checkout';
+import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
 
 /**
  * Hat & Sack guard (2026-10-08): the bundle has three price tiers ($35/$40/$45,
@@ -65,6 +68,21 @@ export async function POST(req: NextRequest) {
       { error: `Item ${bad + 1} needs a variantId string and a whole-number quantity above 0.` },
       { status: 400 },
     );
+  }
+
+  // Storefront switch: our own Stripe checkout instead of a Shopify cart.
+  if (storefrontOwn()) {
+    if (!rateLimit(`store-checkout:${callerIp(req.headers)}`, 15, 60_000)) {
+      return NextResponse.json({ error: 'Too many tries. Give it a minute.' }, { status: 429 });
+    }
+    try {
+      const { url } = await startStoreCheckout({ items, discountCode });
+      return NextResponse.json({ url });
+    } catch (err) {
+      if (err instanceof StoreCheckoutError) return NextResponse.json({ error: err.message }, { status: 400 });
+      console.error('[checkout] store checkout failed:', err);
+      return NextResponse.json({ error: 'Checkout failed. Try again in a moment.' }, { status: 500 });
+    }
   }
 
   let checked: CheckoutItem[] | null;

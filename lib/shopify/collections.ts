@@ -8,6 +8,7 @@
 // existing yet.
 
 import { getVariantStock, getVariantStockStrict } from './stock';
+import { ownCollection, storefrontOwn } from '@/lib/shop/catalog';
 
 export type CollectionProduct = {
   id: string;
@@ -141,6 +142,8 @@ export async function getProductsByCollectionStrict(
   handle: string,
   first = 100,
 ): Promise<CollectionProduct[]> {
+  // Storefront switch: our own catalog instead of Shopify (lib/shop/catalog.ts).
+  if (storefrontOwn()) return ownCollection(handle);
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
   if (!domain || !token) return fixtureProducts(handle);
@@ -165,6 +168,10 @@ export async function getProductsByCollection(
   handle: string,
   first = 100,
 ): Promise<CollectionProduct[]> {
+  if (storefrontOwn()) return ownCollection(handle).catch((err) => {
+    console.error('[collections] own catalog failed:', err);
+    return [];
+  });
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
   if (!domain || !token) return fixtureProducts(handle);

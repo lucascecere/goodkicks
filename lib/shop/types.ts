@@ -61,6 +61,11 @@ export type Product = {
   compare_at_cents: number | null;
   shopify_product_id: string | null;
   shopify_variant_id: string | null;
+  description_html: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
+  track_stock: boolean;
+  brand: 'townies' | 'goodkicks';
   created_at: string;
   updated_at: string;
 };
@@ -118,6 +123,8 @@ export type Order = {
   stock_taken_at: string | null;
   notified_at: string | null;
   payout_unwound_fraction: number;
+  source?: 'market' | 'store';
+  brand?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -136,6 +143,7 @@ export type OrderItem = {
   royalbacks_fee_cents: number;
   our_cut_cents: number;
   discount_cents: number;
+  attributes?: { key: string; value: string }[];
 };
 
 export type PayoutStatus = 'held' | 'due' | 'transferred' | 'reversed' | 'canceled';

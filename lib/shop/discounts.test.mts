@@ -59,3 +59,16 @@ test('scoped codes only cover their kind', () => {
   assert.deepEqual(applyDiscount({ ...base, scope: 'hats' }, lines).perLine, { hat: 299 });
   assert.match(discountProblem({ ...base, scope: 'foot_bags' }, [lines[0]])!, /foot bags/);
 });
+
+test('bogo: cheaper of each pair is free, within scope', () => {
+  const lines: PricedLine[] = [
+    { key: 'pro', house: true, kind: 'foot_bag', unitPriceCents: 1299, qty: 1 },
+    { key: 'std', house: true, kind: 'foot_bag', unitPriceCents: 999, qty: 2 },
+    { key: 'hat', house: true, kind: 'hat', unitPriceCents: 2999, qty: 1 },
+  ];
+  const r = applyDiscount({ ...base, kind: 'bogo', scope: 'foot_bags', value: 0 }, lines);
+  // units: 1299, 999, 999 -> second unit (999) free; third unpaired
+  assert.equal(r.itemsCents, 999);
+  assert.deepEqual(r.perLine, { std: 999 });
+  assert.match(discountProblem({ ...base, kind: 'bogo', scope: 'foot_bags', value: 0 }, [lines[2], { ...lines[1], qty: 1 }])!, /two Good Kicks/);
+});

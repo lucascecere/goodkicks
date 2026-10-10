@@ -8,7 +8,9 @@ import { getVariantStock } from '@/lib/shopify/stock';
 
 export const dynamic = 'force-dynamic';
 
-const VARIANT_GID = /^gid:\/\/shopify\/ProductVariant\/\d+$/;
+// Shopify variant gids, or our own product UUIDs once the storefront runs on
+// our engine (lib/shop/catalog.ts).
+const VARIANT_GID = /^(gid:\/\/shopify\/ProductVariant\/\d+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/;
 
 export async function GET(req: NextRequest) {
   const ids = [...new Set((req.nextUrl.searchParams.get('ids') ?? '').split(',').filter((id) => VARIANT_GID.test(id)))]

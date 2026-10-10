@@ -60,6 +60,9 @@ function totals(o: Order): string {
   </table>`;
 }
 
+/** Market orders read L1005; Townies/Good Kicks store orders read #1005. */
+export const orderNo = (o: Order) => (o.source === 'store' ? `#${o.number}` : `L${o.number}`);
+
 const orderUrl = (o: Order) => `${siteUrl()}${MARKET_BASE}/order/${o.id}`;
 
 // ── Buyer ──────────────────────────────────────────────────────────────────
@@ -75,10 +78,10 @@ export async function sendOrderReceipt(o: Order, items: OrderItem[], pickupAt: S
     from: SHOP_FROM,
     replyTo: SHOP_REPLY_TO,
     to: o.buyer_email,
-    subject: `Order L${o.number} confirmed`,
+    subject: `Order ${orderNo(o)} confirmed`,
     html: layout({
       heading: `Thanks, ${esc(first)}.`,
-      body: `<p style="margin:0 0 12px 0;">Order <strong>L${o.number}</strong> is in.</p>${how}${itemsTable(items)}${totals(o)}`,
+      body: `<p style="margin:0 0 12px 0;">Order <strong>${orderNo(o)}</strong> is in.</p>${how}${itemsTable(items)}${totals(o)}`,
       cta: { href: orderUrl(o), label: 'View order' },
     }),
   });
@@ -90,10 +93,10 @@ export async function sendShippedEmail(o: Order) {
     from: SHOP_FROM,
     replyTo: SHOP_REPLY_TO,
     to: o.buyer_email,
-    subject: `Order L${o.number} shipped`,
+    subject: `Order ${orderNo(o)} shipped`,
     html: layout({
       heading: 'Your hat is on the way.',
-      body: `<p style="margin:0 0 12px 0;">Order <strong>L${o.number}</strong> shipped${o.carrier ? ` with ${esc(o.carrier)}` : ''}.${
+      body: `<p style="margin:0 0 12px 0;">Order <strong>${orderNo(o)}</strong> shipped${o.carrier ? ` with ${esc(o.carrier)}` : ''}.${
         o.tracking_number ? ` Tracking number: <strong>${esc(o.tracking_number)}</strong>.` : ''
       }</p>`,
       cta: o.tracking_url ? { href: o.tracking_url, label: 'Track it' } : { href: orderUrl(o), label: 'View order' },
@@ -107,10 +110,10 @@ export async function sendReadyForPickupEmail(o: Order, seller: Seller) {
     from: SHOP_FROM,
     replyTo: SHOP_REPLY_TO,
     to: o.buyer_email,
-    subject: `Order L${o.number} is ready for pickup`,
+    subject: `Order ${orderNo(o)} is ready for pickup`,
     html: layout({
       heading: 'Ready for pickup.',
-      body: `<p style="margin:0 0 12px 0;">Your order <strong>L${o.number}</strong> is waiting at <strong>${esc(seller.name)}</strong>${
+      body: `<p style="margin:0 0 12px 0;">Your order <strong>${orderNo(o)}</strong> is waiting at <strong>${esc(seller.name)}</strong>${
         seller.pickup_address ? `, ${esc(seller.pickup_address)}` : ''
       }.</p>${seller.pickup_notes ? `<p style="margin:0 0 12px 0;color:#5C6168;">${esc(seller.pickup_notes)}</p>` : ''}<p style="margin:0;">Just give them your name and order number.</p>`,
       cta: { href: orderUrl(o), label: 'View order' },
@@ -130,9 +133,9 @@ export async function sendAdminNewOrder(o: Order, items: OrderItem[], sellers: M
   await sendEmail({
     from: SHOP_FROM,
     to: notifyEmail(),
-    subject: `${verb}: ${who} · ${what} (L${o.number})`,
+    subject: `${verb}: ${who} · ${what} (${orderNo(o)})`,
     html: layout({
-      heading: `${verb}: L${o.number}`,
+      heading: `${verb}: ${orderNo(o)}`,
       body: `${short}<p style="margin:0 0 6px 0;"><strong>${esc(o.buyer_name)}</strong> · ${esc(o.buyer_email)}</p>
         <p style="margin:0 0 12px 0;color:#5C6168;">${o.delivery === 'pickup' ? `Pickup at ${esc(sellers.get(o.pickup_seller_id ?? '')?.name)}` : 'Ship to buyer'}</p>
         ${itemsTable(items)}${totals(o)}`,

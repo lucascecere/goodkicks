@@ -94,3 +94,28 @@ export function releaseAt(handedOver: Date): Date {
 export function dollars(cents: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
 }
+
+/**
+ * Shipping for the Townies + Good Kicks store, mirroring the Shopify profiles
+ * it replaces:
+ * - town hats ("Hats: Standard Shipping"): 1 hat $5.95, 2 $8.95, 3+ $12.95
+ * - pre-order hats ("Pre-order" profile): $5.00 flat when any are in the order
+ * - Good Kicks foot bags: always free
+ * - Hat & Sack: shipping included
+ * - the whole order ships free once the merchandise reaches $75
+ * (Shopify adds the rates of each profile in a mixed cart; so does this.)
+ */
+export function storeShippingCents({
+  standardHats,
+  preorderHats,
+  merchandiseCents,
+}: {
+  standardHats: number;
+  preorderHats: number;
+  merchandiseCents: number;
+}): number {
+  if (merchandiseCents >= FREE_SHIPPING_OVER_CENTS) return 0;
+  const standard = standardHats <= 0 ? 0 : standardHats === 1 ? 595 : standardHats === 2 ? 895 : 1295;
+  const preorder = preorderHats > 0 ? 500 : 0;
+  return standard + preorder;
+}

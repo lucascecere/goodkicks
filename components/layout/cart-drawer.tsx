@@ -48,7 +48,8 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
     i.customAttributes?.some((a) => a.value.toLowerCase().includes('pre-order')),
   );
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [checkoutError, setCheckoutError] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | boolean>(false);
+  const [promo, setPromo] = useState("");
   const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   // Townies hats can't be stepped past the shelf: live on-hand counts for the
@@ -106,6 +107,7 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...(promo.trim() ? { discountCode: promo.trim() } : {}),
           items: items.map((i) => ({
             variantId: i.variantId,
             quantity: i.quantity,
@@ -113,12 +115,12 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
           })),
         }),
       });
-      const { url } = await res.json();
+      const { url, error } = (await res.json()) as { url?: string; error?: string };
       if (url) {
         window.location.href = url;
       } else {
         setIsCheckingOut(false);
-        setCheckoutError(true);
+        setCheckoutError(error || true);
       }
     } catch {
       setIsCheckingOut(false);
@@ -227,6 +229,17 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                   <span className="text-muted">Subtotal</span>
                   <span className="font-medium text-text">{formatCents(subtotalCents)}</span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="cart-promo" className="sr-only">Discount code</label>
+                  <input
+                    id="cart-promo"
+                    value={promo}
+                    onChange={(e) => setPromo(e.target.value)}
+                    placeholder="Discount code"
+                    autoCapitalize="characters"
+                    className="min-w-0 flex-1 rounded-sm border border-rule bg-white px-3 py-2.5 text-sm uppercase text-text placeholder:normal-case placeholder:text-muted focus:border-text focus:outline-none"
+                  />
+                </div>
                 <button
                   onClick={handleCheckout}
                   disabled={isCheckingOut}
@@ -235,7 +248,9 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                   {isCheckingOut ? 'Redirecting…' : 'Checkout →'}
                 </button>
                 {checkoutError && (
-                  <p className="text-center text-red-600 text-xs">Something went wrong — please try again.</p>
+                  <p className="text-center text-red-600 text-xs">
+                    {typeof checkoutError === 'string' ? checkoutError : 'Something went wrong. Please try again.'}
+                  </p>
                 )}
                 <p className="text-center text-muted text-xs">Shipping &amp; taxes calculated at checkout</p>
               </div>

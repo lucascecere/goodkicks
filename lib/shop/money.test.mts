@@ -48,3 +48,14 @@ test('payout releases 14 days after hand-over', () => {
   const d = new Date('2026-10-01T12:00:00Z');
   assert.equal(releaseAt(d).toISOString(), '2026-10-15T12:00:00.000Z');
 });
+
+import { storeShippingCents } from './money.ts';
+
+test('store shipping mirrors the Shopify profiles', () => {
+  assert.equal(storeShippingCents({ standardHats: 1, preorderHats: 0, merchandiseCents: 2999 }), 595);
+  assert.equal(storeShippingCents({ standardHats: 2, preorderHats: 0, merchandiseCents: 5998 }), 895);
+  assert.equal(storeShippingCents({ standardHats: 0, preorderHats: 2, merchandiseCents: 4998 }), 500);
+  assert.equal(storeShippingCents({ standardHats: 1, preorderHats: 1, merchandiseCents: 5498 }), 1095);
+  assert.equal(storeShippingCents({ standardHats: 0, preorderHats: 0, merchandiseCents: 999 }), 0); // foot bags / bundles only
+  assert.equal(storeShippingCents({ standardHats: 3, preorderHats: 0, merchandiseCents: 8997 }), 0); // over $75
+});

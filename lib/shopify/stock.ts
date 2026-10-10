@@ -12,6 +12,7 @@
 
 import { unstable_cache } from 'next/cache';
 import { isShopifyAdminConfigured, shopifyAdminGraphQL } from './admin-graphql';
+import { ownStock, storefrontOwn } from '@/lib/shop/catalog';
 
 export type VariantStock = {
   /** Units on hand, or null when the count is not meaningful for shoppers. */
@@ -41,6 +42,8 @@ const QUERY = `
 `;
 
 async function fetchStock(ids: string[]): Promise<Record<string, VariantStock>> {
+  // Storefront switch: counts come from our own shop_products.
+  if (storefrontOwn()) return ownStock(ids);
   const out: Record<string, VariantStock> = {};
   if (!ids.length || !isShopifyAdminConfigured()) return out;
   // One retry, then THROW: unstable_cache does not store a thrown result, so a

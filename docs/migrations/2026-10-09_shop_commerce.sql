@@ -257,3 +257,20 @@ alter table shop_orders
   add column if not exists stock_taken_at timestamptz,
   add column if not exists notified_at timestamptz,
   add column if not exists payout_unwound_fraction numeric not null default 0;
+
+-- Added 2026-10-10 (migration `shop_storefront_fields`): what the town hats
+-- and Good Kicks storefronts need to run on our own engine instead of Shopify.
+alter table shop_products
+  add column if not exists description_html text,
+  add column if not exists seo_title text,
+  add column if not exists seo_description text,
+  add column if not exists track_stock boolean not null default true,
+  add column if not exists brand text not null default 'townies' check (brand in ('townies', 'goodkicks'));
+alter table shop_order_items
+  add column if not exists attributes jsonb not null default '[]'::jsonb;
+alter table shop_orders
+  add column if not exists brand text,
+  add column if not exists source text not null default 'market' check (source in ('market', 'store'));
+alter table shop_discounts drop constraint if exists shop_discounts_kind_check;
+alter table shop_discounts add constraint shop_discounts_kind_check check (kind in ('percent', 'fixed', 'free_shipping', 'bogo'));
+alter table shop_discounts add column if not exists email text;

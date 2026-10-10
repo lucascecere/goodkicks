@@ -1,6 +1,7 @@
 import { CART_CREATE_MUTATION } from './mutations';
 import { storefrontClient } from './client';
 import type { ShopifyCart } from './types';
+import { ownAllProducts, ownProductByHandle, storefrontOwn } from '@/lib/shop/catalog';
 
 function shopifyFetch(query: string, variables?: Record<string, unknown>) {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
@@ -100,12 +101,14 @@ export async function getShopInfo() {
 }
 
 export async function getProductByHandle(handle: string) {
+  if (storefrontOwn()) return ownProductByHandle(handle);
   const json = await shopifyFetch(PRODUCT_QUERY, { handle });
   if (json?.errors) console.error('[shopify]', JSON.stringify(json.errors));
   return json?.data?.product ?? null;
 }
 
 export async function getAllProducts() {
+  if (storefrontOwn()) return ownAllProducts();
   const json = await shopifyFetch(ALL_PRODUCTS_QUERY);
   if (json?.errors) console.error('[shopify]', JSON.stringify(json.errors));
   return json?.data?.products?.edges?.map((e: { node: unknown }) => e.node) ?? [];

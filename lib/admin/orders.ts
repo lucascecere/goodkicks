@@ -14,7 +14,7 @@ import {
 // hats) sell through our own Stripe checkout; those orders map into this same
 // shape so the Orders page is one list, not one per system.
 
-export type OrderSource = 'shopify' | 'market';
+export type OrderSource = 'shopify' | 'market' | 'store';
 
 export type PaymentState = 'paid' | 'pending' | 'refunded' | 'partially_refunded' | 'voided' | 'disputed' | 'other';
 export type ShipState = 'unfulfilled' | 'partial' | 'fulfilled' | 'cancelled' | 'archived';
@@ -159,8 +159,8 @@ function fromMarket(o: ShopOrder, items: ShopOrderItem[], sellers: Map<string, S
   const sellerIds = [...new Set(items.map((i) => i.seller_id))];
   return {
     key: `m-${o.id}`,
-    source: 'market',
-    number: `L${o.number}`,
+    source: o.source === 'store' ? 'store' : 'market',
+    number: o.source === 'store' ? `#${o.number}` : `L${o.number}`,
     createdAt: o.paid_at ?? o.created_at,
     customer: o.buyer_name || o.buyer_email || 'Buyer',
     email: o.buyer_email,
@@ -171,8 +171,8 @@ function fromMarket(o: ShopOrder, items: ShopOrderItem[], sellers: Map<string, S
     payment: marketPayment(o),
     ship: marketShip(o),
     shipLabel: FULFILLMENT_LABEL[o.fulfillment],
-    brand: 'townies',
-    discountCode: null,
+    brand: o.brand === 'goodkicks' ? 'goodkicks' : o.brand === 'mixed' ? 'mixed' : 'townies',
+    discountCode: o.discount_code ?? null,
     lines: items.map((i) => ({ title: i.title, variant: null, quantity: i.qty, unitPrice: i.unit_price_cents / 100 })),
     address: a
       ? {

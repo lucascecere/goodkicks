@@ -22,6 +22,8 @@ import {
   eligibleSacks,
 } from '@/lib/townies/hat-sack';
 import { getProductsByCollection, getTownieProducts, GOODKICKS_COLLECTION, type CollectionProduct } from './collections';
+import { storefrontOwn } from '@/lib/shop/catalog';
+import { db } from '@/lib/shop/db';
 
 export type TierVariant = { id: string | null; cents: number };
 
@@ -86,6 +88,17 @@ export async function getHatSackOffer(opts: { strict?: boolean } = {}): Promise<
     preorderId: null,
     imageUrl: null,
   };
+
+  // Storefront switch: tiers and the bundle photo come from our own data.
+  if (storefrontOwn()) {
+    try {
+      return await ownHatSackOffer(fallback);
+    } catch (err) {
+      console.error('[hat-sack-offer] own offer failed:', err);
+      if (opts.strict) throw err;
+      return fallback;
+    }
+  }
 
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
@@ -152,6 +165,35 @@ export async function getHatSackOffer(opts: { strict?: boolean } = {}): Promise<
     if (opts.strict) throw err;
     return fallback;
   }
+}
+
+/**
+ * Own-engine offer. Tier ids are synthetic (`hatsack:<tier>`): checkout
+ * re-derives the tier from the hat and bag actually picked, so the id only
+ * says "this line is a Hat & Sack". Prices come from shop_settings
+ * (hat_sack_tiers, written by the Shopify import and editable later).
+ */
+async function ownHatSackOffer(fallback: HatSackOffer): Promise<HatSackOffer> {
+  const [{ data: setting }, { data: bundle }] = await Promise.all([
+    db().from('shop_settings').select('value').eq('key', 'hat_sack_tiers').maybeSingle(),
+    db().from('shop_products').select('image_url, status').eq('slug', HAT_SACK_HANDLE).maybeSingle(),
+  ]);
+  const t = setting?.value ? (JSON.parse(setting.value) as Partial<Record<'standard' | 'everyday' | 'titletown', number | null>>) : {};
+  const standard = t.standard ?? fallback.tiers.standard.cents;
+  const live = bundle?.status === 'active';
+  const tier = (key: 'standard' | 'everyday' | 'titletown', cents: number): TierVariant => ({ id: live ? `hatsack:${key}` : null, cents });
+  return {
+    priceCents: standard,
+    tiers: {
+      everyday: tier('everyday', t.everyday ?? standard - 500),
+      standard: tier('standard', standard),
+      titletown: tier('titletown', t.titletown ?? standard + 500),
+    },
+    sackValueCents: await poolFloorCents(),
+    shipsNowId: live ? 'hatsack:standard' : null,
+    preorderId: null,
+    imageUrl: bundle?.image_url ?? null,
+  };
 }
 
 /**
