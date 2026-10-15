@@ -3,7 +3,6 @@ import { Scissors, CircleDollarSign, Users, Truck } from 'lucide-react';
 import { Hero } from '@/components/townies/hero';
 import { TownTicker } from '@/components/townies/town-ticker';
 import { FeaturedRail } from '@/components/townies/featured-rail';
-import { StepsBand } from '@/components/townies/steps-band';
 import { ValueBand } from '@/components/townies/value-band';
 import { FaqSection } from '@/components/ui/faq-section';
 import { GoodKicksPromoBand } from '@/components/goodkicks/promo-band';
@@ -100,19 +99,6 @@ export default async function GoodKicksHome() {
 
       <GoodKicksPromoBand shopPath={GOODKICKS.shopPath} />
 
-      <StepsBand
-        id="ambassadors"
-        eyebrow="Ambassador program"
-        title="run a school sack account? we'll back you."
-        body="We partner with high school and college hacky sack accounts: your own code, a cut of every sale, and a free starter sack to kick things off."
-        steps={[
-          { n: '01', title: 'Your own code', body: 'A custom code that gives your followers 20% off, tied to your school or account.' },
-          { n: '02', title: '8–10% commission', body: 'Earn on every order placed through your code. Paid out monthly.' },
-          { n: '03', title: 'Free starter sack', body: 'One sack shipped to you on approval, so you post with the real thing in hand.' },
-        ]}
-        cta={{ href: GOODKICKS.supportPath, label: 'Apply to be an ambassador' }}
-        secondary={{ href: '/goodkicks#faq', label: 'High school · college · freestyle · all welcome' }}
-      />
 
       <ValueBand tone="forest" items={VALUE_ITEMS} />
 

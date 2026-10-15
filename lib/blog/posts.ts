@@ -535,8 +535,6 @@ export const blogPosts: BlogPost[] = [
 
 <h2>Step 5: Show Up During Orientation Week</h2>
 <p>The first week of semester is when students are most open to finding their people. Set up in a high-traffic spot with a few bags. Don't make it feel like a pitch — just be there, be welcoming, and let people join. Have your Instagram handle visible. A visible, friendly circle is one of the easiest entry points on any campus.</p>
-
-<p>If you're running a school sack account, <a href="/ambassadors">check out the Good Kicks ambassador program</a>. We back campus circles with free product, your own discount code, and commission on every sale you drive.</p>
 `,
   },
   {

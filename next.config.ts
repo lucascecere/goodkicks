@@ -3,7 +3,10 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   async redirects() {
     return [
-      { source: '/partners', destination: '/ambassadors', permanent: true },
+      { source: '/partners', destination: '/', permanent: false },
+      // Ambassador / Town Rep program is closed to new applicants (2026-10-15).
+      // Temporary redirect so it can reopen: delete this line + restore the links.
+      { source: '/ambassadors', destination: '/', permanent: false },
       // Contact is split into support / request-a-town / wholesale / ambassadors.
       //
       // Host-scoped, and it has to be: next.config redirects run BEFORE

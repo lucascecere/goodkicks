@@ -83,7 +83,6 @@ export default async function GoodKicksShopPage() {
         title="clubs, dorms, campus groups."
         body="We do sack accounts for college clubs, dormitory programs and campus organizations. Tell us how many and we'll sort you out."
         cta={{ href: GOODKICKS.supportPath, label: 'Get in touch' }}
-        secondary={{ href: '/goodkicks#ambassadors', label: 'or become an ambassador' }}
       />
     </div>
   );

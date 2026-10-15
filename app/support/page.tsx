@@ -29,7 +29,7 @@ export default function Page() {
         <SupportForm />
 
         <div className="mt-14 pt-8 border-t border-rule text-sm text-muted">
-          Looking for something else? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request your town</Link>, ask about <Link href="/wholesale" className="underline underline-offset-4 hover:text-text">wholesale</Link>, or <Link href="/ambassadors" className="underline underline-offset-4 hover:text-text">become an ambassador</Link>.
+          Looking for something else? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request your town</Link> or ask about <Link href="/wholesale" className="underline underline-offset-4 hover:text-text">wholesale</Link>.
         </div>
       </div>
     </div>

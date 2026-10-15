@@ -130,7 +130,6 @@ export const TOWNIES: BrandConfig = {
           { href: '/request-a-town', label: 'Request Your Town' },
           { href: '/custom-hats', label: 'Custom Hats' },
           { href: '/wholesale', label: 'Wholesale' },
-          { href: '/ambassadors', label: 'Become an Ambassador' },
         ],
       },
       {
@@ -193,7 +192,6 @@ export const GOODKICKS: BrandConfig = {
   logoClass: 'h-11 sm:h-14 w-auto',
   nav: [
     { href: '/goodkicks/shop', label: 'Shop' },
-    { href: '/goodkicks#ambassadors', label: 'Ambassadors' },
     { href: '/goodkicks#faq', label: 'FAQ' },
     { href: '/goodkicks/support', label: 'Support' },
   ],
@@ -212,7 +210,6 @@ export const GOODKICKS: BrandConfig = {
       {
         title: 'About',
         links: [
-          { href: '/goodkicks#ambassadors', label: 'Ambassador Program' },
           { href: '/goodkicks#faq', label: 'FAQ' },
           { href: `${TOWNIES_URL}/about`, label: 'Our Story' },
         ],

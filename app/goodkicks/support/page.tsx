@@ -34,9 +34,8 @@ export default function Page() {
 
         <div className="mt-14 pt-8 border-t border-rule text-sm text-muted">
           Looking for something else? Read the{' '}
-          <Link href="/goodkicks#faq" className="underline underline-offset-4 hover:text-text">FAQ</Link>, check{' '}
-          <Link href="/goodkicks/shipping-returns" className="underline underline-offset-4 hover:text-text">shipping &amp; returns</Link>, or ask about the{' '}
-          <Link href="/goodkicks#ambassadors" className="underline underline-offset-4 hover:text-text">ambassador program</Link>.
+          <Link href="/goodkicks#faq" className="underline underline-offset-4 hover:text-text">FAQ</Link> or check{' '}
+          <Link href="/goodkicks/shipping-returns" className="underline underline-offset-4 hover:text-text">shipping &amp; returns</Link>.
         </div>
       </div>
     </div>

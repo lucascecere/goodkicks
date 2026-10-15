@@ -39,7 +39,7 @@ export default function Page() {
               program instead" — which read as a dismissal to the coach ordering
               thirty team hats, i.e. exactly the person the page is for. Only
               genuinely different jobs get pointed elsewhere now. */}
-          Want your own logo on the hat instead? That's <Link href="/custom-hats" className="underline underline-offset-4 hover:text-text">custom hats</Link>, with a mockup builder. Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-text">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request it here</Link>. Want to rep Townies for a cut? <Link href="/ambassadors" className="underline underline-offset-4 hover:text-text">The Town Rep program</Link>.
+          Want your own logo on the hat instead? That's <Link href="/custom-hats" className="underline underline-offset-4 hover:text-text">custom hats</Link>, with a mockup builder. Just after one hat? <Link href="/shop" className="underline underline-offset-4 hover:text-text">Shop the towns</Link>. Want a town we don&rsquo;t make yet? <Link href="/request-a-town" className="underline underline-offset-4 hover:text-text">Request it here</Link>.
         </div>
       </div>
     </div>
