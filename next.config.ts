@@ -5,8 +5,14 @@ const nextConfig: NextConfig = {
     return [
       { source: '/partners', destination: '/', permanent: false },
       // Ambassador / Town Rep program is closed to new applicants (2026-10-15).
-      // Temporary redirect so it can reopen: delete this line + restore the links.
-      { source: '/ambassadors', destination: '/', permanent: false },
+      // 2026-10-19: townies.shop/ambassadors is back as an unlisted page (direct
+      // link only, noindex, no nav/footer/sitemap). Still closed on goodkicks.co.
+      {
+        source: '/ambassadors',
+        destination: '/',
+        permanent: false,
+        has: [{ type: 'host', value: '(www\\.)?goodkicks\\.co' }],
+      },
       // Contact is split into support / request-a-town / wholesale / ambassadors.
       //
       // Host-scoped, and it has to be: next.config redirects run BEFORE

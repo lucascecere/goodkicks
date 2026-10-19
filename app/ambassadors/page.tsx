@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description:
     'Become a Townies Town Rep: a free hat, your own discount code, and commission on every sale you drive.',
   alternates: { canonical: '/ambassadors' },
+  // Unlisted (2026-10-19): shared by direct link only.
+  robots: { index: false, follow: false },
   openGraph: {
     title: 'Townies Town Rep Program',
     description: 'Free hat, your own discount code, and commission on every sale you drive.',
