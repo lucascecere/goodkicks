@@ -40,6 +40,13 @@ function emailCopy(wedge: SpinWedge) {
       why: 'You got this because you played Mass trivia at townies.shop. You will hear from us when a new town drops.',
     };
   }
+  if (wedge.id === 'first5ship') {
+    return {
+      headline: 'Welcome to Townies.',
+      sub: 'Here is $5 off and free shipping on your first order.',
+      why: 'You got this because you signed up at townies.shop. You will hear from us when a new town drops.',
+    };
+  }
   if (wedge.id === 'welcome10') {
     return {
       headline: 'Welcome to Townies.',
@@ -57,10 +64,12 @@ function emailCopy(wedge: SpinWedge) {
 export function renderSpinCodeEmail({
   wedge,
   code,
+  shipCode,
   expiresAt,
 }: {
   wedge: SpinWedge;
   code: string;
+  shipCode?: string;
   expiresAt: string;
 }): string {
   const shopUrl = `${SITE_URL}/shop`;
@@ -69,7 +78,7 @@ export function renderSpinCodeEmail({
   return `<!DOCTYPE html>
 <html lang="en">
 <body style="margin:0;padding:0;background:${CREAM};">
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your code is ${code} — ${wedge.terms}, good through ${formatExpiry(expiresAt)}.</div>
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your code is ${code}: ${wedge.terms}, good through ${formatExpiry(expiresAt)}.</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${CREAM};padding:32px 16px;">
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#FFFFFF;border:1px solid #E0DCD2;">
@@ -89,12 +98,13 @@ export function renderSpinCodeEmail({
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px dashed ${FOREST};">
             <tr><td style="padding:22px 16px;text-align:center;">
               <p style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:${STONE};">Your code</p>
-              <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:26px;font-weight:bold;letter-spacing:3px;color:${NAVY};">${code}</p>
+              <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:26px;font-weight:bold;letter-spacing:3px;color:${NAVY};">${code}</p>${shipCode ? `
+              <p style="margin:8px 0 0;font-family:'Courier New',Courier,monospace;font-size:20px;font-weight:bold;letter-spacing:3px;color:${NAVY};">${shipCode}</p>` : ''}
             </td></tr>
           </table>
 
           <p style="margin:18px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.6;color:#5C6168;">
-            ${wedge.terms}. One use, yours alone — good through <strong style="color:${NAVY};">${formatExpiry(expiresAt)}</strong>.
+            ${wedge.terms}. ${shipCode ? 'Shop at townies.shop and both codes go on at checkout by themselves. ' : ''}One use, yours alone, good through <strong style="color:${NAVY};">${formatExpiry(expiresAt)}</strong>.
           </p>
         </td></tr>
 
@@ -133,23 +143,26 @@ export async function sendSpinCodeEmail({
   to,
   wedge,
   code,
+  shipCode,
   expiresAt,
 }: {
   to: string;
   wedge: SpinWedge;
   code: string;
+  shipCode?: string;
   expiresAt: string;
 }): Promise<string> {
   return sendEmail({
     from: `Townies <${FROM_EMAIL}>`,
     to,
-    subject: `${wedge.label}: your Townies code is ${code}`,
-    html: renderSpinCodeEmail({ wedge, code, expiresAt }),
+    subject: shipCode ? '$5 off + free shipping on your first Townies order' : `${wedge.label}: your Townies code is ${code}`,
+    html: renderSpinCodeEmail({ wedge, code, shipCode, expiresAt }),
     text: [
       emailCopy(wedge).headline,
       '',
-      `${wedge.exit} — ${wedge.label}`,
+      `${wedge.exit}: ${wedge.label}`,
       `Code: ${code}`,
+      ...(shipCode ? [`Free shipping code: ${shipCode}`] : []),
       `${wedge.terms}. One use, good through ${formatExpiry(expiresAt)} (${CODE_VALID_DAYS} days).`,
       '',
       `Shop: ${SITE_URL}/shop`,

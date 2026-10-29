@@ -23,7 +23,7 @@ import {
   ShopifyNotConfiguredError,
 } from './admin-graphql';
 import { resolveCollectionGid, collectionForBrand } from './create-discount-code';
-import { CODE_VALID_DAYS, type SpinWedge } from '@/lib/townies/spin-prizes';
+import { CODE_VALID_DAYS, pairedShipCode, type SpinWedge } from '@/lib/townies/spin-prizes';
 import type { RealBrand } from '@/lib/admin/brand';
 
 export { ShopifyScopeError, ShopifyNotConfiguredError };
@@ -86,7 +86,12 @@ export type MintedCode = {
   code: string;
   gid: string;
   expiresAt: string;
+  /** The free-shipping half, for a wedge with a shipCodePrefix. */
+  shipCode?: string;
 };
+
+/** Which discount classes a minted code may stack with at checkout. */
+type CombinesWith = { productDiscounts?: boolean; orderDiscounts?: boolean; shippingDiscounts?: boolean };
 
 async function mintOnce(
   wedge: SpinWedge,
@@ -94,8 +99,11 @@ async function mintOnce(
   brand: RealBrand,
   startsAt: string,
   endsAt: string,
+  combinesWith?: CombinesWith,
 ): Promise<{ result?: MintedCode; errors: UserError[] }> {
-  const title = wedge.id.startsWith('quiz') ? `Mass trivia: ${wedge.label}` : `Rotary spin — ${wedge.label}`;
+  const title = wedge.id === 'first5ship'
+    ? `First order: ${wedge.kind === 'free_shipping' ? 'free shipping' : `$${wedge.amountOff} off`}`
+    : wedge.id.startsWith('quiz') ? `Mass trivia: ${wedge.label}` : `Rotary spin — ${wedge.label}`;
 
   if (wedge.kind === 'free_shipping') {
     const data = await shopifyAdminGraphQL<{
@@ -113,6 +121,7 @@ async function mintOnce(
         destination: { all: true },
         appliesOncePerCustomer: true,
         usageLimit: 1,
+        ...(combinesWith ? { combinesWith } : {}),
       },
     });
 
@@ -139,7 +148,11 @@ async function mintOnce(
     throw new Error(`Wedge "${wedge.id}" is a percentage prize with no usable percentOff.`);
   }
 
-  const collectionGid = await resolveCollectionGid(collectionForBrand(brand));
+  // The first-order $5 is off the whole order (bundles sit outside the hat
+  // collection); every other prize stays on the brand's collection.
+  const items = wedge.shipCodePrefix
+    ? { all: true }
+    : { collections: { add: [await resolveCollectionGid(collectionForBrand(brand))] } };
 
   const data = await shopifyAdminGraphQL<{
     discountCodeBasicCreate: {
@@ -157,10 +170,11 @@ async function mintOnce(
         value: fixed
           ? { discountAmount: { amount: wedge.amountOff!.toFixed(2), appliesOnEachItem: false } }
           : { percentage: percentOff! / 100 },
-        items: { collections: { add: [collectionGid] } },
+        items,
       },
       appliesOncePerCustomer: true,
       usageLimit: 1,
+      ...(combinesWith ? { combinesWith } : {}),
     },
   });
 
@@ -199,8 +213,24 @@ export async function mintSpinCode({
 
   for (let attempt = 0; attempt < 3; attempt++) {
     const code = buildSpinCode(wedge);
-    const { result, errors } = await mintOnce(wedge, code, brand, startsAt, endsAt);
-    if (result) return result;
+    const shipCode = pairedShipCode(wedge, code);
+    const { result, errors } = await mintOnce(
+      wedge, code, brand, startsAt, endsAt,
+      shipCode ? { shippingDiscounts: true } : undefined,
+    );
+    if (result && !shipCode) return result;
+    if (result && shipCode) {
+      // The free-shipping half. If it fails, the dollar code is orphaned:
+      // harmless (one use, expires by itself), and the retry mints a new pair.
+      const ship = await mintOnce(
+        { ...wedge, kind: 'free_shipping' }, shipCode, brand, startsAt, endsAt,
+        { productDiscounts: true, orderDiscounts: true },
+      );
+      if (ship.result) return { ...result, shipCode: ship.result.code };
+      lastErrors = ship.errors;
+      if (!isTakenError(ship.errors)) break;
+      continue;
+    }
 
     lastErrors = errors;
     if (!isTakenError(errors)) break;

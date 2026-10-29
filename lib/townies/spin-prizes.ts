@@ -47,6 +47,12 @@ export type SpinWedge = {
   terms: string;
   /** Wedge fill. Brand palette only: navy / forest / cream. */
   fill: 'navy' | 'forest' | 'cream';
+  /**
+   * Also mint a free-shipping code alongside the dollar-off one. Shopify can't
+   * put both on one code, so the pair shares a suffix (HELLO5-K4Q7NP +
+   * HELLOSHIP-K4Q7NP) and the bag applies both at checkout.
+   */
+  shipCodePrefix?: string;
 };
 
 /** Brand palette, mirrored from app/globals.css --color-town-*. */
@@ -231,8 +237,34 @@ export function quizTier(score: number): number {
   return score >= 2 ? 3 : score === 1 ? 1 : 0;
 }
 
+/**
+ * First-order offer (Lucas, 2026-10-28): $5 off plus free shipping, for
+ * anyone who hasn't ordered before. Replaced Mass trivia in the pop-up.
+ */
+export const FIRST_ORDER_INDEX = 300;
+export const FIRST_ORDER: SpinWedge = {
+  id: 'first5ship',
+  exit: 'First order',
+  label: '$5 OFF + FREE SHIP',
+  kind: 'fixed_amount',
+  amountOff: 5,
+  weight: 0,
+  codePrefix: 'HELLO5',
+  shipCodePrefix: 'HELLOSHIP',
+  terms: '$5 off and free shipping on your first order',
+  fill: 'navy',
+};
+
+/** The free-shipping half of a paired code: same suffix, the ship prefix. */
+export function pairedShipCode(wedge: SpinWedge, code: string): string | null {
+  if (!wedge.shipCodePrefix) return null;
+  const suffix = code.split('-').pop();
+  return suffix ? `${wedge.shipCodePrefix.toUpperCase()}-${suffix}` : null;
+}
+
 export function wedgeById(id: string): SpinWedge | null {
   if (id === WELCOME.id) return WELCOME;
+  if (id === FIRST_ORDER.id) return FIRST_ORDER;
   const quiz = QUIZ_PRIZES.find((w) => w.id === id);
   if (quiz) return quiz;
   return WEDGES.find((w) => w.id === id) ?? null;
@@ -240,6 +272,7 @@ export function wedgeById(id: string): SpinWedge | null {
 
 export function wedgeAt(index: unknown): SpinWedge | null {
   if (index === WELCOME_INDEX) return WELCOME;
+  if (index === FIRST_ORDER_INDEX) return FIRST_ORDER;
   if (typeof index === 'number' && index >= QUIZ_BASE && index < QUIZ_BASE + QUIZ_PRIZES.length) {
     return QUIZ_PRIZES[index - QUIZ_BASE];
   }

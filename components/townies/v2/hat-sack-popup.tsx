@@ -5,11 +5,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { X } from 'lucide-react';
 import { HAT_SACK_PATH, formatUsd } from '@/lib/townies/hat-sack';
+import { offerPopupSettled } from '@/lib/townies/welcome-offer';
 
 // The Hat & Sack offer as a pop-up on /shop only (Lucas, 10-09: no section up
 // top, not a card in the grid). A card in the corner on desktop, a sheet at
 // the bottom on phones, a few seconds after the page opens. Closing it keeps it
-// away for a week. The Mass trivia pop-up skips /shop so the two never stack.
+// away for a week. It waits for the first-order pop-up so the two never stack.
 const KEY = 'townies_hatsack_popup_v1';
 const DELAY_MS = 5000;
 const SNOOZE_DAYS = 7;
@@ -18,6 +19,8 @@ export function HatSackPopup({ fromCents }: { fromCents: number }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    // The first-order pop-up goes first; this one waits until that's settled.
+    if (!offerPopupSettled()) return;
     try {
       const until = Number(localStorage.getItem(KEY) ?? 0);
       if (until > Date.now()) return;

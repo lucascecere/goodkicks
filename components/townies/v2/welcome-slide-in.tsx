@@ -3,55 +3,48 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
+import { OFFER_POPUP_KEY, saveOffer } from '@/lib/townies/welcome-offer';
 
 /**
- * Mass trivia (Lucas, 2026-10-07): a full centred pop-up that opens at 60%
- * scroll on a first page, or on a later page at 50% scroll or 12s, whichever
- * comes first (no exit-intent). Never auto-opens on product pages. Two
- * crazy-easy questions; the score picks the prize, and
- * everyone wins at least $5 off. Graded on the server (/api/quiz/grade), the
- * code is minted through the same /api/spin/claim path as the old rotary.
+ * First-order offer (Lucas, 2026-10-28): $5 off plus free shipping, shown
+ * almost every visit until it's claimed. Replaced Mass trivia. One step:
+ * email in, code out. The token comes from /api/welcome and is claimed through
+ * /api/spin/claim (Shopify-first minting, one code per email, returning
+ * customers turned away). The codes are saved so the bag applies them.
  */
-const KEY = 'townies_welcome_v1';
-type Q = { id: string; q: string; options: string[] };
-type Graded = { score: number; correct: Record<string, boolean>; prize: { label: string; terms: string }; token: string };
-const SNOOZE_DAYS = { dismissed: 14, claimed: 365 } as const;
-const VIEWS = 'townies_welcome_views';
-const BLOCKED = ['/admin', '/checkout', '/cart', '/goodkicks', '/stick'];
-/** Never auto-open over a product page: it covers the buy box (2026-10-08 audit).
- *  /shop has its own Hat & Sack pop-up (10-09), the Hat & Sack builder is mid-
- *  purchase, and /local is a coming-soon showcase (2026-10-09 audit). */
-const NO_AUTO_OPEN = ['/products/', '/shop', '/hat-and-sack', '/local'];
-/** Second-view trigger: half the page scrolled, or this long on it, whichever is first. */
-const SECOND_VIEW_SCROLL = 0.5;
-const SECOND_VIEW_MS = 12_000;
+type Snooze = { until: number; reason: 'dismissed' | 'claimed' };
+/** Closing it only buys a day: Lucas wants it up almost every visit. */
+const SNOOZE_DAYS = { dismissed: 1, claimed: 365 } as const;
+/** Someone who already claimed a trivia code isn't asked again. */
+const LEGACY_KEY = 'townies_welcome_v1';
+const BLOCKED = ['/admin', '/checkout', '/cart', '/goodkicks', '/stick', '/local', '/hat-and-sack'];
+/** Product pages wait longer and skip the scroll trigger, so the buy box gets a look first. */
+const PRODUCT_DELAY_MS = 10_000;
+const PAGE_DELAY_MS = 5_000;
+const PAGE_SCROLL = 0.3;
 
 function snoozedUntil(): number {
   try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw).until as number) ?? 0 : 0;
+    const legacy = localStorage.getItem(LEGACY_KEY);
+    if (legacy && JSON.parse(legacy).reason === 'claimed') return Infinity;
+    const raw = localStorage.getItem(OFFER_POPUP_KEY);
+    return raw ? ((JSON.parse(raw) as Snooze).until ?? 0) : 0;
   } catch {
     return 0;
   }
 }
-function snooze(reason: keyof typeof SNOOZE_DAYS) {
+function snooze(reason: Snooze['reason']) {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ until: Date.now() + SNOOZE_DAYS[reason] * 864e5, reason }));
+    localStorage.setItem(OFFER_POPUP_KEY, JSON.stringify({ until: Date.now() + SNOOZE_DAYS[reason] * 864e5, reason }));
   } catch {}
 }
 
 export function WelcomeSlideIn() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<'intro' | 'quiz' | 'result' | 'done'>('intro');
-  const [questions, setQuestions] = useState<Q[]>([]);
-  const [i, setI] = useState(0);
-  const [picks, setPicks] = useState<Record<string, string>>({});
-  const [picked, setPicked] = useState<string | null>(null);
-  const [graded, setGraded] = useState<Graded | null>(null);
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<{ code: string; emailed: boolean; alreadyClaimed: boolean } | null>(null);
+  const [result, setResult] = useState<{ code: string; shipCode: string | null; emailed: boolean; alreadyClaimed: boolean } | null>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -59,20 +52,11 @@ export function WelcomeSlideIn() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('welcome') === '0') return snooze('dismissed');
     if (params.get('welcome') !== '1' && snoozedUntil() > Date.now()) return;
-
-    let views = 0;
-    try {
-      views = Number(sessionStorage.getItem(VIEWS) ?? 0) + 1;
-      sessionStorage.setItem(VIEWS, String(views));
-    } catch {}
     if (params.get('welcome') === '1') {
       const t = setTimeout(() => setOpen(true), 1500);
       return () => clearTimeout(t);
     }
-    // Product pages still count as a view, they just never open it.
-    if (NO_AUTO_OPEN.some((p) => pathname.startsWith(p))) return;
-    const second = views >= 2;
-    const threshold = second ? SECOND_VIEW_SCROLL : 0.6;
+    const product = pathname.startsWith('/products/');
     let timer: ReturnType<typeof setTimeout> | undefined;
     const show = () => {
       setOpen(true);
@@ -81,10 +65,10 @@ export function WelcomeSlideIn() {
     };
     const onScroll = () => {
       const h = document.documentElement;
-      if ((h.scrollTop + h.clientHeight) / h.scrollHeight >= threshold) show();
+      if ((h.scrollTop + h.clientHeight) / h.scrollHeight >= PAGE_SCROLL) show();
     };
-    if (second) timer = setTimeout(show, SECOND_VIEW_MS);
-    window.addEventListener('scroll', onScroll, { passive: true });
+    timer = setTimeout(show, product ? PRODUCT_DELAY_MS : PAGE_DELAY_MS);
+    if (!product) window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       clearTimeout(timer);
       window.removeEventListener('scroll', onScroll);
@@ -93,66 +77,30 @@ export function WelcomeSlideIn() {
 
   function close() {
     setOpen(false);
-    if (step !== 'done') snooze('dismissed');
-  }
-
-  async function start() {
-    setBusy(true);
-    setError('');
-    try {
-      const r = await fetch('/api/quiz/start').then((x) => x.json());
-      setQuestions(r.questions);
-      setI(0);
-      setPicks({});
-      setStep('quiz');
-    } catch {
-      setError('Couldn’t load the questions. Try again in a minute.');
-    }
-    setBusy(false);
-  }
-
-  async function choose(option: string) {
-    if (picked) return;
-    const q = questions[i];
-    const next = { ...picks, [q.id]: option };
-    setPicked(option);
-    setPicks(next);
-    // A short beat on the chosen answer, then the next question.
-    await new Promise((r) => setTimeout(r, 450));
-    setPicked(null);
-    if (i + 1 < questions.length) return setI(i + 1);
-    setBusy(true);
-    try {
-      const res = await fetch('/api/quiz/grade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ picks: next }),
-      });
-      const g = await res.json();
-      if (!res.ok) throw new Error(g.error);
-      setGraded(g);
-      setStep('result');
-    } catch (err) {
-      setError(err instanceof Error && err.message ? err.message : 'Try again in a minute.');
-    }
-    setBusy(false);
+    if (!result) snooze('dismissed');
   }
 
   async function claim(e: React.FormEvent) {
     e.preventDefault();
-    if (!graded) return;
     setBusy(true);
     setError('');
     try {
+      const start = await fetch('/api/welcome', { method: 'POST' });
+      const { token, error: startError } = await start.json();
+      if (!start.ok) throw new Error(startError ?? 'Try again in a minute.');
       const res = await fetch('/api/spin/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: graded.token, email }),
+        body: JSON.stringify({ token, email }),
       });
       const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? 'Try again in a minute.');
-      setResult({ code: body.code, emailed: body.emailed, alreadyClaimed: body.alreadyClaimed });
-      setStep('done');
+      if (!res.ok) {
+        // A returning customer isn't an error worth retrying; stop asking.
+        if (body.code === 'returning') snooze('claimed');
+        throw new Error(body.error ?? 'Try again in a minute.');
+      }
+      saveOffer({ codes: [body.code, body.shipCode].filter(Boolean), expiresAt: body.expiresAt ?? null });
+      setResult({ code: body.code, shipCode: body.shipCode ?? null, emailed: body.emailed, alreadyClaimed: body.alreadyClaimed });
       snooze('claimed');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Try again in a minute.');
@@ -175,18 +123,16 @@ export function WelcomeSlideIn() {
   }, [open]);
 
   if (!open) return null;
-  const q = questions[i];
   const label = 'font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/60';
   const primary = 'font-label bg-text px-5 py-3 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white hover:bg-black disabled:opacity-60';
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
-      {/* Full pop-up (Lucas, 10-07): a centred card over a dimmed page. */}
       <button aria-label="Close" onClick={close} className="absolute inset-0 animate-[fade-in_.3s_ease-out_both] bg-[#0D1B2A]/60 backdrop-blur-[2px]" />
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Mass trivia"
+        aria-label="First-order offer"
         className="relative w-full max-w-[460px] animate-[pop-in_.35s_ease-out_both] overflow-hidden bg-white shadow-[0_30px_80px_-20px_rgba(13,27,42,0.6)]"
       >
         <div className="bg-[#0D1B2A] px-6 py-5 text-center sm:px-8">
@@ -198,78 +144,43 @@ export function WelcomeSlideIn() {
         </button>
         <div className="p-6 sm:p-8">
 
-      {step === 'intro' && (
-        <div>
-          <p className={label}>Mass trivia</p>
-          <p className="display mt-2 text-[2rem] leading-[1.05] text-text">Know your Mass? Win up to $10 off.</p>
-          <p className="mt-2 text-[0.9375rem] text-text/70">Two easy questions. Everyone wins at least $5 off. Get both right for $10.</p>
-          <div className="mt-4 flex items-center gap-4">
-            <button onClick={start} disabled={busy} className={primary}>{busy ? '…' : 'Play'}</button>
-            <button type="button" onClick={close} className="text-[0.8125rem] text-text/55 underline underline-offset-4 hover:text-text">Not now</button>
-          </div>
-        </div>
-      )}
-
-      {step === 'quiz' && q && (
-        <div>
-          <div className="flex items-center justify-between">
-            <p className={label}>Question {i + 1} of {questions.length}</p>
-            <div className="flex gap-1">
-              {questions.map((x, k) => (
-                <span key={x.id} className={`h-1 w-5 ${k <= i ? 'bg-text' : 'bg-rule'}`} />
-              ))}
-            </div>
-          </div>
-          <p className="display mt-3 text-[1.625rem] leading-snug text-text">{q.q}</p>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {q.options.map((o) => (
-              <button
-                key={o}
-                onClick={() => choose(o)}
-                disabled={!!picked || busy}
-                className={`border px-4 py-4 text-left text-[0.9375rem] font-medium transition-colors ${
-                  picked === o ? 'border-text bg-text text-white' : 'border-rule text-text hover:border-text'
-                }`}
-              >
-                {o}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {step === 'result' && graded && (
+      {!result && (
         <form onSubmit={claim}>
-          <p className={label}>{graded.score} of {questions.length} right</p>
-          <p className="display mt-2 text-[1.75rem] leading-tight text-text">
-            {graded.score === questions.length ? 'Perfect. ' : graded.score === 1 ? 'Not bad. ' : 'Close enough. '}
-            You won {graded.prize.terms.toLowerCase()}.
-          </p>
-          <p className="mt-2 text-[0.875rem] text-text/70">Where should we send the code?</p>
-          <div className="mt-3 flex gap-2">
-            <label htmlFor="quiz-email" className="sr-only">Email</label>
+          <p className={label}>First order</p>
+          <p className="display mt-2 text-[2rem] leading-[1.05] text-text">$5 off and free shipping.</p>
+          <p className="mt-2 text-[0.9375rem] text-text/70">On your first Townies hat. Drop your email and the code is yours.</p>
+          <div className="mt-4 flex gap-2">
+            <label htmlFor="offer-email" className="sr-only">Email</label>
             <input
-              id="quiz-email"
+              id="offer-email"
               type="email"
               required
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
               className="min-w-0 flex-1 border border-text/25 px-3 py-3 text-[1rem] text-text placeholder:text-text/40 focus:border-text focus:outline-none"
             />
-            <button disabled={busy} className={primary}>{busy ? '…' : 'Send it'}</button>
+            <button disabled={busy} className={primary}>{busy ? '…' : 'Get it'}</button>
           </div>
-          <p className="mt-2 text-[0.75rem] text-text/50">One code per person. You’ll also hear when a new town drops.</p>
+          <div className="mt-3 flex items-center justify-between gap-4">
+            <p className="text-[0.75rem] text-text/50">One code per person. You’ll also hear when a new town drops.</p>
+            <button type="button" onClick={close} className="shrink-0 text-[0.8125rem] text-text/55 underline underline-offset-4 hover:text-text">No thanks</button>
+          </div>
         </form>
       )}
 
-      {step === 'done' && result && (
+      {result && (
         <div>
-          <p className={label}>{result.alreadyClaimed ? 'Already yours' : 'Nice work'}</p>
-          <p className="display mt-2 text-[1.75rem] text-text">Your code: {result.code}</p>
+          <p className={label}>{result.alreadyClaimed ? 'Already yours' : 'You’re in'}</p>
+          <p className="mt-2 text-[0.8125rem] text-text/60">Your code</p>
+          <p className="display whitespace-nowrap text-[1.75rem] text-text">{result.code}</p>
+          {result.shipCode && <p className="mt-1 text-[0.9375rem] text-text/70">Free shipping: {result.shipCode}</p>}
           <p className="mt-2 text-[0.9375rem] text-text/70">
-            {result.emailed ? 'We sent it to your inbox too. ' : ''}Enter it at checkout.
+            {result.shipCode ? 'Both go on at checkout automatically. ' : 'Enter it at checkout. '}
+            {result.emailed ? 'We sent them to your inbox too.' : ''}
           </p>
+          <button onClick={() => setOpen(false)} className={`${primary} mt-4`}>Shop hats</button>
         </div>
       )}
 

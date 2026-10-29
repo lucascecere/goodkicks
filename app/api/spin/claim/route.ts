@@ -7,7 +7,8 @@
 // keeps their spin.
 
 import type { NextRequest } from 'next/server';
-import { wedgeAt, wedgeById } from '@/lib/townies/spin-prizes';
+import { pairedShipCode, wedgeAt, wedgeById } from '@/lib/townies/spin-prizes';
+import { hasOrderedBefore } from '@/lib/shopify/has-ordered';
 import { verifySpinToken } from '@/lib/townies/spin-token';
 import { callerIp, hashIp, rateLimit, underDailyClaimLimit } from '@/lib/townies/spin-ratelimit';
 import { mintSpinCode, ShopifyNotConfiguredError, ShopifyScopeError } from '@/lib/shopify/create-spin-code';
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
       return Response.json({
         ok: true,
         code: existing.discount_code,
+        shipCode: held ? pairedShipCode(held, existing.discount_code) : null,
         expiresAt: existing.expires_at,
         terms: held?.terms ?? '',
         prizeLabel: held?.label ?? '',
@@ -105,6 +107,16 @@ export async function POST(req: NextRequest) {
     return Response.json(
       { error: 'That’s the limit for codes from here today. Try again tomorrow.' },
       { status: 429 },
+    );
+  }
+
+  // First-order offers are for people who haven't bought yet. Checked after
+  // the existing-claim lookup, so someone who claimed and then ordered still
+  // sees the code they hold.
+  if (wedge.shipCodePrefix && (await hasOrderedBefore(email))) {
+    return Response.json(
+      { error: 'This one is for first orders, and you’ve ordered with us before. Thanks for coming back.', code: 'returning' },
+      { status: 409 },
     );
   }
 
@@ -178,6 +190,7 @@ export async function POST(req: NextRequest) {
       to: email,
       wedge,
       code: minted.code,
+      shipCode: minted.shipCode,
       expiresAt: minted.expiresAt,
     });
     emailed = true;
@@ -193,6 +206,7 @@ export async function POST(req: NextRequest) {
   return Response.json({
     ok: true,
     code: minted.code,
+    shipCode: minted.shipCode ?? null,
     expiresAt: minted.expiresAt,
     terms: wedge.terms,
     prizeLabel: wedge.label,

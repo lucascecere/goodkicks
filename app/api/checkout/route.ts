@@ -43,7 +43,14 @@ type CheckoutItem = {
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const items: CheckoutItem[] = Array.isArray(body?.items) ? body.items : [];
-  const discountCode: string | undefined = typeof body?.discountCode === 'string' ? body.discountCode : undefined;
+  // Up to two codes: the first-order pop-up hands out a $5-off + free-shipping
+  // pair that the bag applies together. Junk is dropped, not passed to Shopify.
+  const discountCodes: string[] = [
+    ...(typeof body?.discountCode === 'string' ? [body.discountCode] : []),
+    ...(Array.isArray(body?.discountCodes) ? body.discountCodes : []),
+  ]
+    .filter((c): c is string => typeof c === 'string' && /^[A-Z0-9-]{3,40}$/i.test(c))
+    .slice(0, 2);
 
   if (!items.length) {
     return NextResponse.json({ error: 'cart is empty' }, { status: 400 });
@@ -85,7 +92,7 @@ export async function POST(req: NextRequest) {
   }));
 
   try {
-    const cart = await createShopifyCart(lines, discountCode ? [discountCode] : undefined);
+    const cart = await createShopifyCart(lines, discountCodes.length ? discountCodes : undefined);
     if (!cart) {
       return NextResponse.json({ error: 'checkout failed' }, { status: 500 });
     }

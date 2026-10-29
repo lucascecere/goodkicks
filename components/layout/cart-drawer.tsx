@@ -10,6 +10,7 @@ import { useCart } from '@/lib/cart/cart-context';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import type { BrandConfig } from '@/lib/brand/brands';
 import { PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
+import { readOfferCodes } from '@/lib/townies/welcome-offer';
 
 /**
  * "You're $12 from free shipping" — the single most reliable nudge a cart
@@ -49,6 +50,11 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
   );
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState(false);
+  // First-order codes from the pop-up, applied at checkout automatically.
+  const [offerCodes, setOfferCodes] = useState<string[]>([]);
+  useEffect(() => {
+    if (cartOpen) setOfferCodes(readOfferCodes());
+  }, [cartOpen]);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   // Townies hats can't be stepped past the shelf: live on-hand counts for the
@@ -111,6 +117,7 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
             quantity: i.quantity,
             ...(i.customAttributes?.length ? { customAttributes: i.customAttributes } : {}),
           })),
+          ...(offerCodes.length ? { discountCodes: offerCodes } : {}),
         }),
       });
       const { url } = await res.json();
@@ -220,7 +227,13 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                 )}
                 {/* A cart of only Hat & Sack bundles already ships free; the
                     "$X from free shipping" nudge would be wrong there. */}
-                {brand.freeShippingCents !== null && !items.every((i) => i.productTitle === 'Hat & Sack Bundle') && (
+                {offerCodes.length > 0 && (
+                  <p className="text-xs leading-relaxed bg-surface text-muted rounded-sm px-3 py-2.5 border border-rule">
+                    <span className="font-semibold text-text uppercase tracking-wide">First-order offer.</span>{' '}
+                    $5 off and free shipping go on at checkout.
+                  </p>
+                )}
+                {offerCodes.length === 0 && brand.freeShippingCents !== null && !items.every((i) => i.productTitle === 'Hat & Sack Bundle') && (
                   <FreeShippingBar subtotalCents={subtotalCents} thresholdCents={brand.freeShippingCents} />
                 )}
                 <div className="flex justify-between items-center text-sm">
