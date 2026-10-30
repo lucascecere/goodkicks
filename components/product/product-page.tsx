@@ -16,7 +16,7 @@ import { gkDisplayName, gkDescriptionHtml, gkLine } from '@/lib/goodkicks/names'
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
 import { ProductMedia, type ProductMediaImage } from '@/components/product/product-media';
-import { isPreorder, PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
+import { christmasOrderBy, isPreorder, preorderShipNote } from '@/lib/townies/preorder';
 import { getVariantStock, stockNote } from '@/lib/shopify/stock';
 import { gkCanonical, SITE_URL } from '@/lib/seo/site';
 import {
@@ -194,6 +194,8 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
     ? firstVariant.availableForSale ? 'In stock · ships in 1–3 business days' : null
     : stockNote(stock[firstVariant.id]?.quantity);
 
+  const christmasBy = gk ? null : christmasOrderBy(preorder, shopifyProduct.tags);
+
   // Cross-sell within the same brand.
   const hatSack = gk || !HAT_SACK_LIVE ? null : await getHatSackOffer();
   // "Make it $X": the cheapest purchasable tier for THIS hat over the bags on
@@ -369,9 +371,18 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               imageUrl={imgSrc}
               flavor={gk ? 'goodkicks' : 'townies'}
               preorder={preorder}
-              shipNote={PREORDER_SHIP_NOTE}
+              shipNote={preorderShipNote(shopifyProduct.tags)}
               stockNote={stockLine}
             />
+            {!gk && christmasBy && (
+              <p className="mt-3 text-center text-xs text-muted">
+                Want it by Christmas? Order by{' '}
+                <span className="font-semibold text-text">
+                  {christmasBy.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' })}
+                </span>
+                .
+              </p>
+            )}
             {gk ? (
               <TrustRow
                 items={['Free shipping, always', '30-day returns', 'Ships from Massachusetts']}

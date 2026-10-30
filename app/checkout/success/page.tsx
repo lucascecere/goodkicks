@@ -19,7 +19,7 @@ export default function SuccessPage() {
         </h1>
         <p className="text-muted leading-relaxed">
           You&apos;re all set — thanks for repping local. A confirmation&apos;s on its
-          way to your inbox. Pre-order hats ship in about 3–4 weeks; anything in stock
+          way to your inbox. Pre-order hats ship in 2 to 4 weeks, as shown on the hat&apos;s page; anything in stock
           is out the door in a few days.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

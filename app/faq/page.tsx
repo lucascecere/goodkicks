@@ -29,7 +29,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
     a: (
       <>
         A pre-order hat is one we&apos;re making in the next run. Order it now to lock yours in;
-        it ships in about <strong>3–4 weeks</strong>. If your order has any pre-order item in it,
+        it ships in <strong>2 to 4 weeks</strong> depending on the hat, and each hat&apos;s page shows its own time. If your order has any pre-order item in it,
         the whole order ships together once the pre-order&apos;s ready. In-stock hats ship in a few
         days.
       </>
@@ -57,7 +57,7 @@ const FAQS: { q: string; a: React.ReactNode }[] = [
         >
           shipping policy
         </Link>{' '}
-        page. Pre-orders ship in ~3–4 weeks; in-stock orders go out within a few days.
+        page. Pre-orders ship in 2 to 4 weeks depending on the hat; in-stock orders go out within a few days.
       </>
     ),
   },

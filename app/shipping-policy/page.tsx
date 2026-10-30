@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PolicyPage } from '@/components/townies/v2/policy-page';
-import { PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 import { TOWNIES } from '@/lib/brand/brands';
 
 const FREE_OVER = `$${(TOWNIES.freeShippingCents ?? 7500) / 100}`;
@@ -65,9 +64,9 @@ export default function ShippingPolicyPage() {
           body: (
             <>
               <p>
-                Hats marked <strong>Pre-order</strong> are embroidered to order.{' '}
-                <strong>{PREORDER_SHIP_NOTE}</strong> from the day you order; the product page and your cart both
-                show it before you pay.
+                Hats marked <strong>Pre-order</strong> are embroidered to order and ship in{' '}
+                <strong>2 to 4 weeks</strong> from the day you order, depending on whether we have the blanks on
+                hand. Each hat&apos;s page shows its own time, and your cart shows it again before you pay.
               </p>
               <p>You get a tracking email as soon as your pre-order ships.</p>
             </>

@@ -4,6 +4,10 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { isAdminSession } from '@/lib/admin/require-admin';
 import { chromeFor, type CampaignChrome } from '@/lib/email/campaign-chrome';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
+import { unsubscribeUrl } from '@/lib/email/unsubscribe';
+
+// Per-recipient one-click unsubscribe link, swapped in at send time.
+const UNSUB = '{{UNSUB_URL}}';
 
 
 function buildText({ headline, bodyText, ctaText, ctaUrl, chrome }: {
@@ -11,7 +15,7 @@ function buildText({ headline, bodyText, ctaText, ctaUrl, chrome }: {
 }): string {
   const lines = [`${headline}\n`, bodyText];
   if (ctaText && ctaUrl) lines.push(`\n${ctaText}: ${ctaUrl}`);
-  lines.push(`\n---\n${chrome.name} · ${chrome.site}\nTo unsubscribe, reply with "unsubscribe" in the subject.`);
+  lines.push(`\n---\n${chrome.name} · ${chrome.site}\nUnsubscribe: ${UNSUB}`);
   return lines.join('\n');
 }
 
@@ -84,7 +88,7 @@ ${pre}
       <p class="ftr-p">
         ${chrome.name} &nbsp;&middot;&nbsp; <a href="${chrome.url}" style="color:${chrome.accent};text-decoration:none">${chrome.site}</a><br>
         You received this because you signed up or placed an order with us.<br>
-        <a href="mailto:${chrome.email}?subject=Unsubscribe" style="color:#78716C">Unsubscribe</a>
+        <a href="${UNSUB}" style="color:#78716C">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -109,11 +113,17 @@ export async function POST(_req: NextRequest, { params }: Params) {
 
   const chrome = chromeFor(campaign.brand);
 
-  let query = supabase.from('contacts').select('email, name');
+  // Unsubscribed people never get campaign mail.
+  let query = supabase.from('contacts').select('email, name').is('unsubscribed_at', null);
   if (campaign.recipient_mode === 'individual' && campaign.emails?.length > 0) {
     query = query.in('email', campaign.emails);
   } else if (campaign.recipient_mode === 'segment' && campaign.sources?.length > 0) {
     query = query.overlaps('sources', campaign.sources);
+  } else {
+    // "Everyone" means people who bought or signed up. A contact-form or
+    // request-a-town message alone isn't a yes to marketing mail (and that
+    // form collects bot spam).
+    query = query.overlaps('sources', ['order', 'discount', 'newsletter']);
   }
   // Audience brand is a separate axis from the SENDING brand, and additive to
   // the source filter above. Empty = no brand filter, which is what every
@@ -149,6 +159,12 @@ export async function POST(_req: NextRequest, { params }: Params) {
     ? 'Good Kicks <info@goodkicks.co>'
     : TOWNIES_FROM;
 
+  // custom_html written before this existed has no placeholder: add a footer link.
+  const htmlWithUnsub = html.includes(UNSUB)
+    ? html
+    : html.replace(/<\/body>/i, `<p style="text-align:center;font:12px Arial,sans-serif;color:#78716C;margin:16px 0"><a href="${UNSUB}" style="color:#78716C">Unsubscribe</a></p></body>`);
+  const fallback = `mailto:${chrome.email}?subject=Unsubscribe`;
+
   const resend = new Resend(resendKey);
   const CHUNK = 100;
   let sent = 0;
@@ -157,17 +173,19 @@ export async function POST(_req: NextRequest, { params }: Params) {
   for (let i = 0; i < contacts.length; i += CHUNK) {
     const chunk = contacts.slice(i, i + CHUNK);
     const batchResult = await resend.batch.send(
-      chunk.map((c) => ({
-        from,
-        to: c.email,
-        subject: campaign.subject,
-        html,
-        ...(text ? { text } : {}),
-        headers: {
-          'List-Unsubscribe': `<mailto:${chrome.email}?subject=Unsubscribe>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
-        },
-      }))
+      chunk.map((c) => {
+        const link = unsubscribeUrl(chrome.url, c.email);
+        return {
+          from,
+          to: c.email,
+          subject: campaign.subject,
+          html: htmlWithUnsub.replaceAll(UNSUB, link ?? fallback),
+          ...(text ? { text: text.replaceAll(UNSUB, link ?? fallback) } : {}),
+          headers: (link
+            ? { 'List-Unsubscribe': `<${link}>, <${fallback}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' }
+            : { 'List-Unsubscribe': `<${fallback}>` }) as Record<string, string>,
+        };
+      })
     );
     if (!batchResult.data) {
       failed += chunk.length;

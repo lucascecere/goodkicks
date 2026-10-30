@@ -9,7 +9,6 @@ import { X } from 'lucide-react';
 import { useCart, type CartItem } from '@/lib/cart/cart-context';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import type { BrandConfig } from '@/lib/brand/brands';
-import { PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 import { readOfferCodes } from '@/lib/townies/welcome-offer';
 import { firstTouchAttributes } from '@/lib/attribution';
 
@@ -68,6 +67,13 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
   const hasPreorder = items.some((i) =>
     i.customAttributes?.some((a) => a.value.toLowerCase().includes('pre-order')),
   );
+  // The slowest pre-order in the bag sets the date (the order ships together).
+  // Each line carries its hat's own note, e.g. "Pre-order — Ships in about 2 weeks".
+  const preorderNote = items
+    .flatMap((i) => i.customAttributes ?? [])
+    .filter((a) => a.key === 'Fulfillment' && a.value.includes(' — '))
+    .map((a) => a.value.split(' — ')[1])
+    .sort((a, b) => Number(b.match(/(\d+) weeks?$/)?.[1] ?? 0) - Number(a.match(/(\d+) weeks?$/)?.[1] ?? 0))[0];
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState(false);
   // First-order codes from the pop-up, applied at checkout automatically.
@@ -243,7 +249,7 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                 {hasPreorder && (
                   <p className="text-xs leading-relaxed bg-surface text-muted rounded-sm px-3 py-2.5 border border-rule">
                     <span className="font-semibold text-text uppercase tracking-wide">Pre-order in bag.</span>{' '}
-                    Your whole order ships together once the pre-order is ready — {PREORDER_SHIP_NOTE.toLowerCase()}.
+                    Your whole order ships together once the pre-order is ready{preorderNote ? `: ${preorderNote.toLowerCase()}` : ''}.
                   </p>
                 )}
                 {/* A cart of only Hat & Sack bundles already ships free; the
