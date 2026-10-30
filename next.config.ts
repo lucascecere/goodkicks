@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: '/partners', destination: '/', permanent: false },
+      // 2026-10-30: short links for social bios. The UTMs land on the order
+      // via lib/attribution.ts, so we can see which profile sold the hat.
+      { source: '/ig', destination: '/?utm_source=instagram&utm_medium=bio', permanent: false, missing: [{ type: 'host', value: '(www\\.)?goodkicks\\.co' }] },
+      { source: '/fb', destination: '/?utm_source=facebook&utm_medium=page', permanent: false, missing: [{ type: 'host', value: '(www\\.)?goodkicks\\.co' }] },
       // Ambassador / Town Rep program is closed to new applicants (2026-10-15).
       // 2026-10-19: townies.shop/ambassadors is back as an unlisted page (direct
       // link only, noindex, no nav/footer/sitemap). Still closed on goodkicks.co.
