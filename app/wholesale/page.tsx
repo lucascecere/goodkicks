@@ -21,17 +21,42 @@ export const metadata: Metadata = {
   },
 };
 
+const SHOP_POINTS = [
+  {
+    title: 'Your town’s hat',
+    body: 'Stock five or more of your town’s Townies hat at a wholesale price, so there’s real margin on every one you sell.',
+  },
+  {
+    title: 'Your own merch',
+    body: 'Want your shop’s logo on the same hat? We make that too, see custom hats below.',
+  },
+  {
+    title: 'Made for your order',
+    body: 'We embroider every wholesale order fresh. It’s usually a few weeks from your yes, and we give you a date when we quote.',
+  },
+];
+
 export default function Page() {
   return (
     <div className="bg-bg">
       <PageMasthead
         eyebrow="Wholesale"
         title="Our town hats, by the box."
-        sub="For shops that want to stock Townies, and for events, fundraisers and teams buying our town hats in volume. Tell us which towns and how many, and we reply with wholesale pricing and a lead time."
+        sub="For local shops that want their town's hat on the counter, and for teams, events and fundraisers buying in volume. Tell us which towns and how many, and we reply with wholesale pricing and a date."
         pattern="pine"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20">
+        {/* 2026-10-30: shops are the main audience now (Lucas is pitching one
+            counter per town). Two offers, and orders are made to order. */}
+        <div className="mb-14 grid gap-8 sm:grid-cols-3">
+          {SHOP_POINTS.map((p) => (
+            <div key={p.title}>
+              <h2 className="display text-xl text-text">{p.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{p.body}</p>
+            </div>
+          ))}
+        </div>
         <WholesaleForm />
 
         <div className="mt-14 pt-8 border-t border-rule text-sm text-muted">

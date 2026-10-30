@@ -11,7 +11,7 @@ export default async function NewCampaignPage() {
   const supabase = createSupabaseServiceClient();
   const { data: rows } = await supabase
     .from('contacts')
-    .select('id, name, email, sources, brands')
+    .select('id, name, email, sources, brands').is('unsubscribed_at', null)
     .order('created_at', { ascending: false });
 
   const all = rows ?? [];
@@ -27,7 +27,7 @@ export default async function NewCampaignPage() {
       initialBrand={adminBrand === 'goodkicks' ? 'goodkicks' : 'townies'}
       totalContacts={all.length}
       sourceCounts={Object.entries(countMap).map(([source, count]) => ({ source, count }))}
-      contacts={all.map((c) => ({ id: c.id, name: c.name ?? null, email: c.email, brands: c.brands ?? [] }))}
+      contacts={all.map((c) => ({ id: c.id, name: c.name ?? null, email: c.email, brands: c.brands ?? [], sources: c.sources ?? [] }))}
     />
   );
 }

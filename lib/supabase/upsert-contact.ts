@@ -1,7 +1,7 @@
 import { createSupabaseServiceClient } from './client';
 import type { RealBrand } from '@/lib/admin/brand';
 
-export type ContactSource = 'ambassador' | 'discount' | 'newsletter' | 'contact' | 'order';
+export type ContactSource = 'ambassador' | 'discount' | 'newsletter' | 'contact' | 'order' | 'wholesale';
 
 /**
  * Upsert a person into the unified contacts list.

@@ -2,22 +2,24 @@
 
 import { useState, useMemo, useRef } from 'react';
 import { chromeFor } from '@/lib/email/campaign-chrome';
+import { buildPersonalHtml } from '@/lib/email/personal-email';
 import { BRAND_LABELS, type RealBrand } from '@/lib/admin/brand';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { btn, field } from '@/components/admin/ui';
 
-const ALL_SOURCES = ['order', 'newsletter', 'discount', 'ambassador', 'contact'] as const;
+const ALL_SOURCES = ['order', 'newsletter', 'discount', 'ambassador', 'contact', 'wholesale'] as const;
 type Source = typeof ALL_SOURCES[number];
 const SOURCE_LABELS: Record<Source, string> = {
   order: 'Customers (orders)', newsletter: 'Newsletter sign-ups',
   discount: 'Discount wheel', ambassador: 'Ambassadors', contact: 'Contact form',
+  wholesale: 'Shops (wholesale outreach)',
 };
 
 interface SourceCount { source: string; count: number; }
-interface Contact { id: string; name: string | null; email: string; brands?: string[]; }
+interface Contact { id: string; name: string | null; email: string; brands?: string[]; sources?: string[]; }
 type RecipientMode = 'all' | 'segment' | 'individual';
-type ContentMode = 'compose' | 'html';
+type ContentMode = 'compose' | 'personal' | 'html';
 type Device = 'desktop' | 'mobile';
 
 export interface InitialCampaign {
@@ -77,7 +79,7 @@ function buildPreviewHtml(subject: string, headline: string, bodyText: string, c
 </div></div></body></html>`;
 }
 
-export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, sourceCounts, contacts }: Props) {
+export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, contacts }: Props) {
   const router = useRouter();
   const c = initialCampaign;
 
@@ -148,7 +150,7 @@ export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, s
     return {
       name, subject, preheader: preheader || undefined,
       headline: contentMode === 'compose' ? headline : undefined,
-      bodyText: contentMode === 'compose' ? bodyText : undefined,
+      bodyText: contentMode !== 'html' ? bodyText : undefined,
       ctaText: contentMode === 'compose' && ctaText ? ctaText : undefined,
       ctaUrl: contentMode === 'compose' && ctaUrl ? ctaUrl : undefined,
       customHtml: contentMode === 'html' ? customHtml : undefined,
@@ -163,9 +165,11 @@ export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, s
   // The "All contacts" badge has to respect the audience filter, or it promises
   // a reach the send will not deliver.
   const audienceCount = useMemo(() => {
-    if (audienceBrands.size === 0) return totalContacts;
-    return contacts.filter((c) => (c.brands ?? []).some((b) => audienceBrands.has(b as RealBrand))).length;
-  }, [contacts, audienceBrands, totalContacts]);
+    // Same rule as the send route: "everyone" is people who bought or signed up.
+    const reachable = contacts.filter((c) => (c.sources ?? []).some((s) => s === 'order' || s === 'discount' || s === 'newsletter'));
+    if (audienceBrands.size === 0) return reachable.length;
+    return reachable.filter((c) => (c.brands ?? []).some((b) => audienceBrands.has(b as RealBrand))).length;
+  }, [contacts, audienceBrands]);
 
   function toggleAudienceBrand(b: RealBrand) {
     setAudienceBrands((prev) => {
@@ -213,14 +217,16 @@ export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, s
   }
 
   function recipientCount() {
-    if (recipientMode === 'all') return totalContacts;
+    if (recipientMode === 'all') return audienceCount;
     if (recipientMode === 'individual') return selectedEmails.size;
     if (selectedSources.size === 0) return 0;
     return sourceCounts.filter((s) => selectedSources.has(s.source as Source)).reduce((n, s) => n + s.count, 0);
   }
 
   function isValid() {
-    const hasContent = contentMode === 'html' ? !!customHtml : (!!headline.trim() && !!bodyText.trim());
+    const hasContent = contentMode === 'html' ? !!customHtml
+      : contentMode === 'personal' ? !!bodyText.trim()
+      : (!!headline.trim() && !!bodyText.trim());
     const hasRecipients = recipientMode === 'all' || (recipientMode === 'segment' && selectedSources.size > 0) || (recipientMode === 'individual' && selectedEmails.size > 0);
     return !!subject.trim() && hasContent && hasRecipients;
   }
@@ -280,10 +286,10 @@ export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, s
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="admin-eyebrow">Email Content</p>
               <div className="flex gap-1 rounded-full border border-town-cream/15 p-0.5">
-                {(['compose', 'html'] as ContentMode[]).map((m) => (
+                {(['compose', 'personal', 'html'] as ContentMode[]).map((m) => (
                   <button key={m} type="button" onClick={() => setContentMode(m)}
                     className={`rounded-full px-3 py-1 font-label text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors ${contentMode === m ? 'bg-town-cream text-town-navy' : 'text-town-cream/60 hover:text-town-cream'}`}>
-                    {m === 'compose' ? 'Compose' : 'Upload HTML'}
+                    {m === 'compose' ? 'Compose' : m === 'personal' ? 'Personal' : 'Upload HTML'}
                   </button>
                 ))}
               </div>
@@ -301,7 +307,14 @@ export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, s
                 className={field} />
             </div>
 
-            {contentMode === 'compose' ? (
+            {contentMode === 'personal' ? (
+              <div>
+                <label className="admin-eyebrow mb-1.5 block">Email <span className="text-amber-300">*</span></label>
+                <p className="mb-2 text-xs text-town-cream/45">Sent as a plain email from you: no logo, no button. Write the greeting and sign-off yourself. An unsubscribe line is added at the bottom.</p>
+                <textarea value={bodyText} onChange={(e) => setBodyText(e.target.value)} rows={14}
+                  className={`${field} resize-y`} />
+              </div>
+            ) : contentMode === 'compose' ? (
               <>
                 <div>
                   <label className="admin-eyebrow mb-1.5 block">Headline <span className="text-amber-300">*</span></label>
@@ -515,7 +528,7 @@ export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, s
                   <div className="rounded-[24px] overflow-hidden">
                     {contentMode === 'html' && customHtml
                       ? <iframe srcDoc={customHtml} className="w-full border-0" style={{ height: '560px' }} title="Mobile preview" sandbox="allow-same-origin" />
-                      : <div dangerouslySetInnerHTML={{ __html: buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand) }} />
+                      : <div dangerouslySetInnerHTML={{ __html: (contentMode === 'personal' ? buildPersonalHtml(bodyText, '#') : buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand)) }} />
                     }
                   </div>
                   <div className="h-4" />
@@ -530,7 +543,7 @@ export function CampaignEditor({ initialCampaign, initialBrand, totalContacts, s
                       </div>}
                       <iframe srcDoc={customHtml} className="w-full border-0" style={{ height: '600px' }} title="Email preview" sandbox="allow-same-origin" />
                     </div>
-                  : <div dangerouslySetInnerHTML={{ __html: buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand) }} />
+                  : <div dangerouslySetInnerHTML={{ __html: (contentMode === 'personal' ? buildPersonalHtml(bodyText, '#') : buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand)) }} />
               )}
             </div>
           </div>

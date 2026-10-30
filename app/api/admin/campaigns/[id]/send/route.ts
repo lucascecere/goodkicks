@@ -5,6 +5,7 @@ import { isAdminSession } from '@/lib/admin/require-admin';
 import { chromeFor, type CampaignChrome } from '@/lib/email/campaign-chrome';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 import { unsubscribeUrl } from '@/lib/email/unsubscribe';
+import { buildPersonalHtml, buildPersonalText } from '@/lib/email/personal-email';
 
 // Per-recipient one-click unsubscribe link, swapped in at send time.
 const UNSUB = '{{UNSUB_URL}}';
@@ -135,7 +136,8 @@ export async function POST(_req: NextRequest, { params }: Params) {
   if (contactsErr) return Response.json({ error: contactsErr.message }, { status: 500 });
   if (!contacts || contacts.length === 0) return Response.json({ error: 'No contacts match recipients' }, { status: 400 });
 
-  const html = campaign.custom_html ?? buildCampaignHtml({
+  const personal = campaign.content_mode === 'personal';
+  const html = personal ? buildPersonalHtml(campaign.body_text ?? '', UNSUB) : campaign.custom_html ?? buildCampaignHtml({
     headline: campaign.headline ?? '',
     bodyText: campaign.body_text ?? '',
     ctaText: campaign.cta_text ?? undefined,
@@ -144,7 +146,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
     brand: campaign.brand,
   });
 
-  const text = campaign.custom_html ? undefined : buildText({
+  const text = personal ? buildPersonalText(campaign.body_text ?? '', UNSUB) : campaign.custom_html ? undefined : buildText({
     headline: campaign.headline ?? '',
     bodyText: campaign.body_text ?? '',
     ctaText: campaign.cta_text ?? undefined,
@@ -157,7 +159,10 @@ export async function POST(_req: NextRequest, { params }: Params) {
   // Resend. Hardcoding a townies.shop sender here would make every send fail.
   const from = campaign.brand === 'goodkicks'
     ? 'Good Kicks <info@goodkicks.co>'
-    : TOWNIES_FROM;
+    : personal
+      // A personal email comes from a person: "Lucas at Townies <info@…>".
+      ? TOWNIES_FROM.replace(/^Townies </, 'Lucas at Townies <')
+      : TOWNIES_FROM;
 
   // custom_html written before this existed has no placeholder: add a footer link.
   const htmlWithUnsub = html.includes(UNSUB)
