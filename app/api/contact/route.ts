@@ -3,6 +3,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { sendEmail } from '@/lib/email/resend-client';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
+import { scoreSpam } from '@/lib/spam';
 
 // brand-scopes every submission so Townies + Good Kicks data don't collide.
 const brand = z.enum(['townies', 'goodkicks']).default('townies');
@@ -98,6 +99,23 @@ async function insertSubmission(
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
+    // Bots get the same { ok: true } a person does (telling one it failed
+    // teaches it), but nothing is saved, mailed, or added to contacts.
+    if (typeof body?._hp === 'string' && body._hp.trim()) {
+      console.warn('[contact] honeypot filled, dropped');
+      return Response.json({ ok: true });
+    }
+    const spam = scoreSpam({
+      fields: ['name', 'town', 'message', 'groupName', 'company', 'towns'].map((k) => (typeof body?.[k] === 'string' ? body[k] : '')),
+      email: typeof body?.email === 'string' ? body.email : undefined,
+      submitAfterMs: typeof body?._ms === 'number' ? body._ms : undefined,
+    });
+    if (spam.isSpam) {
+      console.warn('[contact] spam dropped', spam.score, spam.reasons.join('; '));
+      return Response.json({ ok: true });
+    }
+
     const result = contactSchema.safeParse(body);
 
     if (!result.success) {

@@ -32,15 +32,35 @@ export function Submitted({ title, body }: { title: string; body: string }) {
   );
 }
 
+/**
+ * Bot trap. Rendered with every SubmitButton so every form has it: off-screen,
+ * skipped by keyboard and screen readers, and only form-filler bots fill it.
+ * Not `hidden`/`display:none`, which smarter bots know to skip.
+ */
+export const HONEYPOT_NAME = 'homepage_url';
+function Honeypot() {
+  return (
+    <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', top: 'auto', width: 1, height: 1, overflow: 'hidden' }}>
+      <label>
+        Leave this empty
+        <input type="text" name={HONEYPOT_NAME} tabIndex={-1} autoComplete="off" defaultValue="" />
+      </label>
+    </div>
+  );
+}
+
 export function SubmitButton({ submitting, label }: { submitting: boolean; label: string }) {
   return (
-    <button
-      type="submit"
-      disabled={submitting}
-      className="bg-accent text-white px-6 py-3 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors disabled:opacity-50"
-    >
-      {submitting ? 'Sending…' : label}
-    </button>
+    <>
+      <Honeypot />
+      <button
+        type="submit"
+        disabled={submitting}
+        className="bg-accent text-white px-6 py-3 rounded-sm text-sm font-semibold uppercase tracking-[0.1em] hover:bg-accent/90 transition-colors disabled:opacity-50"
+      >
+        {submitting ? 'Sending…' : label}
+      </button>
+    </>
   );
 }
 
@@ -77,7 +97,14 @@ export async function postContact(payload: Record<string, unknown>): Promise<boo
     const res = await fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...payload, brand: currentBrand() }),
+      body: JSON.stringify({
+        ...payload,
+        brand: currentBrand(),
+        // Spam signals for /api/contact (lib/spam.ts): the trap field's value,
+        // and how long after the page loaded this was sent.
+        _hp: (document.querySelector(`input[name="${HONEYPOT_NAME}"]`) as HTMLInputElement | null)?.value ?? '',
+        _ms: Math.round(performance.now()),
+      }),
     });
     return res.ok;
   } catch {
