@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { preload } from 'react-dom';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -129,7 +129,18 @@ export function HatWheelHero({
   }, []);
   const stage = useRef<HTMLDivElement>(null);
   const n = reduce ? 1 : hats.length;
-  const pinned = Math.max(Math.min(PINNED_HATS, n) - 1, 0);
+  // Phones don't pin: swiping the hats turns the wheel, and a pinned hero made
+  // the phone home page nearly two screens tall before any products.
+  const [wide, setWide] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+  const pinnedWide = Math.max(Math.min(PINNED_HATS, n) - 1, 0);
+  const pinned = wide ? pinnedWide : 0;
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
   const pagePos = useTransform(scrollYProgress, (p) => p * pinned);
   // Extra turns from scrolling (or swiping) on the hats themselves: endless,
@@ -217,7 +228,11 @@ export function HatWheelHero({
   if (!hats.length) return null;
 
   return (
-    <section ref={ref} style={{ height: `calc(100svh + ${pinned * STEP_SVH}svh)` }} className="relative">
+    <section
+      ref={ref}
+      style={{ '--hero-h': `calc(100svh + ${pinnedWide * STEP_SVH}svh)` } as CSSProperties}
+      className="relative h-[100svh] lg:h-[var(--hero-h)]"
+    >
       <div className="sticky top-[4.75rem] sm:top-[5.5rem] h-[calc(100svh-4.75rem)] sm:h-[calc(100svh-5.5rem)] overflow-hidden bg-[radial-gradient(120%_90%_at_70%_45%,#FBFAF7_0%,#EDEAE3_55%,#E2DED5_100%)]">
         <div className="mx-auto grid h-full max-w-[1320px] grid-rows-[1fr_auto] px-4 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:grid-rows-1 lg:gap-8">
           {/* Phones: wheel on top, copy underneath (Lucas, 10-08). Desktop: side by side. */}

@@ -4,6 +4,7 @@ import { DM_Serif_Display, Figtree, Inter, Rokkitt, Yellowtail } from 'next/font
 import { Analytics } from '@vercel/analytics/react';
 import { SiteWrapper } from '@/components/layout/site-wrapper';
 import { GoogleAnalytics } from '@/components/analytics/google-analytics';
+import { FirstTouch } from '@/components/analytics/first-touch';
 import { SITE_URL, organizationSchema, websiteSchema } from '@/lib/seo/site';
 import './globals.css';
 
@@ -121,6 +122,7 @@ export default async function RootLayout({
         <SiteWrapper host={host}>{children}</SiteWrapper>
         <Analytics />
         <GoogleAnalytics host={host} />
+        <FirstTouch />
       </body>
     </html>
   );

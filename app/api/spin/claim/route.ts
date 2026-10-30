@@ -14,6 +14,7 @@ import { callerIp, hashIp, rateLimit, underDailyClaimLimit } from '@/lib/townies
 import { mintSpinCode, ShopifyNotConfiguredError, ShopifyScopeError } from '@/lib/shopify/create-spin-code';
 import { sendSpinCodeEmail } from '@/lib/email/send-spin-code';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
+import { subscribeShopifyCustomer } from '@/lib/shopify/subscribe-customer';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 
 export const runtime = 'nodejs';
@@ -183,6 +184,7 @@ export async function POST(req: NextRequest) {
   // above are hardcoded to match. Don't "fix" this to a derived brand — the
   // prize wedges are Townies-only, so a Good Kicks spin isn't a thing.
   await upsertContact({ email, source: 'discount', brand: 'townies' });
+  await subscribeShopifyCustomer(email);
 
   let emailed = false;
   try {

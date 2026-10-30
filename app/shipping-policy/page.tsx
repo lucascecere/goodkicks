@@ -39,8 +39,8 @@ export default function ShippingPolicyPage() {
           heading: 'Shipping cost',
           body: (
             <p>
-              Standard shipping is a <strong>flat rate calculated at checkout</strong>. Orders over{' '}
-              <strong>{FREE_OVER} ship free</strong>.
+              One in-stock hat ships for <strong>$5.95</strong> (a few dollars more for several), and pre-orders ship for a
+              flat <strong>$5</strong>. Orders over <strong>{FREE_OVER} ship free</strong>, and so does the Hat &amp; Sack bundle.
             </p>
           ),
         },

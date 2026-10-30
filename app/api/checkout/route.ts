@@ -3,6 +3,28 @@ import { createShopifyCart } from '@/lib/shopify/service';
 import { getHatSackOffer } from '@/lib/shopify/hat-sack-offer';
 import { shopifyAdminGraphQL } from '@/lib/shopify/admin-graphql';
 import { bundleTier } from '@/lib/townies/hat-sack';
+import { sendEmail } from '@/lib/email/resend-client';
+
+/**
+ * A failed checkout used to be a console line nobody read. Email the shop, at
+ * most once per 15 minutes per server instance so an outage is one alert, not
+ * a flood.
+ */
+let lastAlertAt = 0;
+async function alertCheckoutFailure(detail: string, items: CheckoutItem[]) {
+  if (Date.now() - lastAlertAt < 15 * 60 * 1000) return;
+  lastAlertAt = Date.now();
+  try {
+    await sendEmail({
+      from: `Townies site <${process.env.TOWNIES_FROM_EMAIL ?? 'info@goodkicks.co'}>`,
+      to: process.env.SHOP_NOTIFY_EMAIL || 'info@townies.shop',
+      subject: 'Checkout failed on townies.shop',
+      text: `A shopper hit "checkout failed".\n\n${detail}\n\nBag: ${items.map((i) => `${i.quantity} x ${i.variantId}`).join(', ')}\n\nVercel logs: search "[checkout]" / "[createShopifyCart]".`,
+    });
+  } catch (err) {
+    console.error('[checkout] alert email failed:', err);
+  }
+}
 
 /**
  * Hat & Sack guard (2026-10-08): the bundle has three price tiers ($35/$40/$45,
@@ -51,6 +73,13 @@ export async function POST(req: NextRequest) {
   ]
     .filter((c): c is string => typeof c === 'string' && /^[A-Z0-9-]{3,40}$/i.test(c))
     .slice(0, 2);
+  // First-touch attribution from the bag (lib/attribution.ts). Shopify shows
+  // these on the order; anything malformed is dropped, never a reason to fail.
+  const attributes: Array<{ key: string; value: string }> = (Array.isArray(body?.attributes) ? body.attributes : [])
+    .filter((a: unknown): a is { key: string; value: string } =>
+      !!a && typeof (a as { key?: unknown }).key === 'string' && typeof (a as { value?: unknown }).value === 'string')
+    .slice(0, 8)
+    .map((a: { key: string; value: string }) => ({ key: a.key.slice(0, 40), value: a.value.slice(0, 200) }));
 
   if (!items.length) {
     return NextResponse.json({ error: 'cart is empty' }, { status: 400 });
@@ -92,13 +121,15 @@ export async function POST(req: NextRequest) {
   }));
 
   try {
-    const cart = await createShopifyCart(lines, discountCodes.length ? discountCodes : undefined);
+    const cart = await createShopifyCart(lines, discountCodes.length ? discountCodes : undefined, attributes);
     if (!cart) {
+      await alertCheckoutFailure('Shopify did not return a cart (see [createShopifyCart] in the logs).', checked);
       return NextResponse.json({ error: 'checkout failed' }, { status: 500 });
     }
     return NextResponse.json({ url: cart.checkoutUrl });
   } catch (err) {
     console.error('[checkout] Shopify error:', err);
+    await alertCheckoutFailure(String(err), checked);
     return NextResponse.json({ error: 'checkout failed' }, { status: 500 });
   }
 }

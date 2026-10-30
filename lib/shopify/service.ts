@@ -120,13 +120,14 @@ interface CartCreateResult {
 
 export async function createShopifyCart(
   lines: Array<{ merchandiseId: string; quantity: number }>,
-  discountCodes?: string[]
+  discountCodes?: string[],
+  attributes?: Array<{ key: string; value: string }>
 ): Promise<{ cartId: string; checkoutUrl: string } | null> {
   console.log('[createShopifyCart] domain:', process.env.SHOPIFY_STORE_DOMAIN, 'token set:', !!process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN);
   try {
     const { data, errors } = await storefrontClient.request<CartCreateResult>(
       CART_CREATE_MUTATION,
-      { variables: { lines, discountCodes: discountCodes ?? [] } }
+      { variables: { lines, discountCodes: discountCodes ?? [], attributes: attributes ?? [] } }
     );
     if (errors) {
       console.error('[createShopifyCart] errors:', JSON.stringify(errors));

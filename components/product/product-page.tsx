@@ -11,6 +11,7 @@ import { BrandImage } from '@/components/ui/brand-image';
 import { TowniesBlock } from '@/components/brand/wordmark';
 import { ProductCard } from '@/components/townies/product-card';
 import { TrustRow } from '@/components/townies/trust-row';
+import { ShareHat } from '@/components/townies/share-hat';
 import { gkDisplayName, gkDescriptionHtml, gkLine } from '@/lib/goodkicks/names';
 import { BuyBox, type BuyVariant } from '@/components/townies/buy-box';
 import { BundlePicker, type ColorwayProduct } from '@/components/product/bundle-picker';
@@ -378,7 +379,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
               />
             ) : (
               <TrustRow
-                items={['Free shipping over $75', '30-day returns', 'Ships from the South Shore']}
+                items={[preorder ? '$5 shipping, free over $75' : '$5.95 shipping, free over $75', '30-day returns', 'Ships from the South Shore']}
                 href="/shipping-policy"
               />
             )}
@@ -415,6 +416,9 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                   </span>
                 </Link>
                 )}
+                <div>
+                  <ShareHat title={name} url={productUrl} />
+                </div>
                 {hasCustomPage(townKey(shopifyProduct).slug) && (
                   <p className="mt-5 text-xs text-muted">
                     Ordering for a business or team in {townKey(shopifyProduct).name}?{' '}

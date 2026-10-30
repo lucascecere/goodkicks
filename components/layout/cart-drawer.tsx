@@ -6,11 +6,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { LogoImg } from '@/components/brand/brand-logo';
 import { X } from 'lucide-react';
-import { useCart } from '@/lib/cart/cart-context';
+import { useCart, type CartItem } from '@/lib/cart/cart-context';
 import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import type { BrandConfig } from '@/lib/brand/brands';
 import { PREORDER_SHIP_NOTE } from '@/lib/townies/preorder';
 import { readOfferCodes } from '@/lib/townies/welcome-offer';
+import { firstTouchAttributes } from '@/lib/attribution';
 
 /**
  * "You're $12 from free shipping" — the single most reliable nudge a cart
@@ -37,6 +38,25 @@ function FreeShippingBar({ subtotalCents, thresholdCents }: { subtotalCents: num
       </div>
     </div>
   );
+}
+
+/**
+ * What Townies shipping will cost, so $5.95 isn't a surprise on the last step.
+ * Mirrors Shopify: in-stock hats use the weight-banded "Hats — Standard
+ * Shipping" profile ($5.95 for one hat, more for several), pre-orders the flat
+ * $5 "Pre-order" profile, Hat & Sack bundles ship included, and the automatic
+ * discount makes everything free at the threshold.
+ */
+function shippingEstimate(items: CartItem[], subtotalCents: number, thresholdCents: number, hasOffer: boolean): string {
+  if (hasOffer || subtotalCents >= thresholdCents) return 'Free';
+  const isBundle = (i: CartItem) => i.productTitle === 'Hat & Sack Bundle';
+  const isPreorder = (i: CartItem) => !!i.customAttributes?.some((a) => a.key === 'Fulfillment' && a.value.startsWith('Pre-order'));
+  const standard = items.filter((i) => !isBundle(i) && !isPreorder(i)).reduce((n, i) => n + i.quantity, 0);
+  const preorder = items.some((i) => !isBundle(i) && isPreorder(i));
+  if (!standard && !preorder) return 'Included';
+  const cents = (preorder ? 500 : 0) + (standard ? 595 : 0);
+  const exact = standard <= 1;
+  return `${exact ? '' : 'From '}${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100)}`;
 }
 
 function formatCents(cents: number): string {
@@ -118,6 +138,7 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
             ...(i.customAttributes?.length ? { customAttributes: i.customAttributes } : {}),
           })),
           ...(offerCodes.length ? { discountCodes: offerCodes } : {}),
+          attributes: firstTouchAttributes(),
         }),
       });
       const { url } = await res.json();
@@ -240,6 +261,14 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                   <span className="text-muted">Subtotal</span>
                   <span className="font-medium text-text">{formatCents(subtotalCents)}</span>
                 </div>
+                {brand.freeShippingCents !== null && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted">Shipping</span>
+                    <span className="font-medium text-text">
+                      {shippingEstimate(items, subtotalCents, brand.freeShippingCents, offerCodes.length > 0)}
+                    </span>
+                  </div>
+                )}
                 <button
                   onClick={handleCheckout}
                   disabled={isCheckingOut}
@@ -250,7 +279,9 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                 {checkoutError && (
                   <p className="text-center text-red-600 text-xs">Something went wrong — please try again.</p>
                 )}
-                <p className="text-center text-muted text-xs">Shipping &amp; taxes calculated at checkout</p>
+                <p className="text-center text-muted text-xs">
+                  {brand.freeShippingCents !== null ? 'Tax calculated at checkout' : 'Shipping & taxes calculated at checkout'}
+                </p>
               </div>
             )}
           </motion.div>
