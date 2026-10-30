@@ -4,6 +4,7 @@ import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { sendEmail } from '@/lib/email/resend-client';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 import { scoreSpam } from '@/lib/spam';
+import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
 
 // brand-scopes every submission so Townies + Good Kicks data don't collide.
 const brand = z.enum(['townies', 'goodkicks']).default('townies');
@@ -98,6 +99,13 @@ async function insertSubmission(
 
 export async function POST(request: Request) {
   try {
+    // A person sends a form or two; a bot sends dozens. Per server instance,
+    // so it's a speed bump rather than a wall; the content checks below and
+    // the same-email check further down do the real work.
+    if (!rateLimit(`contact:${callerIp(request.headers)}`, 5, 60 * 60 * 1000)) {
+      return Response.json({ ok: false, errors: [{ message: 'Too many messages from here. Try again in a bit.' }] }, { status: 429 });
+    }
+
     const body = await request.json();
 
     // Bots get the same { ok: true } a person does (telling one it failed
@@ -123,6 +131,23 @@ export async function POST(request: Request) {
     }
 
     const data = result.data;
+
+    // The same address three times inside ten minutes is a bot replaying a
+    // harvested email (real people send one). Checked against the database, so
+    // it holds across server instances.
+    {
+      const supabase = createSupabaseServiceClient();
+      const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+      const { count } = await supabase
+        .from('contact_submissions')
+        .select('id', { count: 'exact', head: true })
+        .eq('email', data.email)
+        .gte('created_at', since);
+      if ((count ?? 0) >= 2) {
+        console.warn('[contact] burst from one email, dropped');
+        return Response.json({ ok: true });
+      }
+    }
 
     // The longer wholesale fields have no columns of their own. Rather than
     // migrate contact_submissions for a low-volume form, the structured detail

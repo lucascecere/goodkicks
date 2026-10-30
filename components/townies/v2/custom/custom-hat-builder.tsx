@@ -536,6 +536,8 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
         fd.set('sideLogo', up.file, up.name);
       }
 
+      // Page-time for the spam check (lib/spam.ts).
+      fd.set('_ms', String(Math.round(performance.now())));
       const res = await fetch('/api/custom-quote', { method: 'POST', body: fd });
       if (res.ok) {
         setStatus('done');

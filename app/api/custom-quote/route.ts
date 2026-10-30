@@ -5,6 +5,7 @@ import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { sendEmail } from '@/lib/email/resend-client';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
+import { scoreSpam } from '@/lib/spam';
 
 /**
  * Custom hat quote requests from /custom-hats/build.
@@ -93,6 +94,18 @@ export async function POST(request: Request) {
     });
     if (!parsed.success) return bad(parsed.error.issues[0]?.message ?? 'Check the form and try again.');
     const d = parsed.data;
+
+    // Same content check as /api/contact. Answer as if it worked.
+    const ms = Number(text(fd, '_ms'));
+    const spam = scoreSpam({
+      fields: [d.name, d.organisation ?? '', d.town ?? '', d.notes ?? ''],
+      email: d.email,
+      submitAfterMs: text(fd, '_ms') && Number.isFinite(ms) ? ms : undefined,
+    });
+    if (spam.isSpam) {
+      console.warn('[custom-quote] spam dropped', spam.score, spam.reasons.join('; '));
+      return Response.json({ ok: true });
+    }
 
     const mockup = file(fd, 'mockup');
     if (!mockup || mockup.type !== 'image/png' || mockup.size > 3 * MB) {
