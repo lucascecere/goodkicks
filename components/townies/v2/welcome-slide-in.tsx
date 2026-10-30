@@ -17,7 +17,8 @@ type Snooze = { until: number; reason: 'dismissed' | 'claimed' };
 const SNOOZE_DAYS = { dismissed: 1, claimed: 365 } as const;
 /** Someone who already claimed a trivia code isn't asked again. */
 const LEGACY_KEY = 'townies_welcome_v1';
-const BLOCKED = ['/admin', '/checkout', '/cart', '/goodkicks', '/stick', '/local', '/hat-and-sack'];
+// /wholesale and /custom-hats are for businesses (shop outreach lands there), not first-hat shoppers.
+const BLOCKED = ['/admin', '/checkout', '/cart', '/goodkicks', '/stick', '/local', '/hat-and-sack', '/wholesale', '/custom-hats', '/unsubscribed'];
 /** Product pages wait longer and skip the scroll trigger, so the buy box gets a look first. */
 const PRODUCT_DELAY_MS = 10_000;
 const PAGE_DELAY_MS = 5_000;
