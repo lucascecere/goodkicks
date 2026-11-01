@@ -32,6 +32,7 @@ type ClaimRow = {
   discount_code: string;
   expires_at: string | null;
   prize_id: string;
+  redeemed_at: string | null;
 };
 
 export async function POST(req: NextRequest) {
@@ -80,12 +81,17 @@ export async function POST(req: NextRequest) {
   if (supabase) {
     const { data: existing } = await supabase
       .from('spin_claims')
-      .select('discount_code, expires_at, prize_id')
+      .select('discount_code, expires_at, prize_id, redeemed_at')
       .eq('email', email)
       .eq('brand', 'townies')
       .maybeSingle<ClaimRow>();
 
-    if (existing?.discount_code) {
+    // An old code that ran out unused is worth nothing, so the first-order
+    // offer replaces it (the "haven't bought yet" campaign sends people here).
+    const lapsed = existing && !existing.redeemed_at && existing.expires_at && Date.parse(existing.expires_at) < Date.now();
+    if (lapsed && wedge.shipCodePrefix) {
+      await supabase.from('spin_claims').delete().eq('email', email).eq('brand', 'townies');
+    } else if (existing?.discount_code) {
       const held = wedgeById(existing.prize_id);
       return Response.json({
         ok: true,

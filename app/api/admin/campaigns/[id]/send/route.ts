@@ -6,6 +6,7 @@ import { chromeFor, type CampaignChrome } from '@/lib/email/campaign-chrome';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 import { unsubscribeUrl } from '@/lib/email/unsubscribe';
 import { buildPersonalHtml, buildPersonalText } from '@/lib/email/personal-email';
+import { shopifyBuyerEmails } from '@/lib/shopify/buyer-emails';
 
 // Per-recipient one-click unsubscribe link, swapped in at send time.
 const UNSUB = '{{UNSUB_URL}}';
@@ -100,9 +101,15 @@ ${pre}
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function POST(_req: NextRequest, { params }: Params) {
+export async function POST(req: NextRequest, { params }: Params) {
   if (!(await isAdminSession())) return new Response('Unauthorized', { status: 401 });
   const { id } = await params;
+  // ?test=<email> sends this campaign to that one address only: nothing is
+  // recorded and the campaign stays a draft.
+  const testTo = req.nextUrl.searchParams.get('test')?.trim().toLowerCase() || null;
+  if (testTo && !/^[^\s@]+@[^\s@,]+\.[a-z]{2,}$/i.test(testTo)) {
+    return Response.json({ error: 'That test address does not look right.' }, { status: 400 });
+  }
 
   const resendKey = process.env.RESEND_API_KEY;
   if (!resendKey) return Response.json({ error: 'RESEND_API_KEY not configured' }, { status: 500 });
@@ -115,7 +122,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
   const chrome = chromeFor(campaign.brand);
 
   // Unsubscribed people never get campaign mail.
-  let query = supabase.from('contacts').select('email, name').is('unsubscribed_at', null);
+  let query = supabase.from('contacts').select('email, name, sources').is('unsubscribed_at', null);
   if (campaign.recipient_mode === 'individual' && campaign.emails?.length > 0) {
     query = query.in('email', campaign.emails);
   } else if (campaign.recipient_mode === 'segment' && campaign.sources?.length > 0) {
@@ -132,9 +139,27 @@ export async function POST(_req: NextRequest, { params }: Params) {
   if (campaign.audience_brands?.length > 0) {
     query = query.overlaps('brands', campaign.audience_brands);
   }
-  const { data: contacts, error: contactsErr } = await query;
+  const { data: matched, error: contactsErr } = await query;
   if (contactsErr) return Response.json({ error: contactsErr.message }, { status: 500 });
-  if (!contacts || contacts.length === 0) return Response.json({ error: 'No contacts match recipients' }, { status: 400 });
+  let contacts = matched ?? [];
+
+  // "Haven't bought yet": drop anyone tagged with an order AND anyone Shopify
+  // has an order for. If Shopify can't be read, refuse rather than risk
+  // telling a customer they've never ordered.
+  if (campaign.exclude_buyers && !testTo) {
+    let buyers: Set<string>;
+    try {
+      buyers = await shopifyBuyerEmails();
+    } catch (err) {
+      console.error('[campaign send] buyer lookup failed:', err);
+      return Response.json({ error: 'Could not check Shopify for past buyers. Nothing was sent; try again.' }, { status: 502 });
+    }
+    contacts = contacts.filter(
+      (c) => !(c.sources ?? []).includes('order') && !buyers.has(c.email.trim().toLowerCase()),
+    );
+  }
+  if (testTo) contacts = [{ email: testTo, name: null, sources: [] }];
+  if (contacts.length === 0) return Response.json({ error: 'No contacts match recipients' }, { status: 400 });
 
   const personal = campaign.content_mode === 'personal';
   const html = personal ? buildPersonalHtml(campaign.body_text ?? '', UNSUB) : campaign.custom_html ?? buildCampaignHtml({
@@ -183,7 +208,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
         return {
           from,
           to: c.email,
-          subject: campaign.subject,
+          subject: testTo ? `[Test] ${campaign.subject}` : campaign.subject,
           html: htmlWithUnsub.replaceAll(UNSUB, link ?? fallback),
           ...(text ? { text: text.replaceAll(UNSUB, link ?? fallback) } : {}),
           headers: (link
@@ -196,6 +221,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
       failed += chunk.length;
     } else {
       sent += chunk.length;
+      if (testTo) continue;
       const batchIds = (batchResult.data as unknown as { data: { id: string }[] }).data;
       const rows = chunk.map((c, i) => ({
         campaign_id: id,
@@ -207,6 +233,8 @@ export async function POST(_req: NextRequest, { params }: Params) {
       await supabase.from('campaign_sends').insert(rows);
     }
   }
+
+  if (testTo) return Response.json({ sent, failed, test: true });
 
   await supabase.from('campaigns').update({
     status: 'sent',

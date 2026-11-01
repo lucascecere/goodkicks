@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
       audience_brands: (body.audienceBrands ?? []).filter(parseBrand),
       sources: body.sources || [],
       emails: body.emails || [],
+      exclude_buyers: !!body.excludeBuyers,
       status: 'draft',
     })
     .select('id')

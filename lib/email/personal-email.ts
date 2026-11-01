@@ -9,12 +9,20 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+/** Bare links become real ones, shown without the tracking query. */
+function linkify(s: string): string {
+  return s.replace(/https?:\/\/[^\s<]+/g, (url) => {
+    const shown = url.replace(/^https?:\/\//, '').replace(/[?#].*$/, '').replace(/\/$/, '');
+    return `<a href="${url}" style="color:#1f4e8c">${shown}</a>`;
+  });
+}
+
 export function buildPersonalHtml(bodyText: string, unsubUrl = UNSUB_PLACEHOLDER): string {
   const paragraphs = bodyText
     .split(/\n\n+/)
     .map((p) => p.trim())
     .filter(Boolean)
-    .map((p) => `<p style="margin:0 0 16px">${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
+    .map((p) => `<p style="margin:0 0 16px">${linkify(escapeHtml(p)).replace(/\n/g, '<br>')}</p>`)
     .join('');
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#ffffff">

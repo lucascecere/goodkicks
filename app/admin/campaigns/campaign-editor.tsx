@@ -38,6 +38,7 @@ export interface InitialCampaign {
   recipient_mode: RecipientMode;
   sources: string[];
   emails: string[];
+  exclude_buyers?: boolean;
   status: 'draft' | 'sent';
 }
 
@@ -104,6 +105,9 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
   const [recipientMode, setRecipientMode] = useState<RecipientMode>(c?.recipient_mode ?? 'all');
   const [selectedSources, setSelectedSources] = useState<Set<Source>>(new Set((c?.sources ?? []) as Source[]));
   const [selectedEmails, setSelectedEmails] = useState<Set<string>>(new Set(c?.emails ?? []));
+  const [excludeBuyers, setExcludeBuyers] = useState<boolean>(c?.exclude_buyers ?? false);
+  const [testTo, setTestTo] = useState('info@townies.shop');
+  const [testStatus, setTestStatus] = useState<{ type: 'idle' | 'sending' | 'done' | 'error'; message?: string }>({ type: 'idle' });
   const [contactSearch, setContactSearch] = useState('');
 
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -159,6 +163,7 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
       audienceBrands: [...audienceBrands],
       sources: recipientMode === 'segment' ? [...selectedSources] : [],
       emails: recipientMode === 'individual' ? [...selectedEmails] : [],
+      excludeBuyers,
     };
   }
 
@@ -216,7 +221,30 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
     } catch { setSendStatus({ type: 'error', message: 'Network error' }); }
   }
 
+  async function handleTest() {
+    setTestStatus({ type: 'sending' });
+    const id = await saveDraft();
+    if (!id) { setTestStatus({ type: 'error', message: 'Could not save first.' }); return; }
+    try {
+      const res = await fetch(`/api/admin/campaigns/${id}/send?test=${encodeURIComponent(testTo)}`, { method: 'POST' });
+      const json = await res.json();
+      setTestStatus(res.ok && json.sent > 0 ? { type: 'done', message: `Test sent to ${testTo}.` } : { type: 'error', message: json.error ?? 'Test failed' });
+    } catch { setTestStatus({ type: 'error', message: 'Network error' }); }
+  }
+
   function recipientCount() {
+    // Skipping buyers: count from the contact list itself. Shopify is checked
+    // again at send, so the real number can come out a little lower.
+    if (excludeBuyers) {
+      return contacts.filter((ct) => {
+        const src = ct.sources ?? [];
+        if (src.includes('order')) return false;
+        if (audienceBrands.size > 0 && !(ct.brands ?? []).some((b) => audienceBrands.has(b as RealBrand))) return false;
+        if (recipientMode === 'individual') return selectedEmails.has(ct.email);
+        if (recipientMode === 'segment') return src.some((x) => selectedSources.has(x as Source));
+        return src.some((x) => x === 'discount' || x === 'newsletter');
+      }).length;
+    }
     if (recipientMode === 'all') return audienceCount;
     if (recipientMode === 'individual') return selectedEmails.size;
     if (selectedSources.size === 0) return 0;
@@ -459,6 +487,14 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
               </div>
             ))}
 
+            <label className="flex items-start gap-2.5 cursor-pointer border-t border-town-cream/10 pt-3">
+              <input type="checkbox" checked={excludeBuyers} onChange={(e) => setExcludeBuyers(e.target.checked)} className="accent-town-cream mt-1" />
+              <span>
+                <span className="block text-sm font-semibold text-town-cream">Only people who haven’t ordered</span>
+                <span className="block text-[11px] text-town-cream/45">Skips anyone with an order, checked against Shopify when it sends.</span>
+              </span>
+            </label>
+
             <div className="flex items-center justify-between border-t border-town-cream/10 pt-3">
               <span className="text-sm text-town-cream/55">Sending to</span>
               <span className="text-sm font-semibold text-town-cream">{count} contact{count !== 1 ? 's' : ''}</span>
@@ -478,6 +514,18 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
               </button>
             </div>
             {saveStatus === 'error' && <p className="text-xs text-red-300">{saveError}</p>}
+
+            <div className="flex gap-2">
+              <label htmlFor="test-to" className="sr-only">Test address</label>
+              <input id="test-to" type="email" value={testTo} onChange={(e) => setTestTo(e.target.value)} className={`${field} min-w-0 flex-1`} />
+              <button onClick={handleTest} disabled={!isValid() || testStatus.type === 'sending' || !testTo}
+                className={`${btn.secondary} shrink-0 disabled:cursor-not-allowed`}>
+                {testStatus.type === 'sending' ? 'Sending…' : 'Send test'}
+              </button>
+            </div>
+            {testStatus.message && (
+              <p className={`text-xs ${testStatus.type === 'error' ? 'text-red-300' : 'text-town-cream/60'}`}>{testStatus.message}</p>
+            )}
 
             {!confirming ? (
               <button onClick={() => setConfirming(true)} disabled={!isValid() || sendStatus.type === 'sending' || count === 0}

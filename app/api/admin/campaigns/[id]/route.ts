@@ -37,6 +37,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       recipient_mode: body.recipientMode,
       sources: body.sources || [],
       emails: body.emails || [],
+      exclude_buyers: !!body.excludeBuyers,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id);
