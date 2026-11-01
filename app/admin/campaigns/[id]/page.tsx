@@ -74,6 +74,7 @@ export default async function EditCampaignPage({ params }: Props) {
         recipient_mode: campaign.recipient_mode,
         sources: campaign.sources ?? [],
         emails: campaign.emails ?? [],
+        exclude_buyers: campaign.exclude_buyers ?? false,
         status: campaign.status,
       }}
       totalContacts={all.length}
