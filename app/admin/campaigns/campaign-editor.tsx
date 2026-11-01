@@ -75,7 +75,7 @@ function buildPreviewHtml(subject: string, headline: string, bodyText: string, c
     ${cta ? `<div style="margin:32px 0"><a class="cta-a" href="${ctaUrl}" style="background:${chrome.accent};color:#fff;padding:14px 32px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;display:inline-block;font-family:-apple-system,sans-serif">${ctaText}</a></div>` : ''}
   </div>
   <div class="ftr" style="border-top:1px solid #E5DDD0;padding:22px 32px;background:#FAF7F2">
-    <p style="color:#78716C;font-size:12px;margin:0;line-height:1.8;font-family:-apple-system,sans-serif">${chrome.name} &nbsp;&middot;&nbsp; <a href="${chrome.url}" style="color:${chrome.accent};text-decoration:none">${chrome.site}</a><br>You received this because you signed up or placed an order.<br><a href="#" style="color:#78716C">Unsubscribe</a></p>
+    <p style="color:#78716C;font-size:12px;margin:0;line-height:1.8;font-family:-apple-system,sans-serif">${chrome.name} &nbsp;&middot;&nbsp; <a href="${chrome.url}" style="color:${chrome.accent};text-decoration:none">${chrome.site}</a><br>${chrome.address}<br>You received this because you signed up or placed an order.<br><a href="#" style="color:#78716C">Unsubscribe</a></p>
   </div>
 </div></div></body></html>`;
 }
@@ -576,7 +576,7 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
                   <div className="rounded-[24px] overflow-hidden">
                     {contentMode === 'html' && customHtml
                       ? <iframe srcDoc={customHtml} className="w-full border-0" style={{ height: '560px' }} title="Mobile preview" sandbox="allow-same-origin" />
-                      : <div dangerouslySetInnerHTML={{ __html: (contentMode === 'personal' ? buildPersonalHtml(bodyText, '#') : buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand)) }} />
+                      : <div dangerouslySetInnerHTML={{ __html: (contentMode === 'personal' ? buildPersonalHtml(bodyText, '#', chromeFor(brand).address) : buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand)) }} />
                     }
                   </div>
                   <div className="h-4" />
@@ -591,7 +591,7 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
                       </div>}
                       <iframe srcDoc={customHtml} className="w-full border-0" style={{ height: '600px' }} title="Email preview" sandbox="allow-same-origin" />
                     </div>
-                  : <div dangerouslySetInnerHTML={{ __html: (contentMode === 'personal' ? buildPersonalHtml(bodyText, '#') : buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand)) }} />
+                  : <div dangerouslySetInnerHTML={{ __html: (contentMode === 'personal' ? buildPersonalHtml(bodyText, '#', chromeFor(brand).address) : buildPreviewHtml(subject, headline, bodyText, ctaText, ctaUrl, preheader, brand)) }} />
               )}
             </div>
           </div>

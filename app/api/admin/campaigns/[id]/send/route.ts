@@ -17,7 +17,7 @@ function buildText({ headline, bodyText, ctaText, ctaUrl, chrome }: {
 }): string {
   const lines = [`${headline}\n`, bodyText];
   if (ctaText && ctaUrl) lines.push(`\n${ctaText}: ${ctaUrl}`);
-  lines.push(`\n---\n${chrome.name} · ${chrome.site}\nUnsubscribe: ${UNSUB}`);
+  lines.push(`\n---\n${chrome.name} · ${chrome.site}\n${chrome.address}\nUnsubscribe: ${UNSUB}`);
   return lines.join('\n');
 }
 
@@ -89,6 +89,7 @@ ${pre}
     <div class="ftr">
       <p class="ftr-p">
         ${chrome.name} &nbsp;&middot;&nbsp; <a href="${chrome.url}" style="color:${chrome.accent};text-decoration:none">${chrome.site}</a><br>
+        ${chrome.address}<br>
         You received this because you signed up or placed an order with us.<br>
         <a href="${UNSUB}" style="color:#78716C">Unsubscribe</a>
       </p>
@@ -162,7 +163,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (contacts.length === 0) return Response.json({ error: 'No contacts match recipients' }, { status: 400 });
 
   const personal = campaign.content_mode === 'personal';
-  const html = personal ? buildPersonalHtml(campaign.body_text ?? '', UNSUB) : campaign.custom_html ?? buildCampaignHtml({
+  const html = personal ? buildPersonalHtml(campaign.body_text ?? '', UNSUB, chrome.address) : campaign.custom_html ?? buildCampaignHtml({
     headline: campaign.headline ?? '',
     bodyText: campaign.body_text ?? '',
     ctaText: campaign.cta_text ?? undefined,
@@ -171,7 +172,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     brand: campaign.brand,
   });
 
-  const text = personal ? buildPersonalText(campaign.body_text ?? '', UNSUB) : campaign.custom_html ? undefined : buildText({
+  const text = personal ? buildPersonalText(campaign.body_text ?? '', UNSUB, chrome.address) : campaign.custom_html ? undefined : buildText({
     headline: campaign.headline ?? '',
     bodyText: campaign.body_text ?? '',
     ctaText: campaign.cta_text ?? undefined,
@@ -190,9 +191,13 @@ export async function POST(req: NextRequest, { params }: Params) {
       : TOWNIES_FROM;
 
   // custom_html written before this existed has no placeholder: add a footer link.
-  const htmlWithUnsub = html.includes(UNSUB)
+  // Same for the postal address: an uploaded email without it gets one.
+  const withAddress = html.includes(chrome.address)
     ? html
-    : html.replace(/<\/body>/i, `<p style="text-align:center;font:12px Arial,sans-serif;color:#78716C;margin:16px 0"><a href="${UNSUB}" style="color:#78716C">Unsubscribe</a></p></body>`);
+    : html.replace(/<\/body>/i, `<p style="text-align:center;font:11px Arial,sans-serif;color:#78716C;margin:12px 0">${chrome.address}</p></body>`);
+  const htmlWithUnsub = withAddress.includes(UNSUB)
+    ? withAddress
+    : withAddress.replace(/<\/body>/i, `<p style="text-align:center;font:12px Arial,sans-serif;color:#78716C;margin:16px 0"><a href="${UNSUB}" style="color:#78716C">Unsubscribe</a></p></body>`);
   const fallback = `mailto:${chrome.email}?subject=Unsubscribe`;
 
   const resend = new Resend(resendKey);

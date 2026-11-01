@@ -29,7 +29,12 @@ export type CampaignChrome = {
   url: string;
   /** Reply-to / unsubscribe mailbox. */
   email: string;
+  /** Postal address for the footer. CAN-SPAM wants one in every marketing email. */
+  address: string;
 };
+
+/** Townies' mailing address (Lucas, 2026-11-01). Good Kicks is a Townies line. */
+const MAILING_ADDRESS = '29 Brookmill Road, Stow, MA 01775';
 
 export const CAMPAIGN_CHROME: Record<RealBrand, CampaignChrome> = {
   townies: {
@@ -43,6 +48,7 @@ export const CAMPAIGN_CHROME: Record<RealBrand, CampaignChrome> = {
     // Reply-to and unsubscribe mailbox only. The From is resolved separately
     // via TOWNIES_FROM (TOWNIES_FROM_EMAIL), see lib/email/send-rep-welcome.ts.
     email: 'info@townies.shop',
+    address: MAILING_ADDRESS,
   },
   goodkicks: {
     header: '#C0541A',
@@ -53,6 +59,7 @@ export const CAMPAIGN_CHROME: Record<RealBrand, CampaignChrome> = {
     site: 'goodkicks.co',
     url: 'https://goodkicks.co',
     email: 'info@goodkicks.co',
+    address: MAILING_ADDRESS,
   },
 };
 

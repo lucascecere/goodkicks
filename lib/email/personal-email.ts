@@ -17,7 +17,7 @@ function linkify(s: string): string {
   });
 }
 
-export function buildPersonalHtml(bodyText: string, unsubUrl = UNSUB_PLACEHOLDER): string {
+export function buildPersonalHtml(bodyText: string, unsubUrl = UNSUB_PLACEHOLDER, address?: string): string {
   const paragraphs = bodyText
     .split(/\n\n+/)
     .map((p) => p.trim())
@@ -28,10 +28,10 @@ export function buildPersonalHtml(bodyText: string, unsubUrl = UNSUB_PLACEHOLDER
 <body style="margin:0;padding:0;background:#ffffff">
 <div style="max-width:600px;padding:20px 16px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1f2328">
 ${paragraphs}
-<p style="margin:28px 0 0;font-size:12px;color:#8a8f98">Not interested? <a href="${unsubUrl}" style="color:#8a8f98">Unsubscribe</a> and I won't email again.</p>
+<p style="margin:28px 0 0;font-size:12px;color:#8a8f98">Not interested? <a href="${unsubUrl}" style="color:#8a8f98">Unsubscribe</a> and I won't email again.${address ? `<br>${escapeHtml(address)}` : ''}</p>
 </div></body></html>`;
 }
 
-export function buildPersonalText(bodyText: string, unsubUrl = UNSUB_PLACEHOLDER): string {
-  return `${bodyText.trim()}\n\n--\nNot interested? Unsubscribe: ${unsubUrl}`;
+export function buildPersonalText(bodyText: string, unsubUrl = UNSUB_PLACEHOLDER, address?: string): string {
+  return `${bodyText.trim()}\n\n--\nNot interested? Unsubscribe: ${unsubUrl}${address ? `\n${address}` : ''}`;
 }
