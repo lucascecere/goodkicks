@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { HomeHero, type HeroHat } from '@/components/townies/v2/home-hero';
+import { HatWheelHero } from '@/components/townies/v2/hat-wheel-hero';
 import { price } from '@/components/townies/v2/studio';
 import { TownCrests } from '@/components/townies/v2/town-crests';
 import { HatShelf } from '@/components/townies/v2/hat-shelf';
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
 
 /**
  * v2 home (2026-10), modelled on melin.com with Homefield's shop-by-school row:
- * one-hat hero (the scroll wheel was cut 11-04) → town badge slider → hat grid → one photo band → regions → bulk →
+ * hero (phones: one hat; computers: the hat wheel) → town badge slider → hat grid → one photo band → regions → bulk →
  * reviews (empty until real ones exist) → sign-up (site-wide, SiteWrapper) → footer.
  *
  * Every hat is a real Shopify shot on the shared studio ground (see
@@ -67,14 +68,28 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomeHero
-        hats={wheel}
-        eyebrow="Massachusetts · Est. 2024"
-        headline="Get your town."
-        sub="Embroidered hats for Massachusetts towns. The zip, the year, the nickname only locals use."
-        cta={{ href: '/shop', label: 'Shop all towns' }}
-        ctaSecondary={{ href: '#towns', label: 'Find your town' }}
-      />
+      {/* Phones: one hat, everything in the first screen (11-04). Computers keep
+          the hat wheel (Lucas, 11-04: "the computer version should still have the slider"). */}
+      <div className="lg:hidden">
+        <HomeHero
+          hats={wheel}
+          eyebrow="Massachusetts · Est. 2024"
+          headline="Get your town."
+          sub="Embroidered hats for Massachusetts towns. The zip, the year, the nickname only locals use."
+          cta={{ href: '/shop', label: 'Shop all towns' }}
+          ctaSecondary={{ href: '#towns', label: 'Find your town' }}
+        />
+      </div>
+      <div className="hidden lg:block">
+        <HatWheelHero
+          hats={wheel.slice(0, 8)}
+          eyebrow="Massachusetts · Est. 2024"
+          headline="Get your town."
+          sub="Embroidered hats for Massachusetts towns. The zip, the year, the nickname only locals use."
+          cta={{ href: '/shop', label: 'Shop all towns' }}
+          ctaSecondary={{ href: '#towns', label: 'Find your town' }}
+        />
+      </div>
 
       <TownCrests products={products} />
 
