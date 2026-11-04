@@ -33,7 +33,7 @@ function Copy({ eyebrow, headline, sub, cta, ctaSecondary }: Omit<Props, 'hats'>
   return (
     <div>
       <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-text/70">{eyebrow}</p>
-      <h1 className="display mt-2 text-[2.125rem] uppercase tracking-[0.01em] sm:text-[3.25rem] lg:mt-3 lg:text-[3.75rem] xl:text-[4.25rem] text-text">{headline}</h1>
+      <h1 className="display mt-2 text-[2.125rem] uppercase! tracking-[0.01em]! sm:text-[3.25rem] lg:mt-3 lg:text-[3.75rem] xl:text-[4.25rem] text-text">{headline}</h1>
       <p className="mt-2 max-w-md text-[0.9375rem] leading-relaxed text-text/75 sm:mt-4 sm:text-[1.0625rem]">{sub}</p>
       <div className="mt-5 grid grid-cols-2 gap-2 sm:flex sm:gap-3 lg:mt-7">
         <Link
