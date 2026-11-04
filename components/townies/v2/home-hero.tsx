@@ -69,7 +69,7 @@ function FeatureHero({ hats, ...copy }: Props) {
           <div className="relative mx-auto aspect-[4/3] w-full max-h-[34svh] lg:max-h-none lg:aspect-[5/4]">
             <Image src={hat.src} alt={hat.alt} fill priority sizes="(max-width: 1024px) 100vw, 60vw" className={`object-contain ${STUDIO_IMG}`} />
           </div>
-          <p className="mt-1 flex items-baseline justify-center gap-2 text-[0.875rem] lg:justify-end">
+          <p className="mt-1 flex items-baseline justify-center gap-2 text-[0.875rem]">
             <span className="font-semibold text-text underline-offset-4 group-hover:underline">{hat.title}</span>
             <span className="text-text/70">{hat.price}</span>
           </p>
