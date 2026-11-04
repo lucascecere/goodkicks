@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
+import { preload } from 'react-dom';
 import { STUDIO_IMG } from './studio';
 
 export type HeroHat = { id: string; src: string; alt: string; title: string; price: string; href: string };
@@ -26,6 +26,14 @@ export function HomeHero(p: Props) {
   if (!p.hats.length) return null;
   return <FeatureHero {...p} />;
 }
+
+// The phone hero's photo is the phone LCP. It is a plain <img> through Next's
+// optimiser (same pipeline as next/image) so the preload can carry a media query:
+// only phones fetch it, at high priority. Computers show the hat wheel instead.
+const PHONE_ONLY = '(max-width: 1023.98px)';
+const WIDTHS = [384, 640, 828, 1080];
+const sized = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=75`;
+const srcSet = (src: string) => WIDTHS.map((w) => `${sized(src, w)} ${w}w`).join(', ');
 
 const SWEEP = 'bg-[radial-gradient(120%_90%_at_70%_40%,#FBFAF7_0%,#EDEAE3_55%,#E2DED5_100%)]';
 
@@ -58,6 +66,7 @@ function Copy({ eyebrow, headline, sub, cta, ctaSecondary }: Omit<Props, 'hats'>
 /** Melin's one-hat hero. The hat is a link to itself; name + price under it. */
 function FeatureHero({ hats, ...copy }: Props) {
   const hat = hats[0];
+  preload(sized(hat.src, 640), { as: 'image', fetchPriority: 'high', imageSrcSet: srcSet(hat.src), imageSizes: '100vw', media: PHONE_ONLY });
   return (
     <section className={SWEEP}>
       <div className="mx-auto grid max-w-[1320px] items-center gap-2 px-4 pb-8 pt-2 sm:px-8 lg:min-h-[calc(100svh-7.5rem)] lg:max-h-[860px] lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 lg:py-12">
@@ -67,7 +76,16 @@ function FeatureHero({ hats, ...copy }: Props) {
         <Link href={hat.href} className="group order-1 block lg:order-2">
           {/* Phones: capped so the copy and buttons still land in the first screen. */}
           <div className="relative mx-auto aspect-[4/3] w-full max-h-[34svh] lg:max-h-none lg:aspect-[5/4]">
-            <Image src={hat.src} alt={hat.alt} fill priority sizes="(max-width: 1024px) 100vw, 60vw" className={`object-contain ${STUDIO_IMG}`} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={sized(hat.src, 640)}
+              srcSet={srcSet(hat.src)}
+              sizes="100vw"
+              alt={hat.alt}
+              fetchPriority="high"
+              decoding="async"
+              className={`absolute inset-0 h-full w-full object-contain ${STUDIO_IMG}`}
+            />
           </div>
           <p className="mt-1 flex items-baseline justify-center gap-2 text-[0.875rem]">
             <span className="font-semibold text-text underline-offset-4 group-hover:underline">{hat.title}</span>

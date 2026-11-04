@@ -31,7 +31,7 @@ export function HatShelf({
             // Phones show the first four; the rest is one tap away (the home
             // page ran ~17 phone screens with all eight stacked).
             <div key={p.id} className={i >= 4 ? 'max-sm:hidden' : undefined}>
-              <HatCard product={p} priority={i < 4} rating={ratings[p.handle]} />
+              <HatCard product={p} rating={ratings[p.handle]} />
             </div>
           ))}
         </div>

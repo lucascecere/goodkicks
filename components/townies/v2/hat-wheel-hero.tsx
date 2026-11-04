@@ -91,7 +91,9 @@ function WheelHatImg({
       alt={index === 0 ? hat.alt : ''}
       // The first hat is the page's largest paint: fetch it first, the rest after.
       fetchPriority={index === 0 ? 'high' : 'low'}
-      loading={index === 0 ? 'eager' : 'lazy'}
+      // Lazy even for the first hat: the media-scoped preload above already
+      // fetches it on computers, and lazy keeps hidden phones from fetching it.
+      loading="lazy"
       decoding="async"
       onLoad={onLoad}
       draggable={false}
@@ -119,7 +121,9 @@ export function HatWheelHero({
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   // Preload the first hat in the document head so it starts with the HTML.
-  if (hats[0]) preload(sized(hats[0].src, 640), { as: 'image', fetchPriority: 'high', imageSrcSet: srcSet(hats[0].src), imageSizes: SIZES });
+  // Computers only (11-04): phones get the one-hat HomeHero and this wheel is
+  // display:none there, so a media-less preload made phones fetch the hat twice.
+  if (hats[0]) preload(sized(hats[0].src, 640), { as: 'image', fetchPriority: 'high', imageSrcSet: srcSet(hats[0].src), imageSizes: SIZES, media: '(min-width: 1024px)' });
   // The other seven wait until the first hat has painted (or 1.5s), so they
   // never compete with it for a phone's bandwidth.
   const [rest, setRest] = useState(false);
