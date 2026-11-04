@@ -46,23 +46,23 @@ export function Footer({ brand }: { brand: BrandConfig }) {
       {/* Bottom bar */}
       <div className="border-t border-foot-contrast/15 px-4 sm:px-8 py-5">
         <div className="max-w-7xl mx-auto flex flex-col items-center gap-3 sm:flex-row sm:justify-between text-xs text-foot-contrast/60">
-          {/* The brand's own line with its socials beside it; the agency credit
-              is pushed to the far right, where a build credit belongs. */}
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-5">
-            <p className="flex items-center gap-2">
-              {brand.id === 'townies' && <MaMark className="h-3 w-auto text-foot-contrast/60" />}
-              {brand.id === 'townies' ? 'Massachusetts · ' : ''}© {year} {brand.legalName}
-            </p>
-            <SocialLinks socials={brand.footer.socials} />
-          </div>
-          <a
-            href="https://www.yourwebsitefriend.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded border border-foot-contrast/20 px-3.5 py-1.5 text-[11px] uppercase tracking-[0.16em] text-foot-contrast/60 hover:text-foot-strong hover:border-foot-contrast/40 transition-colors"
-          >
-            Managed by Your Website Friend
-          </a>
+          {/* The brand's line, with the agency credit as a quiet, visible text
+              link on the same line (Lucas, 11-04: no box). It must stay visible:
+              a hidden link reads as link spam to Google. */}
+          <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center sm:justify-start">
+            {brand.id === 'townies' && <MaMark className="h-3 w-auto text-foot-contrast/60" />}
+            <span>{brand.id === 'townies' ? 'Massachusetts · ' : ''}© {year} {brand.legalName}</span>
+            <span aria-hidden className="hidden sm:inline">·</span>
+            <a
+              href="https://www.yourwebsitefriend.com"
+              target="_blank"
+              rel="noopener"
+              className="basis-full sm:basis-auto hover:text-foot-strong hover:underline underline-offset-2 transition-colors"
+            >
+              Site by Your Website Friend
+            </a>
+          </p>
+          <SocialLinks socials={brand.footer.socials} />
         </div>
       </div>
     </footer>
