@@ -54,6 +54,8 @@ const WIDTHS = [384, 640, 828, 1080];
 const SIZES = '(max-width: 1024px) 80vw, 45vw';
 const srcSet = (src: string) => WIDTHS.map((w) => `${sized(src, w)} ${w}w`).join(', ');
 
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
 function sized(src: string, w: number) {
   return `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=75`;
 }
@@ -83,7 +85,12 @@ function WheelHatImg({
     const a = Math.abs(v);
     return a <= 1 ? 1 - a * 0.2 : Math.max(0, 0.8 - (a - 1) * 0.8);
   });
+  // Phones never show the wheel (HomeHero instead), so give them a blank source:
+  // the <picture> stops a display:none eager <img> from downloading the hat.
+  // <picture> is unstyled and inline, so it doesn't isolate the multiply blend.
   return (
+    <picture>
+    <source media="(max-width: 1023.98px)" srcSet={BLANK} />
     <motion.img
       src={sized(hat.src, 640)}
       srcSet={srcSet(hat.src)}
@@ -91,15 +98,14 @@ function WheelHatImg({
       alt={index === 0 ? hat.alt : ''}
       // The first hat is the page's largest paint: fetch it first, the rest after.
       fetchPriority={index === 0 ? 'high' : 'low'}
-      // Lazy even for the first hat: the media-scoped preload above already
-      // fetches it on computers, and lazy keeps hidden phones from fetching it.
-      loading="lazy"
+      loading={index === 0 ? 'eager' : 'lazy'}
       decoding="async"
       onLoad={onLoad}
       draggable={false}
       style={{ x, y, scale, opacity }}
       className="absolute left-[2%] top-[17%] h-[66%] w-[78%] select-none object-contain mix-blend-multiply will-change-transform"
     />
+    </picture>
   );
 }
 
