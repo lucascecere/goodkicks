@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { CollectionProduct } from '@/lib/shopify/collections';
 import { stockTier } from '@/lib/townies/stock-tier';
 import { HatCard } from './hat-card';
@@ -27,9 +28,21 @@ export function HatShelf({
         <ShelfHeader title={title} sub={sub} link={link} />
         <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 lg:grid-cols-4">
           {shown.map((p, i) => (
-            <HatCard key={p.id} product={p} priority={i < 4} rating={ratings[p.handle]} />
+            // Phones show the first four; the rest is one tap away (the home
+            // page ran ~17 phone screens with all eight stacked).
+            <div key={p.id} className={i >= 4 ? 'max-sm:hidden' : undefined}>
+              <HatCard product={p} priority={i < 4} rating={ratings[p.handle]} />
+            </div>
           ))}
         </div>
+        {link && shown.length > 4 && (
+          <Link
+            href={link.href}
+            className="font-label mt-8 flex min-h-12 items-center justify-center border border-text text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-text sm:hidden"
+          >
+            {link.label}
+          </Link>
+        )}
       </div>
     </section>
   );

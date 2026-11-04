@@ -55,12 +55,12 @@ export function Header({ brand }: { brand: BrandConfig }) {
           scrolled ? 'border-chrome-contrast/15 shadow-[0_1px_16px_rgba(0,0,0,0.12)]' : 'border-chrome-contrast/10',
         )}
       >
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${brand.id === 'townies' ? 'h-[4.75rem] sm:h-[5.5rem]' : 'h-16 sm:h-[4.5rem]'} flex items-center justify-between gap-4`}>
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${brand.id === 'townies' ? 'h-[3.75rem] sm:h-[5.5rem]' : 'h-16 sm:h-[4.5rem]'} flex items-center justify-between gap-4`}>
           {/* Left: mobile hamburger + wordmark */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setMobileOpen((v) => !v)}
-              className="lg:hidden p-2 -ml-2 text-chrome-contrast/85 hover:text-chrome-contrast transition-colors"
+              className="lg:hidden p-2.5 -ml-2.5 text-chrome-contrast/85 hover:text-chrome-contrast transition-colors"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
             >

@@ -45,30 +45,33 @@ export function HatSackPopup({ fromCents }: { fromCents: number }) {
     >
       <style>{`@keyframes hatsack-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){[role=dialog]{animation:none!important}}`}</style>
       <div className="relative overflow-hidden bg-band text-white shadow-2xl">
-        <button type="button" onClick={close} aria-label="Close" className="absolute right-2 top-2 p-2 text-white/70 hover:text-white">
+        <button type="button" onClick={close} aria-label="Close" className="absolute right-1 top-1 z-10 p-3 text-white/70 hover:text-white">
           <X className="h-4 w-4" />
         </button>
-        <div className="flex items-center gap-4 p-5 pr-10">
+        {/* Phones: one short row and the whole card is the link (the old sheet
+            covered a quarter of the shop grid). Desktop keeps the button bar. */}
+        <Link href={HAT_SACK_PATH} onClick={close} className="flex items-center gap-3 p-3 pr-11 sm:gap-4 sm:p-5 sm:pr-10">
           <div className="flex shrink-0 items-center gap-1">
-            <div className="relative h-14 w-14 overflow-hidden rounded-full bg-[#F1EEE8]">
+            <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#F1EEE8] sm:h-14 sm:w-14">
               <Image src="/brand/product/mil-front15.jpg" alt="" fill sizes="56px" className="object-contain p-1.5 mix-blend-multiply" />
             </div>
-            <span className="font-block text-lg font-bold text-white/70">+</span>
-            <div className="relative h-14 w-14 overflow-hidden rounded-full bg-[#F1EEE8]">
+            <span className="font-block text-base font-bold text-white/70 sm:text-lg">+</span>
+            <div className="relative h-10 w-10 overflow-hidden rounded-full bg-[#F1EEE8] sm:h-14 sm:w-14">
               <Image src="/brand/product/gk-sack-massachusetts.jpg" alt="" fill sizes="56px" className="object-contain p-2 mix-blend-multiply" />
             </div>
           </div>
           <div className="min-w-0">
-            <p className="font-label text-[0.625rem] font-bold uppercase tracking-[0.2em] text-white/70">The Hat &amp; Sack</p>
-            <p className="mt-1 text-[0.9375rem] leading-snug">
-              Any hat plus a Good Kicks foot bag, <span className="font-semibold">from {formatUsd(fromCents)} shipped.</span>
+            <p className="hidden font-label text-[0.6875rem] font-bold uppercase tracking-[0.2em] text-white/70 sm:block">The Hat &amp; Sack</p>
+            <p className="text-[0.875rem] leading-snug sm:mt-1 sm:text-[0.9375rem]">
+              Hat + Good Kicks foot bag, <span className="font-semibold">{formatUsd(fromCents)} shipped.</span>{' '}
+              <span className="underline underline-offset-2 sm:hidden">Build yours</span>
             </p>
           </div>
-        </div>
+        </Link>
         <Link
           href={HAT_SACK_PATH}
           onClick={close}
-          className="block border-t border-white/20 py-3.5 text-center font-label text-[0.6875rem] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-white hover:text-band"
+          className="hidden sm:block border-t border-white/20 py-3.5 text-center font-label text-[0.6875rem] font-bold uppercase tracking-[0.16em] transition-colors hover:bg-white hover:text-band"
         >
           Build yours
         </Link>

@@ -21,7 +21,7 @@ export function AnnouncementBar({ brand }: { brand: BrandConfig }) {
 
   return (
     <div className="bg-announce text-announce-contrast">
-      <div className="max-w-7xl mx-auto flex h-8 items-center justify-center gap-5 px-4 text-[0.625rem] font-semibold uppercase tracking-[0.2em]">
+      <div className="max-w-7xl mx-auto flex h-8 items-center justify-center gap-5 px-4 text-[0.6875rem] font-semibold uppercase tracking-[0.16em] sm:tracking-[0.2em]">
         {items.map((item, i) => (
           <span
             key={item.text}

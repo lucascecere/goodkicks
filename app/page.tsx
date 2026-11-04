@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { HatWheelHero, type WheelHat } from '@/components/townies/v2/hat-wheel-hero';
+import { HomeHero, type HeroHat } from '@/components/townies/v2/home-hero';
 import { price } from '@/components/townies/v2/studio';
 import { TownCrests } from '@/components/townies/v2/town-crests';
 import { HatShelf } from '@/components/townies/v2/hat-shelf';
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 /**
  * v2 home (2026-10), modelled on melin.com with Homefield's shop-by-school row:
- * hat-wheel hero (scroll turns the wheel) → town badge slider → hat grid → one photo band → regions → bulk →
+ * hero (one hat, or a swipe row; the scroll wheel was cut 11-04) → town badge slider → hat grid → one photo band → regions → bulk →
  * reviews (empty until real ones exist) → sign-up (site-wide, SiteWrapper) → footer.
  *
  * Every hat is a real Shopify shot on the shared studio ground (see
@@ -42,7 +42,7 @@ export default async function HomePage() {
 
   // The hero wheel: one hat per town, Milton (the first town) leading when it
   // is in stock, then whatever is buyable today. Sold-out hats sort to the back
-  // so they never lead. Eight stops keeps the pinned scroll short.
+  // so they never lead.
   const ranked = [...products].sort((a, b) => stockTier(a) - stockTier(b));
   const seen = new Set<string>();
   const wheelProducts = [
@@ -53,8 +53,8 @@ export default async function HomePage() {
     if (!p.featuredImage?.url || seen.has(slug)) return false;
     seen.add(slug);
     return true;
-  }).slice(0, 8);
-  const wheel: WheelHat[] = wheelProducts.map((p) => ({
+  }).slice(0, 12);
+  const wheel: HeroHat[] = wheelProducts.map((p) => ({
     id: p.id,
     src: p.featuredImage!.url,
     alt: p.featuredImage!.altText ?? p.title,
@@ -67,7 +67,8 @@ export default async function HomePage() {
 
   return (
     <>
-      <HatWheelHero
+      <HomeHero
+        variant={process.env.HOME_HERO === 'row' ? 'row' : 'feature'}
         hats={wheel}
         eyebrow="Massachusetts · Est. 2024"
         headline="Get your town."

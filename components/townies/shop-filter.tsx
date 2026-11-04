@@ -156,13 +156,13 @@ export function ShopFilter({
           No result count: it restated the grid below it. */}
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-rule mt-3 pt-3 mb-7">
         <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.2em] text-muted">
+          <label className="flex items-center gap-2 text-[0.6875rem] uppercase tracking-[0.2em] text-muted">
             <span>Sort</span>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
               aria-label="Sort"
-              className="bg-transparent border-b border-rule py-1 pr-1 text-[0.68rem] uppercase tracking-[0.2em] text-text focus:outline-none focus:border-text"
+              className="bg-transparent border-b border-rule py-1 pr-1 text-[0.6875rem] uppercase tracking-[0.2em] text-text focus:outline-none focus:border-text"
             >
               {SORTS.map((s) => (
                 <option key={s.key} value={s.key}>
@@ -175,7 +175,7 @@ export function ShopFilter({
             <button
               type="button"
               onClick={clear}
-              className="text-[0.68rem] uppercase tracking-[0.2em] text-text hover:text-accent underline underline-offset-4 transition-colors"
+              className="text-[0.6875rem] uppercase tracking-[0.2em] text-text hover:text-accent underline underline-offset-4 transition-colors"
             >
               Clear{activeLabel ? ` · ${activeLabel}` : ''}
             </button>
@@ -228,7 +228,7 @@ function Tab({
       aria-pressed={active}
       className={cn(
         'whitespace-nowrap rounded-full border transition-colors font-semibold uppercase tracking-[0.14em]',
-        quiet ? 'px-3.5 py-1.5 text-[0.65rem]' : 'px-4 py-2 text-xs',
+        quiet ? 'px-3.5 py-2 text-[0.6875rem]' : 'px-4 py-2.5 text-xs',
         active
           ? 'bg-ink text-ink-contrast border-ink'
           : 'bg-transparent text-text/60 border-rule hover:text-text hover:border-text/40',
@@ -246,7 +246,7 @@ function Toggle({ label, active, onClick }: { label: string; active: boolean; on
       onClick={onClick}
       aria-pressed={active}
       className={cn(
-        'px-2.5 py-1 text-[0.68rem] uppercase tracking-[0.18em] border-b-2 transition-colors',
+        'px-2.5 py-2 text-[0.6875rem] uppercase tracking-[0.18em] border-b-2 transition-colors',
         active ? 'border-text text-text' : 'border-transparent text-muted hover:text-text',
       )}
     >

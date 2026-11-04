@@ -59,7 +59,7 @@ export function Footer({ brand }: { brand: BrandConfig }) {
             href="https://www.yourwebsitefriend.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center rounded border border-foot-contrast/20 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.16em] text-foot-contrast/60 hover:text-foot-strong hover:border-foot-contrast/40 transition-colors"
+            className="inline-flex items-center rounded border border-foot-contrast/20 px-3.5 py-1.5 text-[11px] uppercase tracking-[0.16em] text-foot-contrast/60 hover:text-foot-strong hover:border-foot-contrast/40 transition-colors"
           >
             Managed by Your Website Friend
           </a>
@@ -81,18 +81,18 @@ function FooterCol({
       {/* An h2, not an h3: on a form page the footer is the first heading
           after the H1, and an h3 there is the heading-order failure every
           accessibility scan of the site reported. */}
-      <h2 className="text-foot-contrast/60 text-[11px] uppercase tracking-[0.15em] mb-4 font-medium">
+      <h2 className="text-foot-contrast/60 text-[11px] uppercase tracking-[0.15em] mb-2 sm:mb-4 font-medium">
         {title}
       </h2>
-      <ul className="space-y-3 text-sm">
+      <ul className="text-sm sm:space-y-3">
         {links.map((l) => (
           <li key={l.label}>
             {l.external ? (
-              <a href={l.href} target="_blank" rel="noopener noreferrer" className="text-foot-contrast/75 hover:text-foot-strong transition-colors">
+              <a href={l.href} target="_blank" rel="noopener noreferrer" className="inline-block py-2 sm:py-0 text-foot-contrast/75 hover:text-foot-strong transition-colors">
                 {l.label}
               </a>
             ) : (
-              <Link href={l.href} className="text-foot-contrast/75 hover:text-foot-strong transition-colors">
+              <Link href={l.href} className="inline-block py-2 sm:py-0 text-foot-contrast/75 hover:text-foot-strong transition-colors">
                 {l.label}
               </Link>
             )}

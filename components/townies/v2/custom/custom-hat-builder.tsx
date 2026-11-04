@@ -563,7 +563,7 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
         <div className="mx-auto grid max-w-[1320px] gap-8 px-4 py-10 sm:px-8 sm:py-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14">
           {/* Stage. Phones: pinned under the header (and smaller) so the hat stays
               in view while picking blanks and colourways below it. */}
-          <div className="sticky top-[4.75rem] z-20 -mx-4 bg-white px-4 pb-2 pt-2 shadow-[0_8px_12px_-12px_rgba(13,27,42,0.35)] sm:top-[5.5rem] lg:top-24 lg:mx-0 lg:self-start lg:bg-transparent lg:p-0 lg:shadow-none">
+          <div className="sticky top-[3.75rem] z-20 -mx-4 bg-white px-4 pb-2 pt-2 shadow-[0_8px_12px_-12px_rgba(13,27,42,0.35)] sm:top-[5.5rem] lg:top-24 lg:mx-0 lg:self-start lg:bg-transparent lg:p-0 lg:shadow-none">
             <div className="relative bg-[#F1EEE8]">
               <div className="absolute left-3 top-3 z-10 flex border border-text/20 bg-white/70 backdrop-blur-sm" role="group" aria-label="View">
                 {(['front', 'side'] as const).map((v) => (

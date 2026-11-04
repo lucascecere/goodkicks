@@ -94,7 +94,7 @@ export const TOWNIES: BrandConfig = {
   },
   // The script slants up to the right and its swash hangs low, so centred by
   // its box it looks high in the bar: nudge it down a touch (Lucas, 10-07).
-  logoClass: 'h-11 sm:h-[3.25rem] w-auto translate-y-[3px] sm:translate-y-[4px]',
+  logoClass: 'h-9 sm:h-[3.25rem] w-auto translate-y-[2px] sm:translate-y-[4px]',
   nav: [
     { href: '/shop', label: 'Shop' },
     // Lucas, 10-07: two different jobs. Custom Hats = THEIR logo on our blanks
