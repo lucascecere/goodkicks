@@ -227,14 +227,18 @@ export function CustomTownLinks({ towns, heading }: { towns: TownPage[]; heading
   return (
     <div className="mt-8 first:mt-0">
       {heading && <h3 className="mb-3 font-label text-[1rem] font-bold text-text">{heading}</h3>}
-      <ul className="flex flex-wrap gap-2">
+      {/* Phones: town names two-up (the full "Custom hats in X" pills stacked one
+          per line and made this page ~11 screens). The full phrase stays in the
+          link text for screen readers and search. */}
+      <ul className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
         {towns.map((t) => (
           <li key={t.slug}>
             <Link
               href={customTownHref(t.slug)}
-              className="inline-flex items-center border border-text/25 px-4 py-2 text-[0.875rem] font-semibold text-text transition-colors hover:border-text hover:bg-text hover:text-white"
+              className="flex min-h-11 items-center border border-text/25 px-3 py-2 text-[0.875rem] font-semibold text-text transition-colors hover:border-text hover:bg-text hover:text-white sm:inline-flex sm:px-4"
             >
-              Custom hats in {t.name}
+              <span className="sr-only sm:not-sr-only sm:mr-1">Custom hats in</span>
+              {t.name}
             </Link>
           </li>
         ))}
