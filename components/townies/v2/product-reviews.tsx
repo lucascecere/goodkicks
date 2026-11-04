@@ -31,7 +31,7 @@ export function ProductReviews({ reviews, handle }: { reviews: PublicReview[]; h
         </Link>
       </div>
       {count === 0 ? (
-        <p className="text-[0.9375rem] text-muted">No reviews on this one yet. Own it? <Link href={write} className="text-text underline underline-offset-4">Be the first.</Link></p>
+        <p className="text-[0.9375rem] text-muted">No reviews on this one yet. Own it? <Link href={write} className="inline-block py-2 text-text underline underline-offset-4">Be the first.</Link></p>
       ) : (
         <ul className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
           {reviews.map((r, i) => (

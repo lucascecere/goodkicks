@@ -24,10 +24,12 @@ import { customTownHref, hasCustomPage } from '@/lib/townies/custom-hats';
 export const revalidate = 60;
 
 const GRID: Record<number, string> = {
+  // grid-cols-2 lives here, not on the grid: sitting beside grid-cols-1 it won
+  // the cascade and squeezed one-hat towns into the left half on phones.
   1: 'max-w-xs grid-cols-1',
-  2: 'max-w-2xl',
-  3: 'max-w-4xl lg:grid-cols-3',
-  4: 'lg:grid-cols-4',
+  2: 'max-w-2xl grid-cols-2',
+  3: 'max-w-4xl grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-2 lg:grid-cols-4',
 };
 export const dynamicParams = true;
 
@@ -125,7 +127,7 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-16">
         {/* Centred under the centred masthead — most towns have one or two hats,
             and a four-column grid would leave them hugging the left edge. */}
-        <div className={`grid grid-cols-2 gap-4 sm:gap-6 mx-auto ${GRID[Math.min(count, 4)]}`}>
+        <div className={`grid gap-4 sm:gap-6 mx-auto ${GRID[Math.min(count, 4)]}`}>
           {town.products.map((p, i) => (
             <ProductCard key={p.id} product={p} priority={i < 4} rating={ratings[p.handle]} />
           ))}
@@ -149,11 +151,11 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
             <TownLinks heading="Every other town" towns={elsewhere} align="center" />
           )}
           <p className="mt-8 text-sm text-muted">
-            <Link href={regionHref(town.region)} className="underline underline-offset-4 hover:text-text">
+            <Link href={regionHref(town.region)} className="inline-block py-2 underline underline-offset-4 hover:text-text">
               Shop the {town.regionLabel}
             </Link>
             {' · '}
-            <Link href="/shop" className="underline underline-offset-4 hover:text-text">
+            <Link href="/shop" className="inline-block py-2 underline underline-offset-4 hover:text-text">
               Shop every town
             </Link>
           </p>

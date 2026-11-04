@@ -26,7 +26,7 @@ export function ShareHat({ title, url }: { title: string; url: string }) {
     <button
       type="button"
       onClick={share}
-      className="mt-4 text-xs text-muted underline underline-offset-2 hover:text-text transition-colors"
+      className="mt-2 py-2 text-xs text-muted underline underline-offset-2 hover:text-text transition-colors"
     >
       {copied ? 'Link copied' : 'Send this to the group chat'}
     </button>

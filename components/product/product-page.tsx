@@ -343,7 +343,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             {!gk && (
               <Link
                 href={townHref(townKey(shopifyProduct).slug)}
-                className="inline-block text-xs font-semibold uppercase tracking-[0.12em] text-muted hover:text-text underline underline-offset-4 mb-5"
+                className="inline-block py-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted hover:text-text underline underline-offset-4 mb-3"
               >
                 All {townKey(shopifyProduct).name}, MA hats
               </Link>
@@ -400,7 +400,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
                   One size fits most, adjustable snapback.{' '}
                   <Link
                     href="/size-guide"
-                    className="underline underline-offset-2 hover:text-text transition-colors"
+                    className="inline-block py-2 underline underline-offset-2 hover:text-text transition-colors"
                   >
                     size guide
                   </Link>
