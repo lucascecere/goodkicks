@@ -4,11 +4,11 @@ import { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 /** One sideways row with arrow buttons (desktop) and swipe (phones). */
-export function CrestRail({ children, arrowTop = 'top-[38px] sm:top-[44px]' }: { children: React.ReactNode; arrowTop?: string }) {
+export function CrestRail({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLUListElement>(null);
   const nudge = (dir: number) => ref.current?.scrollBy({ left: dir * ref.current.clientWidth * 0.8, behavior: 'smooth' });
   const btn =
-    `absolute ${arrowTop} -translate-y-1/2 z-10 hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-rule bg-white text-text shadow-sm transition hover:border-text`;
+    'absolute top-[38px] sm:top-[44px] -translate-y-1/2 z-10 hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-rule bg-white text-text shadow-sm transition hover:border-text';
   return (
     <div className="relative">
       <button type="button" aria-label="Previous towns" onClick={() => nudge(-1)} className={`${btn} -left-2 lg:-left-5`}>

@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 /**
  * v2 home (2026-10), modelled on melin.com with Homefield's shop-by-school row:
- * hero (one hat, or a swipe row; the scroll wheel was cut 11-04) → town badge slider → hat grid → one photo band → regions → bulk →
+ * one-hat hero (the scroll wheel was cut 11-04) → town badge slider → hat grid → one photo band → regions → bulk →
  * reviews (empty until real ones exist) → sign-up (site-wide, SiteWrapper) → footer.
  *
  * Every hat is a real Shopify shot on the shared studio ground (see
@@ -68,7 +68,6 @@ export default async function HomePage() {
   return (
     <>
       <HomeHero
-        variant={process.env.HOME_HERO === 'row' ? 'row' : 'feature'}
         hats={wheel}
         eyebrow="Massachusetts · Est. 2024"
         headline="Get your town."
