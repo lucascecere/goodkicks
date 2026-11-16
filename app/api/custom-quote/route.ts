@@ -79,8 +79,7 @@ export async function POST(request: Request) {
 
     // Honeypot: a filled-in hidden field is a bot. Answer as if it worked.
     if (text(fd, 'company_website')) {
-      await quarantine({ form: 'custom hat quote', brand: 'townies', name: text(fd, 'name'), email: text(fd, 'email'), reasons: ['honeypot'] });
-      return Response.json({ ok: true });
+      if (await quarantine({ form: 'custom hat quote', brand: 'townies', name: text(fd, 'name'), email: text(fd, 'email'), reasons: ['honeypot'] })) return Response.json({ ok: true });
     }
 
     const parsed = schema.safeParse({
@@ -110,8 +109,7 @@ export async function POST(request: Request) {
     });
     const spamPayload = { organisation: d.organisation, town: d.town, quantity: d.quantity, notes: d.notes, phone: d.phone };
     if (spam.isSpam) {
-      await quarantine({ form: 'custom hat quote', brand: 'townies', name: d.name, email: d.email, reasons: spam.reasons, payload: spamPayload });
-      return Response.json({ ok: true });
+      if (await quarantine({ form: 'custom hat quote', brand: 'townies', name: d.name, email: d.email, reasons: spam.reasons, payload: spamPayload })) return Response.json({ ok: true });
     }
 
     // Bots that skip the page (no signed form token), faker leads with stolen
@@ -126,8 +124,7 @@ export async function POST(request: Request) {
       buyerIntent: BUYER_INTENT.hats,
     });
     if (verdict.spam) {
-      await quarantine({ form: 'custom hat quote', brand: 'townies', name: d.name, email: d.email, reasons: verdict.reasons, payload: spamPayload });
-      return Response.json({ ok: true });
+      if (await quarantine({ form: 'custom hat quote', brand: 'townies', name: d.name, email: d.email, reasons: verdict.reasons, payload: spamPayload })) return Response.json({ ok: true });
     }
     if (await burstHold('custom hat quote', { name: d.name, email: d.email, brand: 'townies' }, spamPayload)) {
       return Response.json({ ok: true });

@@ -16,7 +16,17 @@ export function ApplyForm() {
     e.preventDefault();
     setState('sending');
     setError(null);
-    const body = { ...Object.fromEntries(new FormData(e.currentTarget).entries()), _t: await formToken() };
+    const fields = Object.fromEntries(new FormData(e.currentTarget).entries());
+    let _t: string;
+    try {
+      _t = await formToken();
+    } catch (err) {
+      // No token: never send (the server would refuse it). Say how to reach us.
+      setError(err instanceof Error ? err.message : 'Could not send. Try again.');
+      setState('idle');
+      return;
+    }
+    const body = { ...fields, _t };
     const res = await fetch('/api/shop/apply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

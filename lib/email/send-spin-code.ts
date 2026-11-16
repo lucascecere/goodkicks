@@ -11,11 +11,9 @@ import { CODE_VALID_DAYS, type SpinWedge } from '@/lib/townies/spin-prizes';
 // faces, and a font that fails to load looks worse than one that was never
 // asked for.
 //
-// Sender: townies.shop until Resend reports it verified, at which point set
-// TOWNIES_FROM_EMAIL and this flips with no code change. Do NOT set that env
-// var early — Resend rejects unverified senders and every one of these would
-// bounce silently.
-const FROM_EMAIL = process.env.TOWNIES_FROM_EMAIL ?? 'info@goodkicks.co';
+// HARD RULE (Lucas): Townies mail goes out ONLY from info@townies.shop
+// (verified in Resend). Hard-coded so no env var can send it as anything else.
+const FROM_EMAIL = 'info@townies.shop';
 
 const NAVY = '#0D1B2A';
 const FOREST = '#2F4F3A';

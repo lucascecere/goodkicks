@@ -48,8 +48,7 @@ export async function POST(req: Request) {
   });
   const spamPayload = { business: b.name, town: b.town, website: b.website, instagram: b.instagram, about: b.about };
   if (verdict.spam) {
-    await quarantine({ form: 'market application', brand: 'townies', name: b.contact_name, email: b.contact_email, reasons: verdict.reasons, payload: spamPayload });
-    return NextResponse.json({ ok: true });
+    if (await quarantine({ form: 'market application', brand: 'townies', name: b.contact_name, email: b.contact_email, reasons: verdict.reasons, payload: spamPayload })) return NextResponse.json({ ok: true });
   }
   if (await burstHold('market application', { name: b.contact_name, email: b.contact_email, brand: 'townies' }, spamPayload)) {
     return NextResponse.json({ ok: true });

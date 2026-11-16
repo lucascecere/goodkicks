@@ -125,8 +125,7 @@ export async function POST(request: Request) {
       ['type', 'message', 'town', 'groupName', 'igHandle', 'company', 'phone', 'website', 'quantity', 'towns'].map((k) => [k, body?.[k] ?? null]),
     );
     if (typeof body?._hp === 'string' && body._hp.trim()) {
-      await quarantine({ ...spamWho, reasons: ['honeypot'], payload: spamPayload });
-      return Response.json({ ok: true });
+      if (await quarantine({ ...spamWho, reasons: ['honeypot'], payload: spamPayload })) return Response.json({ ok: true });
     }
     const spam = scoreSpam({
       fields: ['name', 'town', 'message', 'groupName', 'company', 'towns'].map((k) => (typeof body?.[k] === 'string' ? body[k] : '')),
@@ -134,8 +133,7 @@ export async function POST(request: Request) {
       submitAfterMs: typeof body?._ms === 'number' ? body._ms : undefined,
     });
     if (spam.isSpam) {
-      await quarantine({ ...spamWho, reasons: spam.reasons, payload: spamPayload });
-      return Response.json({ ok: true });
+      if (await quarantine({ ...spamWho, reasons: spam.reasons, payload: spamPayload })) return Response.json({ ok: true });
     }
 
     const result = contactSchema.safeParse(body);
@@ -159,8 +157,7 @@ export async function POST(request: Request) {
       buyerIntent: BUYER_INTENT.hats,
     });
     if (verdict.spam) {
-      await quarantine({ ...spamWho, reasons: verdict.reasons, payload: spamPayload });
-      return Response.json({ ok: true });
+      if (await quarantine({ ...spamWho, reasons: verdict.reasons, payload: spamPayload })) return Response.json({ ok: true });
     }
 
     // The same address three times inside ten minutes is a bot replaying a
@@ -175,8 +172,7 @@ export async function POST(request: Request) {
         .eq('email', data.email)
         .gte('created_at', since);
       if ((count ?? 0) >= 2) {
-        await quarantine({ ...spamWho, reasons: ['same-email-burst'], payload: spamPayload });
-        return Response.json({ ok: true });
+        if (await quarantine({ ...spamWho, reasons: ['same-email-burst'], payload: spamPayload })) return Response.json({ ok: true });
       }
     }
     if (await burstHold(spamWho.form, { name: data.name, email: data.email, brand: data.brand }, spamPayload)) {

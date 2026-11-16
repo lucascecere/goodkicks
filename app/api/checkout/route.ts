@@ -16,7 +16,7 @@ async function alertCheckoutFailure(detail: string, items: CheckoutItem[]) {
   lastAlertAt = Date.now();
   try {
     await sendEmail({
-      from: `Townies site <${process.env.TOWNIES_FROM_EMAIL ?? 'info@goodkicks.co'}>`,
+      from: 'Townies site <info@townies.shop>', // Townies mail ONLY from info@townies.shop
       to: process.env.SHOP_NOTIFY_EMAIL || 'info@townies.shop',
       subject: 'Checkout failed on townies.shop',
       text: `A shopper hit "checkout failed".\n\n${detail}\n\nBag: ${items.map((i) => `${i.quantity} x ${i.variantId}`).join(', ')}\n\nVercel logs: search "[checkout]" / "[createShopifyCart]".`,

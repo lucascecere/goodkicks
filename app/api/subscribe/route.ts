@@ -19,8 +19,7 @@ export async function POST(req: NextRequest) {
     (r): r is string => Boolean(r),
   );
   if (botReasons.length) {
-    await quarantine({ form: 'newsletter', brand: typeof brand === 'string' ? brand : null, email, reasons: botReasons });
-    return NextResponse.json({ ok: true });
+    if (await quarantine({ form: 'newsletter', brand: typeof brand === 'string' ? brand : null, email, reasons: botReasons })) return NextResponse.json({ ok: true });
   }
 
   // The form says which brand rendered it, because Host cannot: the Good Kicks

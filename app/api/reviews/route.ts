@@ -39,15 +39,14 @@ export async function POST(req: NextRequest) {
     buyerIntent: BUYER_INTENT.review,
   });
   if (verdict.spam) {
-    await quarantine({
+    if (await quarantine({
       form: 'review',
       brand: body.brand === 'goodkicks' ? 'goodkicks' : 'townies',
       name: String(body.name ?? ''),
       email: body.email ? String(body.email) : null,
       reasons: verdict.reasons,
       payload: { rating: body.rating, quote: String(body.quote ?? '').slice(0, 1200), town: body.town ?? null },
-    });
-    return Response.json({ ok: true, verified: false });
+    })) return Response.json({ ok: true, verified: false });
   }
 
   // Open form: a hat picked from the list. Only a handle that is really in the

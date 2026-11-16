@@ -58,8 +58,7 @@ export async function POST(req: NextRequest) {
   if (junk.isSpam) verdict.reasons.push(...junk.reasons);
   const spamPayload = { instagram, school, town, message, followers, accountType, age };
   if (verdict.spam || junk.isSpam) {
-    await quarantine({ form: 'rep application', brand, name, email, reasons: verdict.reasons, payload: spamPayload });
-    return NextResponse.json({ ok: true });
+    if (await quarantine({ form: 'rep application', brand, name, email, reasons: verdict.reasons, payload: spamPayload })) return NextResponse.json({ ok: true });
   }
   if (await burstHold('rep application', { name, email, brand }, spamPayload)) return NextResponse.json({ ok: true });
 
@@ -85,7 +84,9 @@ export async function POST(req: NextRequest) {
   let notify: { ok: boolean; error: string | null } = { ok: false, error: 'RESEND_API_KEY not set' };
   if (process.env.RESEND_API_KEY) {
     try {
-      const notifyEmail = process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co';
+      // Townies rep applications go to the Townies inbox (Lucas 11-16); Good
+      // Kicks ambassador apps stay on info@goodkicks.co (same inbox's alternate).
+      const notifyEmail = isTownies ? 'info@townies.shop' : process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co';
       const accent = isTownies ? '#2F4F3A' : '#C66A3D';
       const heading = isTownies ? 'New Town Rep Application' : 'New Ambassador Application';
       const sourcePath = isTownies ? 'townies.shop/ambassadors' : 'goodkicks.co/ambassadors';

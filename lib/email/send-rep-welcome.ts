@@ -15,11 +15,9 @@ import {
   type RepWelcomeFields,
 } from './rep-welcome-template';
 
-// Townies has no verified Resend sending domain yet, so mail goes out under the
-// Good Kicks address with a Townies display name — the same compromise
-// app/api/contact/route.ts already makes. Verify townies.shop in Resend, then
-// set TOWNIES_FROM_EMAIL to flip this over with no code change.
-const FROM_EMAIL = process.env.TOWNIES_FROM_EMAIL ?? 'info@goodkicks.co';
+// HARD RULE (Lucas): Townies mail goes out ONLY from info@townies.shop
+// (verified in Resend). Hard-coded so no env var can send it as anything else.
+const FROM_EMAIL = 'info@townies.shop';
 export const TOWNIES_FROM = `Townies <${FROM_EMAIL}>`;
 
 function safeEmail(email: string) {

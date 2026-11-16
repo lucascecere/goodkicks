@@ -6,9 +6,9 @@ import { promises as dns } from 'node:dns';
 //
 // Every public form on Townies / Good Kicks runs through judgeForm(). Spam is
 // answered with the exact success a person sees, but sends NOTHING: no inbox
-// email, no autoresponder, no discount code, and NOTHING stored (2026-11-16):
-// only an aggregate count in `spam_counts` (lib/form-quarantine.ts). A false
-// positive can't be restored, so the rules here stay conservative.
+// email, no autoresponder, no discount code. A DEFINITE bot is refused and only
+// counted; anything else flagged is HELD for review in the Command Center
+// (lib/form-quarantine.ts), never dropped (2026-11-16).
 //
 // What it catches:
 //   - bots that post straight to the endpoint (no signed form token, or one
@@ -176,30 +176,32 @@ function genericRfq(message: string): boolean {
 }
 
 // ---------- sales pitches (people selling TO the shop, not buying) ----------
-
+// A pitch takes TWO OR MORE distinct patterns AND no buyer intent (2026-11-16
+// audit: "unsubscribe", "quick call", "15 minutes", "more customers", "MOQ",
+// "funding" and a bare "VA" all showed up in real messages, so they are gone).
+// Even a pitch is only HELD for review in the Command Center, never dropped.
 const PITCH_PHRASES = [
-  /virtual assistant|\bVAs?\b|MAVIS/,
-  /\bSEO\b|search engines?|first page|top of (the )?search|rank(ing)?s? (higher|on google)|more traffic/i,
-  /financing|funding|lending|line of credit|working capital|merchant cash|no personal guarantee/i,
+  /virtual assistants?|\bMAVIS\b/i,
+  /\bSEO\b|search engine (optimi[sz]ation|rankings?)|top of (the )?search results|rank(ing)?s? (higher|on google)|more (website )?traffic|online visibility/i,
+  /merchant (services|processing|cash)|dealer fees|line of credit|working capital|no personal guarantee|business (loan|funding|financing)/i,
   /guest (post|article)|contribute an? article|my article|publish(ing)? it on your (site|website)/i,
-  /AI (agent|employee|system)|custom.built AI/i,
-  /lead.generation|more (customers|leads|clients|sales)|generate more/i,
-  /acquire businesses|considered selling|buyers actively/i,
-  /reviews? provider|google reviews|trustpilot/i,
+  /AI (agent|employee|system|receptionist)|custom.built AI/i,
+  /lead.generation|generate more (leads|sales)|qualified (leads|appointments)/i,
+  /acquire businesses|considered selling (your|the) business|buyers actively/i,
+  /reviews? provider|(buy|boost) (google )?reviews|trustpilot/i,
   /wikipedia/i,
-  /reply (stop|yes)|respond with stop|opt.?out|unsubscribe/i,
-  /tried emailing (you|but)|reaching out here instead|didn.t (seem to )?land/i,
-  /mobile experience|website (design|redesign)|improve (your )?(site|website|store)|areas? (for|of) improvement|shopify (expert|developer|apps?)/i,
-  /book (a|your) (call|demo)|cal\.com|calendly|15 minutes|quick (call|chat)/i,
+  /mobile experience|website (design|redesign)|redesign (your|the) (site|website|store)|areas? (for|of) improvement|shopify (expert|developer|apps?)/i,
+  /cal\.com|calendly|book (a|your) (free )?demo/i,
   /targeted visitors|drive (traffic|visitors)|keyword options/i,
-  /article (idea|on)|\barticle\b.{0,80}(your (site|website|audience|readers))/i,
-  /dropshipping|print.on.demand (supplier|partner)|we manufacture|factory direct|our factory|MOQ\b/i,
-];
+  /article (idea|on)|collaborat(e|ion) (on|with you on) (an? )?(article|post)/i,
+  /dropshipping|print.on.demand (supplier|partner)|factory direct|our factory/i,
+  /social media (management|marketing) (services|agency)|marketing agency|our agency|white.label/i,
+]
 
 /** Wording a buyer, customer or applicant uses. Hats/apparel by default. */
 export const BUYER_INTENT = {
   // Good Kicks sells hacky sacks, so the sack words count too.
-  hats: /custom hats?|\bhats?\b|\bcaps?\b|\bsacks?\b|hacky|footbag|our (team|club|school|league|shop|store|business|company|event|group|town|program|staff|crew|wedding|reunion|class|house|chapter|fraternity|frat|sorority)|\border(ed|ing|s)?\b|\bquote\b|how much|pric(e|es|ing)|bulk|wholesale|embroider|\blogo\b|\d+\s*(hats|caps|pieces|units)|my (town|order|hat|package|size)|shipping|delivery|return|exchange|refund|tracking|size|fit/i,
+  hats: /\bmoq\b|lead time|\b(please )?add [A-Z][a-z]+|\b(a|one) for [A-Z]|\bcustom\b|\bstore\b|custom hats?|\bhats?\b|\bcaps?\b|\bsacks?\b|hacky|footbag|our (team|club|school|league|shop|store|business|company|event|group|town|program|staff|crew|wedding|reunion|class|house|chapter|fraternity|frat|sorority)|\border(ed|ing|s)?\b|\bquote\b|how much|pric(e|es|ing)|bulk|wholesale|embroider|\blogo\b|\d+\s*(hats|caps|pieces|units)|my (town|order|hat|package|size)|shipping|delivery|return|exchange|refund|tracking|size|fit/i,
   rep: /\b(rep|ambassador)\b|my (town|school|followers|friends|team|account|page|community)|instagram|tiktok|followers|\bhats?\b|townies|good kicks|\bpost(s|ing)?\b|content|wear/i,
   market: /we (make|sell|bake|brew|create|design|print|roast|craft)|our (shop|store|products?|business|brand|bakery|cafe|café|studio|goods|stall|farm)|handmade|hand.made|local|market|small business|family.owned/i,
   review: /\bhats?\b|\bcaps?\b|fit|quality|love|great|comfortable|gift|order|ship|wear|color|colour|stitch/i,
@@ -208,7 +210,7 @@ export const BUYER_INTENT = {
 export function salesPitch(message: string, buyerIntent: RegExp): boolean {
   if (!message) return false;
   const hits = PITCH_PHRASES.filter((r) => r.test(message)).length;
-  return hits >= 2 || (hits >= 1 && !buyerIntent.test(message));
+  return hits >= 2 && !buyerIntent.test(message);
 }
 
 // ---------- the verdict ----------
@@ -229,7 +231,16 @@ export type FormInput = {
   buyerIntent: RegExp;
 };
 
-export type Verdict = { spam: boolean; reasons: string[] };
+// spam = the rules doubt it; bot = a DEFINITE bot (refused, only counted).
+// Anything else flagged is content-only and HELD for review in the Command
+// Center, never dropped (Lucas 11-16: when in doubt, deliver).
+export type Verdict = { spam: boolean; bot: boolean; reasons: string[] };
+
+const DEFINITE = new Set(['honeypot', 'token:missing', 'token:bad', 'token:fast', 'email:disposable', 'email:no-mx']);
+export function definiteBot(reasons: string[]): boolean {
+  if (reasons.some((r) => DEFINITE.has(r) || r.startsWith('gibberish') || r === 'posted without the page' || r === 'claim:no-form-token' || r === 'spin:no-form-token' || r === 'token')) return true;
+  return reasons.includes('company:faker') && reasons.includes('email:unrelated');
+}
 
 export async function judgeForm(input: FormInput, opts: { skipToken?: boolean } = {}): Promise<Verdict> {
   const reasons: string[] = [];
@@ -239,12 +250,12 @@ export async function judgeForm(input: FormInput, opts: { skipToken?: boolean } 
     reasons.push(reason);
   };
 
-  if (typeof input.honey === 'string' && input.honey.trim()) return { spam: true, reasons: ['honeypot'] };
+  if (typeof input.honey === 'string' && input.honey.trim()) return { spam: true, bot: true, reasons: ['honeypot'] };
 
   if (!opts.skipToken) {
     const tok = checkFormToken(input.token);
-    if (tok === 'missing' || tok === 'bad' || tok === 'fast') return { spam: true, reasons: [`token:${tok}`] };
-    if (tok === 'stale') flag(2, 'token:stale');
+    if (tok === 'missing' || tok === 'bad' || tok === 'fast') return { spam: true, bot: true, reasons: [`token:${tok}`] };
+    // A stale token (page open over a day) is a person: never scored (11-16 audit).
   }
 
   const name = (input.name ?? '').trim();
@@ -272,7 +283,10 @@ export async function judgeForm(input: FormInput, opts: { skipToken?: boolean } 
   }
   if (genericRfq(message)) flag(2, 'message:generic-rfq');
   // A pitch is spam on its own: vendors write from their own real addresses.
-  if (salesPitch(message, input.buyerIntent)) return { spam: true, reasons: [...reasons, 'message:sales-pitch'] };
+  if (salesPitch(message, input.buyerIntent)) {
+    const r = [...reasons, 'message:sales-pitch'];
+    return { spam: true, bot: definiteBot(r), reasons: r };
+  }
 
   // Content alone never flags a lead whose email fits the person: faker-looking
   // names only count when the address doesn't belong to them.
@@ -282,5 +296,6 @@ export async function judgeForm(input: FormInput, opts: { skipToken?: boolean } 
   // Something in the content (faker company, stale token, RFQ scam wording)
   // has to agree. A bare form with no message is not evidence on its own.
   const contentScore = score - (reasons.includes('no-detail') ? 1 : 0) - reasons.filter((r) => r.startsWith('email:') && !r.includes('(no points)')).reduce((n, r) => n + (r.startsWith('email:no-website') || r === 'email:unrelated' ? 1 : 2), 0);
-  return { spam: score >= 3 && badAddress && (unrelated || contentScore >= 1), reasons };
+  const spam = score >= 3 && badAddress && (unrelated || contentScore >= 1);
+  return { spam, bot: spam && definiteBot(reasons), reasons };
 }
