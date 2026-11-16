@@ -6,8 +6,9 @@ import { promises as dns } from 'node:dns';
 //
 // Every public form on Townies / Good Kicks runs through judgeForm(). Spam is
 // answered with the exact success a person sees, but sends NOTHING: no inbox
-// email, no autoresponder, no discount code. It is kept in `form_spam` (with
-// the reasons) so a false positive can be found and restored by hand.
+// email, no autoresponder, no discount code, and NOTHING stored (2026-11-16):
+// only an aggregate count in `spam_counts` (lib/form-quarantine.ts). A false
+// positive can't be restored, so the rules here stay conservative.
 //
 // What it catches:
 //   - bots that post straight to the endpoint (no signed form token, or one
