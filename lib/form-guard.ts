@@ -72,6 +72,24 @@ const ROLE_LOCAL =
 const DISPOSABLE = new Set(['mailchuwee.com', 'mailinator.com', 'guerrillamail.com', 'yopmail.com', '10minutemail.com', 'tempmail.com', 'sharklasers.com']);
 const FREE_MAIL = new Set(['gmail.com', 'googlemail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'me.com', 'live.com', 'msn.com', 'comcast.net', 'verizon.net', 'att.net', 'protonmail.com', 'proton.me', 'ymail.com', 'mac.com']);
 
+// A real person who fat-fingers their address ("gmail.con", "gmial.com") fails
+// every domain check. Bots use real, working stolen addresses, so a near-miss
+// of a big free-mail domain says "typo", not "bot": skip the domain checks.
+const FREE_MAIL_NAMES = ['gmail', 'googlemail', 'yahoo', 'hotmail', 'outlook', 'icloud', 'aol', 'comcast', 'verizon', 'live', 'msn', 'ymail', 'protonmail'];
+function editDistance(a: string, b: string): number {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function freeMailTypo(domain: string): boolean {
+  if (FREE_MAIL.has(domain)) return false;
+  const name = domain.split('.')[0] ?? '';
+  return FREE_MAIL_NAMES.some((f) => name === f || (f.length >= 5 && editDistance(name, f) <= 1));
+}
+
 const tokens = (s: string) =>
   s
     .toLowerCase()
@@ -238,10 +256,12 @@ export async function judgeForm(input: FormInput, opts: { skipToken?: boolean } 
   if (!message && !input.hasDetail) flag(1, 'no-detail');
 
   const domain = email.split('@')[1] ?? '';
+  const typo = freeMailTypo(domain);
+  if (typo) reasons.push('email:free-mail-typo(no points)');
   if (DISPOSABLE.has(domain)) flag(2, 'email:disposable');
-  else if (domain && (await domainHasNoMail(domain))) flag(2, 'email:no-mx');
+  else if (domain && !typo && (await domainHasNoMail(domain))) flag(2, 'email:no-mx');
 
-  if (domain && !FREE_MAIL.has(domain) && !DISPOSABLE.has(domain)) {
+  if (domain && !typo && !FREE_MAIL.has(domain) && !DISPOSABLE.has(domain)) {
     const [age, noSite] = await Promise.all([domainAgeDays(domain), domainHasNoWebsite(domain)]);
     if (age !== null && age < NEW_DOMAIN_DAYS) flag(2, `email:new-domain(${Math.round(age)}d)`);
     if (noSite) flag(1, 'email:no-website');
@@ -252,11 +272,11 @@ export async function judgeForm(input: FormInput, opts: { skipToken?: boolean } 
 
   // Content alone never flags a lead whose email fits the person: faker-looking
   // names only count when the address doesn't belong to them.
-  const badAddress = unrelated || reasons.some((r) => r.startsWith('email:'));
+  const badAddress = unrelated || reasons.some((r) => r.startsWith('email:') && !r.includes('(no points)'));
   // When the address does match the person, domain trouble alone is not
   // enough: a real customer who typed "gmail.con" fails every domain check.
   // Something in the content (faker company, stale token, RFQ scam wording)
   // has to agree.
-  const contentScore = score - reasons.filter((r) => r.startsWith('email:')).reduce((n, r) => n + (r.startsWith('email:no-website') || r === 'email:unrelated' ? 1 : 2), 0);
+  const contentScore = score - reasons.filter((r) => r.startsWith('email:') && !r.includes('(no points)')).reduce((n, r) => n + (r.startsWith('email:no-website') || r === 'email:unrelated' ? 1 : 2), 0);
   return { spam: score >= 3 && badAddress && (unrelated || contentScore >= 1), reasons };
 }
