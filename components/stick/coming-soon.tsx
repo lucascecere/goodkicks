@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { stagger, useAnimate } from 'framer-motion';
 import { BLOSSOM_PIN, WORDMARK, WORDMARK_VIEWBOX } from '@/lib/stick/marks';
+import { formToken, useFormToken } from '@/lib/form-token-client';
+import { FormTrap, trapValue } from '@/components/forms/form-trap';
 
 const GREEN = '#1F3A2A';
 const LILAC = '#B89BD8';
@@ -238,16 +240,19 @@ export function StickComingSoon() {
 function NotifyForm() {
   const [email, setEmail] = useState('');
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
+  useFormToken();
 
-  async function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setState('sending');
+    const _hp = trapValue(e.currentTarget);
     try {
+      const _t = await formToken();
       // Stick is a Townies line, so signups land on the Townies list.
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, brand: 'townies' }),
+        body: JSON.stringify({ email, brand: 'townies', _t, _hp }),
       });
       setState(res.ok ? 'done' : 'error');
     } catch {
@@ -260,7 +265,8 @@ function NotifyForm() {
   }
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} className="relative">
+      <FormTrap />
       <div className="flex flex-col sm:flex-row gap-2">
       <label htmlFor="stick-email" className="sr-only">Email</label>
       <input

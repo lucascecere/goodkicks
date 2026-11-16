@@ -14,6 +14,7 @@ import type { NextRequest } from 'next/server';
 import { drawWedgeIndex, SPIN_TOKEN_TTL_SECONDS, WEDGES } from '@/lib/townies/spin-prizes';
 import { createSpinToken, isSpinSigningConfigured } from '@/lib/townies/spin-token';
 import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
+import { tokenPasses } from '@/lib/form-guard';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -31,12 +32,18 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Slow down a second.' }, { status: 429 });
   }
 
+  // No form token (posted by a script, not the page): answer exactly like a
+  // spin, but the prize token is marked so /api/spin/claim never mints it.
+  const body = (await req.json().catch(() => null)) as { _t?: unknown } | null;
+  const bot = !tokenPasses(body?._t);
+  if (bot) console.warn('[FORM_SPAM] spin without a form token');
+
   const wedge = drawWedgeIndex();
 
   return Response.json(
     {
       wedge,
-      token: await createSpinToken(wedge),
+      token: await createSpinToken(wedge, { bot }),
       expiresIn: SPIN_TOKEN_TTL_SECONDS,
       // Echoed so the client can assert its copy of the prize table matches the
       // server's. A stale cached bundle after a prize change would otherwise

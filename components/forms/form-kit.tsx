@@ -1,6 +1,7 @@
 'use client';
 
 import { currentBrand } from '@/components/brand/current-brand';
+import { formToken, useFormToken } from '@/lib/form-token-client';
 
 // Shared form furniture for the inquiry pages.
 //
@@ -39,6 +40,8 @@ export function Submitted({ title, body }: { title: string; body: string }) {
  */
 export const HONEYPOT_NAME = 'homepage_url';
 function Honeypot() {
+  // Every form renders this, so it is also where the form token is fetched.
+  useFormToken();
   return (
     <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', top: 'auto', width: 1, height: 1, overflow: 'hidden' }}>
       <label>
@@ -94,6 +97,7 @@ export function Field({
  */
 export async function postContact(payload: Record<string, unknown>): Promise<boolean> {
   try {
+    const _t = await formToken();
     const res = await fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -104,6 +108,8 @@ export async function postContact(payload: Record<string, unknown>): Promise<boo
         // and how long after the page loaded this was sent.
         _hp: (document.querySelector(`input[name="${HONEYPOT_NAME}"]`) as HTMLInputElement | null)?.value ?? '',
         _ms: Math.round(performance.now()),
+        // Signed proof the page was loaded first (lib/form-guard.ts).
+        _t,
       }),
     });
     return res.ok;

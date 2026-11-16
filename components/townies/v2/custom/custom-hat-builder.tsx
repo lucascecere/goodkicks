@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react';
 import { fieldClass, labelClass } from '@/components/forms/form-kit';
+import { formToken, useFormToken } from '@/lib/form-token-client';
 import { FRONT_BOUNDS, FrontHat, SIDE_BOUNDS, SideHat, type HatStyleId, type Placed, type SideMark } from './hat-art';
 import { LOGO_MAX_BYTES, LOGO_TYPES, logoForUpload, normaliseLogo, removeWhite, renderMockup } from './image-utils';
 import { BLANKS, BLANK_BRANDS, blankById, type Colorway } from '@/lib/townies/blanks';
@@ -321,6 +322,7 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
   const [fileError, setFileError] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [serverError, setServerError] = useState('');
+  useFormToken();
   const [mockupUrl, setMockupUrl] = useState<string | null>(null);
 
   const colorway =
@@ -538,6 +540,8 @@ export function CustomHatBuilder({ howItWorks }: { howItWorks?: ReactNode }) {
 
       // Page-time for the spam check (lib/spam.ts).
       fd.set('_ms', String(Math.round(performance.now())));
+      // Signed proof the page was loaded first (lib/form-guard.ts).
+      fd.set('_t', await formToken());
       const res = await fetch('/api/custom-quote', { method: 'POST', body: fd });
       if (res.ok) {
         setStatus('done');

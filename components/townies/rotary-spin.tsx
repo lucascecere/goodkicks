@@ -18,6 +18,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { MA_PATH, MA_VIEWBOX } from '@/components/brand/wordmark';
 import { WEDGES, WEDGE_COLORS, WEDGE_INK, CODE_VALID_DAYS } from '@/lib/townies/spin-prizes';
+import { formToken, useFormToken } from '@/lib/form-token-client';
+import { FormTrap, trapValue } from '@/components/forms/form-trap';
 
 // ---------------------------------------------------------------- geometry --
 
@@ -143,6 +145,7 @@ export function RotarySpin() {
   const [token, setToken] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [sending, setSending] = useState(false);
+  useFormToken();
   const [error, setError] = useState<string | null>(null);
   const [claim, setClaim] = useState<ClaimResult | null>(null);
   const [copied, setCopied] = useState(false);
@@ -263,7 +266,11 @@ export function RotarySpin() {
 
     let drawn: { wedge: number; token: string };
     try {
-      const res = await fetch('/api/spin', { method: 'POST' });
+      const res = await fetch('/api/spin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _t: await formToken() }),
+      });
       if (!res.ok) throw new Error(String(res.status));
       drawn = (await res.json()) as { wedge: number; token: string };
     } catch {
@@ -324,12 +331,13 @@ export function RotarySpin() {
 
     setSending(true);
     setError(null);
+    const _hp = trapValue(e.currentTarget as HTMLFormElement);
 
     try {
       const res = await fetch('/api/spin/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, email }),
+        body: JSON.stringify({ token, email, _t: await formToken(), _hp }),
       });
       const data = (await res.json().catch(() => ({}))) as {
         ok?: boolean;
@@ -677,7 +685,8 @@ export function RotarySpin() {
           )}
 
           {step === 'reveal' && (
-            <form onSubmit={handleClaim} className="space-y-3">
+            <form onSubmit={handleClaim} className="relative space-y-3">
+              <FormTrap />
               <label htmlFor="rotary-email" className="sr-only">
                 Email address
               </label>

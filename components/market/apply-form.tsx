@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { formToken, useFormToken } from '@/lib/form-token-client';
 
 const input =
   'w-full border border-rule bg-white px-3 py-2.5 text-[0.9375rem] text-text placeholder:text-stone focus:border-text focus:outline-none';
@@ -9,12 +10,13 @@ const label = 'mb-1.5 block font-label text-[0.6875rem] font-bold uppercase trac
 export function ApplyForm() {
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle');
   const [error, setError] = useState<string | null>(null);
+  useFormToken();
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setState('sending');
     setError(null);
-    const body = Object.fromEntries(new FormData(e.currentTarget).entries());
+    const body = { ...Object.fromEntries(new FormData(e.currentTarget).entries()), _t: await formToken() };
     const res = await fetch('/api/shop/apply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -82,7 +84,10 @@ export function ApplyForm() {
           ))}
         </div>
       </div>
-      <input type="text" name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
+      {/* Bot trap: off-screen, never display:none (smarter bots skip hidden fields). */}
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', top: 'auto', width: 1, height: 1, overflow: 'hidden' }}>
+        <input type="text" name="company" tabIndex={-1} autoComplete="off" defaultValue="" />
+      </div>
       {error && <p className="border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 sm:col-span-2">{error}</p>}
       <div className="sm:col-span-2">
         <button

@@ -90,9 +90,12 @@ export type SpinTokenPayload = {
    *  what actually enforces "one claim per spin" — the signature alone can't,
    *  since a valid token stays valid until it expires. */
   n: string;
+  /** Set when the spin was requested without a valid form token (a script,
+   *  not a page). The claim answers it like a win but mints and sends nothing. */
+  b?: 1;
 };
 
-export async function createSpinToken(wedgeIndex: number): Promise<string> {
+export async function createSpinToken(wedgeIndex: number, opts: { bot?: boolean } = {}): Promise<string> {
   const key = secret();
   if (!key) throw new Error('Cannot sign a spin: no SPIN_SECRET / ADMIN_SESSION_SECRET / ADMIN_PASSWORD');
 
@@ -100,6 +103,7 @@ export async function createSpinToken(wedgeIndex: number): Promise<string> {
     w: wedgeIndex,
     exp: Math.floor(Date.now() / 1000) + SPIN_TOKEN_TTL_SECONDS,
     n: randomNonce(),
+    ...(opts.bot ? { b: 1 as const } : {}),
   };
   const encoded = base64urlEncode(JSON.stringify(payload));
   return `${encoded}.${await sign(encoded, key)}`;
@@ -131,7 +135,7 @@ export async function verifySpinToken(token: unknown): Promise<SpinTokenPayload 
       return null;
     }
     if (Math.floor(Date.now() / 1000) >= data.exp) return null;
-    return { w: data.w, exp: data.exp, n: data.n };
+    return { w: data.w, exp: data.exp, n: data.n, ...(data.b === 1 ? { b: 1 as const } : {}) };
   } catch {
     return null;
   }

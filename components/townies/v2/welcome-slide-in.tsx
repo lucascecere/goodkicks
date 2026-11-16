@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { X } from 'lucide-react';
 import { OFFER_POPUP_KEY, saveOffer } from '@/lib/townies/welcome-offer';
+import { formToken, useFormToken } from '@/lib/form-token-client';
+import { FormTrap, trapValue } from '@/components/forms/form-trap';
 
 /**
  * First-order offer (Lucas, 2026-10-28): $5 off plus free shipping, shown
@@ -45,6 +47,7 @@ export function WelcomeSlideIn() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
+  useFormToken();
   const [result, setResult] = useState<{ code: string; shipCode: string | null; emailed: boolean; alreadyClaimed: boolean } | null>(null);
   const [error, setError] = useState('');
 
@@ -85,14 +88,20 @@ export function WelcomeSlideIn() {
     e.preventDefault();
     setBusy(true);
     setError('');
+    const _hp = trapValue(e.currentTarget as HTMLFormElement);
     try {
-      const start = await fetch('/api/welcome', { method: 'POST' });
+      const _t = await formToken();
+      const start = await fetch('/api/welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _t }),
+      });
       const { token, error: startError } = await start.json();
       if (!start.ok) throw new Error(startError ?? 'Try again in a minute.');
       const res = await fetch('/api/spin/claim', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, email }),
+        body: JSON.stringify({ token, email, _t, _hp }),
       });
       const body = await res.json();
       if (!res.ok) {
@@ -146,7 +155,8 @@ export function WelcomeSlideIn() {
         <div className="p-6 sm:p-8">
 
       {!result && (
-        <form onSubmit={claim}>
+        <form onSubmit={claim} className="relative">
+          <FormTrap />
           <p className={label}>First order</p>
           <p className="display mt-2 text-[2rem] leading-[1.05] text-text">$5 off and free shipping.</p>
           <p className="mt-2 text-[0.9375rem] text-text/70">On your first Townies hat. Drop your email and the code is yours.</p>

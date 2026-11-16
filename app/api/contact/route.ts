@@ -1,3 +1,4 @@
+import { after } from 'next/server';
 import { z } from 'zod';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
@@ -5,6 +6,9 @@ import { sendEmail } from '@/lib/email/resend-client';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 import { scoreSpam } from '@/lib/spam';
 import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
+import { BUYER_INTENT, judgeForm } from '@/lib/form-guard';
+import { burstHold, quarantine } from '@/lib/form-quarantine';
+import { captureSend, leadSiteFor, reportLead } from '@/lib/lead-monitor';
 
 // brand-scopes every submission so Townies + Good Kicks data don't collide.
 const brand = z.enum(['townies', 'goodkicks']).default('townies');
@@ -83,18 +87,19 @@ const contactSchema = z.discriminatedUnion('type', [
 async function insertSubmission(
   supabase: ReturnType<typeof createSupabaseServiceClient>,
   row: Record<string, unknown>,
-) {
-  const { error } = await supabase.from('contact_submissions').insert(row);
-  if (!error) return;
+): Promise<string | null> {
+  const { data, error } = await supabase.from('contact_submissions').insert(row).select('id').maybeSingle();
+  if (!error) return (data?.id as string | undefined) ?? null;
   if (/town|column/i.test(error.message)) {
     const { town: _t, ...rest } = row;
     void _t;
     console.warn('[contact] retrying without `town` — is the column missing?');
-    const retry = await supabase.from('contact_submissions').insert(rest);
+    const retry = await supabase.from('contact_submissions').insert(rest).select('id').maybeSingle();
     if (retry.error) console.error('[contact] DB insert error:', retry.error.message);
-    return;
+    return (retry.data?.id as string | undefined) ?? null;
   }
   console.error('[contact] DB insert error:', error.message);
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -110,8 +115,17 @@ export async function POST(request: Request) {
 
     // Bots get the same { ok: true } a person does (telling one it failed
     // teaches it), but nothing is saved, mailed, or added to contacts.
+    const spamWho = {
+      form: `contact:${typeof body?.type === 'string' ? body.type : 'unknown'}`,
+      brand: typeof body?.brand === 'string' ? body.brand : null,
+      name: typeof body?.name === 'string' ? body.name : null,
+      email: typeof body?.email === 'string' ? body.email : null,
+    };
+    const spamPayload = Object.fromEntries(
+      ['type', 'message', 'town', 'groupName', 'igHandle', 'company', 'phone', 'website', 'quantity', 'towns'].map((k) => [k, body?.[k] ?? null]),
+    );
     if (typeof body?._hp === 'string' && body._hp.trim()) {
-      console.warn('[contact] honeypot filled, dropped');
+      await quarantine({ ...spamWho, reasons: ['honeypot'], payload: spamPayload });
       return Response.json({ ok: true });
     }
     const spam = scoreSpam({
@@ -120,7 +134,7 @@ export async function POST(request: Request) {
       submitAfterMs: typeof body?._ms === 'number' ? body._ms : undefined,
     });
     if (spam.isSpam) {
-      console.warn('[contact] spam dropped', spam.score, spam.reasons.join('; '));
+      await quarantine({ ...spamWho, reasons: spam.reasons, payload: spamPayload });
       return Response.json({ ok: true });
     }
 
@@ -131,6 +145,23 @@ export async function POST(request: Request) {
     }
 
     const data = result.data;
+
+    // Bots that skip the page (no signed form token), faker leads with stolen
+    // emails, sales pitches and bid scams (lib/form-guard.ts). Same { ok: true }.
+    const verdict = await judgeForm({
+      name: data.name,
+      email: data.email,
+      company: data.type === 'partnership' ? data.groupName : data.type === 'wholesale' ? data.company : '',
+      message: data.message ?? '',
+      hasDetail: data.type === 'town_request' || data.type === 'wholesale',
+      token: body?._t,
+      honey: body?._hp,
+      buyerIntent: BUYER_INTENT.hats,
+    });
+    if (verdict.spam) {
+      await quarantine({ ...spamWho, reasons: verdict.reasons, payload: spamPayload });
+      return Response.json({ ok: true });
+    }
 
     // The same address three times inside ten minutes is a bot replaying a
     // harvested email (real people send one). Checked against the database, so
@@ -144,9 +175,12 @@ export async function POST(request: Request) {
         .eq('email', data.email)
         .gte('created_at', since);
       if ((count ?? 0) >= 2) {
-        console.warn('[contact] burst from one email, dropped');
+        await quarantine({ ...spamWho, reasons: ['same-email-burst'], payload: spamPayload });
         return Response.json({ ok: true });
       }
+    }
+    if (await burstHold(spamWho.form, { name: data.name, email: data.email, brand: data.brand }, spamPayload)) {
+      return Response.json({ ok: true });
     }
 
     // The longer wholesale fields have no columns of their own. Rather than
@@ -187,7 +221,7 @@ export async function POST(request: Request) {
 
     // Save to Supabase (brand-scoped, resilient to missing columns)
     const supabase = createSupabaseServiceClient();
-    await insertSubmission(supabase, {
+    const submissionId = await insertSubmission(supabase, {
       type: data.type,
       brand: data.brand,
       name: data.name,
@@ -236,9 +270,10 @@ export async function POST(request: Request) {
       .filter((l) => l !== null)
       .join('\n');
 
+    let notify: { ok: boolean; error: string | null } = { ok: false, error: 'RESEND_API_KEY not set' };
     if (process.env.RESEND_API_KEY) {
-      try {
-        await sendEmail({
+      notify = await captureSend(() =>
+        sendEmail({
           // Townies mail goes out as Townies (TOWNIES_FROM_EMAIL); GK unchanged.
           from: data.brand === 'townies' ? TOWNIES_FROM : 'Townies <info@goodkicks.co>',
           // Townies inquiries (wholesale, support, town requests) land in the
@@ -250,13 +285,29 @@ export async function POST(request: Request) {
           replyTo: data.email,
           subject,
           text,
-        });
-      } catch (err) {
-        console.error('[contact] Email error:', err);
-      }
+        }),
+      );
+      if (!notify.ok) console.error('[contact] Email error:', notify.error);
     } else {
       console.log('[contact] (no RESEND_API_KEY) would send:', subject, '\n', text);
     }
+
+    // Tell the YWF Command Center about the lead and whether the inbox alert
+    // went out. after() runs once the response is sent; never throws.
+    after(() =>
+      reportLead({
+        site: leadSiteFor(data.brand),
+        externalId: submissionId,
+        name: data.name,
+        email: data.email,
+        phone: data.type === 'wholesale' ? data.phone : null,
+        company: groupName,
+        form: subjectLabel[data.type].toLowerCase(),
+        summary: message,
+        clientNotified: notify.ok,
+        notifyError: notify.error,
+      }),
+    );
 
     return Response.json({ ok: true });
   } catch {

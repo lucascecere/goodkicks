@@ -1,8 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { z } from 'zod';
 import { createSeller, db } from '@/lib/shop/db';
 import { sendAdminApplication } from '@/lib/shop/email';
 import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
+import { BUYER_INTENT, judgeForm } from '@/lib/form-guard';
+import { burstHold, quarantine } from '@/lib/form-quarantine';
+import { captureSend, reportLead } from '@/lib/lead-monitor';
 
 // A business we don't know yet asking for a stall. Lands as 'applied' and
 // shows up in Admin › Market for review; nothing goes live from here.
@@ -17,7 +20,8 @@ const Body = z.object({
   instagram: z.string().trim().max(100).optional().default(''),
   about: z.string().trim().min(10).max(1200),
   has_logo: z.enum(['yes', 'no', 'not_sure']),
-  company: z.string().max(0).optional(), // honeypot
+  company: z.string().max(500).optional(), // honeypot: anything in it is a bot
+  _t: z.string().max(200).optional(), // signed form token (lib/form-guard.ts)
 });
 
 export async function POST(req: Request) {
@@ -29,7 +33,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Fill in every required field, then try again.' }, { status: 400 });
   }
   const b = parsed.data;
-  if (b.company) return NextResponse.json({ ok: true });
+
+  // Spam guard: bots (trap field, no form token), faker leads, pitches and
+  // scams get the same { ok: true } but nothing is created or emailed.
+  const verdict = await judgeForm({
+    name: b.contact_name,
+    email: b.contact_email,
+    company: b.name,
+    message: b.about,
+    hasDetail: true,
+    token: b._t,
+    honey: b.company,
+    buyerIntent: BUYER_INTENT.market,
+  });
+  const spamPayload = { business: b.name, town: b.town, website: b.website, instagram: b.instagram, about: b.about };
+  if (verdict.spam) {
+    await quarantine({ form: 'market application', brand: 'townies', name: b.contact_name, email: b.contact_email, reasons: verdict.reasons, payload: spamPayload });
+    return NextResponse.json({ ok: true });
+  }
+  if (await burstHold('market application', { name: b.contact_name, email: b.contact_email, brand: 'townies' }, spamPayload)) {
+    return NextResponse.json({ ok: true });
+  }
 
   // One application per email per day; the in-memory limiter resets per
   // server instance, so this is the limit that actually holds.
@@ -52,10 +76,25 @@ export async function POST(req: Request) {
     instagram: b.instagram || null,
     application: { about: b.about, has_logo: b.has_logo, submitted_at: new Date().toISOString() },
   });
-  try {
-    await sendAdminApplication(seller);
-  } catch (err) {
-    console.error('[shop] application email failed', err);
-  }
+  const notify = await captureSend(() => sendAdminApplication(seller));
+  if (!notify.ok) console.error('[shop] application email failed', notify.error);
+
+  // Tell the YWF Command Center (after the response; never throws).
+  after(() =>
+    reportLead({
+      site: 'townies',
+      externalId: seller.id,
+      name: b.contact_name,
+      email: b.contact_email,
+      phone: b.contact_phone || null,
+      company: b.name,
+      form: 'market application',
+      summary: [`Business: ${b.name} (${b.town})`, b.website && `Website: ${b.website}`, b.instagram && `Instagram: ${b.instagram}`, b.about]
+        .filter(Boolean)
+        .join('\n'),
+      clientNotified: notify.ok,
+      notifyError: notify.error,
+    }),
+  );
   return NextResponse.json({ ok: true });
 }

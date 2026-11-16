@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { formToken, useFormToken } from '@/lib/form-token-client';
 
 /** Townies Google Business Profile, "Ask for reviews" link (verified 2026-10-08). */
 const GOOGLE_REVIEW_URL = 'https://g.page/r/CdJt1JoFmcnqEAI/review';
@@ -36,6 +37,7 @@ export function ReviewForm({
   const [state, setState] = useState<'idle' | 'sending' | 'done'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [quote, setQuote] = useState('');
+  useFormToken();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -43,6 +45,7 @@ export function ReviewForm({
     const form = new FormData(e.currentTarget);
     setState('sending');
     try {
+      const _t = await formToken();
       const res = await fetch('/api/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -56,6 +59,7 @@ export function ReviewForm({
           website: form.get('website'), // honeypot
           token,
           brand,
+          _t,
         }),
       });
       const json = (await res.json()) as { ok: boolean; error?: string };

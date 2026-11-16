@@ -6,6 +6,9 @@ import { sendEmail } from '@/lib/email/resend-client';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 import { callerIp, rateLimit } from '@/lib/townies/spin-ratelimit';
 import { scoreSpam } from '@/lib/spam';
+import { BUYER_INTENT, judgeForm } from '@/lib/form-guard';
+import { burstHold, quarantine } from '@/lib/form-quarantine';
+import { captureSend, reportLead } from '@/lib/lead-monitor';
 
 /**
  * Custom hat quote requests from /custom-hats/build.
@@ -75,7 +78,10 @@ export async function POST(request: Request) {
     }
 
     // Honeypot: a filled-in hidden field is a bot. Answer as if it worked.
-    if (text(fd, 'company_website')) return Response.json({ ok: true });
+    if (text(fd, 'company_website')) {
+      await quarantine({ form: 'custom hat quote', brand: 'townies', name: text(fd, 'name'), email: text(fd, 'email'), reasons: ['honeypot'] });
+      return Response.json({ ok: true });
+    }
 
     const parsed = schema.safeParse({
       name: text(fd, 'name'),
@@ -102,8 +108,28 @@ export async function POST(request: Request) {
       email: d.email,
       submitAfterMs: text(fd, '_ms') && Number.isFinite(ms) ? ms : undefined,
     });
+    const spamPayload = { organisation: d.organisation, town: d.town, quantity: d.quantity, notes: d.notes, phone: d.phone };
     if (spam.isSpam) {
-      console.warn('[custom-quote] spam dropped', spam.score, spam.reasons.join('; '));
+      await quarantine({ form: 'custom hat quote', brand: 'townies', name: d.name, email: d.email, reasons: spam.reasons, payload: spamPayload });
+      return Response.json({ ok: true });
+    }
+
+    // Bots that skip the page (no signed form token), faker leads with stolen
+    // emails, sales pitches and bid scams (lib/form-guard.ts). Same { ok: true }.
+    const verdict = await judgeForm({
+      name: d.name,
+      email: d.email,
+      company: d.organisation,
+      message: d.notes,
+      hasDetail: true,
+      token: text(fd, '_t'),
+      buyerIntent: BUYER_INTENT.hats,
+    });
+    if (verdict.spam) {
+      await quarantine({ form: 'custom hat quote', brand: 'townies', name: d.name, email: d.email, reasons: verdict.reasons, payload: spamPayload });
+      return Response.json({ ok: true });
+    }
+    if (await burstHold('custom hat quote', { name: d.name, email: d.email, brand: 'townies' }, spamPayload)) {
       return Response.json({ ok: true });
     }
 
@@ -155,18 +181,17 @@ export async function POST(request: Request) {
     const subject = `[Townies] Custom hat quote: ${d.name}${qualifier ? ` (${qualifier})` : ''}`;
     const body = [...details, '', 'Mockup and logo attached. Reply to this email to reach the customer.'].join('\n');
 
+    let notify: { ok: boolean; error: string | null } = { ok: false, error: 'RESEND_API_KEY not set' };
     if (process.env.RESEND_API_KEY) {
-      try {
-        await sendEmail({ from: TOWNIES_FROM, to: inbox, replyTo: d.email, subject, text: body, attachments });
-      } catch (err) {
-        console.error('[custom-quote] Email error:', err);
-      }
+      notify = await captureSend(() => sendEmail({ from: TOWNIES_FROM, to: inbox, replyTo: d.email, subject, text: body, attachments }));
+      if (!notify.ok) console.error('[custom-quote] Email error:', notify.error);
     } else {
       console.log('[custom-quote] (no RESEND_API_KEY) would send:', subject, '\n', body);
     }
 
     // Everything below is bookkeeping the customer does not need to wait for.
     after(async () => {
+      let rowId: string | null = null;
       if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
         const supabase = createSupabaseServiceClient();
         const row = {
@@ -179,13 +204,15 @@ export async function POST(request: Request) {
           group_name: d.organisation || null,
           ig_handle: null,
         };
-        const { error } = await supabase.from('contact_submissions').insert(row);
+        const { data: ins, error } = await supabase.from('contact_submissions').insert(row).select('id').maybeSingle();
+        rowId = (ins?.id as string | undefined) ?? null;
         if (error) {
           // Same fallback as app/api/contact: tolerate a missing `town` column.
           if (/town|column/i.test(error.message)) {
             const { town: _t, ...rest } = row;
             void _t;
-            const retry = await supabase.from('contact_submissions').insert(rest);
+            const retry = await supabase.from('contact_submissions').insert(rest).select('id').maybeSingle();
+            rowId = (retry.data?.id as string | undefined) ?? null;
             if (retry.error) console.error('[custom-quote] DB insert error:', retry.error.message);
           } else {
             console.error('[custom-quote] DB insert error:', error.message);
@@ -218,6 +245,21 @@ export async function POST(request: Request) {
           console.error('[custom-quote] Confirmation email error:', err);
         }
       }
+
+      // Tell the YWF Command Center about the lead and whether the Townies
+      // inbox alert went out. Never throws.
+      await reportLead({
+        site: 'townies',
+        externalId: rowId,
+        name: d.name,
+        email: d.email,
+        phone: d.phone || null,
+        company: d.organisation || null,
+        form: 'custom hat quote',
+        summary: details.join('\n'),
+        clientNotified: notify.ok,
+        notifyError: notify.error,
+      });
     });
 
     return Response.json({ ok: true });

@@ -1,19 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import { formToken, useFormToken } from '@/lib/form-token-client';
+import { FormTrap, trapValue } from '@/components/forms/form-trap';
 
 /** Melin's "Join the family": navy band, one email field, forest button (Lucas, 10-07). */
 export function JoinBand() {
   const [email, setEmail] = useState('');
   const [state, setState] = useState<'idle' | 'busy' | 'done' | 'error'>('idle');
+  useFormToken();
 
-  async function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setState('busy');
+    const _hp = trapValue(e.currentTarget);
+    const _t = await formToken();
     const res = await fetch('/api/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, brand: 'townies' }),
+      body: JSON.stringify({ email, brand: 'townies', _t, _hp }),
     }).catch(() => null);
     setState(res?.ok ? 'done' : 'error');
   }
@@ -26,7 +31,8 @@ export function JoinBand() {
         {state === 'done' ? (
           <p className="mt-8 font-label text-[0.8125rem] font-semibold uppercase tracking-[0.16em] text-white">You’re on the list.</p>
         ) : (
-          <form onSubmit={submit} className="mx-auto mt-8 flex max-w-md gap-2">
+          <form onSubmit={submit} className="relative mx-auto mt-8 flex max-w-md gap-2">
+            <FormTrap />
             <label htmlFor="join-email" className="sr-only">Email</label>
             <input
               id="join-email"

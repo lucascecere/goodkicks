@@ -6,6 +6,8 @@ import { MaMark } from '@/components/brand/wordmark';
 import { LogoImg } from '@/components/brand/brand-logo';
 import { SocialLinks } from '@/components/townies/social-links';
 import { currentBrand } from '@/components/brand/current-brand';
+import { formToken, useFormToken } from '@/lib/form-token-client';
+import { FormTrap, trapValue } from '@/components/forms/form-trap';
 import type { BrandConfig } from '@/lib/brand/brands';
 
 // The one footer, for both brands. Columns, logo, socials and the copyright
@@ -106,11 +108,14 @@ function FooterCol({
 function SubscribeForm() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  useFormToken();
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus('loading');
+    const _hp = trapValue(e.currentTarget);
     try {
+      const _t = await formToken();
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,7 +123,7 @@ function SubscribeForm() {
         // at submit time: this footer renders on goodkicks.co AND on
         // townies.shop/goodkicks, and the server can't tell those apart from
         // Host alone.
-        body: JSON.stringify({ email, brand: currentBrand() }),
+        body: JSON.stringify({ email, brand: currentBrand(), _t, _hp }),
       });
       setStatus(res.ok ? 'success' : 'error');
     } catch {
@@ -131,7 +136,8 @@ function SubscribeForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 w-full max-w-md md:ml-auto">
+    <form onSubmit={handleSubmit} className="relative flex flex-col sm:flex-row gap-3 w-full max-w-md md:ml-auto">
+      <FormTrap />
       <input
         type="email"
         required

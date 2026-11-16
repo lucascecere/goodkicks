@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import type { RealBrand } from '@/lib/admin/brand';
 import { accountTypesFor } from '@/lib/reps/labels';
+import { formToken, useFormToken } from '@/lib/form-token-client';
+import { FormTrap, trapValue } from '@/components/forms/form-trap';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -34,6 +36,7 @@ const GK_COLORWAYS = [
 export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
   const isTownies = brand === 'townies';
   const [state, setState] = useState<FormState>('idle');
+  useFormToken();
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -67,11 +70,13 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
     const parts = [addressLine1, addressLine2, city, st, zip, country].filter(Boolean);
     const shippingAddress = parts.length > 1 ? parts.join(', ') : null;
     const parsedAge = age ? parseInt(age, 10) : null;
+    const _hp = trapValue(e.currentTarget as HTMLFormElement);
     try {
+      const _t = await formToken();
       const res = await fetch('/api/partners', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...rest, brand, name, age: parsedAge, shippingAddress }),
+        body: JSON.stringify({ ...rest, brand, name, age: parsedAge, shippingAddress, _t, _hp }),
       });
       setState(res.ok ? 'success' : 'error');
     } catch {
@@ -110,7 +115,8 @@ export function AmbassadorForm({ brand = 'townies' }: { brand?: RealBrand }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="relative space-y-5">
+      <FormTrap />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label className={labelClass}>first name</label>

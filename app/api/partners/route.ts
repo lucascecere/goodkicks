@@ -1,10 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { sendEmail } from '@/lib/email/resend-client';
 import { sendApplicationConfirmation } from '@/lib/email/send-application-confirmation';
 import { TOWNIES_FROM } from '@/lib/email/send-rep-welcome';
 import { parseBrand, requestBrand } from '@/lib/brand/site-brand';
+import { BUYER_INTENT, judgeForm } from '@/lib/form-guard';
+import { burstHold, quarantine } from '@/lib/form-quarantine';
+import { captureSend, leadSiteFor, reportLead } from '@/lib/lead-monitor';
+import { scoreSpam } from '@/lib/spam';
 
 const GK_FROM = 'Good Kicks <info@goodkicks.co>';
 
@@ -39,8 +43,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'missing required fields' }, { status: 400 });
   }
 
+  // Spam guard (lib/form-guard.ts): bots, faker leads and pitches get the same
+  // { ok: true } a person does, but nothing is saved, emailed or confirmed.
+  const verdict = await judgeForm({
+    name: String(name),
+    email: String(email),
+    message: [message, followers, accountType].filter((v) => typeof v === 'string').join('\n'),
+    hasDetail: true,
+    token: body?._t,
+    honey: body?._hp,
+    buyerIntent: BUYER_INTENT.rep,
+  });
+  const junk = scoreSpam({ fields: [String(name), String(place), String(message ?? '')], email: String(email), submitAfterMs: 1e9 });
+  if (junk.isSpam) verdict.reasons.push(...junk.reasons);
+  const spamPayload = { instagram, school, town, message, followers, accountType, age };
+  if (verdict.spam || junk.isSpam) {
+    await quarantine({ form: 'rep application', brand, name, email, reasons: verdict.reasons, payload: spamPayload });
+    return NextResponse.json({ ok: true });
+  }
+  if (await burstHold('rep application', { name, email, brand }, spamPayload)) return NextResponse.json({ ok: true });
+
   const supabase = createSupabaseServiceClient();
-  const { error: dbError } = await supabase.from('ambassador_applications').insert({
+  const { data: inserted, error: dbError } = await supabase.from('ambassador_applications').insert({
     brand,
     name,
     email,
@@ -54,10 +78,11 @@ export async function POST(req: NextRequest) {
     shipping_address: shippingAddress ?? null,
     colorway_preference: colorwayPreference ?? null,
     age: typeof age === 'number' ? age : null,
-  });
+  }).select('id').maybeSingle();
   if (dbError) console.error('[partners] DB insert error:', dbError.message, dbError.details, dbError.hint);
   await upsertContact({ email, name, source: 'ambassador', brand });
 
+  let notify: { ok: boolean; error: string | null } = { ok: false, error: 'RESEND_API_KEY not set' };
   if (process.env.RESEND_API_KEY) {
     try {
       const notifyEmail = process.env.PARTNER_NOTIFICATION_EMAIL ?? 'info@goodkicks.co';
@@ -65,7 +90,7 @@ export async function POST(req: NextRequest) {
       const heading = isTownies ? 'New Town Rep Application' : 'New Ambassador Application';
       const sourcePath = isTownies ? 'townies.shop/ambassadors' : 'goodkicks.co/ambassadors';
 
-      await sendEmail({
+      notify = await captureSend(() => sendEmail({
         from: isTownies ? TOWNIES_FROM : GK_FROM,
         to: notifyEmail,
         replyTo: email,
@@ -92,13 +117,32 @@ export async function POST(req: NextRequest) {
             <p style="color:#6B6B6B;font-size:12px">Reply to this email to respond directly to the applicant.</p>
           </div>
         `,
-      });
+      }));
+      if (!notify.ok) console.error('[partners] Inbox alert failed:', notify.error);
 
       await sendApplicationConfirmation({ firstName: String(name).split(' ')[0], email, brand });
     } catch (err) {
       console.error('[partners] Email error:', err);
     }
   }
+
+  // Tell the YWF Command Center about the application and whether the inbox
+  // alert went out. after() runs once the response is sent; never throws.
+  after(() =>
+    reportLead({
+      site: leadSiteFor(brand),
+      externalId: inserted?.id ?? null,
+      name: String(name),
+      email: String(email),
+      company: String(place),
+      form: isTownies ? 'town rep application' : 'ambassador application',
+      summary: [`Instagram: ${instagram}`, `${isTownies ? 'Town' : 'School'}: ${place}`, followers && `Followers: ${followers}`, message]
+        .filter(Boolean)
+        .join('\n'),
+      clientNotified: notify.ok,
+      notifyError: notify.error,
+    }),
+  );
 
   return NextResponse.json({ ok: true });
 }

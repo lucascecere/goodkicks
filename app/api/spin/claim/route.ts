@@ -7,11 +7,13 @@
 // keeps their spin.
 
 import type { NextRequest } from 'next/server';
-import { pairedShipCode, wedgeAt, wedgeById } from '@/lib/townies/spin-prizes';
+import { CODE_VALID_DAYS, pairedShipCode, wedgeAt, wedgeById } from '@/lib/townies/spin-prizes';
 import { hasOrderedBefore } from '@/lib/shopify/has-ordered';
 import { verifySpinToken } from '@/lib/townies/spin-token';
 import { callerIp, hashIp, rateLimit, underDailyClaimLimit } from '@/lib/townies/spin-ratelimit';
-import { mintSpinCode, ShopifyNotConfiguredError, ShopifyScopeError } from '@/lib/shopify/create-spin-code';
+import { buildSpinCode, mintSpinCode, ShopifyNotConfiguredError, ShopifyScopeError } from '@/lib/shopify/create-spin-code';
+import { tokenPasses } from '@/lib/form-guard';
+import { quarantine } from '@/lib/form-quarantine';
 import { sendSpinCodeEmail } from '@/lib/email/send-spin-code';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { subscribeShopifyCustomer } from '@/lib/shopify/subscribe-customer';
@@ -41,7 +43,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Slow down a second.' }, { status: 429 });
   }
 
-  const body = (await req.json().catch(() => null)) as { token?: unknown; email?: unknown } | null;
+  const body = (await req.json().catch(() => null)) as { token?: unknown; email?: unknown; _t?: unknown; _hp?: unknown } | null;
   const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
 
   if (!EMAIL_RE.test(email) || email.length > 254) {
@@ -64,6 +66,30 @@ export async function POST(req: NextRequest) {
       { error: 'The wheel changed while you were spinning. One more go?', code: 'expired' },
       { status: 409 },
     );
+  }
+
+  // Bots: a prize token drawn without the page, no form token on the claim, or
+  // the trap field filled. They get the same "you won" a person sees, with a
+  // code that was never created: nothing minted, emailed, stored or subscribed.
+  const botReasons = [
+    payload.b === 1 && 'spin:no-form-token',
+    !tokenPasses(body?._t) && 'claim:no-form-token',
+    typeof body?._hp === 'string' && body._hp.trim() && 'honeypot',
+  ].filter((r): r is string => Boolean(r));
+  if (botReasons.length) {
+    await quarantine({ form: 'spin claim', brand: 'townies', email, reasons: botReasons, payload: { prize: wedge.id } });
+    const fake = buildSpinCode(wedge);
+    return Response.json({
+      ok: true,
+      code: fake,
+      shipCode: pairedShipCode(wedge, fake),
+      expiresAt: new Date(Date.now() + CODE_VALID_DAYS * 86_400_000).toISOString(),
+      terms: wedge.terms,
+      prizeLabel: wedge.label,
+      prizeExit: wedge.exit,
+      emailed: true,
+      alreadyClaimed: false,
+    });
   }
 
   const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL ? createSupabaseServiceClient() : null;

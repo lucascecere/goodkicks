@@ -3,12 +3,24 @@ import { storefrontClient } from '@/lib/shopify/client';
 import { CUSTOMER_CREATE_MUTATION } from '@/lib/shopify/mutations';
 import { upsertContact } from '@/lib/supabase/upsert-contact';
 import { requestBrand } from '@/lib/brand/site-brand';
+import { tokenPasses } from '@/lib/form-guard';
+import { quarantine } from '@/lib/form-quarantine';
 
 export async function POST(req: NextRequest) {
-  const { email, brand } = await req.json();
+  const { email, brand, _t, _hp } = await req.json();
 
   if (!email || typeof email !== 'string' || !email.includes('@')) {
     return NextResponse.json({ error: 'invalid email' }, { status: 400 });
+  }
+
+  // Posted without the page (no form token) or the trap field filled: answer
+  // like a signup, but nothing joins the list or Shopify.
+  const botReasons = [!tokenPasses(_t) && 'token', typeof _hp === 'string' && _hp.trim() && 'honeypot'].filter(
+    (r): r is string => Boolean(r),
+  );
+  if (botReasons.length) {
+    await quarantine({ form: 'newsletter', brand: typeof brand === 'string' ? brand : null, email, reasons: botReasons });
+    return NextResponse.json({ ok: true });
   }
 
   // The form says which brand rendered it, because Host cannot: the Good Kicks

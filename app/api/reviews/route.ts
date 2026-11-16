@@ -7,6 +7,8 @@
 import type { NextRequest } from 'next/server';
 import { submitReview } from '@/lib/reviews/server';
 import { getTownieProducts } from '@/lib/shopify/collections';
+import { BUYER_INTENT, judgeForm } from '@/lib/form-guard';
+import { quarantine } from '@/lib/form-quarantine';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,6 +24,29 @@ export async function POST(req: NextRequest) {
   // Honeypot: a field no human sees and every naive bot fills. Answer 200 so
   // the bot records a success and doesn't come back with something cleverer.
   if (typeof body.website === 'string' && body.website.length > 0) {
+    return Response.json({ ok: true, verified: false });
+  }
+
+  // Spam guard: a signed form token (page loaded first), and no sales pitch.
+  // Spam is answered like a pending review but never saved to reviews.
+  const verdict = await judgeForm({
+    name: String(body.name ?? ''),
+    email: String(body.email ?? ''),
+    message: String(body.quote ?? ''),
+    hasDetail: true,
+    token: body._t,
+    honey: body.website,
+    buyerIntent: BUYER_INTENT.review,
+  });
+  if (verdict.spam) {
+    await quarantine({
+      form: 'review',
+      brand: body.brand === 'goodkicks' ? 'goodkicks' : 'townies',
+      name: String(body.name ?? ''),
+      email: body.email ? String(body.email) : null,
+      reasons: verdict.reasons,
+      payload: { rating: body.rating, quote: String(body.quote ?? '').slice(0, 1200), town: body.town ?? null },
+    });
     return Response.json({ ok: true, verified: false });
   }
 
