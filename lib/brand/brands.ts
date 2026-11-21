@@ -115,6 +115,7 @@ export const TOWNIES: BrandConfig = {
         title: 'Shop By',
         links: [
           { href: '/shop', label: 'All Towns' },
+          { href: '/gifts', label: 'Gifts' },
           { href: '/south-shore', label: 'South Shore' },
           { href: '/boston', label: 'Boston' },
           { href: '/south-east', label: 'Southeastern Mass' },

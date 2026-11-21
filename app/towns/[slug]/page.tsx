@@ -10,6 +10,9 @@ import { RequestTownBand } from '@/components/townies/request-town-band';
 import { TownLinks } from '@/components/townies/town-links';
 import { SITE_URL, breadcrumbSchema } from '@/lib/seo/site';
 import { customTownHref, hasCustomPage } from '@/lib/townies/custom-hats';
+import { townContent } from '@/lib/townies/town-content';
+import { townFaqs } from '@/lib/townies/town-faq';
+import { FaqSection } from '@/components/ui/faq-section';
 
 /**
  * One page per town — /towns/milton, /towns/west-roxbury.
@@ -56,8 +59,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const found = await findTown(slug);
   if (!found) return { title: 'Town Not Found' };
   const { town } = found;
-  const title = `${town.name}, MA Hats & Town Apparel`;
-  const description = `${town.name}, Massachusetts town-pride hats from Townies Apparel Co. Shop ${styleSummary(town)}, stitched with ${town.name} on the front. Ships from Massachusetts.`;
+  const content = townContent(town.slug);
+  const title = content?.seoTitle ?? `${town.name}, MA Hats & Town Apparel`;
+  const description =
+    content?.seoDescription ??
+    `${town.name}, Massachusetts town-pride hats from Townies Apparel Co. Shop ${styleSummary(town)}, stitched with ${town.name} on the front. Ships from Massachusetts.`;
   const image = town.products.find((p) => p.featuredImage?.url)?.featuredImage?.url;
   return {
     title,
@@ -82,6 +88,8 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
   const elsewhere = all.filter((t) => t.region !== town.region);
   const count = town.products.length;
   const url = `${SITE_URL}${townHref(town.slug)}`;
+  const content = townContent(town.slug);
+  const faqs = townFaqs(town.name, town.slug, town.products, new Date(), content?.placeName);
 
   const schema = [
     {
@@ -142,6 +150,51 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
         )}
       </div>
 
+      {content && (
+        <section aria-labelledby="on-the-hat" className="bg-surface border-y border-rule">
+          <div className="max-w-6xl mx-auto px-4 sm:px-8 py-14 sm:py-20 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+            <div>
+              <p className="text-[0.625rem] uppercase tracking-[0.22em] font-medium text-accent mb-3">
+                What&apos;s stitched on it
+              </p>
+              <h2 id="on-the-hat" className="display text-[2rem] sm:text-[2.5rem] text-text mb-6">
+                The {town.name} hat.
+              </h2>
+              <dl className="border-t border-rule text-sm">
+                {(
+                  [
+                    ['Front', content.front],
+                    ['Side', content.side],
+                    ['Colours', content.colours],
+                    ['Made', 'Embroidered, not printed. Adjustable snapback. Designed in Massachusetts.'],
+                  ] as const
+                ).map(([label, value]) => (
+                  <div key={label} className="grid grid-cols-[5.5rem_1fr] gap-4 border-b border-rule py-3.5">
+                    <dt className="text-[0.6875rem] uppercase tracking-[0.16em] font-semibold text-muted pt-0.5">{label}</dt>
+                    <dd className="text-text leading-relaxed">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+            <div className="text-text leading-relaxed space-y-5 lg:pt-10">
+              {content.why && (
+                <p className="text-lg sm:text-xl leading-snug">{content.why}</p>
+              )}
+              {content.about.map((para) => (
+                <p key={para.slice(0, 24)} className="text-muted">{para}</p>
+              ))}
+              <p className="text-sm">
+                <Link href="/gifts" className="underline underline-offset-4 hover:text-accent">
+                  Buying it as a gift? See every town
+                </Link>
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <FaqSection id="faq" eyebrow={`${town.name} hat questions`} title="Good to know." items={faqs} />
+
       {(neighbours.length > 0 || elsewhere.length > 0) && (
         <nav aria-label="More towns" className="max-w-4xl mx-auto px-4 sm:px-8 pb-20 text-center">
           {neighbours.length > 0 && (
@@ -152,7 +205,7 @@ export default async function TownPageRoute({ params }: { params: Promise<{ slug
           )}
           <p className="mt-8 text-sm text-muted">
             <Link href={regionHref(town.region)} className="inline-block py-2 underline underline-offset-4 hover:text-text">
-              Shop the {town.regionLabel}
+              Shop {town.regionLabel.endsWith('Shore') ? 'the ' : ''}{town.regionLabel}
             </Link>
             {' · '}
             <Link href="/shop" className="inline-block py-2 underline underline-offset-4 hover:text-text">

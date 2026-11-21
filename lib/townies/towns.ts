@@ -76,8 +76,8 @@ function titleCase(slug: string): string {
  * towns turned up on /south-shore. Geography is a fact about the town, not
  * about whether someone remembered to tag a product, so it lives in code.
  *
- * An explicit region tag in Shopify still wins, so a one-off can be overridden
- * without a deploy.
+ * A Shopify region tag only counts for towns not listed here (see
+ * regionForProduct).
  */
 const TOWN_REGION: Record<string, string> = {
   // Boston — neighbourhoods, not suburbs.
@@ -101,6 +101,12 @@ const TOWN_REGION: Record<string, string> = {
   walpole: 'south-shore', norwood: 'south-shore', canton: 'south-shore',
   stoughton: 'south-shore', sharon: 'south-shore', dedham: 'south-shore',
   westwood: 'south-shore', avon: 'south-shore',
+
+  // Greater Boston west of the city. Needham is Norfolk County but nobody
+  // calls it the South Shore; it was filed there by a stray `south-shore`
+  // Shopify tag (11-20).
+  needham: 'greater-boston', wellesley: 'greater-boston', newton: 'greater-boston',
+  brookline: 'greater-boston', watertown: 'greater-boston', waltham: 'greater-boston',
 
   // Southeastern Mass — Bristol County and the Taunton/Brockton side.
   norton: 'south-east', mansfield: 'south-east', foxboro: 'south-east',
@@ -135,16 +141,23 @@ const TOWN_REGION: Record<string, string> = {
 };
 
 /**
- * Region for a product: explicit Shopify tag first, then the town map.
+ * Region for a product: the town map first, then an explicit Shopify tag.
+ *
+ * The map wins because geography is a fact about the town. A tag only decides
+ * for towns the map doesn't know yet, which is what it was really for: Needham
+ * carried a stray `south-shore` tag and turned up on /south-shore. Every other
+ * live hat's region tag already agrees with the map, so this changes Needham only.
  *
  * Falls back to `other` ("More Towns"), NOT to South Shore. An unrecognised
  * town showing up under More Towns is a visible prompt to add it here; one
  * silently filed under South Shore is a bug nobody sees.
  */
 export function regionForProduct(tags: string[], townSlug: string): string {
+  const mapped = TOWN_REGION[townSlug];
+  if (mapped) return mapped;
   const tagged = tags.find((t) => REGION_LABELS[t.toLowerCase()]);
   if (tagged) return tagged.toLowerCase();
-  return TOWN_REGION[townSlug] ?? OTHER_REGION;
+  return OTHER_REGION;
 }
 
 export function regionLabel(region: string): string {
