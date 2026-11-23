@@ -35,7 +35,8 @@ export function cartPhrase(lines: AbandonedLine[]): string {
   return `your ${count} ${lines.every((l) => /hat/i.test(l.title)) ? 'hats' : 'items'}`;
 }
 
-export function abandonedSubject(lines: AbandonedLine[], hasOffer: boolean): string {
+export function abandonedSubject(lines: AbandonedLine[], hasOffer: boolean, deal = false): string {
+  if (deal) return 'Your hats are still $25 each';
   const what = lines.length === 1 && lines[0].quantity === 1 ? lines[0].title.replace(/^The /, '') : 'cart';
   return hasOffer ? `$5 off to finish your ${what}` : `Your ${what} is still saved`;
 }
@@ -46,11 +47,14 @@ export function renderAbandonedEmail(opts: {
   lines: AbandonedLine[];
   link: string;
   offer: { code: string; expiresAt: string } | null;
+  /** 2+ hats: the two-town deal applies at checkout. */
+  deal?: boolean;
 }): { subject: string; html: string; text: string; unsubscribe: string } {
   const { firstName, lines, link, offer } = opts;
+  const deal = Boolean(opts.deal) && !offer;
   const hello = firstName ? `Hey ${esc(firstName)},` : 'Hey,';
   const phrase = esc(cartPhrase(lines));
-  const subject = abandonedSubject(lines, Boolean(offer));
+  const subject = abandonedSubject(lines, Boolean(offer), deal);
   const unsub = unsubscribeUrl(C.url, opts.email) ?? `mailto:${C.email}?subject=Unsubscribe`;
 
   const shown = lines.filter((l) => l.imageUrl).slice(0, 2);
@@ -62,6 +66,8 @@ export function renderAbandonedEmail(opts: {
 
   const intro = offer
     ? `You were one step away from ${phrase}. We saved your cart, and here's $5 off to finish it up.`
+    : deal
+    ? `You were one step away from ${phrase}. We saved your cart, and the two-town deal is still on: get 2 or more hats and you save $4.99 on each, taken off at checkout.`
     : `You were one step away from ${phrase}. We saved your cart, so you can pick up right where you left off.`;
 
   const ticket = offer
@@ -79,7 +85,7 @@ export function renderAbandonedEmail(opts: {
   const html = `<!doctype html>
 <html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(subject)}</title></head>
 <body style="margin:0;padding:0;background:${C.bg};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
-  <div style="display:none;max-height:0;overflow:hidden;">${offer ? 'We saved your cart, plus $5 off to finish it.' : 'We saved your cart for you.'}</div>
+  <div style="display:none;max-height:0;overflow:hidden;">${offer ? 'We saved your cart, plus $5 off to finish it.' : deal ? 'We saved your cart. The two-town deal is still on.' : 'We saved your cart for you.'}</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.bg};padding:28px 12px;">
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:540px;background:#ffffff;border-radius:6px;overflow:hidden;">
@@ -135,6 +141,7 @@ export async function sendAbandonedCheckoutEmail(opts: {
   lines: AbandonedLine[];
   link: string;
   offer: { code: string; expiresAt: string } | null;
+  deal?: boolean;
 }): Promise<string> {
   const r = renderAbandonedEmail({ email: opts.to, ...opts });
   const fallback = `mailto:${C.email}?subject=Unsubscribe`;

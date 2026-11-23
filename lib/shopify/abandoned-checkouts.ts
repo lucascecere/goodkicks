@@ -1,5 +1,6 @@
 import 'server-only';
 import { shopifyAdminGraphQL } from './admin-graphql';
+import { TWO_TOWN_DEAL } from '@/lib/townies/two-town-deal';
 
 // Abandoned checkouts worth a recovery email.
 //
@@ -38,6 +39,8 @@ export type AbandonedCheckout = {
   discountCodes: string[];
   subtotal: number;
   lines: AbandonedLine[];
+  /** Hat units on the checkout (productType "Hats"), for the two-town deal. */
+  hatUnits: number;
 };
 
 type RawNode = {
@@ -55,7 +58,7 @@ type RawNode = {
       customAttributes: { key: string; value: string | null }[];
       image: { url: string } | null;
       variant: {
-        product: { handle: string; featuredImage: { url: string } | null; inCollection: boolean } | null;
+        product: { handle: string; productType: string | null; featuredImage: { url: string } | null; inCollection: boolean } | null;
       } | null;
     }[];
   };
@@ -105,7 +108,7 @@ export async function listRecoverableCheckouts(now = Date.now()): Promise<Abando
               title quantity
               customAttributes { key value }
               image { url }
-              variant { product { handle featuredImage { url } inCollection(id: $c) } }
+              variant { product { handle productType featuredImage { url } inCollection(id: $c) } }
             }
           }
         }
@@ -133,6 +136,9 @@ export async function listRecoverableCheckouts(now = Date.now()): Promise<Abando
       firstName: n.customer?.firstName?.trim() || null,
       discountCodes: n.discountCodes ?? [],
       subtotal: Number(n.subtotalPriceSet.shopMoney.amount),
+      hatUnits: n.lineItems.nodes
+        .filter((l) => l.variant?.product?.productType === TWO_TOWN_DEAL.hatProductType)
+        .reduce((sum, l) => sum + l.quantity, 0),
       lines: n.lineItems.nodes.map((l) => ({
         title: l.title,
         quantity: l.quantity,

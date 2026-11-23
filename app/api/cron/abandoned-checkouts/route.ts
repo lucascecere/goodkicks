@@ -9,8 +9,10 @@
 // Who: checkouts 1 to 48 hours old with an email, never completed, with at
 // least one Townies line, whose email hasn't ordered since and isn't
 // unsubscribed (lib/shopify/abandoned-checkouts.ts).
-// What: no promo on the checkout → a one-use BACK5 code ($5 off, 7 days) that
-// the link applies automatically. Already had a promo → a plain reminder.
+// What: 2+ hats → the two-town deal already prices them at $25 each (BACK5
+// wouldn't stack with it), so a reminder that says the deal is still on. Else
+// no promo on the checkout → a one-use BACK5 code ($5 off, 7 days) that the
+// link applies automatically. Already had a promo → a plain reminder.
 // Once: abandoned_checkout_emails.checkout_id is unique, and the row is claimed
 // BEFORE minting or sending, so two overlapping runs can't double-send.
 
@@ -19,6 +21,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/client';
 import { listRecoverableCheckouts, orderedSince, recoveryLink } from '@/lib/shopify/abandoned-checkouts';
 import { mintBack5Code } from '@/lib/shopify/create-back5-code';
 import { sendAbandonedCheckoutEmail, abandonedSubject } from '@/lib/email/send-abandoned-checkout';
+import { dealApplies } from '@/lib/townies/two-town-deal';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -31,6 +34,8 @@ type Planned = {
   email: string;
   createdAt: string;
   offer: 'back5' | 'reminder';
+  /** 2+ hats: the two-town deal applies at checkout, so say so instead of minting BACK5. */
+  deal: boolean;
   subject: string;
   items: string[];
 };
@@ -88,20 +93,22 @@ export async function GET(req: NextRequest) {
     if (await orderedSince(c.email, since)) { skipped.push({ checkout: c.id, reason: 'ordered recently' }); continue; }
     // The same person can leave two checkouts in a row; email the newest only.
     if (planned.some((p) => p.email === c.email)) { skipped.push({ checkout: c.id, reason: 'newer checkout for same email' }); continue; }
-    const hasOffer = c.discountCodes.length === 0;
+    const deal = dealApplies(c.hatUnits);
+    const hasOffer = !deal && c.discountCodes.length === 0;
     planned.push({
       c,
       checkout: c.id,
       email: c.email,
       createdAt: c.createdAt,
       offer: hasOffer ? 'back5' : 'reminder',
-      subject: abandonedSubject(c.lines, hasOffer),
+      deal,
+      subject: abandonedSubject(c.lines, hasOffer, deal),
       items: c.lines.map((l) => `${l.title}${l.quantity > 1 ? ` x${l.quantity}` : ''}`),
     });
   }
 
   const batch = planned.slice(0, MAX_PER_RUN);
-  const view = (p: Planned) => ({ checkout: p.checkout, email: p.email, createdAt: p.createdAt, offer: p.offer, subject: p.subject, items: p.items });
+  const view = (p: Planned) => ({ checkout: p.checkout, email: p.email, createdAt: p.createdAt, offer: p.deal ? 'deal' : p.offer, subject: p.subject, items: p.items });
 
   if (dry) {
     return Response.json({
@@ -141,6 +148,7 @@ export async function GET(req: NextRequest) {
         lines: c.lines,
         link: recoveryLink(c.recoveryUrl, minted?.code ?? null),
         offer: minted ? { code: minted.code, expiresAt: minted.expiresAt } : null,
+        deal: p.deal,
       });
       await db.from('abandoned_checkout_emails')
         .update({ status: 'sent', resend_id: resendId, sent_at: new Date().toISOString() })

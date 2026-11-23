@@ -72,7 +72,7 @@ export function AnnouncementBar({ brand }: { brand: BrandConfig }) {
 function dealItems(brand: BrandConfig): AnnounceItem[] {
   if (brand.id !== 'townies' || !TWO_TOWN_DEAL.enabled) return [];
   const out: AnnounceItem[] = [
-    { text: 'Two towns, $50. Any 2 hats are $25 each.', href: brand.shopPath, event: 'two_town_banner_click' },
+    { text: 'Two towns from $50. Get 2 or more hats, save $4.99 on each.', href: brand.shopPath, event: 'two_town_banner_click' },
   ];
   const by = christmasOrderBy(false, []);
   if (by) {
