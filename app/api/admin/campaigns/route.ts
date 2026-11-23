@@ -9,7 +9,7 @@ export async function GET() {
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase
     .from('campaigns')
-    .select('id,name,subject,status,brand,audience_brands,content_mode,recipient_mode,sent_at,sent_count,failed_count,created_at,updated_at')
+    .select('id,name,subject,status,brand,audience_brands,content_mode,recipient_mode,sent_at,sent_count,failed_count,scheduled_for,schedule_error,created_at,updated_at')
     .order('updated_at', { ascending: false });
   if (error) return Response.json({ error: error.message }, { status: 500 });
   return Response.json(data);

@@ -9,7 +9,7 @@ export default async function CampaignsPage() {
   const supabase = createSupabaseServiceClient();
   const { data } = await supabase
     .from('campaigns')
-    .select('id,name,subject,status,brand,sent_at,sent_count,failed_count,updated_at,created_at')
+    .select('id,name,subject,status,brand,sent_at,sent_count,failed_count,scheduled_for,schedule_error,updated_at,created_at')
     .order('updated_at', { ascending: false });
 
   return (

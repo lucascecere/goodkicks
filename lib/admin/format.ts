@@ -77,3 +77,44 @@ export function money(n: number, { decimals = 2 }: { decimals?: 0 | 2 } = {}): s
     ...(decimals === 0 ? { maximumFractionDigits: 0 } : {}),
   }).format(n);
 }
+
+// ── Campaign scheduling: wall-clock Massachusetts time <-> UTC ──────────────
+// A <input type="datetime-local"> has no zone. The scheduler types Boston time
+// whatever zone the browser is in, and the DB stores UTC.
+
+/** Milliseconds America/New_York is ahead of UTC at `date` (negative: -4h/-5h). */
+function easternOffsetMs(date: Date): number {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: TZ, hourCycle: 'h23',
+    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit',
+  }).formatToParts(date);
+  const get = (t: string) => Number(parts.find((p) => p.type === t)?.value ?? 0);
+  return Date.UTC(get('year'), get('month') - 1, get('day'), get('hour'), get('minute'), get('second')) - date.getTime();
+}
+
+/** "2026-12-04T10:00" read as Boston time → UTC ISO string, or null if malformed. */
+export function easternLocalToUtcIso(local: string): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(local);
+  if (!m) return null;
+  const naive = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+  // Two passes so a time near a DST switch picks up the offset in force then.
+  let utc = naive - easternOffsetMs(new Date(naive));
+  utc = naive - easternOffsetMs(new Date(utc));
+  return new Date(utc).toISOString();
+}
+
+/** UTC ISO → "2026-12-04T10:00" in Boston time, for a datetime-local input. */
+export function utcToEasternLocal(iso: string): string {
+  const d = new Date(iso);
+  const local = new Date(d.getTime() + easternOffsetMs(d));
+  return local.toISOString().slice(0, 16);
+}
+
+/** "Thu Dec 4, 10:00 AM ET" — a scheduled send time. */
+export function fmtScheduled(iso: string | null | undefined, fallback = '—'): string {
+  if (!iso) return fallback;
+  const d = new Date(iso);
+  const day = d.toLocaleDateString(TZ_NOTE, { timeZone: TZ, weekday: 'short', month: 'short', day: 'numeric' });
+  const time = d.toLocaleTimeString(TZ_NOTE, { timeZone: TZ, hour: 'numeric', minute: '2-digit' });
+  return `${day.replace(',', '')}, ${time} ET`;
+}

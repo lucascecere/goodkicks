@@ -75,6 +75,10 @@ export default async function EditCampaignPage({ params }: Props) {
         sources: campaign.sources ?? [],
         emails: campaign.emails ?? [],
         exclude_buyers: campaign.exclude_buyers ?? false,
+        // Round-trips through the editor so it can show (and keep) the
+        // schedule. Saving never writes it; only /schedule does.
+        scheduled_for: campaign.scheduled_for ?? null,
+        schedule_error: campaign.schedule_error ?? null,
         status: campaign.status,
       }}
       totalContacts={all.length}

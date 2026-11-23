@@ -11,6 +11,25 @@ import { QuantityStepper } from '@/components/ui/quantity-stepper';
 import type { BrandConfig } from '@/lib/brand/brands';
 import { readOfferCodes } from '@/lib/townies/welcome-offer';
 import { firstTouchAttributes } from '@/lib/attribution';
+import {
+  TWO_TOWN_DEAL,
+  checkoutCodes,
+  dealHatPriceCents,
+  dealSavingCents,
+  formatDealUsd,
+} from '@/lib/townies/two-town-deal';
+import { track } from '@/lib/track';
+
+/**
+ * Best guess at "is this line a hat" while Shopify's answer is on its way (or
+ * if it never comes): a Townies line that isn't the Hat & Sack bundle. The real
+ * answer is the product's Shopify productType, read via /api/cart/hats.
+ */
+function looksLikeHat(i: CartItem): boolean {
+  if (i.productTitle === 'Hat & Sack Bundle') return false;
+  if (i.customAttributes?.some((a) => a.key === '_hat_variant')) return false;
+  return !!i.customAttributes?.some((a) => a.key === '_brand' && a.value === 'townies');
+}
 
 /**
  * "You're $12 from free shipping" — the single most reliable nudge a cart
@@ -46,16 +65,25 @@ function FreeShippingBar({ subtotalCents, thresholdCents }: { subtotalCents: num
  * $5 "Pre-order" profile, Hat & Sack bundles ship included, and the automatic
  * discount makes everything free at the threshold.
  */
-function shippingEstimate(items: CartItem[], subtotalCents: number, thresholdCents: number, hasOffer: boolean): string {
-  if (hasOffer || subtotalCents >= thresholdCents) return 'Free';
+function shippingEstimate(
+  items: CartItem[],
+  subtotalCents: number,
+  thresholdCents: number,
+  hasOffer: boolean,
+): { text: string; cents: number | null } {
+  if (hasOffer || subtotalCents >= thresholdCents) return { text: 'Free', cents: 0 };
   const isBundle = (i: CartItem) => i.productTitle === 'Hat & Sack Bundle';
   const isPreorder = (i: CartItem) => !!i.customAttributes?.some((a) => a.key === 'Fulfillment' && a.value.startsWith('Pre-order'));
   const standard = items.filter((i) => !isBundle(i) && !isPreorder(i)).reduce((n, i) => n + i.quantity, 0);
   const preorder = items.some((i) => !isBundle(i) && isPreorder(i));
-  if (!standard && !preorder) return 'Included';
+  if (!standard && !preorder) return { text: 'Included', cents: 0 };
   const cents = (preorder ? 500 : 0) + (standard ? 595 : 0);
   const exact = standard <= 1;
-  return `${exact ? '' : 'From '}${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100)}`;
+  return {
+    text: `${exact ? '' : 'From '}${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100)}`,
+    // "From" means several hats in the weight band: no exact number to add.
+    cents: exact ? cents : null,
+  };
 }
 
 function formatCents(cents: number): string {
@@ -82,6 +110,48 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
     if (cartOpen) setOfferCodes(readOfferCodes());
   }, [cartOpen]);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+  // ── Two-town deal (lib/townies/two-town-deal.ts) ──────────────────────────
+  // Shopify applies it automatically to 2+ productType "Hats" units. Ask
+  // Shopify which lines are hats (cached server-side), remembering every id
+  // already asked about so a quantity change doesn't refetch.
+  const [hatCheck, setHatCheck] = useState<{ checked: Set<string>; hats: Set<string> }>(
+    () => ({ checked: new Set(), hats: new Set() }),
+  );
+  const uncheckedKey = [...new Set(items.map((i) => i.variantId))]
+    .filter((id) => !hatCheck.checked.has(id))
+    .sort()
+    .join(',');
+  useEffect(() => {
+    if (!TWO_TOWN_DEAL.enabled || brand.id !== 'townies' || !cartOpen || !uncheckedKey) return;
+    let live = true;
+    fetch(`/api/cart/hats?ids=${encodeURIComponent(uncheckedKey)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!live || !Array.isArray(j?.hats)) return;
+        setHatCheck((prev) => ({
+          checked: new Set([...prev.checked, ...uncheckedKey.split(',')]),
+          hats: new Set([...prev.hats, ...(j.hats as string[])]),
+        }));
+      })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [cartOpen, uncheckedKey, brand.id]);
+  // Confirmed = Shopify has answered for every line in the bag.
+  const hatsConfirmed = items.length > 0 && !uncheckedKey;
+  const isHat = (i: CartItem) => (hatCheck.checked.has(i.variantId) ? hatCheck.hats.has(i.variantId) : looksLikeHat(i));
+  const dealOn = TWO_TOWN_DEAL.enabled && brand.id === 'townies';
+  const hatLines = dealOn ? items.filter(isHat) : [];
+  const hatUnits = hatLines.reduce((n, i) => n + i.quantity, 0);
+  const dealCents = dealOn ? dealSavingCents(hatUnits) : 0;
+  const afterDealCents = Math.max(0, subtotalCents - dealCents);
+  // The one hat in the bag, for the "add a second town" nudge. Its deal price
+  // is what a pair costs per hat (Titletown $31.99 → $27, the rest → $25).
+  const loneHat = dealOn && hatUnits === 1 ? hatLines[0] : null;
+  // HELLO5 and the deal don't stack: once Shopify has confirmed the hats and
+  // the deal is worth more, send only the free-shipping half of the pair.
+  const codesToSend = hatsConfirmed ? checkoutCodes(offerCodes, hatUnits) : offerCodes;
+  const dealBeatsOffer = dealCents > 0 && offerCodes.length > 0;
 
   // Townies hats can't be stepped past the shelf: live on-hand counts for the
   // Townies lines (Good Kicks unchanged), fetched whenever the drawer opens or
@@ -143,7 +213,7 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
             quantity: i.quantity,
             ...(i.customAttributes?.length ? { customAttributes: i.customAttributes } : {}),
           })),
-          ...(offerCodes.length ? { discountCodes: offerCodes } : {}),
+          ...(codesToSend.length ? { discountCodes: codesToSend } : {}),
           attributes: firstTouchAttributes(),
         }),
       });
@@ -254,27 +324,68 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                 )}
                 {/* A cart of only Hat & Sack bundles already ships free; the
                     "$X from free shipping" nudge would be wrong there. */}
+                {/* HELLO5 and the two-town deal don't stack. With 2+ hats the
+                    deal ($9.98 and up) beats $5, so that's the saving shown,
+                    and the bag sends only the free-shipping code. */}
                 {offerCodes.length > 0 && (
                   <p className="text-xs leading-relaxed bg-surface text-muted rounded-sm px-3 py-2.5 border border-rule">
                     <span className="font-semibold text-text uppercase tracking-wide">First-order offer.</span>{' '}
-                    $5 off and free shipping go on at checkout.
+                    {dealBeatsOffer
+                      ? 'Free shipping goes on at checkout. The two-town deal saves you more than the $5 off, so checkout uses the deal.'
+                      : '$5 off and free shipping go on at checkout.'}
+                  </p>
+                )}
+                {loneHat && (
+                  <p className="text-xs leading-relaxed bg-surface text-muted rounded-sm px-3 py-2.5 border border-rule">
+                    <span className="font-semibold text-text uppercase tracking-wide">Two-town deal.</span>{' '}
+                    {dealHatPriceCents(loneHat.priceInCents) === 2500
+                      ? 'Add a second town, both are $25.'
+                      : `Add a second town and every hat in the bag is ${formatDealUsd(TWO_TOWN_DEAL.perHatOffCents)} off.`}{' '}
+                    <Link
+                      href={brand.shopPath}
+                      onClick={() => {
+                        track('two_town_nudge_click', { location: 'cart_drawer' });
+                        closeCart();
+                      }}
+                      className="font-semibold text-text underline underline-offset-2 hover:text-accent"
+                    >
+                      Pick a town
+                    </Link>
                   </p>
                 )}
                 {offerCodes.length === 0 && brand.freeShippingCents !== null && !items.every((i) => i.productTitle === 'Hat & Sack Bundle') && (
-                  <FreeShippingBar subtotalCents={subtotalCents} thresholdCents={brand.freeShippingCents} />
+                  <FreeShippingBar subtotalCents={afterDealCents} thresholdCents={brand.freeShippingCents} />
                 )}
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted">Subtotal</span>
                   <span className="font-medium text-text">{formatCents(subtotalCents)}</span>
                 </div>
-                {brand.freeShippingCents !== null && (
+                {dealCents > 0 && (
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted">Shipping</span>
-                    <span className="font-medium text-text">
-                      {shippingEstimate(items, subtotalCents, brand.freeShippingCents, offerCodes.length > 0)}
-                    </span>
+                    <span className="text-muted">Two-town deal ({hatUnits} hats)</span>
+                    <span className="font-medium text-accent">&minus;{formatDealUsd(dealCents)}</span>
                   </div>
                 )}
+                {brand.freeShippingCents !== null && (() => {
+                  const ship = shippingEstimate(items, afterDealCents, brand.freeShippingCents, offerCodes.length > 0);
+                  return (
+                    <>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted">Shipping</span>
+                        <span className="font-medium text-text">{ship.text}</span>
+                      </div>
+                      {dealCents > 0 && (
+                        <div className="flex justify-between items-center text-sm border-t border-rule pt-2">
+                          <span className="text-text font-semibold">Estimated total</span>
+                          <span className="font-semibold text-text">
+                            {formatDealUsd(afterDealCents + (ship.cents ?? 0))}
+                            {ship.cents === null && <span className="font-normal text-muted"> + shipping</span>}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
                 <button
                   onClick={handleCheckout}
                   disabled={isCheckingOut}

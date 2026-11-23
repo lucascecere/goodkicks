@@ -23,6 +23,7 @@ const PRODUCT_QUERY = `
       title
       handle
       tags
+      productType
       descriptionHtml
       seo {
         title

@@ -5,15 +5,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BrandBadge } from '@/components/admin/brand-badge';
 import type { RealBrand } from '@/lib/admin/brand';
-import { fmtDate } from '@/lib/admin/format';
+import { fmtDate, fmtScheduled } from '@/lib/admin/format';
 import { Badge, Card, EmptyState } from '@/components/admin/ui';
 
 interface Campaign {
   id: string;
   name: string;
   subject: string;
-  status: 'draft' | 'sent';
+  status: 'draft' | 'sending' | 'sent';
   brand?: RealBrand | null;
+  scheduled_for?: string | null;
+  schedule_error?: string | null;
   sent_at: string | null;
   sent_count: number | null;
   failed_count: number | null;
@@ -48,20 +50,26 @@ function CampaignRow({ campaign, onDelete }: { campaign: Campaign; onDelete: (id
         <div className="mb-1 flex min-w-0 flex-wrap items-center gap-2">
           <BrandBadge brand={campaign.brand ?? 'townies'} />
           <Badge tone={campaign.status === 'sent' ? 'good' : 'warn'}>{campaign.status}</Badge>
+          {campaign.status === 'draft' && campaign.scheduled_for && <Badge tone="info">Scheduled</Badge>}
+          {campaign.status === 'draft' && !campaign.scheduled_for && campaign.schedule_error && <Badge tone="bad">Schedule failed</Badge>}
           <p className="min-w-0 truncate text-sm font-semibold text-town-cream">{campaign.name}</p>
         </div>
         <p className="truncate text-xs text-town-cream/60">{campaign.subject || <span className="italic">no subject</span>}</p>
         <p className="mt-0.5 text-xs text-town-cream/45">
           {campaign.status === 'sent' && campaign.sent_at
             ? `Sent ${fmtDate(campaign.sent_at)} · ${campaign.sent_count ?? 0} contacts`
-            : `Updated ${fmtRelative(campaign.updated_at)}`}
+            : campaign.status === 'sending'
+              ? 'Sending now'
+              : campaign.scheduled_for
+                ? `Sends ${fmtScheduled(campaign.scheduled_for)}`
+                : `Updated ${fmtRelative(campaign.updated_at)}`}
         </p>
       </div>
 
       <div className="-ml-2 flex flex-shrink-0 items-center gap-2 sm:ml-0">
         <Link href={`/admin/campaigns/${campaign.id}`}
           className="px-2 py-1 font-label text-[11px] font-semibold uppercase tracking-[0.12em] text-town-cream hover:underline">
-          {campaign.status === 'draft' ? 'Edit' : 'View'}
+          {campaign.status === 'sent' ? 'View' : 'Edit'}
         </Link>
         {!confirming ? (
           <button onClick={() => setConfirming(true)}
@@ -90,7 +98,8 @@ export function CampaignsList({ initialCampaigns }: { initialCampaigns: Campaign
     setCampaigns((prev) => prev.filter((c) => c.id !== id));
   }
 
-  const drafts = campaigns.filter((c) => c.status === 'draft');
+  // In-flight sends sit with the drafts so they never vanish from the page.
+  const drafts = campaigns.filter((c) => c.status !== 'sent');
   const sent = campaigns.filter((c) => c.status === 'sent');
 
   return (

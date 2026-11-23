@@ -60,6 +60,9 @@ const figtree = Figtree({
 
 const siteUrl = SITE_URL;
 
+/** Google Merchant Center site verification for townies.shop. */
+const GOOGLE_MERCHANT_CENTER_VERIFICATION = '0mJUgBjiQk43hnACkEBsj_8b20qy8m3Ls4nkVAx87rM';
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
@@ -90,7 +93,12 @@ export const metadata: Metadata = {
   verification: {
     // townies.shop's own Google Search Console token — set via env once the
     // property is verified (the previous hardcoded token was Good Kicks').
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    // Plus Google Merchant Center's token for townies.shop (2026-11-23), which
+    // renders on every page whether or not the Search Console one is set.
+    google: [
+      GOOGLE_MERCHANT_CENTER_VERIFICATION,
+      ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? [process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION] : []),
+    ],
   },
 };
 

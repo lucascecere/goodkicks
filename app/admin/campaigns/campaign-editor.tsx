@@ -7,6 +7,7 @@ import { BRAND_LABELS, type RealBrand } from '@/lib/admin/brand';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { btn, field } from '@/components/admin/ui';
+import { easternLocalToUtcIso, fmtScheduled, utcToEasternLocal } from '@/lib/admin/format';
 
 const ALL_SOURCES = ['order', 'newsletter', 'discount', 'ambassador', 'contact', 'wholesale'] as const;
 type Source = typeof ALL_SOURCES[number];
@@ -39,7 +40,11 @@ export interface InitialCampaign {
   sources: string[];
   emails: string[];
   exclude_buyers?: boolean;
-  status: 'draft' | 'sent';
+  /** UTC ISO; the cron sends the draft at or just after this. Set only via /schedule, never by a save. */
+  scheduled_for?: string | null;
+  /** Why the last scheduled attempt sent nothing. */
+  schedule_error?: string | null;
+  status: 'draft' | 'sending' | 'sent';
 }
 
 interface Props {
@@ -117,6 +122,20 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [saveError, setSaveError] = useState('');
   const [sendStatus, setSendStatus] = useState<{ type: 'idle' | 'sending' | 'done' | 'error'; message?: string }>({ type: 'idle' });
+
+  // Scheduling. Lives apart from the draft fields: Save never sends it, so a
+  // save can't switch a schedule off. Times are typed and shown in Boston time.
+  const [scheduledFor, setScheduledFor] = useState<string | null>(c?.scheduled_for ?? null);
+  const [scheduleError, setScheduleError] = useState<string | null>(c?.schedule_error ?? null);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  // Default: tomorrow at 10:00 AM ET.
+  const [scheduleInput, setScheduleInput] = useState(() =>
+    c?.scheduled_for
+      ? utcToEasternLocal(c.scheduled_for)
+      : utcToEasternLocal(new Date(Date.now() + 24 * 3600_000).toISOString()).slice(0, 11) + '10:00',
+  );
+  const [scheduleStatus, setScheduleStatus] = useState<{ type: 'idle' | 'working' | 'error'; message?: string }>({ type: 'idle' });
+  const isSending = c?.status === 'sending';
 
   const isSent = c?.status === 'sent' && !campaignId; // immutable once sent (only if loaded that way)
 
@@ -219,6 +238,39 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
       if (!res.ok) setSendStatus({ type: 'error', message: json.error ?? 'Send failed' });
       else setSendStatus({ type: 'done', message: `Sent to ${json.sent} contact${json.sent !== 1 ? 's' : ''}${json.failed > 0 ? ` (${json.failed} failed)` : ''}.` });
     } catch { setSendStatus({ type: 'error', message: 'Network error' }); }
+  }
+
+  async function handleSchedule() {
+    const iso = easternLocalToUtcIso(scheduleInput);
+    if (!iso) { setScheduleStatus({ type: 'error', message: 'Pick a date and time.' }); return; }
+    if (new Date(iso).getTime() < Date.now()) { setScheduleStatus({ type: 'error', message: 'That time has already passed.' }); return; }
+    setScheduleStatus({ type: 'working' });
+    // Save first so what goes out is what's on screen now.
+    const id = await saveDraft();
+    if (!id) { setScheduleStatus({ type: 'error', message: 'Could not save first.' }); return; }
+    try {
+      const res = await fetch(`/api/admin/campaigns/${id}/schedule`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ scheduledFor: iso }),
+      });
+      const json = await res.json();
+      if (!res.ok) { setScheduleStatus({ type: 'error', message: json.error ?? 'Could not schedule.' }); return; }
+      setScheduledFor(json.scheduledFor ?? iso);
+      setScheduleError(null);
+      setScheduleOpen(false);
+      setScheduleStatus({ type: 'idle' });
+    } catch { setScheduleStatus({ type: 'error', message: 'Network error' }); }
+  }
+
+  async function handleCancelSchedule() {
+    if (!campaignId) return;
+    setScheduleStatus({ type: 'working' });
+    try {
+      const res = await fetch(`/api/admin/campaigns/${campaignId}/schedule`, { method: 'DELETE' });
+      const json = await res.json();
+      if (!res.ok) { setScheduleStatus({ type: 'error', message: json.error ?? 'Could not cancel.' }); return; }
+      setScheduledFor(null);
+      setScheduleStatus({ type: 'idle' });
+    } catch { setScheduleStatus({ type: 'error', message: 'Network error' }); }
   }
 
   async function handleTest() {
@@ -527,11 +579,55 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
               <p className={`text-xs ${testStatus.type === 'error' ? 'text-red-300' : 'text-town-cream/60'}`}>{testStatus.message}</p>
             )}
 
-            {!confirming ? (
-              <button onClick={() => setConfirming(true)} disabled={!isValid() || sendStatus.type === 'sending' || count === 0}
-                className={`${btn.primary} w-full disabled:cursor-not-allowed`}>
-                {sendStatus.type === 'sending' ? 'Sending…' : `Send to ${count} contact${count !== 1 ? 's' : ''} →`}
-              </button>
+            {scheduleError && !scheduledFor && (
+              <p className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-3 text-xs text-amber-200">
+                Last scheduled send didn&rsquo;t go out: {scheduleError}
+              </p>
+            )}
+
+            {isSending && sendStatus.type === 'idle' ? (
+              <p className="rounded-xl border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-sm text-sky-200">
+                Sending now. Refresh in a minute to see the results.
+              </p>
+            ) : scheduledFor && sendStatus.type !== 'done' ? (
+              <div className="space-y-2 rounded-xl border border-sky-400/30 bg-sky-400/10 p-4">
+                <p className="text-sm font-semibold text-sky-200">Scheduled for {fmtScheduled(scheduledFor)}</p>
+                <p className="text-xs text-town-cream/60">
+                  Goes to {count} contact{count !== 1 ? 's' : ''} (recounted when it sends). Saved edits before then go out with it.
+                </p>
+                <button onClick={handleCancelSchedule} disabled={scheduleStatus.type === 'working'}
+                  className={`${btn.secondary} w-full`}>
+                  {scheduleStatus.type === 'working' ? 'Cancelling…' : 'Cancel schedule'}
+                </button>
+              </div>
+            ) : scheduleOpen ? (
+              <div className="space-y-3 rounded-xl border border-town-cream/15 bg-town-cream/[0.04] p-4">
+                <label htmlFor="schedule-at" className="admin-eyebrow block">Send at <span className="font-normal normal-case tracking-normal text-town-cream/40">(Boston time, ET)</span></label>
+                <input id="schedule-at" type="datetime-local" value={scheduleInput} step={900}
+                  min={utcToEasternLocal(new Date().toISOString())}
+                  onChange={(e) => setScheduleInput(e.target.value)} className={field} />
+                {easternLocalToUtcIso(scheduleInput) && (
+                  <p className="text-xs text-town-cream/55">{fmtScheduled(easternLocalToUtcIso(scheduleInput))}, to {count} contact{count !== 1 ? 's' : ''}. Sends within 15 minutes of that time.</p>
+                )}
+                <div className="flex gap-2">
+                  <button onClick={handleSchedule} disabled={scheduleStatus.type === 'working' || !isValid() || count === 0}
+                    className={`${btn.primary} flex-1 disabled:cursor-not-allowed`}>
+                    {scheduleStatus.type === 'working' ? 'Scheduling…' : 'Schedule send'}
+                  </button>
+                  <button onClick={() => { setScheduleOpen(false); setScheduleStatus({ type: 'idle' }); }} className={`${btn.secondary} flex-1`}>Cancel</button>
+                </div>
+              </div>
+            ) : !confirming ? (
+              <div className="flex gap-2">
+                <button onClick={() => setConfirming(true)} disabled={!isValid() || sendStatus.type === 'sending' || count === 0}
+                  className={`${btn.primary} flex-1 disabled:cursor-not-allowed`}>
+                  {sendStatus.type === 'sending' ? 'Sending…' : `Send to ${count} contact${count !== 1 ? 's' : ''} →`}
+                </button>
+                <button onClick={() => setScheduleOpen(true)} disabled={!isValid() || sendStatus.type === 'sending' || count === 0}
+                  className={`${btn.secondary} shrink-0 disabled:cursor-not-allowed`}>
+                  Schedule
+                </button>
+              </div>
             ) : (
               <div className="space-y-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-4">
                 <p className="text-sm font-semibold text-amber-200">Send to {count} contacts? This cannot be undone.</p>
@@ -541,6 +637,7 @@ export function CampaignEditor({ initialCampaign, initialBrand, sourceCounts, co
                 </div>
               </div>
             )}
+            {scheduleStatus.type === 'error' && <p className="text-xs text-red-300">{scheduleStatus.message}</p>}
           </div>
         </div>
       </div>
