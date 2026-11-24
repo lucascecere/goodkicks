@@ -27,7 +27,7 @@ import { isPreorder } from '@/lib/townies/preorder';
  * to true and redeploy, then set the product ACTIVE and publish it to the
  * "Townies Shop" channel only.
  */
-export const HAT_SACK_LIVE = true;
+export const HAT_SACK_LIVE = false;
 
 export const HAT_SACK_HANDLE = 'hat-and-sack';
 export const HAT_SACK_PATH = '/hat-and-sack';

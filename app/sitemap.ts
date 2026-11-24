@@ -7,6 +7,7 @@ import { customTownHref, customTowns } from '@/lib/townies/custom-hats';
 import { isGoodKicksHost } from '@/lib/seo/hosts';
 import { getStalls } from '@/lib/shop/market';
 import { MARKET_BASE } from '@/lib/shop/paths';
+import { HAT_SACK_LIVE } from '@/lib/townies/hat-sack';
 
 // Each domain lists only its own URLs. A sitemap on townies.shop that also
 // lists goodkicks.co pages is ignored for those entries and blurs which site is
@@ -81,7 +82,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const towniesPages: MetadataRoute.Sitemap = [
     { url: siteUrl,                        lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 1.0 },
     { url: `${siteUrl}/shop`,              lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.9 },
-    { url: `${siteUrl}/hat-and-sack`,      lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
+    ...(HAT_SACK_LIVE ? [{ url: `${siteUrl}/hat-and-sack`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 }] : []),
     { url: `${siteUrl}/south-shore`,       lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.9 },
     { url: `${siteUrl}/boston`,            lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
     { url: `${siteUrl}/south-east`,        lastModified: new Date(), changeFrequency: 'weekly' as const,  priority: 0.8 },
