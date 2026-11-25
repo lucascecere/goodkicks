@@ -18,14 +18,17 @@ export function GiveawayBand({ products }: { products: CollectionProduct[] }) {
   return (
     <section id="giveaway" className="bg-[#0D1B2A] text-[#F2EFE8]">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] items-stretch">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/brand/scene/giveaway-norwood-wide.jpg"
-          alt="The Norwood hat on a wrapped gift box"
-          width={920}
-          height={607}
-          className="block w-full h-full object-cover aspect-[3/2] lg:aspect-auto"
-        />
+        <picture className="block">
+          <source media="(min-width: 1024px)" srcSet="/brand/scene/giveaway-norwood.jpg" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/scene/giveaway-norwood-wide.jpg"
+            alt="The Norwood hat on a wrapped gift box"
+            width={920}
+            height={607}
+            className="block w-full h-full object-cover aspect-[3/2] lg:aspect-auto lg:max-h-[640px]"
+          />
+        </picture>
         <div className="px-5 py-10 sm:px-10 sm:py-14 lg:px-14 flex flex-col justify-center min-w-0">
           <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-[#8FB39A]">
             Giveaway · enter by Sunday, Dec 6
