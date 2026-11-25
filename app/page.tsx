@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import { HomeHero, type HeroHat } from '@/components/townies/v2/home-hero';
-import { HatWheelHero } from '@/components/townies/v2/hat-wheel-hero';
-import { price } from '@/components/townies/v2/studio';
+import { PhotoHero } from '@/components/townies/v2/photo-hero';
 import { TownCrests } from '@/components/townies/v2/town-crests';
 import { HatShelf } from '@/components/townies/v2/hat-shelf';
 import { RegionCards } from '@/components/townies/v2/region-cards';
@@ -9,10 +7,9 @@ import { BulkSplit } from '@/components/townies/v2/bulk-split';
 import { HatSackBand } from '@/components/townies/hat-sack-band';
 import { CampaignBand } from '@/components/townies/campaign-band';
 import { ReviewBand } from '@/components/townies/review-band';
-import { GiveawayBand } from '@/components/townies/giveaway-band';
+import { giveawayOpen } from '@/lib/townies/giveaway';
 import { getTownieProducts } from '@/lib/shopify/collections';
-import { townKey, hatStyle } from '@/lib/townies/towns';
-import { stockTier } from '@/lib/townies/stock-tier';
+import { townKey } from '@/lib/townies/towns';
 import { getReviewSummaries } from '@/lib/reviews/server';
 
 export const revalidate = 60;
@@ -32,7 +29,7 @@ export const metadata: Metadata = {
 
 /**
  * v2 home (2026-10), modelled on melin.com with Homefield's shop-by-school row:
- * hero (phones: one hat; computers: the hat wheel) → town badge slider → hat grid → one photo band → regions → bulk →
+ * clean photo hero (11-25; the giveaway through Dec 6) → town badge slider → hat grid → one photo band → regions → bulk →
  * reviews (empty until real ones exist) → sign-up (site-wide, SiteWrapper) → footer.
  *
  * Every hat is a real Shopify shot on the shared studio ground (see
@@ -42,58 +39,37 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const [products, ratings] = await Promise.all([getTownieProducts(), getReviewSummaries()]);
 
-  // The hero wheel: one hat per town, Milton (the first town) leading when it
-  // is in stock, then whatever is buyable today. Sold-out hats sort to the back
-  // so they never lead.
-  const ranked = [...products].sort((a, b) => stockTier(a) - stockTier(b));
-  const seen = new Set<string>();
-  const wheelProducts = [
-    ...ranked.filter((p) => townKey(p).slug === 'milton' && hatStyle(p.title) === 'lifestyle' && stockTier(p) === 0),
-    ...ranked,
-  ].filter((p) => {
-    const slug = townKey(p).slug;
-    if (!p.featuredImage?.url || seen.has(slug)) return false;
-    seen.add(slug);
-    return true;
-  }).slice(0, 12);
-  const wheel: HeroHat[] = wheelProducts.map((p) => ({
-    id: p.id,
-    src: p.featuredImage!.url,
-    alt: p.featuredImage!.altText ?? p.title,
-    title: p.title,
-    price: price(p),
-    href: `/products/${p.handle}`,
-  }));
   // Titletown is a Boston nickname hat, not a town, so it isn't counted.
   const townCount = new Set(products.map((p) => townKey(p).slug).filter((slug) => slug !== 'titletown')).size;
 
   return (
     <>
-      {/* Phones: one hat, everything in the first screen (11-04). Computers keep
-          the hat wheel (Lucas, 11-04: "the computer version should still have the slider"). */}
-      <div className="lg:hidden">
-        <HomeHero
-          hats={wheel}
+      {/* Clean photo hero (Lucas 11-25, replaced the hat wheel). Through Dec 6 the
+          hero IS the town hat giveaway; after that it is the brand hero. */}
+      {giveawayOpen() ? (
+        <PhotoHero
+          desktopSrc="/brand/scene/giveaway-norwood-hero.jpg"
+          mobileSrc="/brand/scene/giveaway-norwood.jpg"
+          alt="The Norwood Townies hat on a wrapped gift box"
+          eyebrow="Giveaway · enter by Sunday, Dec 6"
+          headline="Win your town’s hat."
+          sub="One free hat for every town. Pick yours and enter in ten seconds. Winners picked Monday, Dec 7."
+          cta={{ href: '/giveaway?utm_source=home', label: 'Enter the giveaway' }}
+          ctaSecondary={{ href: '/shop', label: 'Shop all towns' }}
+          focus="72% 55%"
+        />
+      ) : (
+        <PhotoHero
+          desktopSrc="/brand/scene/milton-21x9.jpg"
+          mobileSrc="/brand/drops/milton.jpg"
+          alt="Two Milton Townies snapbacks on a curb in Milton Village"
           eyebrow="Massachusetts · Est. 2024"
           headline="Get your town."
           sub="Embroidered hats for Massachusetts towns. The zip, the year, the nickname only locals use."
           cta={{ href: '/shop', label: 'Shop all towns' }}
           ctaSecondary={{ href: '#towns', label: 'Find your town' }}
         />
-      </div>
-      <div className="hidden lg:block">
-        <HatWheelHero
-          hats={wheel.slice(0, 8)}
-          eyebrow="Massachusetts · Est. 2024"
-          headline="Get your town."
-          sub="Embroidered hats for Massachusetts towns. The zip, the year, the nickname only locals use."
-          cta={{ href: '/shop', label: 'Shop all towns' }}
-          ctaSecondary={{ href: '#towns', label: 'Find your town' }}
-        />
-      </div>
-
-      {/* Town hat giveaway, through Dec 6 (renders nothing once it closes). */}
-      <GiveawayBand products={products} />
+      )}
 
       <TownCrests products={products} />
 

@@ -33,7 +33,8 @@ export function GiveawayPopup() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (BLOCKED.some((p) => pathname.startsWith(p))) return;
+    // Not on the homepage: its hero already is the giveaway.
+    if (pathname === '/' || BLOCKED.some((p) => pathname.startsWith(p))) return;
     const params = new URLSearchParams(window.location.search);
     if (params.get('giveaway') === '0') return snooze('dismissed');
     const force = params.get('giveaway') === '1';
