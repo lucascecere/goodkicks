@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { MARKET_VISIBLE } from '@/lib/shop/paths';
 import type { Metadata } from 'next';
 import { PageMasthead } from '@/components/townies/page-masthead';
 import { ApplyForm } from '@/components/market/apply-form';
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default function ApplyPage() {
+  if (!MARKET_VISIBLE) redirect('/shop');
   return (
     <>
       <PageMasthead

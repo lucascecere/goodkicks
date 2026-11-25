@@ -121,7 +121,7 @@ export const TOWNIES: BrandConfig = {
           { href: '/boston', label: 'Boston' },
           { href: '/south-east', label: 'Southeastern Mass' },
           { href: '/north-shore', label: 'North Shore' },
-          { href: '/local', label: 'Local Market' },
+          // Local Market hidden for now (Lucas 11-25); see MARKET_VISIBLE in lib/shop/paths.ts.
           { href: '/goodkicks', label: 'Good Kicks' },
         ],
       },

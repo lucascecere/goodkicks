@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { MARKET_VISIBLE } from '@/lib/shop/paths';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -34,6 +36,7 @@ function instagramUrl(handle: string): string {
 }
 
 export default async function StallPage({ params }: { params: Promise<{ slug: string }> }) {
+  if (!MARKET_VISIBLE) redirect('/shop');
   const { slug } = await params;
   const stall = await getStall(slug);
   if (!stall) notFound();

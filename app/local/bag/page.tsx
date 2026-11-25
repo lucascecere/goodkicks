@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { MARKET_VISIBLE } from '@/lib/shop/paths';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BagView } from '@/components/market/bag-view';
@@ -6,6 +8,7 @@ import { marketOpen } from '@/lib/shop/config';
 export const metadata: Metadata = { title: 'Market bag', robots: { index: false } };
 
 export default function BagPage() {
+  if (!MARKET_VISIBLE) redirect('/shop');
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-8 sm:py-14">
       <h1 className="display mb-8 text-[2.25rem] text-text sm:text-[2.75rem]">Your market bag</h1>

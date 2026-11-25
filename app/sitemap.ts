@@ -6,7 +6,7 @@ import { SITE_URL, GK_HOST_LIVE, gkCanonical } from '@/lib/seo/site';
 import { customTownHref, customTowns } from '@/lib/townies/custom-hats';
 import { isGoodKicksHost } from '@/lib/seo/hosts';
 import { getStalls } from '@/lib/shop/market';
-import { MARKET_BASE } from '@/lib/shop/paths';
+import { MARKET_BASE, MARKET_VISIBLE } from '@/lib/shop/paths';
 import { HAT_SACK_LIVE } from '@/lib/townies/hat-sack';
 
 // Each domain lists only its own URLs. A sitemap on townies.shop that also
@@ -25,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // The local market: only open stalls with something to sell (getStalls
   // already drops the rest), so the sitemap never lists an empty stall.
-  const marketRoutes: MetadataRoute.Sitemap = stalls.length
+  const marketRoutes: MetadataRoute.Sitemap = MARKET_VISIBLE && stalls.length
     ? [
         { url: `${siteUrl}${MARKET_BASE}`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
         ...stalls.map((s) => ({

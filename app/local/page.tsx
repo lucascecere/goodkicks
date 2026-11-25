@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+import { MARKET_VISIBLE } from '@/lib/shop/paths';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getStalls, townSlug, townsOf } from '@/lib/shop/market';
@@ -26,6 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MarketPage({ searchParams }: { searchParams: Promise<{ town?: string; payouts?: string }> }) {
+  if (!MARKET_VISIBLE) redirect('/shop');
   const { town, payouts } = await searchParams;
   const open = marketOpen();
   const stalls = await getStalls();
