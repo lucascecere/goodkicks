@@ -37,21 +37,21 @@ export function PhotoHero({ desktopSrc, mobileSrc, alt, eyebrow, headline, sub, 
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(13,27,42,0)_35%,rgba(13,27,42,.55)_62%,rgba(13,27,42,.92)_100%)] lg:bg-[linear-gradient(90deg,rgba(13,27,42,.82)_0%,rgba(13,27,42,.55)_34%,rgba(13,27,42,0)_58%)]" />
 
       <div className="mx-auto flex min-h-[min(86svh,720px)] max-w-7xl flex-col justify-end px-5 pb-10 pt-40 sm:px-8 lg:min-h-[min(80vh,720px)] lg:justify-center lg:pb-16 lg:pt-16">
-        <div className="max-w-xl">
+        <div className="max-w-xl lg:max-w-2xl">
           <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-[#F2EFE8]/80">{eyebrow}</p>
-          <h1 className="display mt-3 text-[2.5rem] leading-[1] uppercase! tracking-[0.01em]! sm:text-[3.5rem] lg:text-[4.25rem]">{headline}</h1>
+          <h1 className="display mt-3 text-[2.5rem] leading-[1] uppercase! tracking-[0.01em]! sm:text-[3.5rem] lg:whitespace-nowrap lg:text-[3.75rem]">{headline}</h1>
           <p className="mt-3 max-w-md text-[1rem] leading-relaxed text-[#F2EFE8]/80 sm:text-[1.0625rem]">{sub}</p>
           <div className="mt-6 grid grid-cols-2 gap-2 sm:flex sm:gap-3">
             <Link
               href={cta.href}
-              className="font-label flex min-h-12 items-center justify-center bg-[#F2EFE8] px-4 text-center text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-[#0D1B2A] transition-colors hover:bg-white sm:px-8"
+              className="font-label flex min-h-12 items-center justify-center whitespace-nowrap bg-[#F2EFE8] px-3 text-center text-[0.6875rem] font-semibold uppercase tracking-[0.1em] sm:text-[0.75rem] sm:tracking-[0.14em] text-[#0D1B2A] transition-colors hover:bg-white sm:px-8"
             >
               {cta.label}
             </Link>
             {ctaSecondary && (
               <Link
                 href={ctaSecondary.href}
-                className="font-label flex min-h-12 items-center justify-center border border-[#F2EFE8]/70 px-4 text-center text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-[#F2EFE8] transition-colors hover:bg-[#F2EFE8] hover:text-[#0D1B2A] sm:px-8"
+                className="font-label flex min-h-12 items-center justify-center whitespace-nowrap border border-[#F2EFE8]/70 px-3 text-center text-[0.6875rem] font-semibold uppercase tracking-[0.1em] sm:text-[0.75rem] sm:tracking-[0.14em] text-[#F2EFE8] transition-colors hover:bg-[#F2EFE8] hover:text-[#0D1B2A] sm:px-8"
               >
                 {ctaSecondary.label}
               </Link>
