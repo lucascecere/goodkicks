@@ -10,7 +10,7 @@ import { BUYER_INTENT, judgeForm } from '@/lib/form-guard';
 import { quarantine } from '@/lib/form-quarantine';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { townPages } from '@/lib/townies/towns';
-import { GIVEAWAY, OTHER_TOWN, giveawayOpen } from '@/lib/townies/giveaway';
+import { GIVEAWAY, OTHER_TOWN, giveawayEligible, giveawayOpen } from '@/lib/townies/giveaway';
 import { SITE_URL } from '@/lib/seo/site';
 
 // Website entries for the town hat giveaway. One row per person per town
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
 
     // The town must be one we actually make (or "other" with a name typed).
     const towns = townPages(await getTownieProducts());
-    const town = towns.find((t) => t.slug === d.town);
+    const town = towns.find((t) => t.slug === d.town && giveawayEligible(t.slug));
     if (!town && d.town !== OTHER_TOWN) {
       return Response.json({ ok: false, error: 'Pick your town from the list.' }, { status: 400 });
     }

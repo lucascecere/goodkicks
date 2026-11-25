@@ -5,7 +5,7 @@ import { getTownieProducts } from '@/lib/shopify/collections';
 import { townPages } from '@/lib/townies/towns';
 import { PageMasthead } from '@/components/townies/page-masthead';
 import { GiveawayForm, type GiveawayTown } from '@/components/forms/giveaway-form';
-import { GIVEAWAY, giveawayOpen } from '@/lib/townies/giveaway';
+import { GIVEAWAY, giveawayEligible, giveawayOpen } from '@/lib/townies/giveaway';
 
 // /giveaway: website entry for the town hat giveaway (one free hat per town).
 // Linked from the Instagram post, the bio and paid boosts. Temporary page: kept
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 };
 
 export default async function GiveawayPage() {
-  const towns: GiveawayTown[] = townPages(await getTownieProducts()).map((t) => ({
+  const towns: GiveawayTown[] = townPages(await getTownieProducts()).filter((t) => giveawayEligible(t.slug)).map((t) => ({
     slug: t.slug,
     name: t.name,
     image: t.products[0]?.featuredImage?.url ?? null,
@@ -39,7 +39,7 @@ export default async function GiveawayPage() {
       <PageMasthead
         eyebrow={open ? 'Giveaway · enter by Sunday, Dec 6' : 'Giveaway · closed'}
         title="Win your town’s hat."
-        sub={`One free hat for every town we make. Pick your town and enter. We pick one winner per town on ${GIVEAWAY.pickLabel}.`}
+        sub={`One free hat for every town below. Pick your town and enter. We pick one winner per town on ${GIVEAWAY.pickLabel}.`}
         pattern="topo"
       />
 

@@ -8,6 +8,7 @@ import { ParentBanner } from './parent-banner';
 import { AnnouncementBar } from './announcement-bar';
 import { CartDrawer } from './cart-drawer';
 import { WelcomeSlideIn } from '@/components/townies/v2/welcome-slide-in';
+import { GiveawayPopup } from '@/components/townies/v2/giveaway-popup';
 import { JoinBand } from '@/components/townies/v2/join-band';
 import { siteBrand } from '@/lib/brand/site-brand';
 import { brandConfig } from '@/lib/brand/brands';
@@ -58,6 +59,7 @@ export function SiteWrapper({
         {/* Townies only — Good Kicks has its own offer story, and mixing the two
             brands' promotions in one popup is exactly the thing we don't do. */}
         {!isGoodKicks && <WelcomeSlideIn />}
+        {!isGoodKicks && <GiveawayPopup />}
       </CartProvider>
     </div>
   );

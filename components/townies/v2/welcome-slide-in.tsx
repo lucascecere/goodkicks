@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import { OFFER_POPUP_KEY, saveOffer } from '@/lib/townies/welcome-offer';
 import { formToken, useFormToken } from '@/lib/form-token-client';
 import { FormTrap, trapValue } from '@/components/forms/form-trap';
+import { giveawayOpen, giveawayPopupPending } from '@/lib/townies/giveaway';
 
 /**
  * First-order offer (Lucas, 2026-10-28): $5 off plus free shipping, shown
@@ -56,6 +57,13 @@ export function WelcomeSlideIn() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('welcome') === '0') return snooze('dismissed');
     if (params.get('welcome') !== '1' && snoozedUntil() > Date.now()) return;
+    // While the town hat giveaway runs, its popup takes this slot: stand down if
+    // it is still pending or already showed this visit (never two popups).
+    if (params.get('welcome') !== '1' && giveawayOpen()) {
+      let seen = false;
+      try { seen = sessionStorage.getItem('townies_giveaway_seen') === '1'; } catch {}
+      if (seen || giveawayPopupPending()) return;
+    }
     if (params.get('welcome') === '1') {
       const t = setTimeout(() => setOpen(true), 1500);
       return () => clearTimeout(t);

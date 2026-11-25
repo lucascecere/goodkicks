@@ -14,3 +14,25 @@ export function giveawayOpen(now = Date.now()): boolean {
 }
 
 export const OTHER_TOWN = 'other';
+
+/** Live towns that are NOT part of this giveaway (Lucas 11-25: Canton and
+ *  Westwood launched after the post; Charlestown is in). */
+export const GIVEAWAY_EXCLUDED = new Set(['canton', 'westwood']);
+
+export function giveawayEligible(slug: string): boolean {
+  return !GIVEAWAY_EXCLUDED.has(slug);
+}
+
+/** localStorage key for the site popup's snooze. */
+export const GIVEAWAY_POPUP_KEY = 'townies_giveaway_popup_v1';
+
+/** True while the giveaway popup still wants to show (open + not snoozed). */
+export function giveawayPopupPending(): boolean {
+  if (!giveawayOpen()) return false;
+  try {
+    const raw = localStorage.getItem(GIVEAWAY_POPUP_KEY);
+    return !raw || (JSON.parse(raw).until ?? 0) < Date.now();
+  } catch {
+    return false;
+  }
+}
