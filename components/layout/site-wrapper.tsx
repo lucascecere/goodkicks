@@ -9,6 +9,7 @@ import { AnnouncementBar } from './announcement-bar';
 import { CartDrawer } from './cart-drawer';
 import { WelcomeSlideIn } from '@/components/townies/v2/welcome-slide-in';
 import { GiveawayPopup } from '@/components/townies/v2/giveaway-popup';
+import { giveawayOpen } from '@/lib/townies/giveaway';
 import { JoinBand } from '@/components/townies/v2/join-band';
 import { siteBrand } from '@/lib/brand/site-brand';
 import { brandConfig } from '@/lib/brand/brands';
@@ -58,8 +59,9 @@ export function SiteWrapper({
         <CartDrawer brand={brand} />
         {/* Townies only — Good Kicks has its own offer story, and mixing the two
             brands' promotions in one popup is exactly the thing we don't do. */}
-        {!isGoodKicks && <WelcomeSlideIn />}
-        {!isGoodKicks && <GiveawayPopup />}
+        {/* While the town hat giveaway runs, it is the ONLY popup on the site
+            (Lucas 11-25). The first-order offer comes back after Dec 6. */}
+        {!isGoodKicks && (giveawayOpen() ? <GiveawayPopup /> : <WelcomeSlideIn />)}
       </CartProvider>
     </div>
   );

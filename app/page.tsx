@@ -9,6 +9,7 @@ import { BulkSplit } from '@/components/townies/v2/bulk-split';
 import { HatSackBand } from '@/components/townies/hat-sack-band';
 import { CampaignBand } from '@/components/townies/campaign-band';
 import { ReviewBand } from '@/components/townies/review-band';
+import { GiveawayBand } from '@/components/townies/giveaway-band';
 import { getTownieProducts } from '@/lib/shopify/collections';
 import { townKey, hatStyle } from '@/lib/townies/towns';
 import { stockTier } from '@/lib/townies/stock-tier';
@@ -90,6 +91,9 @@ export default async function HomePage() {
           ctaSecondary={{ href: '#towns', label: 'Find your town' }}
         />
       </div>
+
+      {/* Town hat giveaway, through Dec 6 (renders nothing once it closes). */}
+      <GiveawayBand products={products} />
 
       <TownCrests products={products} />
 
