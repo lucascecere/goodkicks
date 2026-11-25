@@ -85,7 +85,7 @@ export function GiveawayForm({ towns }: { towns: GiveawayTown[] }) {
     >
       <fieldset>
         <legend className="block text-xs uppercase tracking-[0.15em] text-muted mb-3">Pick your town</legend>
-        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-2.5">
           {towns.map((t) => {
             const on = picked === t.slug;
             return (
@@ -99,7 +99,7 @@ export function GiveawayForm({ towns }: { towns: GiveawayTown[] }) {
                 ) : (
                   <div className="w-full aspect-[4/3]" />
                 )}
-                <span className="block text-center text-xs font-semibold uppercase tracking-[0.12em] text-text pb-2.5 -mt-1">{t.name}</span>
+                <span className="block text-center text-[10px] sm:text-xs font-semibold uppercase tracking-[0.1em] sm:tracking-[0.12em] text-text pb-2 sm:pb-2.5 -mt-1 px-1 leading-tight">{t.name}</span>
                 {on ? (
                   <span className="absolute top-2 right-2 rounded-full bg-text text-bg text-[10px] font-bold px-2 py-0.5">✓</span>
                 ) : null}
