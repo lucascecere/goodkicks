@@ -8,6 +8,7 @@ import { ShopFilter, type RegionTab, type ShopItem, type TownTab } from '@/compo
 import { HAT_SACK_LIVE } from '@/lib/townies/hat-sack';
 import { HatSackPopup } from '@/components/townies/v2/hat-sack-popup';
 import { giveawayOpen } from '@/lib/townies/giveaway';
+import { BLACK_FRIDAY, blackFridayOn } from '@/lib/townies/black-friday';
 import { getHatSackFromCents } from '@/lib/shopify/hat-sack-offer';
 import { getReviewSummaries } from '@/lib/reviews/server';
 
@@ -68,6 +69,13 @@ export default async function ShopPage({
 
       <div id="hats" className="relative max-w-7xl mx-auto scroll-mt-24 px-4 sm:px-8 pt-8 sm:pt-12 pb-20">
         {/* No section up top (Lucas, 10-09): one quiet title line, then the cards. */}
+        {/* Black Friday weekend (lib/townies/black-friday.ts). */}
+        {blackFridayOn() && (
+          <div className="mb-6 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-y border-rule py-4">
+            <p className="display text-[1.75rem] leading-none uppercase! tracking-[0.01em]! text-text sm:text-[2.25rem]">Black Friday: $10 off every hat.</p>
+            <p className="text-[0.875rem] text-muted">No code needed, it comes off at checkout. Ends {BLACK_FRIDAY.endsLabel}.</p>
+          </div>
+        )}
         <h1 className="mb-6 font-label text-[0.75rem] font-semibold uppercase tracking-[0.2em] text-text/60">
           Shop all hats{items.length > 0 ? ` · ${items.length}` : ''}
         </h1>
@@ -101,7 +109,7 @@ export default async function ShopPage({
       </div>
 
       <RequestTownBand />
-      {hatSack !== null && !giveawayOpen() && <HatSackPopup fromCents={hatSack} />}
+      {hatSack !== null && !giveawayOpen() && !blackFridayOn() && <HatSackPopup fromCents={hatSack} />}
     </div>
   );
 }

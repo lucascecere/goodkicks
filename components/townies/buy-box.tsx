@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
+import { BLACK_FRIDAY, blackFridayOn, bfHatPriceCents, isHat, usd } from '@/lib/townies/black-friday';
 
 export type BuyVariant = {
   id: string;
@@ -77,6 +78,11 @@ export function BuyBox({
     minimumFractionDigits: selected.priceInCents % 100 === 0 ? 0 : 2,
   }).format(selected.priceInCents / 100);
 
+  // Black Friday (lib/townies/black-friday.ts): Shopify takes $10 off each hat
+  // at checkout automatically; the page shows the price they will pay.
+  const bf = blackFridayOn() && isHat(productTitle);
+  const salePrice = bf ? usd(bfHatPriceCents(selected.priceInCents)) : null;
+
   function handleAdd() {
     addItem({
       variantId: selected.id,
@@ -102,7 +108,18 @@ export function BuyBox({
 
   return (
     <div className="space-y-6">
-      <p className="text-2xl font-medium text-text">{price}</p>
+      {salePrice ? (
+        <div>
+          <p className="flex items-baseline gap-2.5">
+            <span className="text-2xl font-semibold text-[#B3261E]">{salePrice}</span>
+            <s className="text-lg text-muted">{price}</s>
+            <span className="rounded-sm bg-[#0D1B2A] px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-white">Black Friday</span>
+          </p>
+          <p className="mt-1.5 text-[0.8125rem] text-muted">$10 off every hat, taken off at checkout. No code needed. Ends {BLACK_FRIDAY.endsLabel}.</p>
+        </div>
+      ) : (
+        <p className="text-2xl font-medium text-text">{price}</p>
+      )}
 
       {hasChoices && (
         <div>
@@ -166,7 +183,7 @@ export function BuyBox({
             <div className="min-w-0 flex-1">
               <p className="truncate text-[0.875rem] font-semibold text-text">{productTitle}</p>
               <p className="text-[0.8125rem] text-muted">
-                {price}
+                {salePrice ? <><span className="font-semibold text-[#B3261E]">{salePrice}</span> <s>{price}</s></> : price}
                 {preorder && selected.available ? ' · Pre-order' : stockNote && selected.available ? ` · ${stockNote.split('·')[1]?.trim() ?? ''}` : ''}
               </p>
             </div>

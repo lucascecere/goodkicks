@@ -22,6 +22,7 @@ import { listRecoverableCheckouts, orderedSince, recoveryLink } from '@/lib/shop
 import { mintBack5Code } from '@/lib/shopify/create-back5-code';
 import { sendAbandonedCheckoutEmail, abandonedSubject } from '@/lib/email/send-abandoned-checkout';
 import { dealApplies } from '@/lib/townies/two-town-deal';
+import { blackFridayOn } from '@/lib/townies/black-friday';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -94,7 +95,9 @@ export async function GET(req: NextRequest) {
     // The same person can leave two checkouts in a row; email the newest only.
     if (planned.some((p) => p.email === c.email)) { skipped.push({ checkout: c.id, reason: 'newer checkout for same email' }); continue; }
     const deal = dealApplies(c.hatUnits);
-    const hasOffer = !deal && c.discountCodes.length === 0;
+    // Black Friday weekend: hats are already $10 off at checkout and BACK5 can't
+    // stack with it, so everyone gets the reminder (no code minted).
+    const hasOffer = !deal && !blackFridayOn() && c.discountCodes.length === 0;
     planned.push({
       c,
       checkout: c.id,

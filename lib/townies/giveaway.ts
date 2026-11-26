@@ -1,3 +1,5 @@
+import { blackFridayOn } from './black-friday';
+
 // Town hat giveaway (Dec 2026): one free hat per town, one winner per town.
 // Entries come from the /giveaway form (this table) and from Instagram comments
 // on the giveaway post. Change the dates here and the page + API follow.
@@ -15,6 +17,15 @@ export function giveawayOpen(now = Date.now()): boolean {
 
 export const OTHER_TOWN = 'other';
 
+/**
+ * Should the site PROMOTE the giveaway right now (hero, popup, footer link)?
+ * Not during Black Friday weekend (Lucas 11-26: hide it for the weekend, then
+ * back to the giveaway). /giveaway itself stays open the whole time.
+ */
+export function giveawayPromoted(now = Date.now()): boolean {
+  return giveawayOpen(now) && !blackFridayOn();
+}
+
 /** Live towns that are NOT part of this giveaway (Lucas 11-25: Canton and
  *  Westwood launched after the post; Charlestown is in). */
 export const GIVEAWAY_EXCLUDED = new Set(['canton', 'westwood']);
@@ -28,7 +39,7 @@ export const GIVEAWAY_POPUP_KEY = 'townies_giveaway_popup_v1';
 
 /** True while the giveaway popup still wants to show (open + not snoozed). */
 export function giveawayPopupPending(): boolean {
-  if (!giveawayOpen()) return false;
+  if (!giveawayPromoted()) return false;
   try {
     const raw = localStorage.getItem(GIVEAWAY_POPUP_KEY);
     return !raw || (JSON.parse(raw).until ?? 0) < Date.now();

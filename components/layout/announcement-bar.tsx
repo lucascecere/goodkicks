@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import type { BrandConfig } from '@/lib/brand/brands';
-import { TWO_TOWN_DEAL } from '@/lib/townies/two-town-deal';
+import { TWO_TOWN_DEAL, twoTownDealOn } from '@/lib/townies/two-town-deal';
 import { christmasOrderBy } from '@/lib/townies/preorder';
+import { BLACK_FRIDAY, blackFridayOn } from '@/lib/townies/black-friday';
 import { track } from '@/lib/track';
 
 type AnnounceItem = { text: string; href?: string; event?: string };
@@ -30,7 +31,7 @@ export function AnnouncementBar({ brand }: { brand: BrandConfig }) {
   const show = (i: number) =>
     deal.length === 0
       ? i === 0 ? 'flex' : 'hidden sm:flex'
-      : i === 0 ? 'flex' : i === 1 ? 'hidden lg:flex' : i === 2 ? 'hidden xl:flex' : 'hidden';
+      : i === 0 ? 'flex' : i === 1 ? 'hidden lg:flex' : i === 2 ? 'hidden xl:flex' : i === 3 ? 'hidden 2xl:flex' : 'hidden';
 
   return (
     <div className="bg-announce text-announce-contrast">
@@ -70,10 +71,16 @@ export function AnnouncementBar({ brand }: { brand: BrandConfig }) {
  * christmasOrderBy() (the same date the hat pages print) for the cutoff.
  */
 function dealItems(brand: BrandConfig): AnnounceItem[] {
-  if (brand.id !== 'townies' || !TWO_TOWN_DEAL.enabled) return [];
-  const out: AnnounceItem[] = [
-    { text: 'Two towns from $50. Get 2 or more hats, save $4.99 on each.', href: brand.shopPath, event: 'two_town_banner_click' },
-  ];
+  if (brand.id !== 'townies') return [];
+  // Black Friday weekend leads the bar (lib/townies/black-friday.ts).
+  const bf = blackFridayOn();
+  if (!bf && !twoTownDealOn()) return [];
+  const out: AnnounceItem[] = bf
+    ? [
+        { text: 'Black Friday: $10 off every hat. No code needed.', href: brand.shopPath, event: 'bf_banner_click' },
+        { text: `Ends ${BLACK_FRIDAY.endsLabel}` },
+      ]
+    : [{ text: 'Two towns from $50. Get 2 or more hats, save $4.99 on each.', href: brand.shopPath, event: 'two_town_banner_click' }];
   const by = christmasOrderBy(false, []);
   if (by) {
     out.push({

@@ -32,7 +32,7 @@ import { sortByStock } from '@/lib/townies/stock-tier';
 import { getProductReviews } from '@/lib/reviews/server';
 import { ProductReviews } from '@/components/townies/v2/product-reviews';
 import { Stars } from '@/components/townies/v2/stars';
-import { TWO_TOWN_DEAL, dealHatPriceCents, formatDealUsd } from '@/lib/townies/two-town-deal';
+import { TWO_TOWN_DEAL, dealHatPriceCents, formatDealUsd, twoTownDealOn } from '@/lib/townies/two-town-deal';
 
 // Shared product-detail body, rendered by BOTH the Townies route
 // (app/products/[handle]) and the Good Kicks route (app/goodkicks/products/[handle]).
@@ -378,7 +378,7 @@ export async function ProductPageBody({ handle, brand }: { handle: string; brand
             {/* Two-town deal (lib/townies/two-town-deal.ts): Shopify takes
                 $4.99 off each hat at 2+. Worded per hat so Titletown ($31.99)
                 reads $27, not a $25 checkout won't give. */}
-            {!gk && TWO_TOWN_DEAL.enabled && shopifyProduct.productType === TWO_TOWN_DEAL.hatProductType && (
+            {!gk && twoTownDealOn() && shopifyProduct.productType === TWO_TOWN_DEAL.hatProductType && (
               <p className="mt-3 text-center text-xs text-muted">
                 <span className="font-semibold text-text">Two-town deal:</span>{' '}
                 {dealHatPriceCents(variants[0].priceInCents) === 2500

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { HatPrice } from '@/components/townies/hat-price';
 import Image from 'next/image';
 import type { CollectionProduct } from '@/lib/shopify/collections';
 import { isPreorder } from '@/lib/townies/preorder';
@@ -139,7 +140,7 @@ export function ProductCard({
         <p className="font-medium text-text text-[0.9375rem] leading-snug">
           {title ?? product.title}
         </p>
-        <p className="text-muted text-[0.9375rem] shrink-0">{priceLabel(product)}</p>
+        <p className="text-muted text-[0.9375rem] shrink-0"><HatPrice title={product.title} amount={product.variants.edges[0]?.node.price.amount} /></p>
       </div>
       {rating && rating.count > 0 && (
         <p className="mt-1 flex items-center gap-1.5 text-[0.75rem] text-muted">

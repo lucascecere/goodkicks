@@ -16,8 +16,8 @@ import {
   checkoutCodes,
   dealHatPriceCents,
   dealSavingCents,
-  formatDealUsd,
-} from '@/lib/townies/two-town-deal';
+  formatDealUsd, twoTownDealOn } from '@/lib/townies/two-town-deal';
+import { BLACK_FRIDAY, blackFridayOn } from '@/lib/townies/black-friday';
 import { track } from '@/lib/track';
 
 /**
@@ -123,7 +123,7 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
     .sort()
     .join(',');
   useEffect(() => {
-    if (!TWO_TOWN_DEAL.enabled || brand.id !== 'townies' || !cartOpen || !uncheckedKey) return;
+    if (!twoTownDealOn() || brand.id !== 'townies' || !cartOpen || !uncheckedKey) return;
     let live = true;
     fetch(`/api/cart/hats?ids=${encodeURIComponent(uncheckedKey)}`)
       .then((r) => (r.ok ? r.json() : null))
@@ -140,11 +140,17 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
   // Confirmed = Shopify has answered for every line in the bag.
   const hatsConfirmed = items.length > 0 && !uncheckedKey;
   const isHat = (i: CartItem) => (hatCheck.checked.has(i.variantId) ? hatCheck.hats.has(i.variantId) : looksLikeHat(i));
-  const dealOn = TWO_TOWN_DEAL.enabled && brand.id === 'townies';
+  const dealOn = twoTownDealOn() && brand.id === 'townies';
   const hatLines = dealOn ? items.filter(isHat) : [];
   const hatUnits = hatLines.reduce((n, i) => n + i.quantity, 0);
   const dealCents = dealOn ? dealSavingCents(hatUnits) : 0;
-  const afterDealCents = Math.max(0, subtotalCents - dealCents);
+  // Black Friday (lib/townies/black-friday.ts): Shopify takes $10 off each hat
+  // at checkout; the bag shows the same saving so the total isn't a surprise.
+  const bfOn = blackFridayOn() && brand.id === 'townies';
+  const bfLineOff = (i: CartItem) => (bfOn && isHat(i) ? Math.min(BLACK_FRIDAY.perHatOffCents, i.priceInCents) : 0);
+  const bfCents = bfOn ? items.reduce((n, i) => n + bfLineOff(i) * i.quantity, 0) : 0;
+  const bfHats = bfOn ? items.filter((i) => bfLineOff(i) > 0).reduce((n, i) => n + i.quantity, 0) : 0;
+  const afterDealCents = Math.max(0, subtotalCents - dealCents - bfCents);
   // The one hat in the bag, for the "add a second town" nudge. Its deal price
   // is what a pair costs per hat (Titletown $31.99 → $27, the rest → $25).
   const loneHat = dealOn && hatUnits === 1 ? hatLines[0] : null;
@@ -305,7 +311,14 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                         )}
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-sm text-text">{formatCents(item.priceInCents * item.quantity)}</p>
+                        {bfLineOff(item) > 0 ? (
+                          <p className="text-sm">
+                            <span className="font-semibold text-[#B3261E]">{formatCents((item.priceInCents - bfLineOff(item)) * item.quantity)}</span>{' '}
+                            <s className="text-xs text-muted">{formatCents(item.priceInCents * item.quantity)}</s>
+                          </p>
+                        ) : (
+                          <p className="text-sm text-text">{formatCents(item.priceInCents * item.quantity)}</p>
+                        )}
                       </div>
                     </li>
                   );
@@ -360,6 +373,12 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                   <span className="text-muted">Subtotal</span>
                   <span className="font-medium text-text">{formatCents(subtotalCents)}</span>
                 </div>
+                {bfCents > 0 && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted">Black Friday ({bfHats} {bfHats === 1 ? 'hat' : 'hats'}, $10 off each)</span>
+                    <span className="font-semibold text-[#B3261E]">&minus;{formatDealUsd(bfCents)}</span>
+                  </div>
+                )}
                 {dealCents > 0 && (
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-muted">Two-town deal ({hatUnits} hats)</span>
@@ -374,7 +393,7 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
                         <span className="text-muted">Shipping</span>
                         <span className="font-medium text-text">{ship.text}</span>
                       </div>
-                      {dealCents > 0 && (
+                      {(dealCents > 0 || bfCents > 0) && (
                         <div className="flex justify-between items-center text-sm border-t border-rule pt-2">
                           <span className="text-text font-semibold">Estimated total</span>
                           <span className="font-semibold text-text">

@@ -9,6 +9,7 @@ import { currentBrand } from '@/components/brand/current-brand';
 import { formToken, useFormToken } from '@/lib/form-token-client';
 import { FormTrap, trapValue } from '@/components/forms/form-trap';
 import type { BrandConfig } from '@/lib/brand/brands';
+import { giveawayPromoted } from '@/lib/townies/giveaway';
 
 // The one footer, for both brands. Columns, logo, socials and the copyright
 // line come from the brand config; the ground is `ink`, which is navy for
@@ -30,7 +31,7 @@ export function Footer({ brand }: { brand: BrandConfig }) {
           </div>
 
           {brand.footer.columns.map((col) => (
-            <FooterCol key={col.title} title={col.title} links={col.links} />
+            <FooterCol key={col.title} title={col.title} links={col.links.filter((l) => l.href !== '/giveaway' || giveawayPromoted())} />
           ))}
         </div>
 

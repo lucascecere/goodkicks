@@ -16,6 +16,7 @@
 // or the site will promise a price checkout won't give (or hide one it will).
 
 import { FIRST_ORDER } from '@/lib/townies/spin-prizes';
+import { blackFridayOn } from '@/lib/townies/black-friday';
 
 export const TWO_TOWN_DEAL = {
   enabled: true,
@@ -26,9 +27,18 @@ export const TWO_TOWN_DEAL = {
   hatProductType: 'Hats',
 } as const;
 
+/**
+ * Is the deal on right now? Off during Black Friday weekend: the $10-off-every-
+ * hat sale beats it and the two Shopify discounts don't stack (Shopify applies
+ * the bigger one), so the site stops talking about it for those days.
+ */
+export function twoTownDealOn(): boolean {
+  return TWO_TOWN_DEAL.enabled && !blackFridayOn();
+}
+
 /** True when `count` hat units earn the deal. */
 export function dealApplies(hatUnits: number): boolean {
-  return TWO_TOWN_DEAL.enabled && hatUnits >= TWO_TOWN_DEAL.minHats;
+  return twoTownDealOn() && hatUnits >= TWO_TOWN_DEAL.minHats;
 }
 
 /** The deal's saving for this many hat units, in cents (0 below the minimum). */
@@ -57,6 +67,10 @@ export function dealHatPriceCents(priceCents: number): number {
  * every code and let Shopify choose.
  */
 export function checkoutCodes(codes: string[], hatUnits: number): string[] {
+  const dollarPrefixBf = `${FIRST_ORDER.codePrefix.toUpperCase()}-`;
+  // Black Friday's automatic $10/hat doesn't combine with order discounts:
+  // never send the dollar code into checkout while it runs (shipping code stays).
+  if (blackFridayOn()) return codes.filter((c) => !c.toUpperCase().startsWith(dollarPrefixBf));
   const saving = dealSavingCents(hatUnits);
   if (!saving) return codes;
   const dollarPrefix = `${FIRST_ORDER.codePrefix.toUpperCase()}-`;
