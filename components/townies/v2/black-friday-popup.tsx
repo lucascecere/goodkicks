@@ -71,7 +71,7 @@ export function BlackFridayPopup() {
 
   // On a hat page the shopper is already where they need to be: just close.
   const onProduct = pathname.startsWith('/products/');
-  const onTown = pathname.startsWith('/towns/');
+  const onTown = pathname.startsWith('/towns/') || pathname.startsWith('/shop') || pathname.startsWith('/gifts');
   const primary = 'font-label inline-block bg-text px-5 py-3.5 text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-white hover:bg-black';
 
   return (
@@ -107,7 +107,7 @@ export function BlackFridayPopup() {
                   track('bf_popup_click', { path: pathname });
                 }}
               >
-                {onProduct ? 'Get this hat' : 'Shop these hats'}
+                {onProduct ? 'Get this hat' : 'Shop the sale'}
               </button>
             ) : (
               <a
