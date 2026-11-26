@@ -5,7 +5,7 @@ import { BLACK_FRIDAY, blackFridayOn } from './black-friday';
 // its own photo, and none of them is used anywhere else on the homepage (the
 // Milton curb and Braintree pile are already further down the page).
 //
-//   Nov 27 to Nov 29        Black Friday, $10 off every hat (Dorchester, spotlight)
+//   Nov 27 to Nov 29        Black Friday, $10 off in-stock hats (Needham, spotlight)
 //   until Dec 6 11:59pm ET  the town hat giveaway (Norwood gift box)
 //   Dec 7 to Dec 25         Christmas (Needham by the tree; Needham has the most stock)
 //   Dec 26 on               everyday brand hero (Needham on a porch rail)
@@ -36,12 +36,12 @@ export function homeHero(now = Date.now()): HeroContent {
   if (blackFridayOn(now)) {
     return {
       phase: 'blackfriday',
-      desktopSrc: '/brand/scene/bf-dorchester-wide.jpg',
-      mobileSrc: '/brand/scene/bf-dorchester-tall.jpg',
-      alt: 'The Dorchester Townies hat on a slate stone under a spotlight',
+      desktopSrc: '/brand/scene/bf-needham-wide.jpg',
+      mobileSrc: '/brand/scene/bf-needham-tall.jpg',
+      alt: 'The Needham Townies hat on a slate stone under a spotlight',
       eyebrow: `Black Friday weekend · ends ${BLACK_FRIDAY.endsLabel}`,
-      headline: '$10 off every hat.',
-      sub: 'Hats from $19.99 through Sunday. No code needed, it comes off at checkout.',
+      headline: '$10 off in-stock hats.',
+      sub: 'In-stock hats are $19.99 through Sunday. No code needed, it comes off at checkout.',
       cta: { href: '/shop?utm_source=home&utm_campaign=black-friday', label: 'Shop the sale' },
       ctaSecondary: { href: '#towns', label: 'Find your town' },
       focus: '68% 50%',

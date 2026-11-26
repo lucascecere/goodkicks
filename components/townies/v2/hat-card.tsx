@@ -57,7 +57,7 @@ export function HatCard({
       </div>
       <div className="mt-3 flex items-baseline justify-between gap-3">
         <p className="text-[0.9375rem] font-semibold text-text leading-snug">{product.title}</p>
-        <p className="shrink-0 text-[0.9375rem] text-text"><HatPrice title={product.title} amount={product.variants.edges[0]?.node.price.amount} /></p>
+        <p className="shrink-0 text-[0.9375rem] text-text"><HatPrice title={product.title} tags={product.tags} stock={product.stock} amount={product.variants.edges[0]?.node.price.amount} /></p>
       </div>
       <p className="mt-0.5 flex items-center gap-2 text-[0.8125rem] text-muted">
         {styleLine(product)}

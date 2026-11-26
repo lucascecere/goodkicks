@@ -84,7 +84,7 @@ export function BlackFridayPopup() {
         className="relative w-full max-w-[440px] animate-[pop-in_.35s_ease-out_both] overflow-hidden bg-white shadow-[0_30px_80px_-20px_rgba(13,27,42,0.6)]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/scene/bf-dorchester-popup.jpg" alt="The Dorchester hat under a spotlight" className="block w-full h-auto" width={920} height={613} />
+        <img src="/brand/scene/bf-needham-popup.jpg" alt="The Needham hat under a spotlight" className="block w-full h-auto" width={920} height={613} />
         <button onClick={close} aria-label="Close" className="absolute right-3 top-3 rounded-full bg-black/40 p-1 text-white hover:bg-black/60">
           <X size={20} />
         </button>
@@ -92,9 +92,9 @@ export function BlackFridayPopup() {
           <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-[#B3261E]">
             Black Friday · ends {BLACK_FRIDAY.endsLabel}
           </p>
-          <p className="display mt-2 text-[2.125rem] leading-[1.02] uppercase! tracking-[0.01em]! text-text">$10 off every hat.</p>
+          <p className="display mt-2 text-[2.125rem] leading-[1.02] uppercase! tracking-[0.01em]! text-text">$10 off in-stock hats.</p>
           <p className="mt-2 text-[0.9375rem] text-text/70">
-            Hats from $19.99 this weekend only. No code needed, it comes off at checkout.
+            In-stock hats are $19.99 this weekend only. No code needed, it comes off at checkout.
           </p>
           <div className="mt-5 flex items-center justify-between gap-4">
             {onProduct || onTown ? (

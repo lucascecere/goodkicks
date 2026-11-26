@@ -1,9 +1,12 @@
-// Black Friday weekend 2026 (Lucas 11-26): $10 off every hat, Fri Nov 27 12:00am
-// to Sun Nov 29 11:59pm ET. Shipping works as normal (free over $75).
+// Black Friday weekend 2026 (Lucas 11-26): $10 off every IN-STOCK hat except
+// Charlestown (pre-order hats and Charlestown are not in the sale), Fri Nov 27
+// 12:00am to Sun Nov 29 11:59pm ET. Shipping works as normal (free over $75).
 //
-// The discount itself is a Shopify AUTOMATIC discount, "Black Friday: $10 off
-// every hat" (gid://shopify/DiscountAutomaticNode/1242225016987): $10 off each
-// item in the `all-hats` collection, scheduled for exactly this window. It
+// The discount itself is a Shopify AUTOMATIC discount (gid://shopify/
+// DiscountAutomaticNode/1242225016987): $10 off each item in the SMART
+// collection `black-friday-hats` (type Hats AND inventory > 0 AND title not
+// containing Charlestown), scheduled for exactly this window. A hat that sells
+// out mid-weekend drops out of the collection (and goes pre-order) by itself. It
 // combines with shipping discounts only, so it beats the two-town deal ($4.99)
 // and replaces HELLO5 / BACK5 rather than stacking.
 //
@@ -33,9 +36,25 @@ export function blackFridayOn(now = bfNow()): boolean {
   return now >= Date.parse(BLACK_FRIDAY.startsAt) && now <= Date.parse(BLACK_FRIDAY.endsAt);
 }
 
-/** True for a Townies hat (the sale's own rule is the all-hats collection). */
+/** True for a Townies hat. */
 export function isHat(title: string): boolean {
   return /\bhat\b/i.test(title) && !/sack|bundle/i.test(title);
+}
+
+/** Hats left out of the sale by name (Lucas 11-26). */
+const EXCLUDED = /charlestown/i;
+
+/**
+ * Is this hat in the sale? Mirrors the Shopify collection rule: a hat, not
+ * Charlestown, and in stock (not pre-order). Pass whatever the caller knows:
+ * `preorder` (hat page / bag line), `tags` (`preorder` tag), `stock` (on hand).
+ */
+export function bfEligible(p: { title: string; preorder?: boolean; tags?: string[]; stock?: number | null }): boolean {
+  if (!isHat(p.title) || EXCLUDED.test(p.title)) return false;
+  if (p.preorder) return false;
+  if (p.tags?.includes('preorder')) return false;
+  if (typeof p.stock === 'number' && p.stock <= 0) return false;
+  return true;
 }
 
 /** Sale price of a hat in cents (2999 -> 1999). */

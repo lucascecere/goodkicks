@@ -17,7 +17,7 @@ import {
   dealHatPriceCents,
   dealSavingCents,
   formatDealUsd, twoTownDealOn } from '@/lib/townies/two-town-deal';
-import { BLACK_FRIDAY, blackFridayOn } from '@/lib/townies/black-friday';
+import { BLACK_FRIDAY, blackFridayOn, bfEligible } from '@/lib/townies/black-friday';
 import { track } from '@/lib/track';
 
 /**
@@ -147,7 +147,10 @@ export function CartDrawer({ brand }: { brand: BrandConfig }) {
   // Black Friday (lib/townies/black-friday.ts): Shopify takes $10 off each hat
   // at checkout; the bag shows the same saving so the total isn't a surprise.
   const bfOn = blackFridayOn() && brand.id === 'townies';
-  const bfLineOff = (i: CartItem) => (bfOn && isHat(i) ? Math.min(BLACK_FRIDAY.perHatOffCents, i.priceInCents) : 0);
+  const bfLineOff = (i: CartItem) =>
+    bfOn && isHat(i) && bfEligible({ title: i.productTitle, preorder: !!i.customAttributes?.some((a) => a.key === 'Fulfillment' && /pre-order/i.test(a.value)) })
+      ? Math.min(BLACK_FRIDAY.perHatOffCents, i.priceInCents)
+      : 0;
   const bfCents = bfOn ? items.reduce((n, i) => n + bfLineOff(i) * i.quantity, 0) : 0;
   const bfHats = bfOn ? items.filter((i) => bfLineOff(i) > 0).reduce((n, i) => n + i.quantity, 0) : 0;
   const afterDealCents = Math.max(0, subtotalCents - dealCents - bfCents);

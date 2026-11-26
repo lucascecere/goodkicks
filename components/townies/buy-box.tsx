@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '@/lib/cart/cart-context';
 import { cn } from '@/lib/utils';
-import { BLACK_FRIDAY, blackFridayOn, bfHatPriceCents, isHat, usd } from '@/lib/townies/black-friday';
+import { BLACK_FRIDAY, blackFridayOn, bfEligible, bfHatPriceCents, usd } from '@/lib/townies/black-friday';
 
 export type BuyVariant = {
   id: string;
@@ -80,7 +80,7 @@ export function BuyBox({
 
   // Black Friday (lib/townies/black-friday.ts): Shopify takes $10 off each hat
   // at checkout automatically; the page shows the price they will pay.
-  const bf = blackFridayOn() && isHat(productTitle);
+  const bf = blackFridayOn() && bfEligible({ title: productTitle, preorder }) && selected.available;
   const salePrice = bf ? usd(bfHatPriceCents(selected.priceInCents)) : null;
 
   function handleAdd() {
@@ -115,7 +115,7 @@ export function BuyBox({
             <s className="text-lg text-muted">{price}</s>
             <span className="rounded-sm bg-[#0D1B2A] px-2 py-0.5 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] text-white">Black Friday</span>
           </p>
-          <p className="mt-1.5 text-[0.8125rem] text-muted">$10 off every hat, taken off at checkout. No code needed. Ends {BLACK_FRIDAY.endsLabel}.</p>
+          <p className="mt-1.5 text-[0.8125rem] text-muted">$10 off in-stock hats, taken off at checkout. No code needed. Ends {BLACK_FRIDAY.endsLabel}.</p>
         </div>
       ) : (
         <p className="text-2xl font-medium text-text">{price}</p>

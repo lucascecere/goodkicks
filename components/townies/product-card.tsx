@@ -140,7 +140,7 @@ export function ProductCard({
         <p className="font-medium text-text text-[0.9375rem] leading-snug">
           {title ?? product.title}
         </p>
-        <p className="text-muted text-[0.9375rem] shrink-0"><HatPrice title={product.title} amount={product.variants.edges[0]?.node.price.amount} /></p>
+        <p className="text-muted text-[0.9375rem] shrink-0"><HatPrice title={product.title} tags={product.tags} stock={product.stock} amount={product.variants.edges[0]?.node.price.amount} /></p>
       </div>
       {rating && rating.count > 0 && (
         <p className="mt-1 flex items-center gap-1.5 text-[0.75rem] text-muted">

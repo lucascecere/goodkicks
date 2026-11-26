@@ -77,7 +77,7 @@ function dealItems(brand: BrandConfig): AnnounceItem[] {
   if (!bf && !twoTownDealOn()) return [];
   const out: AnnounceItem[] = bf
     ? [
-        { text: 'Black Friday: $10 off every hat. No code needed.', href: brand.shopPath, event: 'bf_banner_click' },
+        { text: 'Black Friday: $10 off in-stock hats. No code needed.', href: brand.shopPath, event: 'bf_banner_click' },
         { text: `Ends ${BLACK_FRIDAY.endsLabel}` },
       ]
     : [{ text: 'Two towns from $50. Get 2 or more hats, save $4.99 on each.', href: brand.shopPath, event: 'two_town_banner_click' }];
