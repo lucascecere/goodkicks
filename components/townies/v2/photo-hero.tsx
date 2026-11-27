@@ -40,7 +40,7 @@ export function PhotoHero({ desktopSrc, mobileSrc, alt, eyebrow, headline, sub, 
       <div className="mx-auto max-w-7xl px-5 pb-10 pt-7 sm:px-8 lg:flex lg:min-h-[min(80vh,720px)] lg:flex-col lg:justify-center lg:pb-16 lg:pt-16">
         <div className="max-w-xl lg:max-w-2xl">
           <p className="font-label text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-[#F2EFE8]/80">{eyebrow}</p>
-          <h1 className="display mt-3 text-[2.5rem] leading-[1] uppercase! tracking-[0.01em]! sm:text-[3.5rem] lg:whitespace-nowrap lg:text-[3.75rem]">{headline}</h1>
+          <h1 className="display mt-3 text-[2.5rem] leading-[1] uppercase! tracking-[0.01em]! sm:text-[3.5rem] lg:whitespace-nowrap lg:text-[3.75rem]">{headline.split('\n').map((line, i) => (<span key={i} className="block">{line}</span>))}</h1>
           <p className="mt-3 max-w-md text-[1rem] leading-relaxed text-[#F2EFE8]/80 sm:text-[1.0625rem]">{sub}</p>
           <div className="mt-6 grid grid-cols-2 gap-2 sm:flex sm:gap-3">
             <Link

@@ -40,7 +40,7 @@ export function homeHero(now = Date.now()): HeroContent {
       mobileSrc: '/brand/scene/bf-needham-tall.jpg',
       alt: 'The Needham Townies hat on a slate stone under a spotlight',
       eyebrow: `Black Friday weekend · ends ${BLACK_FRIDAY.endsLabel}`,
-      headline: '$10 off in-stock hats.',
+      headline: '$10 off\nin-stock hats.',
       sub: 'In-stock hats are $19.99 through Sunday. No code needed, it comes off at checkout.',
       cta: { href: '/shop?utm_source=home&utm_campaign=black-friday', label: 'Shop the sale' },
       ctaSecondary: { href: '#towns', label: 'Find your town' },
